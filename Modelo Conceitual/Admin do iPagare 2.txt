@@ -1,0 +1,45 @@
+https://www.ipagare.com.br/panel/loginUser.do
+
+user: emerson
+senha: capreti1020
+
+
+Paginas de retorno
+Sucesso
+--------
+https://compra.compreingressos.com/comprar/pagamento_ok.php
+
+
+Falha
+--------
+https://compra.compreingressos.com/comprar/pagamento_cancelado.php
+
+
+Personalizacao de Telas
+
+URL Da folha de estilo CSS
+--------------------------
+
+
+https://compra.compreingressos.com/stylesheets/ipagare.css
+
+
+
+
+
+
+
+Ambiente de Testes
+
+
+user: compreingressos_teste
+senha: thoIk6lD
+
+
+
+
+
+
+https://www.ticketnet.com.br/compreingressos/ipagare.css
+https://www.ticketnet.com.br/compreingressos/pagamentofinalizado.asp
+https://www.ticketnet.com.br/compreingressos/pagamentofinalizado_erro.asp

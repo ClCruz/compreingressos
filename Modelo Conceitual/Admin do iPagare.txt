@@ -1,0 +1,4 @@
+https://www.ipagare.com.br/panel/loginUser.do
+
+user: emerson
+senha: capreti1020

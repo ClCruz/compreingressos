@@ -51,8 +51,8 @@ $pagina = basename(__FILE__);
   }
 </style>
 </HEAD>
-<link rel="stylesheet" type="text/css" href="estilos_ra.css">
-<link rel="stylesheet" type="text/css" href="padraoRelat.css">
+<link rel="stylesheet" type="text/css" href="../stylesheets/estilos_ra.css">
+<link rel="stylesheet" type="text/css" href="../stylesheets/padraoRelat.css">
 <body leftmargin="0" topmargin="0">
 <?php
 function Cabec($nPag, $nLin){

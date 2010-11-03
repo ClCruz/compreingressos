@@ -42,6 +42,7 @@ $(function() {
 		document.location = '?p=' + pagina.replace('.php', '') + '&dt_inicial=' + $("#dt_inicial").val() + '&dt_final='+ $("#dt_final").val() + '&situacao=' + $("#cboSituacao").val() + '&controle=' + $("#controle").val() + '';		
 	});
 	
+	//Gera relatorio
 	$("#btnRelatorio").click(function(){
 		if($("#local").val() == "")
 			$.dialog({title: 'Alerta...', text: 'Selecione o local!'});

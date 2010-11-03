@@ -358,6 +358,24 @@ function comboLocal(){
 	print("</select>");
 }
 
+function comboEventos($idBase, $idUsuario){
+	$mainConnection  = mainConnection();
+	$tsql = "SELECT P.CODPECA, P.NOMPECA 
+			  FROM 
+				  CI_TESTE..TABPECA P
+				  INNER JOIN 
+				  CI_MIDDLEWAY..MW_ACESSO_CONCEDIDO A
+				  ON	A.CODPECA = P.CODPECA
+				  AND A.ID_BASE = ?
+				  AND A.ID_USUARIO = ?
+			  WHERE STAPECA = 'A' ORDER BY 2";
+	$stmt = executeSQL($mainConnection, $tsql, array($idBase, $idUsuario));
+	print("<option value=\"null\">Todos</option>");
+	while($eventos = fetchResult($stmt)){
+		print("<option value=\"". $eventos["CODPECA"] ."\">". utf8_encode($eventos["NOMPECA"]) ."</option>\n");	
+	}	
+}
+
 /*  OUTROS  */
 
 

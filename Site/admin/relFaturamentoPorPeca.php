@@ -11,6 +11,34 @@ $pagina = basename(__FILE__);
 <title>Relatório - Faturamento</title>
 <HEAD>
 <style type="text/css">
+	div.div1 {
+	  font-size=8;
+	  padding=0;
+	  spacing=0;
+	  width:120px; 
+	  overflow:hidden; 
+	}
+	div.div2 {
+	  font-size=8;
+	  padding=0;
+	  spacing=0
+	  width:60px;  
+	  overflow:hidden; 
+	}
+	div.div3 {
+	  font-size=8;
+	  padding=0;
+	  spacing=0;
+	  width:52px; 
+	  overflow:hidden; 
+	}
+	div.div4 {
+	  font-size=8;
+	  padding=0;
+	  spacing=0;
+	  width:90px; 
+	  overflow:hidden; 
+	}
     body {margin:0px 0px 0px 0px;}
   @media print {
     body {margin: 0px 0px 0px 0px;}
@@ -39,7 +67,7 @@ function Cabec($nPag, $nLin){
                 <td align="right" width="150"><font size="1" face="tahoma,verdana,arial"><b>Data: <?php echo date("d/m/Y"); ?></b></font></td>			
             </tr>
             <tr>
-                <td align="center" rowspan="2"><font size="2" face="tahoma,verdana,arial"><b>Repasses por Forma de Pagamento (Detalhado)</b></font></td>
+                <td align="center" rowspan="2"><font size="2" face="tahoma,verdana,arial"><b>Repasses por Forma de Pagamento (Detalhado por peça)</b></font></td>
                 <td align="right" width="150"><font size="1" face="tahoma,verdana,arial"><b>Hora: <?php echo date("G:i:s"); ?></b></font></td>
             </tr>
             <tr>
@@ -65,9 +93,10 @@ $var_DescPeca	= $_GET["DescPeca"];
 $var_NomeBase	= $_GET["local"];
 
 if(isset($_GET["periodo"]) && $_GET["periodo"] == "ocorrencia")
-	$gSQL = "EXECUTE SP_REL_FAT001 '". $dataInicial . "', '". $dataFinal ."' ,". $codPeca;
+	$gSQL = "EXECUTE SP_REL_FAT002 '". $dataInicial . "', '". $dataFinal ."' ,". $codPeca;
 else
-	$gSQL = "EXECUTE SP_REL_FAT001 '". $dataInicial . "', '". $dataFinal ."' ,". $codPeca;
+	$gSQL = "EXECUTE SP_REL_FAT002a '". $dataInicial . "', '". $dataFinal ."' ,". $codPeca;
+	
 	
 $stmt = executeSQL($mainConnection, $gSQL);	
 
@@ -75,6 +104,7 @@ if(sqlErrors($stmt) == ""){
 	if(hasRows($stmt)){
 		$nPag = 1;
 		$nLin = 0;
+		$nPrimeiraVez = 0;
 		Cabec(&$nPag, &$nLin);
 ?>
         <form name="frmVisaoSint" method="post">
@@ -95,12 +125,69 @@ if(sqlErrors($stmt) == ""){
         
         <br clear="all">
 <?php
+		$bPularSubTotal = true;
+		
+		$cont1_1_sub = 0;
+		$cont2_2_sub = 0;
+		$cont3_3_sub = 0;
+		$cont4_4_sub = 0;
+		$cont5_5_sub = 0;
+		$cont6_6_sub = 0;
+		$cont7_7_sub = 0;
+		$cont7_7a_sub = 0;
+		$cont8_8_sub = 0;		
+
 		$nLin = $nLin+3;
 		// Repete todos os registros de faturamento
 		while($pForma = fetchResult($stmt)){
+			if($var_NomePeca != $pForma["NomPeca"]){
+				if($bPularSubTotal == false){
+?>
+                <tr>			
+                    <td	align="left"   class="div1"><STRONG>Total por Peça:</STRONG></td>
+                    <td	align="center" class="div4">---</td>
+                    <td	align="right"  class="div3"><STRONG><?php echo number_format($cont1_1_sub,2); ?></STRONG></td>
+                    <td	align="right"  class="div3"><STRONG><?php echo $cont2_2_sub; ?></STRONG></td>
+                    <td	align="right"  class="div3"><STRONG><?php echo number_format($cont6_6_sub,2); ?></STRONG></td>
+                    <td	align="right"  class="div2"><STRONG><?php echo number_format($cont3_3_sub,2); ?></STRONG></td>
+                    <td	align="center" class="div2">---</td>
+                    <td	align="right"  class="div3"><STRONG><?php echo number_format($cont4_4_sub,2); ?></STRONG></td>
+                    <td	align="right"  class="div2"><STRONG><?php echo number_format($cont5_5_sub,2); ?></STRONG></td>
+                    <td	align="center" class="div3">---</td>
+                    <td	align="right"  class="div3"><STRONG><?php echo number_format($cont7_7_sub,2); ?></STRONG></td>
+                    <td	align="right"  class="div3"><STRONG><?php echo number_format($cont7_7a_sub,2); ?></STRONG></td>
+                    <td	align="right"  class="div3"><STRONG><?php echo number_format($cont8_8_sub,2); ?></STRONG></td>			
+                </tr>
+				</table>
+<?php
+				}
+				$bPularSubTotal = false;
+				$cont1_1_sub = 0;
+				$cont2_2_sub = 0;
+				$cont3_3_sub = 0;
+				$cont4_4_sub = 0;
+				$cont5_5_sub = 0;
+				$cont6_6_sub = 0;
+				$cont7_7_sub = 0;
+				$cont7_7a_sub = 0;
+				$cont8_8_sub = 0;
+?>
+				<br clear=all>
+                <br clear=all>
+                <table width="900" class="tabela" border="0" bgcolor="LightGrey">
+                    <tr>
+                        <td	align="left" width="900" colspan="11" class="label" style="font-size: 12;"><STRONG>Nome da Peça</STRONG>:   <?php echo utf8_encode($pForma["NomPeca"]); ?></td>
+                    </tr>
+                </table>
+<?php
+				$var_NomePeca = $pForma["NomPeca"];
+			}
+			
 			$var_forPagto = $pForma["forpagto"];	
 ?>	
-            <table width="900" border="0" bgcolor="LightGrey" class="tabela">
+			</table>
+            <br clear="all">
+			<table name="tab" id="tab" style="width: 900px; " border=0 bgcolor="LightGrey" class="tabela">
                 <tr>
                     <td	align="left" width="900" colspan="11" class="label"><STRONG>Forma de Pagamento</STRONG>:   <?php echo utf8_encode($var_forPagto); ?></td>
                 </tr>
@@ -138,7 +225,7 @@ if(sqlErrors($stmt) == ""){
 					if($var_forPagto == $pRs["forpagto"]){
 						$formula1 = $pRs["totfat"] - $pRs["TotTxConveniencia"] - $pRs["TotSpread"];
 
-						if(is_null($pRs["PcTxAdm"])){
+						if(!is_null($pRs["PcTxAdm"])){
 							$formula3 = $pRs["PcTxAdm"] / 100;
 							$PcTxAdm = $pRs["PcTxAdm"];
 						}else{
@@ -147,7 +234,7 @@ if(sqlErrors($stmt) == ""){
 						}
 						$formula4 = $pRs["totfat"] * $formula3;
 				
-						if(is_null($pRs["VLCMS"])){
+						if(!is_null($pRs["VLCMS"])){
 						  $formula5 = $pRs["totfat"] - $formula4 - $formula1 + $pRs["VLCMS"];
 						}
 ?>
@@ -174,7 +261,7 @@ if(sqlErrors($stmt) == ""){
 						$cont3 = $cont3 + round($pRs["TotTxConveniencia"],2);
 						$cont4 = $cont4 + round($pRs["TotSpread"],2);
 						$cont5 = $cont5 + round($formula1,2);
-						if(is_null($pRs["VLCMS"])){
+						if(!is_null($pRs["VLCMS"])){
 							$cont6 = $cont6 + round($pRs["VLCMS"],2);
 						}
 						$cont7 = $cont7 + round($formula4,2);
@@ -224,10 +311,18 @@ if(sqlErrors($stmt) == ""){
                 <td	align="right" width="" class=""><STRONG><?php echo number_format($cont7a,2); ?></STRONG></td>
                 <td	align="right" width="" class=""><STRONG><?php echo number_format($cont8,2); ?></STRONG></td>			
             </tr>
-        </table>
-		<br><p>
 <?php
 		$nLin=$nLin+2;
+			
+		$cont1_1_sub = $cont1_1_sub + $cont1;
+		$cont2_2_sub = $cont2_2_sub + $cont2;
+		$cont3_3_sub = $cont3_3_sub + $cont3;
+		$cont4_4_sub = $cont4_4_sub + $cont4;
+		$cont5_5_sub = $cont5_5_sub + $cont5;
+		$cont6_6_sub = $cont6_6_sub + $cont6;
+		$cont7_7_sub = $cont7_7_sub+ $cont7;
+		$cont7_7a_sub = $cont7_7a_sub + $cont7a;
+		$cont8_8_sub = $cont8_8_sub + $cont8;		
 			
 		$cont1_1 = $cont1_1 + $cont1;
 		$cont2_2 = $cont2_2 + $cont2;
@@ -250,7 +345,22 @@ if(sqlErrors($stmt) == ""){
 		$cont8 = 0;
 		}//Fecha while
 ?>
-    <table width="900" border="1" bgcolor="LightGrey" class="tabela">
+		<tr>			
+			<td	align="left"  class="div1"><STRONG>Total por Peça:</STRONG></td>
+			<td	align="center" class="div4">---</td>
+			<td	align="right"  class="div3"><STRONG><?php echo number_format($cont1_1_sub,2); ?></STRONG></td>
+			<td	align="right"  class="div3"><STRONG><?php echo $cont2_2_sub; ?></STRONG></td>
+			<td	align="right"  class="div3"><STRONG><?php echo number_format($cont6_6_sub,2); ?></STRONG></td>
+			<td	align="right"  class="div2"><STRONG><?php echo number_format($cont3_3_sub,2); ?></STRONG></td>
+			<td	align="center" class="div2">---</td>
+			<td	align="right"  class="div3"><STRONG><?php echo number_format($cont4_4_sub,2); ?></STRONG></td>
+			<td	align="right"  class="div2"><STRONG><?php echo number_format($cont5_5_sub,2); ?></STRONG></td>
+			<td	align="center" class="div3">---</td>
+			<td	align="right"  class="div3"><STRONG><?php echo number_format($cont7_7_sub,2); ?></STRONG></td>
+			<td	align="right"  class="div3"><STRONG><?php echo number_format($cont7_7a_sub,2); ?></STRONG></td>
+			<td	align="right"  class="div3"><STRONG><?php echo number_format($cont8_8_sub,2); ?></STRONG></td>			
+		</tr>
+		<tr><td><font size="1">&nbsp</font></td></tr>
         <tr>
             <td	align="left" width="137"><STRONG>Total Geral:</STRONG></td>			
             <td	align="center" width="52">---</td>

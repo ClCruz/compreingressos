@@ -375,10 +375,7 @@ function comboEventos($idBase, $idUsuario){
 		print("<option value=\"". $eventos["CODPECA"] ."\">". utf8_encode($eventos["NOMPECA"]) ."</option>\n");	
 	}	
 }
-
 /*  OUTROS  */
-
-
 
 require_once('../settings/mail.php');
 

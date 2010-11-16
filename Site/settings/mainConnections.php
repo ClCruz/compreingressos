@@ -20,4 +20,14 @@ function getConnection($teatroID) {
 	
 	return sqlsrv_connect($host.','.$port, array("UID" => $user, "PWD" => $pass, "Database" => $rs['DS_NOME_BASE_SQL']));
 }
+
+function getConnectionTsp(){
+	$host = '11.11.11.218';
+	$port = '1433';
+	$dbname = 'tspweb';
+	$user = 'tsp';
+	$pass = 'tsp';
+	
+	return sqlsrv_connect($host.','.$port, array("UID" => $user, "PWD" => $pass, "Database" => $dbname));
+}
 ?>

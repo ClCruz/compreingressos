@@ -54,7 +54,7 @@ $(function() {
 										'<label>' +
 										'<div class="endereco_radio">' +
 											'<input name="entrega" type="radio" value="'+data.split('?')[1]+'">' +
-											'<a href="cadastro.php?action=manageAddresses&enderecoID='+data.split('?')[1]+'">X</a>' +
+											'<a class="apagar_novo_endereco" href="cadastro.php?action=manageAddresses&enderecoID='+data.split('?')[1]+'">X</a>' +
 										'</div>' +
 										'<div class="endereco_entrega">' +
 											'<h2>' + endereco.val() + '</h2>' +
@@ -86,6 +86,7 @@ $(function() {
 		}
 	});
 	
+	/**
 	$('a[href^="cadastro.php?action=manageAddresses"]').click(function(event) {
 		event.preventDefault();
 		
@@ -106,5 +107,47 @@ $(function() {
 				$('#loadingIcon').fadeOut('slow');
 			}
 		});
+	});**/
+	
+	//Apagar novo endereco
+
+	$('.apagar_novo_endereco').live('click',function(event) {
+		event.preventDefault();
+		var $this = $(this);
+		$.confirmDialog({
+			text: 'Deseja apagar o endereço',
+			title: 'Atenção',
+			height:140,
+			uiOptions: {
+			  resizable: false,
+			  modal: true,
+			  buttons: {
+				  'Sim': function() {
+					  $.ajax({
+						url: $this.attr('href'),
+						type: 'get',
+						success: function(data) {
+							if (data == 'true') {
+								$this.closest('div.entrega').remove();
+							} else {
+								$.dialog({text: data});
+							}
+						},
+						complete: function() {
+							$('#loadingIcon').fadeOut('slow');
+							$( this ).dialog( "close" );
+						}
+					});
+					$( this ).dialog( "close" );
+
+				  },
+				  'Cancelar': function() {
+					  $(this).dialog('close');
+				  }
+			  }
+		   }
+		});
+		
 	});
+	
 });

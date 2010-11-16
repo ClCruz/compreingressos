@@ -56,6 +56,7 @@ $(function() {
 			complete: function() {
 				$('#loadingIcon').fadeOut('slow');
 				calculaTotal();
+				
 			}
 		});
 	});
@@ -108,23 +109,76 @@ $(function() {
 		});
 	});
 	
+	function verificaTempoLimite(idEstado, idEtapa){
+		$('#loadingIcon').fadeOut('fast');
+		var retornoFunc;
+		$.ajax({
+			url: 'calculaFrete.php?action=verificatempo&etapa='+ idEtapa,
+			type: 'post',
+			data: 'idestado=' + idEstado,
+			async: false,
+			success: function(data){
+				if(data != "true"){
+					retornoFunc = false;
+				}else{
+					retornoFunc = true;					
+				}
+			},
+			complete: function(data){
+				$('#loadingIcon').fadeOut('slow');
+			},
+			error: function(){
+				$.dialog({
+					title: 'Erro...',
+					text: 'Erro na chamada dos dados !!!'
+				});	
+				return false;
+			}
+		});
+		return retornoFunc;
+	};
+	
 	$('#botao_avancar, #botao_pagamento, .botao_avancar, .botao_pagamento').click(function(event) {
 		event.preventDefault();
 		
+		var etapa = 0;
+		var estado = $('#estado'),
+			 url = $(this).attr('href');
+			 
 		var $this = $(this),
 			 form = $('#pedido');
-		
+			 
 		if ($.cookie('user') == null) {
 			if ($('#cmb_entrega').val() == 'entrega' && $('#estado').val() == '') return false;
-		} else {
-			if ($('#cmb_entrega').val() == 'entrega' && $('.endereco_radio :radio:checked').length == 0) {
+		} 	
+		else {
+			if($('#cmb_entrega').val() == 'entrega' && $('.endereco_radio :radio:checked').length == 0) {
 				$.dialog({title: 'Aviso...', text: 'Favor escolher um endereço ou mudar o tipo de forma de entrega.'});
 				return false;
 			}
+			var etapa = 4;
 		}
-		
+
+		estado = $('.endereco_radio :radio:checked');
+		if((etapa == 4) && ($('#cmb_entrega').val() == 'entrega')){
+			retornoVerifica = verificaTempoLimite(estado.val(), etapa);	
+			if(retornoVerifica == true){
+				carregarDadosGerais($this, form);
+			}else{
+				$.dialog({
+					title: 'Atenção!!!',
+					text: 'Tempo não suficiente para entrega dos ingressos.<br>Favor alterar o tipo de forma de entrega.'
+				});	
+			}				
+		}
+		else{
+			carregarDadosGerais($this, form);	
+		}
+	});
+	
+	// Função para quando usuário clicar no botão avançar das etapas
+	function carregarDadosGerais($this, form){
 		$('#loadingIcon').fadeIn('fast');
-		
 		$.ajax({
 			url: form.attr('action'),
 			data: form.serialize(),
@@ -139,8 +193,8 @@ $(function() {
 			complete: function() {
 				$('#loadingIcon').fadeOut('slow');
 			}
-		});
-	});
+		});	
+	}
 	
 	function calculaTotalLinha() {
 		$('.valorTotalLinha').each(function() {

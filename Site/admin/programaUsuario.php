@@ -3,7 +3,7 @@ require_once('../settings/functions.php');
 $mainConnection = mainConnection();
 session_start();
 
-if (acessoPermitido($mainConnection, $_SESSION['admin'], 14, true)) {
+if (acessoPermitido($mainConnection, $_SESSION['admin'], 15, true)) {
 
 function getChildren($conn, $idPrograma, $idUsuario, $nivel) {
 	$query = 'SELECT P.ID_PROGRAMA, P.ID_PARENT, P.DS_PROGRAMA, P.DS_URL,

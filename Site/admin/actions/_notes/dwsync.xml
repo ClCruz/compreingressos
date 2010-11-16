@@ -33,4 +33,14 @@
 <file name="servicosConveniencia.php" server="//11.11.11.218/c$/inetpub/wwwroot/compreingressos2/" local="129328188618897578" remote="129328188610000000" />
 <file name="servicosEntrega.php" server="//11.11.11.218/c$/inetpub/wwwroot/compreingressos2/" local="129326762890054250" remote="129326762890000000" />
 <file name="usuarios.php" server="//11.11.11.218/c$/inetpub/wwwroot/compreingressos2/" local="129326687151483217" remote="129326687150000000" />
+<file name="formaPagamento.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129332712450228092" remote="129332712450000000" />
+<file name="locais.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129332712450088092" remote="129332712450000000" />
+<file name="mapaPlateia.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129332712450148092" remote="129332712450000000" />
+<file name="restricaoBilhete.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129332712450288092" remote="129332712450000000" />
+<file name="servicosConveniencia.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129332712450198092" remote="129332712450000000" />
+<file name="servicosEntrega.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129332712450258092" remote="129332712450000000" />
+<file name="usuarios.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129332712450118092" remote="129332712450000000" />
+<file name="programaUsuarioEventos.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129337776784319311" remote="129337776780000000" />
+<file name="envioIngressos.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129337902290039294" remote="129337902290000000" />
+<file name="relatorioBordero.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129340479088502161" remote="129340479080000000" />
 </dwsync>

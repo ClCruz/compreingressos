@@ -1,4 +1,11 @@
 <?php 
+if(isset($_GET["exportar"]) && $_GET["exportar"] == "true"){
+	header("Content-type: application/vnd.ms-excel");
+	header("Content-type: application/force-download");
+	header("Content-Disposition: attachment; filename=relatorio.xls");
+	header("Pragma: no-cache");
+}
+
 require_once('../settings/functions.php');
 if(isset($_GET["local"])){
 	$mainConnection = getConnection($_GET["local"]);
@@ -27,7 +34,7 @@ $pagina = basename(__FILE__);
 <link rel="stylesheet" type="text/css" href="../stylesheets/padraoRelat.css">
 <body leftmargin="0" topmargin="0">
 <?php
-function Cabec($nPag, $nLin){
+function Cabec($nPag, $nLin, $descricao){
 		if($nPag > 1){
 			echo "<br clear=\"all\" style=\"page-break-after:always;\">";
 		}
@@ -39,7 +46,7 @@ function Cabec($nPag, $nLin){
                 <td align="right" width="60"><font size="1" face="tahoma,verdana,arial"><b>Data: <?php echo date("d/m/Y"); ?></b></font></td>			
             </tr>
             <tr>
-                <td align="center" rowspan="2"><font size="1" face="tahoma,verdana,arial"><b>Repasses por Forma de Pagamento (Resumido por peça)</b></font></td>
+                <td align="center" rowspan="2"><font size="1" face="tahoma,verdana,arial"><b><?php echo $descricao; ?></b></font></td>
                 <td align="right" width="60"><font size="1" face="tahoma,verdana,arial"><b>Hora: <?php echo date("G:i:s"); ?></b></font></td>
             </tr>
             <tr>
@@ -62,12 +69,20 @@ $dataInicial	= $_GET["dt_inicial"];
 $dataFinal		= $_GET["dt_final"];
 $var_Papel		= $_GET["Papel"];
 $var_DescPeca	= $_GET["DescPeca"];
-$var_NomeBase	= $_GET["local"];
+$var_NomePeca	= $_GET["local"];
 
-if(isset($_GET["periodo"]) && $_GET["periodo"] == "ocorrencia")
+// URL usada para exportar dados para excel
+$var_url 		= "relFaturamentoPorPecaRes.php?dt_inicial=". $dataInicial ."&dt_final=". $dataFinal ."&local=". $var_NomeBase ."&DescPeca=". $var_DescPeca ."&eventos=".$_GET["eventos"] ."&teatro=". $var_Teatro;
+
+
+if(isset($_GET["periodo"]) && $_GET["periodo"] == "ocorrencia"){
 	$gSQL = "EXECUTE SP_REL_FAT002 '". $dataInicial . "', '". $dataFinal ."' ,". $codPeca;
-else
+	$descricao = "Relatório de Faturamento/Repasse por Espetáculo (Resumido)";
+}
+else{
 	$gSQL = "EXECUTE SP_REL_FAT002a '". $dataInicial . "', '". $dataFinal ."' ,". $codPeca;
+	$descricao = "Relatório de Faturamento/Repasse por Espetáculo <BR>(Resumido - Base na data da Venda)";	
+}
 
 $stmt = executeSQL($mainConnection, $gSQL);	
 
@@ -76,10 +91,12 @@ if(sqlErrors($stmt) == ""){
 		$nPag = 1;
 		$nLin = 0;
 		$bPularSubTotal = false;
-		Cabec(&$nPag, &$nLin);
+		// Mostra cabeçalho somento no modo HTML e não no Excel
+		if(!isset($_GET["exportar"]))
+			Cabec(&$nPag, &$nLin, $descricao);
 ?>
         <form name="frmVisaoSint" method="post">
-        <table width="670" border="0" bgcolor="LightGrey" class="tabela">
+        <table width="670" border="0" bgcolor="<?php echo (!isset($_GET["exportar"])) ? "LightGrey" : ""; ?>" class="tabela">
             <tr height="15">
                 <td	width="100" align="left"><font class="label">Teatro: </font></td>
                 <td width="350" align="left" class="texto" colspan="3"><?php echo $var_Teatro; ?></td>
@@ -98,18 +115,18 @@ if(sqlErrors($stmt) == ""){
         <?php 
 			$bPularSubTotal = true;
 			while($pForma = fetchResult($stmt)){
-				if($var_DescPeca != $pForma["NomPeca"]){
+				if($var_NomePeca != $pForma["NomPeca"]){
 					if($bPularSubTotal == false){
 		?>
         				<tr height=2px><td colspan="4">&nbsp</td></tr>
                         <tr>
                             <td align="left" class="label"><strong>Subtotal:</strong></td>
                             <td align="right" class="texto"><strong><?php echo $cont2_2_sub; ?></strong></td>
-                            <td align="right" class="texto"><strong><?php echo number_format($cont9_9_sub,2); ?></strong></td>
-                            <td align="right" class="texto"><strong><?php echo number_format($cont3_3_sub,2); ?></strong></td>
-                            <td align="right" class="texto"><strong><?php echo number_format($cont7_7a_sub,2); ?></strong></td>
-                            <td align="right" class="texto"><strong><?php echo number_format($cont8_8_sub,2); ?></strong></td>			
-                            <td align="right" class="texto"><strong><?php echo number_format($cont5_5_sub,2); ?></strong></td>
+                            <td align="right" class="texto"><strong><?php echo number_format($cont9_9_sub,2, ",", "."); ?></strong></td>
+                            <td align="right" class="texto"><strong><?php echo number_format($cont3_3_sub,2, ",", "."); ?></strong></td>
+                            <td align="right" class="texto"><strong><?php echo number_format($cont7_7a_sub,2, ",", "."); ?></strong></td>
+                            <td align="right" class="texto"><strong><?php echo number_format($cont8_8_sub,2, ",", "."); ?></strong></td>			
+                            <td align="right" class="texto"><strong><?php echo number_format($cont5_5_sub,2, ",", "."); ?></strong></td>
                         </tr>
                     </table>
                     <?php 
@@ -127,12 +144,12 @@ if(sqlErrors($stmt) == ""){
 					$bPularSubTotal = false;
 					?>
                     <br clear=all>
-                    <table width="670px" border="1" bgcolor="LightGrey" class="tabela">
+                    <table width="670px" border="1" bgcolor="<?php echo (!isset($_GET["exportar"])) ? "LightGrey" : ""; ?>" class="tabela">
                     <tr>
                         <td	colspan=6 align=left width="900" class=label style="font-size: 12;"><STRONG>Nome da Peça</STRONG>:   <?php echo utf8_encode($pForma["NomPeca"]); ?></td>
                     </tr>
                		</table>
-                    <table width="670" border="0" bgcolor="LightGrey" class="tabela">
+                    <table width="670" border="0" bgcolor="<?php echo (!isset($_GET["exportar"])) ? "LightGrey" : ""; ?>" class="tabela">
                     <tr>
                         <td align="center" class="titulogrid" style="with: 170px;">Forma de Pagamento</td>
                         <td align="center" class="titulogrid" style="with: 100px;">Qtd Bilhetes</td>
@@ -143,7 +160,7 @@ if(sqlErrors($stmt) == ""){
                         <td align="center" class="titulogrid" style="with: 100px;">Valor do Repasse</td>
                     </tr>
 <?php
-					$var_DescPeca = $pForma["NomPeca"];
+					$var_NomePeca = $pForma["NomPeca"];
 				}
 			
 				$var_forPagto = $pForma["forpagto"];	
@@ -164,7 +181,7 @@ if(sqlErrors($stmt) == ""){
 					if($var_forPagto == $pRs["forpagto"]){
 						$formula1 = $pRs["totfat"] - $pRs["TotTxConveniencia"] - $pRs["TotSpread"];
 
-						if(is_null($pRs["PcTxAdm"])){
+						if(!is_null($pRs["PcTxAdm"])){
 							$formula3 = $pRs["PcTxAdm"] / 100;
 							$PcTxAdm = $pRs["PcTxAdm"];
 						}else{
@@ -173,7 +190,7 @@ if(sqlErrors($stmt) == ""){
 						}
 						$formula4 = $pRs["totfat"] * $formula3;
 				
-						if(is_null($pRs["VLCMS"])){
+						if(!is_null($pRs["VLCMS"])){
 						  $formula5 = $pRs["totfat"] - $formula4 - $formula1 + $pRs["VLCMS"];
 						}
 						
@@ -197,11 +214,11 @@ if(sqlErrors($stmt) == ""){
 	<tr>
 		<td align="left" class="label"><strong><?php echo utf8_encode($var_forPagto); ?></strong></td>
 		<td align="right" class="texto"><strong><?php echo $cont2; ?></strong></td>
-		<td align="right" class="texto"><strong><?php echo number_format($cont9,2); ?></strong></td>
-		<td align="right" class="texto"><strong><?php echo number_format($cont3,2); ?></strong></td>
-		<td align="right" class="texto"><strong><?php echo number_format($cont7a,2); ?></strong></td>
-		<td align="right" class="texto"><strong><?php echo number_format($cont8,2); ?></strong></td>		
-		<td align="right" class="texto"><strong><?php echo number_format($cont5,2); ?></strong></td>	
+		<td align="right" class="texto"><strong><?php echo number_format($cont9,2, ",", "."); ?></strong></td>
+		<td align="right" class="texto"><strong><?php echo number_format($cont3,2, ",", "."); ?></strong></td>
+		<td align="right" class="texto"><strong><?php echo number_format($cont7a,2, ",", "."); ?></strong></td>
+		<td align="right" class="texto"><strong><?php echo number_format($cont8,2, ",", "."); ?></strong></td>		
+		<td align="right" class="texto"><strong><?php echo number_format($cont5,2, ",", "."); ?></strong></td>	
 	</tr>
     <?php
 		$cont1_1_sub = $cont1_1_sub + $cont1;
@@ -231,22 +248,22 @@ if(sqlErrors($stmt) == ""){
 	<tr>
 		<td align="left" class="label"><strong>Subtotal:</strong></td>
 		<td align="right" class="texto"><strong><?php echo $cont2_2_sub; ?></strong></td>
-		<td align="right" class="texto"><strong><?php echo number_format($cont9_9_sub,2); ?></strong></td>
-		<td align="right" class="texto"><strong><?php echo number_format($cont3_3_sub,2); ?></strong></td>
-		<td align="right" class="texto"><strong><?php echo number_format($cont7_7a_sub,2); ?></strong></td>
-		<td align="right" class="texto"><strong><?php echo number_format($cont8_8_sub,2); ?></strong></td>			
-		<td align="right" class="texto"><strong><?php echo number_format($cont5_5_sub,2); ?></strong></td>
+		<td align="right" class="texto"><strong><?php echo number_format($cont9_9_sub,2, ",", "."); ?></strong></td>
+		<td align="right" class="texto"><strong><?php echo number_format($cont3_3_sub,2, ",", "."); ?></strong></td>
+		<td align="right" class="texto"><strong><?php echo number_format($cont7_7a_sub,2, ",", "."); ?></strong></td>
+		<td align="right" class="texto"><strong><?php echo number_format($cont8_8_sub,2, ",", "."); ?></strong></td>			
+		<td align="right" class="texto"><strong><?php echo number_format($cont5_5_sub,2, ",", "."); ?></strong></td>
 	</tr>
     
     <tr><td colspan=4>&nbsp;</td></tr>			
 	<tr>			
 		<td align="left" class="label"><strong>Total Geral:</strong></td>
 		<td align="right" class="texto"><strong><?php echo $cont2_2; ?></strong></td>
-		<td align="right" class="texto"><strong><?php echo number_format($cont9_9,2); ?></strong></td>
-		<td align="right" class="texto"><strong><?php echo number_format($cont3_3,2); ?></strong></td>
-		<td align="right" class="texto"><strong><?php echo number_format($cont7_7a,2); ?></strong></td>
-		<td align="right" class="texto"><strong><?php echo number_format($cont8_8,2); ?></strong></td>
-		<td align="right" class="texto"><strong><?php echo number_format($cont5_5,2); ?></strong></td>				
+		<td align="right" class="texto"><strong><?php echo number_format($cont9_9,2, ",", "."); ?></strong></td>
+		<td align="right" class="texto"><strong><?php echo number_format($cont3_3,2, ",", "."); ?></strong></td>
+		<td align="right" class="texto"><strong><?php echo number_format($cont7_7a,2, ",", "."); ?></strong></td>
+		<td align="right" class="texto"><strong><?php echo number_format($cont8_8,2, ",", "."); ?></strong></td>
+		<td align="right" class="texto"><strong><?php echo number_format($cont5_5,2, ",", "."); ?></strong></td>				
 	</tr>
 	</table>
 	<br>
@@ -256,6 +273,7 @@ if(sqlErrors($stmt) == ""){
                 <br>	
                 <input class="botao" type="button" value="Imprimir Relatório" name="cmdImprimi" onClick="window.print();">			
                 <input class="botao" type="button" value="Fechar Janela" name="cmdFecha" onClick="window.close()">
+                <input class="botao" type="button" value="Exportar Excel" name="cmdExportar" onClick="document.location.href = '<?php echo $var_url."&exportar=true"; ?>';">
             </td>
         </tr>	
     </table>

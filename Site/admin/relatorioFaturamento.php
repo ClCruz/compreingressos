@@ -3,7 +3,7 @@ require_once('../settings/functions.php');
 $mainConnection = mainConnection();
 session_start();
 
-if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
+if (acessoPermitido($mainConnection, $_SESSION['admin'], 15, true)) {
 
 $pagina = basename(__FILE__);
 
@@ -52,20 +52,21 @@ $(function() {
 			var teatro = $("#local").find('option').filter(":selected").text();
 			var peca = $("#eventos").find('option').filter(":selected").text();
 			var tipo = $("#tipo").val();
-			var url = ".php?dt_inicial="+ $("#dt_inicial").val() + "&dt_final="+ $("#dt_final").val() + "&local="+ $("#local").val() +"&eventos="+ $("#eventos").val() + "&periodo="+ $(".periodo").radioSel() +"&DescPeca="+ peca + "&teatro="+ teatro;
+			
+			var url = ".php?dt_inicial="+ $("#dt_inicial").val() + "&dt_final="+ $("#dt_final").val() + "&local="+ $("#local").val() +"&eventos="+ $("#eventos").val() + "&periodo="+ $(".periodo").radioSel() +"&DescPeca="+ peca + "&teatro="+ teatro +"";
 			
 			switch(tipo){
 				case 'detalhado':
-					window.open("relFaturamentoDet"+ url, "Relatório de Faturamento", 'width=920, scrollbars=yes');
+					window.open("relFaturamentoDet" + url, "", "width=920, scrollbars=yes, height=600", "");
 					break;
 				case 'detalhado_peca':
-					window.open("relFaturamentoPorPeca" + url , "Relatório de Faturamento", 'width=920, scrollbars=yes');
+					window.open("relFaturamentoPorPeca" + url , "", "width=920, height=600, scrollbars=yes", "");
 					break;
 				case 'resumido':
-					window.open("relFaturamentoRes" + url , "Relatório de Faturamento", 'width=920, scrollbars=yes');
+					window.open("relFaturamentoRes" + url , "", "width=920, height=600, scrollbars=yes", "");
 					break;
 				case 'resumido_peca':
-					window.open("relFaturamentoPorPecaRes" + url , "Relatório de Faturamento", 'width=920, scrollbars=yes');
+					window.open("relFaturamentoPorPecaRes" + url , "", "width=920, height=600, scrollbars=yes", "");
 					break;
 			}
 		}
@@ -118,9 +119,6 @@ $(function() {
         <option value="resumido_peca">Resumido por peça</option>
     </select></td>
     </tr>
-  <tr>
-  	<td><a href=""></a></td>
-  </tr>
   <tr>
     <td colspan="4"><span style="width:100%;text-align: left;">
       <input type="button" class="button" id="btnRelatorio" value="Buscar" />

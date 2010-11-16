@@ -4,8 +4,12 @@ require_once('../settings/functions.php');
 
 $mainConnection = mainConnection();
 
+$json = json_encode(array('descricao' => '1. chamada do pagamento_ok - codigo_pedido=' . $_POST['codigo_pedido'],'Post='=>$_POST ));
+include('logiPagareChamada.php');
+
+
 if (isset($_POST['codigo_pedido'])) {
-	$json = json_encode(array('descricao' => 'entrada no pagamento_ok - retorno do ipagare'));
+	$json = json_encode(array('descricao' => '2. entrada no pagamento_ok - retorno do ipagare'));
 	include('logiPagareChamada.php');
 	
 	require('processarRetornoiPagare.php');
@@ -34,6 +38,7 @@ if (isset($_POST['codigo_pedido'])) {
 			
 			$noErrors = true;
 			$retornoProcedure = '';
+			$sqlErrors = array();
 			
 			// Definir se cliente busca ingresso
 			if(isset($_SESSION["operador"])){
@@ -58,7 +63,7 @@ if (isset($_POST['codigo_pedido'])) {
 					$caixa = 255;				
 			}
 			
-			beginTransaction($mainConnection);
+			//beginTransaction($mainConnection);
 			
 			while ($rs = fetchResult($result) and $noErrors) {
 				$query = 'EXEC '.strtoupper($rs['DS_NOME_BASE_SQL']).'..SP_VEN_INS001_WEB ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?';
@@ -68,15 +73,20 @@ if (isset($_POST['codigo_pedido'])) {
 									 $_POST['numero_autorizacao'], $_POST['numero_transacao'], $_POST['numero_cartao'], $caixa);
 				$retornoProcedure = executeSQL($mainConnection, $query, $params, true);
 				$noErrors = ($retornoProcedure[0] and $noErrors);
+				$sqlErrors = sqlErrors();
+				
+				$json = json_encode(array('sp_ven_ins001_web' => $query,'params=' => $params, 'retorno_procedure' => $retornoProcedure));
+				include('logiPagareChamada.php');
+
 			}
 			
 			$sqlErrors = sqlErrors();
 			if ($noErrors and empty($sqlErrors)) {
 				executeSQL($mainConnection, 'DELETE MW_RESERVA WHERE ID_SESSION = ?', array(session_id()));
-				commitTransaction($mainConnection);
+				//commitTransaction($mainConnection);
 			} else {
 				include('errorMail.php');
-				rollbackTransaction($mainConnection);
+				//rollbackTransaction($mainConnection);
 			}
 		}
 		?>
@@ -97,6 +107,9 @@ if (isset($_POST['codigo_pedido'])) {
 	
 	setcookie('pedido', '', -1);
 }
+
+$json = json_encode(array('descricao' => '3. fim da chamada do pagamento_ok - codigo_pedido=' . $_POST['codigo_pedido'],'Post='=>$_POST ));
+include('logiPagareChamada.php');
 ?>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -149,7 +162,11 @@ if (isset($_POST['codigo_pedido'])) {
 								<p>Para visualiz&aacute;-lo basta clicar no link acima ou acessar o menu <a href="minha_conta.php" <?php echo (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) ? 'target="_blank"' : ''; ?>>minha conta</a></p>
 							</div>
 							<div id="footer_ticket">
-							<?php if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) { ?>
+							<?php if (!(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) { ?>
+								<a href="http://www.compreingressos.com/">
+									<div class="botoes_ticket" id="botao_avancar">home</div>
+								</a>
+							<?php } else { ?>
 								<a href="etapa0.php">
 									<div class="botoes_ticket" id="botao_avancar">nova venda</div>
 								</a>

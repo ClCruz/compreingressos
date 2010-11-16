@@ -171,10 +171,6 @@ include('logiPagareChamada.php');
 								<a href="etapa0.php">
 									<div class="botoes_ticket" id="botao_avancar">nova venda</div>
 								</a>
-							<?php } else { ?>
-								<a href="http://www.compreingressos.com/">
-									<div class="botoes_ticket" id="botao_avancar">home</div>
-								</a>
 							<?php } ?>
 							</div>
 						</div>

@@ -1,6 +1,5 @@
 <?php
 require_once('../settings/functions.php');
-require_once('../settings/mainConnections.php');
 
 if (isset($_GET['action'])) {
 	$mainConnection = mainConnection();

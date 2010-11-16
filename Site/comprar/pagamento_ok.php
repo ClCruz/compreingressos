@@ -126,6 +126,12 @@ include('logiPagareChamada.php');
 		<script type="text/javascript" src="../javascripts/jquery.js"></script>
 		<script type="text/javascript" src="../javascripts/jquery-ui.js"></script>
 		<script type="text/javascript" src="../javascripts/jquery.utils.js"></script>
+        <script type="text/javascript" src="../javascripts/jquery.cookie.js"></script>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$.cookie('entrega') = null;
+		});
+		</script>
 	</head>
 	<body>
 		<div id="background_holder">

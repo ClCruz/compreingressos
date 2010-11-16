@@ -192,7 +192,6 @@ $(function() {
 			},
 			complete: function() {
 				$('#loadingIcon').fadeOut('slow');
-				$.cookie('user') = null;
 			}
 		});	
 	}

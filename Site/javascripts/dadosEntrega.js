@@ -34,8 +34,9 @@ $(function() {
 					} else {
 						$(this).findNextMsg().slideUp('slow');
 					}
-				}).add(complemento);
-				
+				})
+				allFields = allFields.add(complemento);
+								
 				if (valido) {
 					$('#loadingIcon').fadeIn('fast');
 					
@@ -59,7 +60,7 @@ $(function() {
 										'<div class="endereco_entrega">' +
 											'<h2>' + endereco.val() + '</h2>' +
 											'<p>' + complemento.val() + (complemento.val() != '' ? ' - ' : '') + bairro.val() + '</p>' +
-											'<p>' + cidade.val() + ' - ' + estado.val() + '</p>' +
+											'<p>' + cidade.val() + ' - ' + estado.find(':selected').text() + '</p>' +
 											'<p>' + cep1.val() + '-' + cep2.val() + '</p>' +
 										'</div>' +
 										'</label>' +

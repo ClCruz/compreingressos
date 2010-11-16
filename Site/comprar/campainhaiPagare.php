@@ -4,14 +4,26 @@ require_once('../settings/functions.php');
 
 if (isset($_POST['codigo_pedido'])) {
 	$mainConnection = mainConnection();
-	
-	$json = json_encode(array('descricao' => 'entrada no campainhaiPagare - retorno do ipagare'));
+
+	if (!is_numeric($_POST['codigo_pedido'])){
+		$json = json_encode(array('campainha' => '9. ok. Pedido feito direto no iPagare= ' . $_POST['codigo_pedido']));
+		include('logiPagareChamada.php');
+		
+		ob_clean();
+		echo 'OK';
+		die();	
+	}
+
+	$json = json_encode(array('campainha' => '1. campainhaiPagare - retorno do ipagare'));
 	include('logiPagareChamada.php');
 	
 	require('processarRetornoiPagare.php');
 	
 	if ($validado) {
-		$query = 'SELECT 1 FROM MW_PEDIDO WHERE ID_PEDIDO = ? AND IN_SITUACAO = \'F\'';
+		$json = json_encode(array('campainha' => '1.1 campainhaiPagare - validou'));
+		include('logiPagareChamada.php');
+
+		$query = 'SELECT 1 FROM MW_PEDIDO_VENDA WHERE ID_PEDIDO_VENDA = ? AND IN_SITUACAO = \'F\'';
 		$params = array($_POST['codigo_pedido']);
 		$result = executeSQL($mainConnection, $query, $params);
 		
@@ -45,7 +57,7 @@ if (isset($_POST['codigo_pedido'])) {
 						 WHERE P.ID_CLIENTE = ? AND P.ID_PEDIDO_VENDA = ? AND P.IN_SITUACAO = \'P\'';
 			$params = array($dados['ID_CLIENTE'], $_POST['codigo_pedido']);
 			$result = executeSQL($mainConnection, $query, $params);
-			
+
 			$noErrors = true;
 			$retornoProcedure = '';
 			
@@ -89,15 +101,45 @@ if (isset($_POST['codigo_pedido'])) {
 			if ($noErrors and empty($sqlErrors)) {
 				executeSQL($mainConnection, 'DELETE MW_RESERVA WHERE ID_SESSION = ?', array($dados['ID_SESSION']));
 				commitTransaction($mainConnection);
+
+				$json = json_encode(array('campainha' => '1.6 campainhaiPagare - retorno OK - Pedido = ' . $_POST['codigo_pedido']));
+				include('logiPagareChamada.php');
+				
+				ob_clean();
+
 				echo 'OK';
 			} else {
 				include('errorMail.php');
 				rollbackTransaction($mainConnection);
+
+				$json = json_encode(array('campainha' => '1.7 campainhaiPagare - retorno NOT OK - Pedido = ' . $_POST['codigo_pedido']));
+				include('logiPagareChamada.php');
+				
 				echo 'NOT OK';
 			}
+		}
+		else {
+			$json = json_encode(array('campainha' => '1.9 campainhaiPagare - ok - sem necessidade de atualizar. Pedido = ' . $_POST['codigo_pedido']));
+			include('logiPagareChamada.php');
+
+			ob_clean();
+			
+			echo 'OK';
 		}
 		include('logiPagare.php');
 		die();
 	}
+	else {
+		$json = json_encode(array('campainha' => '2. Erro na validação no campainhaiPagare - retorno do ipagare'));
+		include('logiPagareChamada.php');
+
+		echo 'NOT OK';
+	}
+}
+else {
+	$json = json_encode(array('campainha' => '3 Tentativa via URL. Pedido = ' . $_POST['codigo_pedido']));
+	include('logiPagareChamada.php');
+	ob_clean();
+	echo 'OK';
 }
 ?>

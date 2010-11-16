@@ -106,6 +106,7 @@ if (isset($_POST['codigo_pedido'])) {
 	$nome = $rs['DS_NOME'];
 	
 	setcookie('pedido', '', -1);
+	setcookie('entrega', '', -1);
 }
 
 $json = json_encode(array('descricao' => '3. fim da chamada do pagamento_ok - codigo_pedido=' . $_POST['codigo_pedido'],'Post='=>$_POST ));
@@ -126,12 +127,6 @@ include('logiPagareChamada.php');
 		<script type="text/javascript" src="../javascripts/jquery.js"></script>
 		<script type="text/javascript" src="../javascripts/jquery-ui.js"></script>
 		<script type="text/javascript" src="../javascripts/jquery.utils.js"></script>
-        <script type="text/javascript" src="../javascripts/jquery.cookie.js"></script>
-		<script type="text/javascript">
-		$(document).ready(function(){
-			$.cookie('entrega') = null;
-		});
-		</script>
 	</head>
 	<body>
 		<div id="background_holder">

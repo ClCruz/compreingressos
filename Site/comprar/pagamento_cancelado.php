@@ -98,6 +98,7 @@ if (isset($_COOKIE['ipagareError'])) {
 	
 	if (isset($_SESSION['operador'])) {
 		unset($_SESSION['user']);
+		setcookie('pedido', '', -1);
 		header("Location: etapa0.php");
 	}
 }
@@ -115,12 +116,6 @@ if (isset($_COOKIE['ipagareError'])) {
 		
 		<script type="text/javascript" src="../javascripts/jquery.js"></script>
 		<script type="text/javascript" src="../javascripts/jquery-ui.js"></script>
-        <script type="text/javascript" src="../javascripts/jquery.cookie.js"></script>
-		<script type="text/javascript" language="javascript">
-		$(document).ready(function(){
-			$.cookie('entrega') = null;
-		});
-		</script>
 	</head>
 	<body>
 		<div id="background_holder">

@@ -37,7 +37,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
 					 TABAPRESENTACAO A
 					 INNER JOIN TABSALA S ON S.CODSALA = A.CODSALA
 					 INNER JOIN TABPECA P ON P.CODPECA = A.CODPECA
-					 WHERE CODAPRESENTACAO = ? AND P.STAPECA = \'A\' AND CONVERT(INT, P.DATFINPECA) >= CONVERT(INT, GETDATE()) AND P.IN_VENDE_SITE = 1';
+					 WHERE CODAPRESENTACAO = ? AND P.STAPECA = \'A\' AND CONVERT(CHAR(8), P.DATFINPECA,112) >= CONVERT(CHAR(8), GETDATE(),112) AND P.IN_VENDE_SITE = 1';
 		$params = array($rs['CODAPRESENTACAO']);
 		$rs2 = executeSQL($conn, $query, $params, true);
 		

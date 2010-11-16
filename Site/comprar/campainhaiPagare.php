@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once('../settings/functions.php');
 
 if (isset($_POST['codigo_pedido'])) {
@@ -48,14 +49,38 @@ if (isset($_POST['codigo_pedido'])) {
 			$noErrors = true;
 			$retornoProcedure = '';
 			
+			// Definir se cliente busca ingresso
+			if(isset($_SESSION["operador"])){
+				//buscar ingresso
+				if(isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] == -1)
+					$caixa = 254;
+				//receber ingresso
+				else if(isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] != -1)
+					$caixa = 252;
+				//buscar ingresso
+				else
+					$caixa = 254;				
+			}else{
+				//buscar ingresso
+				if(isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] == -1)
+					$caixa = 255;
+				//receber ingresso
+				else if(isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] != -1)
+					$caixa = 253;
+				//buscar ingresso
+				else
+					$caixa = 255;				
+			}
+
+			
 			beginTransaction($mainConnection);
 			
 			while ($rs = fetchResult($result) and $noErrors) {
-				$query = 'EXEC '.strtoupper($rs['DS_NOME_BASE_SQL']).'..SP_VEN_INS001_WEB ?,?,?,?,?,?,?,?,?,?,?,?,?,?';
+				$query = 'EXEC '.strtoupper($rs['DS_NOME_BASE_SQL']).'..SP_VEN_INS001_WEB ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?';
 				$params = array($dados['ID_SESSION'], $rs['ID_BASE'], $_POST['codigo_pagamento'], $rs['CODAPRESENTACAO'],
 									 $dados['DS_DDD_TELEFONE'], $dados['DS_TELEFONE'], ($dados['DS_NOME'].' '.$dados['DS_SOBRENOME']),
 									 $dados['CD_CPF'], $dados['CD_RG'], $_POST['codigo_pedido'], $_POST['uid_pedido'],
-									 $_POST['numero_autorizacao'], $_POST['numero_transacao'], $_POST['numero_cartao']);
+									 $_POST['numero_autorizacao'], $_POST['numero_transacao'], $_POST['numero_cartao'], $caixa);
 				$retornoProcedure = executeSQL($mainConnection, $query, $params, true);
 				$noErrors = ($retornoProcedure[0] and $noErrors);
 			}

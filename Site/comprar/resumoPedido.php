@@ -18,13 +18,15 @@ $result = executeSQL($mainConnection, $query, $params);
 setlocale(LC_ALL, "pt_BR", "pt_BR.iso-8859-1", "pt_BR.utf-8", "portuguese");
 
 $eventoAtual = NULL;
-
+$_SESSION["dataEvento"] = "";
 while ($rs = fetchResult($result)) {
 	
 	$removeUrl = 'apresentacao='.$rs['ID_APRESENTACAO'].'&'.'id='.$rs['ID_CADEIRA'];
 	$hora = explode('h', $rs['HR_APRESENTACAO']);
 	$data = explode('/', $rs['DT_APRESENTACAO']);
 	$tempo = mktime($hora[0], $hora[1], 0, $data[1], $data[0], $data[2]);
+	if($_SESSION["dataEvento"] == "")
+		$_SESSION["dataEvento"] = $rs['DT_APRESENTACAO'];
 	
 	if ($eventoAtual != $rs['ID_EVENTO'] . $rs['ID_APRESENTACAO']) {
 		

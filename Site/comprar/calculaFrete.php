@@ -41,6 +41,46 @@ if (isset($_GET['id']) and is_numeric($_GET['id']) and isset($_SESSION['user']))
 	if ($rs = executeSQL($mainConnection, $query, $params, true)) {
 		echo str_replace('.', ',', $rs[0]);
 	}
+}else if(isset($_GET["action"]) && $_GET["action"] == "verificatempo"){
+	require_once('../settings/functions.php');
+	$mainConnection = mainConnection();
+	if($_GET["etapa"] == 2){
+		$query = 'SELECT QT_HORAS_LIMITE FROM MW_LIMITE_ENTREGA WHERE ID_ESTADO = ?';
+		$params = array($_POST["idestado"]);	
+	}
+	else if($_GET["etapa"] == 4){
+		if($_POST["idestado"] != -1){
+			$query = 'SELECT LE.QT_HORAS_LIMITE
+					  FROM MW_ENDERECO_CLIENTE EC
+					  INNER JOIN MW_LIMITE_ENTREGA LE ON LE.ID_ESTADO = EC.ID_ESTADO
+					  WHERE EC.ID_ENDERECO_CLIENTE = ?';
+			$params = array($_POST["idestado"]);
+		}else{
+			$query = 'SELECT LE.QT_HORAS_LIMITE
+					  FROM MW_CLIENTE C
+					  INNER JOIN MW_LIMITE_ENTREGA LE ON LE.ID_ESTADO = C.ID_ESTADO
+					  WHERE C.ID_CLIENTE = ?';
+			$params = array($_SESSION["user"]);
+		}
+	}
+
+	if($rs = executeSQL($mainConnection, $query, $params, true)){
+		if(!sqlErrors()){
+			$diasLimite = ceil($rs[0] / 24);	
+			$dataLimiteTemp = mktime(0, 0, 0, date("m"), date("d") + $diasLimite, date("Y"));
+			$dataLimite = strftime("%d/%m/%Y", $dataLimiteTemp);
+			if($_SESSION["dataEvento"] > $dataLimite)
+				echo "true";
+			else{
+				$msg = array("DT Atual " => $_SESSION["dataEvento"],
+							"Dias Limite " => $diasLimite,
+							"Data Limite " => $dataLimite);
+				print_r($msg);
+			}
+		}else{
+			print_r(sqlErrors());	
+		}
+	}
 }
 
 ?>

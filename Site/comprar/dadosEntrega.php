@@ -39,7 +39,7 @@ while ($rs = fetchResult($result)) {
 									<label>
 									<div class="endereco_radio">
 										<input name="entrega" type="radio" value="<?php echo $rs['ID_ENDERECO_CLIENTE']; ?>" <?php echo ($rs['ID_ENDERECO_CLIENTE'] == $_COOKIE['entrega'] ? 'checked' : ''); ?>><br>
-										<a href="cadastro.php?action=manageAddresses&enderecoID=<?php echo $rs['ID_ENDERECO_CLIENTE']; ?>">X</a>
+										<a class="apagar_novo_endereco" href="cadastro.php?action=manageAddresses&enderecoID=<?php echo $rs['ID_ENDERECO_CLIENTE']; ?>">X</a>
 									</div>
 									<div class="endereco_entrega">
 										<h2><?php echo utf8_encode($rs['DS_ENDERECO']); ?></h2>
@@ -57,15 +57,15 @@ while ($rs = fetchResult($result)) {
 							</div>
 							<div id="identificacao">
 								<h2>Endere&ccedil;o (rua/av./pra&ccedil; e n&uacute;mero)</h2>
-								<input id="novo_endereco" size="30" maxlength="30"/>
+								<input id="novo_endereco" size="30" maxlength="150"/>
 								<p class="err_msg">Insira a rua</p>
 								<h2>Complemento</h2>
-								<input id="novo_complemento" size="30" maxlength="30"/>
+								<input id="novo_complemento" size="30" maxlength="50"/>
 								<h2>Bairro</h2>
-								<input id="novo_bairro" size="30" maxlength="30"/>
+								<input id="novo_bairro" size="30" maxlength="50"/>
 								<p class="err_msg">Insira o bairro</p>
 								<h2>Cidade</h2>
-								<input id="novo_cidade" size="30" maxlength="30"/>
+								<input id="novo_cidade" size="30" maxlength="50"/>
 								<p class="err_msg">Insira a cidade</p>
 								<h2>Estado</h2>
 								<?php echo comboEstado('novo_estado', $_COOKIE['entrega']); ?>

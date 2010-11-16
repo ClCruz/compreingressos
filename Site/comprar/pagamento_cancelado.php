@@ -3,7 +3,7 @@ session_start();
 
 require_once('../settings/functions.php');
 require_once('../settings/settings.php');
-$json = json_encode(array('descricao' => 'entrada no pagamento_cancelado - retorno do ipagare'));
+$json = json_encode(array('cancelado' => 'entrada no pagamento_cancelado','SESSION='=>$_SESSION,'POST='=>$_POST));
 include('logiPagareChamada.php');
 
 if (isset($_COOKIE['ipagareError'])) {
@@ -11,6 +11,9 @@ if (isset($_COOKIE['ipagareError'])) {
 		setcookie('ipagareError['.$key.']', '', -1);
 	}
 } else if (isset($_POST['codigo_pedido'])) {
+	$json = json_encode(array('cancelado' => 'entrada no pagamento_cancelado - retorno do ipagare','SESSION='=>$_SESSION,'POST='=>$_POST));
+	include('logiPagareChamada.php');
+
 	foreach ($_POST as $key => $val) {
 		setcookie('ipagareError['.$key.']', $val, $cookieExpireTime);
 	}
@@ -52,14 +55,14 @@ if (isset($_COOKIE['ipagareError'])) {
 	beginTransaction($mainConnection);
 	
 	if (isset($_COOKIE['pedido']) and is_numeric($_COOKIE['pedido'])) {
-		$query = 'DELETE I FROM MW_ITEM_PEDIDO_VENDA I
+/*		$query = 'DELETE I FROM MW_ITEM_PEDIDO_VENDA I
 					 INNER JOIN MW_PEDIDO_VENDA P ON P.ID_PEDIDO_VENDA = I.ID_PEDIDO_VENDA
 					 WHERE I.ID_PEDIDO_VENDA = ? AND P.ID_CLIENTE = ?';
 		$params = array($_COOKIE['pedido'], $_SESSION['user']);
 		executeSQL($mainConnection, $query, $params);
 		
 		$sqlErrors = sqlErrors();
-		$noErrors = (empty($sqlErrors) and $noErrors);
+		$noErrors = (empty($sqlErrors) and $noErrors); */
 		
 		$query = 'UPDATE MW_PEDIDO_VENDA SET
 					 IN_SITUACAO = ?

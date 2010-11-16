@@ -238,11 +238,11 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 	return $isCombo ? $combo : $text;
 }
 
-function comboTeatro($name, $selected) {
+function comboTeatro($name, $selected, $funcJavascript = "") {
 	$mainConnection = mainConnection();
 	$result = executeSQL($mainConnection, 'SELECT ID_BASE, DS_NOME_TEATRO FROM MW_BASE WHERE IN_ATIVO = \'1\' ORDER BY DS_NOME_TEATRO');
 	
-	$combo = '<select name="'.$name.'" class="inputStyle" id="'.$name.'"><option value="">Selecione um local...</option>';
+	$combo = '<select name="'.$name.'" '. $funcJavascript .' class="inputStyle" id="'.$name.'"><option value="">Selecione um local...</option>';
 	while ($rs = fetchResult($result)) {
 		$combo .= '<option value="'.$rs['ID_BASE'].'"'.(($selected == $rs['ID_BASE']) ? ' selected' : '').'>'.utf8_encode($rs['DS_NOME_TEATRO']).'</option>';
 	}
@@ -358,11 +358,11 @@ function comboLocal(){
 	print("</select>");
 }
 
-function comboEventos($idBase, $idUsuario){
+function comboEventos($idBase, $nomeBase, $idUsuario){
 	$mainConnection  = mainConnection();
 	$tsql = "SELECT P.CODPECA, P.NOMPECA 
 			  FROM 
-				  CI_TESTE..TABPECA P
+				  ".$nomeBase."..TABPECA P
 				  INNER JOIN 
 				  CI_MIDDLEWAY..MW_ACESSO_CONCEDIDO A
 				  ON	A.CODPECA = P.CODPECA

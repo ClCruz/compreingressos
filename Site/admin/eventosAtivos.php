@@ -15,7 +15,7 @@ if (isset($_GET['action'])) {
 	
 	$result = executeSQL($mainConnection, 'SELECT ID_USUARIO, CD_LOGIN, DS_NOME, DS_EMAIL, IN_ATIVO, IN_ADMIN, IN_TELEMARKETING FROM MW_USUARIO');
 	$result = executeSQL($mainConnection, 'SELECT ID_APRESENTACAO, CONVERT(CHAR(10), DT_APRESENTACAO,103) AS DT_APRESENTACAO, HR_APRESENTACAO, DS_PISO, IN_ATIVO FROM MW_APRESENTACAO WHERE ID_EVENTO = ? 
-	AND CONVERT(CHAR(8), DT_APRESENTACAO,112) > CONVERT(CHAR(8), GETDATE(),112) ORDER BY MW_APRESENTACAO.DT_APRESENTACAO
+	AND CONVERT(CHAR(8), DT_APRESENTACAO,112) >= CONVERT(CHAR(8), GETDATE(),112) ORDER BY MW_APRESENTACAO.DT_APRESENTACAO
 	', array($_GET['evento']));
 	
 	$resultTeatros = executeSQL($mainConnection, 'SELECT ID_BASE, DS_NOME_TEATRO FROM MW_BASE WHERE IN_ATIVO = \'1\'');
@@ -142,7 +142,7 @@ $(function() {
 			<td><?php echo $rs['ID_APRESENTACAO']; ?></td>
 			<td><?php echo $rs['DT_APRESENTACAO']; ?></td>
 			<td><?php echo $rs['HR_APRESENTACAO']; ?></td>
-			<td><?php echo $rs['DS_PISO']; ?></td>
+			<td><?php echo utf8_encode($rs['DS_PISO']); ?></td>
 			<td><?php echo ($rs['IN_ATIVO'] ? 'Ativo' : 'Inativo'); ?></td>
             <td class="button center"><a href="<?php echo $pagina; ?>?action=edit&codevento=<?php echo $rs['ID_APRESENTACAO']; ?>">Editar</a></td>
 		</tr>

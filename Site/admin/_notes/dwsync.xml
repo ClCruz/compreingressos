@@ -134,11 +134,12 @@
 <file name="servicosConveniencia.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129332712451988092" remote="129332712450000000" />
 <file name="servicosEntrega.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129332712451598092" remote="129332712450000000" />
 <file name="usuarios.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129332712451858092" remote="129332712450000000" />
-<file name="carregaEventos.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129339552550782398" remote="129339552550000000" />
+<file name="carregaEventos.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129344888190192554" remote="129344888190000000" />
 <file name="usuariosEventos.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129337787585499311" remote="129337787580000000" />
 <file name="programaUsuarioEventos.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129337749699739311" remote="129337749690000000" />
 <file name="envioIngressos.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129337915730829294" remote="129337915730000000" />
-<file name="relatorioBordero.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129343921614024189" remote="129343921610000000" />
-<file name="relatorioBorderoActions.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129343870930824189" remote="129343870930000000" />
-<file name="relBorderoVendas.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129343981152264172" remote="129343981150000000" />
+<file name="relatorioBordero.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129346366365158543" remote="129346366360000000" />
+<file name="relatorioBorderoActions.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129345806536949680" remote="129345806530000000" />
+<file name="relBorderoVendas.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129346354971013715" remote="129346354970000000" />
+<file name="eventosAtivos.php" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129344930190242537" remote="129344930190000000" />
 </dwsync>

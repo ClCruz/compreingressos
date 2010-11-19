@@ -148,7 +148,7 @@ function PreencheDescricao(){
 				url += "&DataFim=" + document.fPeca.cboApresentacao.value;
 				url += "&HorSessao=" + HorSessao.value;
 				url += "&Sala=" + document.fPeca.cboSala.value;
-			Janela = window.open (url, 'pecas');
+			Janela = window.open (url, "", "width=720, height=600, scrollbars=yes", "");
 		};
 
 		function limpar()
@@ -160,7 +160,6 @@ function PreencheDescricao(){
 			document.getElementById("divApresent").style.display 	= "none";
 			document.getElementById("divHorario").style.display 	= "none";
 			document.getElementById("divSala").style.display 	= "none";
-			CarregaApresentacao();
 		};
 
 		function verData()
@@ -246,16 +245,22 @@ function PreencheDescricao(){
 		};
 		</script>
 	<head>
-		<title>TMS Sistemas</title>
-		<link rel="stylesheet" type="text/css" href="../stylesheets/estilos_ra.css">
+    	<style type="text/css">
+		#paginacao{
+			width: 100%;
+			text-align: center;
+			margin-top: 10px;	
+		}
+		</style>
+		<h2>Relatório Borderô de Vendas</h2>
 	</head>
-	<body leftmargin="5" topmargin="0" bgcolor="#ffffff">
+	<body>
 		<form action="javascript:validar();" name="fPeca" id="fPeca" method="POST">
 			<table cellpadding='0' border='0' width='609' cellspacing='0'>
 				<tr>
 					<td><strong>Teatro:</strong><br>
 						<?php
-							$funcJavascript  = 'onChange="ExibePeca(\'CI_COlISEU\', \'Peca\', \'.dbo.SP_PEC_CON009;1\', '. $_SESSION["admin"] .' );PreencheDescricao()"';
+							$funcJavascript  = 'onChange="ExibePeca(this.value, \'Peca\', \'SP_PEC_CON009;1\', '. $_SESSION["admin"] .' );PreencheDescricao()"';
 						 	echo comboTeatro("cboTeatro", "", $funcJavascript); 
 						 ?>
 					</td>

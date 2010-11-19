@@ -1,6 +1,7 @@
 <?php
 require_once('../settings/functions.php');
 $mainConnection = mainConnection();
+session_start();
 
 // parametros para pesquisa dos dados
 $Acao            = $_POST["Acao"];
@@ -18,8 +19,8 @@ function mostraDataSimple($vData){
 
 function buscarDatas(){
 	$CodPeca = ($_REQUEST["CodPeca"] == "") ? "null" : $_REQUEST["CodPeca"];
-	$gSQL =	"SP_PEC_CON009;2 'Emerson', ".$CodPeca;
-	$conn = getConnection(13);
+	$gSQL =	$_SESSION["NomeBase"]."..SP_PEC_CON009;2 'Emerson', ".$CodPeca;
+	$conn = getConnection($_SESSION["IdBase"]);
 	$rsGeral = executeSQL($conn, $gSQL);
 	if(!sqlErrors()){
 		if(hasRows($rsGeral)){
@@ -41,8 +42,8 @@ function buscarDatas(){
 function buscarHorarios(){
 	$CodPeca = ($_REQUEST["CodPeca"] == "") ? "null" :  $_REQUEST["CodPeca"];
 	$DatApresentacao = ($_REQUEST["DatApresentacao"] == "") ? "null" : $_REQUEST["DatApresentacao"];
-	$gSQL = "SP_PEC_CON009;3 'Emerson', ". $CodPeca .", ". $DatApresentacao;
-	$conn = getConnection(13);	
+	$gSQL = $_SESSION["NomeBase"]."..SP_PEC_CON009;3 'Emerson', ". $CodPeca .", ". $DatApresentacao;
+	$conn = getConnection($_SESSION["IdBase"]);	
 	$rsGeral = executeSQL($conn, $gSQL);
 	if(!sqlErrors()){
 		if(hasRows($rsGeral)){
@@ -64,7 +65,7 @@ function buscarSala(){
 	$DatApresentacao = ($_REQUEST["DatApresentacao"] == "") ? "null" : $_REQUEST["DatApresentacao"];
 	$Horario = ($_REQUEST["Horario"] == "") ? "null" : $_REQUEST["Horario"];
 	
-	$gSQL = "SP_REL_BORDERO_VENDAS;7 '" . $DatApresentacao ."',". $CodPeca .",'". $Horario ."','CI_COLISEU'";
+	$gSQL = "SP_REL_BORDERO_VENDAS;7 '" . $DatApresentacao ."',". $CodPeca .",'". $Horario ."','".$_SESSION["NomeBase"]."'";
 	$conn = getConnectionTsp();
 	$rsGeral = executeSQL($conn, $gSQL);
 	if(!sqlErrors()){
@@ -82,13 +83,30 @@ function buscarSala(){
 }
 
 if($_POST["NomeBase"] != "" && $_POST["Proc"] != "" && !isset($_REQUEST["Acao"])){
-	$query = "EXEC ".$_POST['NomeBase']."".$_POST['Proc'] ." 'Emerson'";
-	$result = executeSQL($mainConnection, $query);
-	$html = "<select name=\"cboPeca\" id=\"cboPeca\" onchange=\"CarregaApresentacao()\">\n";
-	while($rs = fetchResult($result)){
-		$html .= "<option value=\"". $rs["CodPeca"] ."\">". utf8_encode($rs["nomPeca"]) ."</option>\n";	
+	$strQuery = "SELECT DS_NOME_BASE_SQL FROM MW_BASE WHERE ID_BASE = ".$_POST["NomeBase"];
+	if( $stmt = executeSQL($mainConnection, $strQuery, array(), true) ){
+		$conn = getConnection($_POST["NomeBase"]);
+		$query = "EXEC ". $stmt["DS_NOME_BASE_SQL"] ."..". $_POST['Proc'] ." 'Emerson'";
+		if(	$result = executeSQL($conn, $query) ){
+			// Cria sessao com nome da base utilizada
+			$_SESSION["IdBase"] = $_POST["NomeBase"];
+			$_SESSION["NomeBase"] = $stmt["DS_NOME_BASE_SQL"];
+			$html = "<select name=\"cboPeca\" id=\"cboPeca\" onchange=\"CarregaApresentacao()\">\n";
+			$html .= "<option value=\"null\">Selecione...</option>";
+			if(hasRows($result)){
+				while($rs = fetchResult($result)){
+					$html .= "<option value=\"". $rs["CodPeca"] ."\">". utf8_encode($rs["nomPeca"]) ."</option>\n";	
+				}
+			}
+			$html .= '</select>';
+		}else{
+			$html = print_r(sqlErrors());
+			$html .= "<br>".$query;	
+		}
+	}else{
+		$html = print_r(sqlErrors());
+		$html .= "<br>".$strQuery;
 	}
-	$html .= '</select>';
 	echo $html;
 }
 

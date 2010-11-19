@@ -2,7 +2,6 @@
 if (isset($_GET['action'])) {
 	require_once('../settings/functions.php');
 	require_once('../settings/settings.php');
-	
 	session_start();
 	$mainConnection = mainConnection();
 	
@@ -25,6 +24,9 @@ if (isset($_GET['action'])) {
 				
 				$codApresentacao = $rs['CODAPRESENTACAO'];
 				$conn = getConnection($rs['ID_BASE']);
+				
+				$return = verificarLimitePorCPF($conn, $codApresentacao, $_SESSION['user']);
+				($return != NULL) ? die($return) : '';
 				
 				$query = 'SELECT 1 FROM TABLUGSALA WHERE CODAPRESENTACAO = ? AND INDICE = ?';
 				$params = array($codApresentacao, $_REQUEST['id']);
@@ -276,6 +278,9 @@ if (isset($_GET['action'])) {
 		
 		if ($_POST['numIngressos'] <= $maxIngressos) {
 			$conn = getConnection($_POST['teatro']);
+			
+			$return = verificarLimitePorCPF($conn, $_POST['codapresentacao'], $_SESSION['user']);
+			($return != NULL) ? die($return) : '';
 			
 			//ainda existe o numero selecionado de ingressos disponiveis?
 			$query = 'SELECT SUM(1) FROM TABSALDETALHE D

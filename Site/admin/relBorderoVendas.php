@@ -202,8 +202,8 @@ end function
                                     <td	align=left  class=texto><?php echo $pRSBilhete["TipBilhete"]; ?></td>
                                     <td	align=right  class=texto><?php echo $pRSBilhete["Qtde"]; ?></td>
                                     <td	align=left class=texto><?php echo utf8_encode($pRSBilhete["NomSetor"]); ?></td>
-                                    <td	align=right class=texto>R$&nbsp;<?php echo number_format($pRSBilhete["Preco"], 2); ?></td>
-                                    <td	align=right class=texto >R$&nbsp;<?php echo number_format($pRSBilhete["Total"], 2); ?></td>
+                                    <td	align=right class=texto>R$&nbsp;<?php echo number_format($pRSBilhete["Preco"], 2, ",", "."); ?></td>
+                                    <td	align=right class=texto >R$&nbsp;<?php echo number_format($pRSBilhete["Total"], 2, ",", "."); ?></td>
                                 </tr>
                     <?php
 							}
@@ -212,11 +212,11 @@ end function
 						if($Resumido == "0"){
 					?>
                             <tr>
-                                <td colspan="3" bgcolor="#FFFFFF" rowspan="2" align="center" class="tabela"><font size=2 face="tahoma,verdana,arial"><b>Taxa de Ocupação:</b>&nbsp;&nbsp;  <?php echo number_format(((number_format($totPublico, 2) / number_format($pRSBordero["Lugares"], 2)) * 100), 2); ?> %</font></td>
+                                <td colspan="3" bgcolor="#FFFFFF" rowspan="2" align="center" class="tabela"><font size=2 face="tahoma,verdana,arial"><b>Taxa de Ocupação:</b>&nbsp;&nbsp;  <?php echo number_format(((number_format($totPublico, 2) / number_format($pRSBordero["Lugares"], 2)) * 100), 2, ",", "."); ?> %</font></td>
                                 <td bgcolor="LightGrey" colspan="2" align="center" class="label"><b>TOTAL DE VENDAS BRUTO</b></td>
                             </tr>
                             <tr>
-                                <td bgcolor="LightGrey" colspan="2" align="right" class="label"><b>R$&nbsp;&nbsp;<?php echo number_format($nTotalVendas, 2); ?></b></td>
+                                <td bgcolor="LightGrey" colspan="2" align="right" class="label"><b>R$&nbsp;&nbsp;<?php echo number_format($nTotalVendas, 2, ",", "."); ?></b></td>
                             </tr>
                         </table>
                         <br clear=all>
@@ -253,9 +253,9 @@ end function
                                     <tr>
                                         <td	align=left  class=texto><?php echo $pRSDetalhamento["forpagto"]; ?></td>
                                         <td	align=right class=texto><?php echo $pRSDetalhamento["qtdBilh"]; ?></td>
-                                        <td	align=right class=texto>R$&nbsp;<?php echo number_format($pRSDetalhamento["totfat"], 2); ?></td>
-                                        <td	align=right class=texto>R$&nbsp;<?php echo number_format($pRSDetalhamento["Descontos"], 2); ?></td>
-                                        <td	align=right class=texto >R$&nbsp;<?php echo number_format($pRSDetalhamento["liquido"], 2); ?></td>
+                                        <td	align=right class=texto>R$&nbsp;<?php echo number_format($pRSDetalhamento["totfat"], 2, ",", "."); ?></td>
+                                        <td	align=right class=texto>R$&nbsp;<?php echo number_format($pRSDetalhamento["Descontos"], 2, ",", "."); ?></td>
+                                        <td	align=right class=texto >R$&nbsp;<?php echo number_format($pRSDetalhamento["liquido"], 2, ",", "."); ?></td>
                                     </tr>
                         <?php
 									$nQt = $nQt + $pRSDetalhamento["qtdBilh"];
@@ -271,7 +271,7 @@ end function
                                                     
                     
                                                     
-                                <td align="right" valign="top" bgcolor="LightGrey" class="label"><b>R$&nbsp;&nbsp;<?php echo number_format($nTotDesc, 2); ?></b></td>
+                                <td align="right" valign="top" bgcolor="LightGrey" class="label"><b>R$&nbsp;&nbsp;<?php echo number_format($nTotDesc, 2, ",", "."); ?></b></td>
                                                     
                                       <br>
                                   </b></td>
@@ -301,8 +301,8 @@ end function
 					?>
                                 <tr>
                                     <td	align=left  class=texto><?php echo $pRSDebito["DebBordero"]; ?></td>
-                                    <td	align=right class=texto><?php echo $simbolo ." ". number_format($pRSDebito["PerDesconto"], 2); ?></td>
-                                    <td	align=right class=texto><?php echo number_format($pRSDebito["Valor"], 2); ?></td>
+                                    <td	align=right class=texto><?php echo $simbolo ." ". number_format($pRSDebito["PerDesconto"], 2, ",", "."); ?></td>
+                                    <td	align=right class=texto><?php echo number_format($pRSDebito["Valor"], 2, ",", "."); ?></td>
                                 </tr>
                     <?php
 							}
@@ -314,7 +314,7 @@ end function
                         <td bgcolor="LightGrey" colspan="2" align="center" class="label"><b>TOTAL DE DÉBITOS</b></td>
                     </tr>
                     <tr>				    
-                        <td align="right" bgcolor="LightGrey" class="label">R$&nbsp;&nbsp;&nbsp;<?php echo number_format($nTotalDesp, 2); ?><br>
+                        <td align="right" bgcolor="LightGrey" class="label">R$&nbsp;&nbsp;&nbsp;<?php echo number_format($nTotalDesp, 2, ",", "."); ?><br>
                           <br>
                         </td>	
                     </tr>
@@ -336,7 +336,7 @@ end function
                                 </tr>
                             </table>
                         </td>						
-                        <td bgcolor="LightGrey" align="right" class="label" valign="top"><b>R$&nbsp;&nbsp;&nbsp;<?php echo number_format(($nTotLiqu - $nTotalDesp), 2); ?></b></td>
+                        <td bgcolor="LightGrey" align="right" class="label" valign="top"><b>R$&nbsp;&nbsp;&nbsp;<?php echo number_format(($nTotLiqu - $nTotalDesp), 2, ",", "."); ?></b></td>
                     </tr>
                 </table>
                 <br>
@@ -364,8 +364,8 @@ end function
                             <tr>
                                 <td	align=left  class=texto><?php echo $pRSDet["Venda"]; ?></td>
                                 <td	align=right  class=texto><?php echo $pRSDet["Quant"]; ?></td>
-                                <td	align=right class=texto>R$&nbsp;<?php echo number_format($pRSDet["Total"], 2); ?></td>
-                                <td	align=right class=texto><?php echo number_format(($pRSDet["Quant"] / $totPagantes) * 100,2); ?>%</td>
+                                <td	align=right class=texto>R$&nbsp;<?php echo number_format($pRSDet["Total"], 2, ",", "."); ?></td>
+                                <td	align=right class=texto><?php echo number_format(($pRSDet["Quant"] / $totPagantes) * 100, 2, ",", "."); ?>%</td>
                             </tr>
             		<?php
 							$nQt = $nQt + $pRSDet["Quant"];
@@ -376,7 +376,7 @@ end function
                     <tr>
                         <td bgcolor="LightGrey" align="left" class="label"><b>TOTAL DE VENDAS</b></td>
                         <td bgcolor="LightGrey" align="right" class="label"><b><?php echo $nQt; ?></b></td>
-                        <td bgcolor="LightGrey" align="right" class="label"><b>R$&nbsp;&nbsp;<?php echo number_format($nBrutoTot, 2); ?></b></td>
+                        <td bgcolor="LightGrey" align="right" class="label"><b>R$&nbsp;&nbsp;<?php echo number_format($nBrutoTot, 2, ",", "."); ?></b></td>
                         <td bgcolor="LightGrey" align="right" class="label"><b><?php echo number_format($cont, 0); ?>%</b></td>
                     </tr>		
                     

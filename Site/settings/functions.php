@@ -52,6 +52,39 @@ function extenderTempo($min = NULL) {
 	return $result;
 }
 
+function verificarLimitePorCPF($conn, $codApresentacao, $user) {
+	$mainConnection = mainConnection();
+	
+	if (isset($user)) {
+		$rs = executeSQL($mainConnection, 'SELECT CD_CPF FROM MW_CLIENTE WHERE ID_CLIENTE = ?', array($user), true);
+		$cpf = $rs[0];
+		
+		$query = 'SELECT (
+						 SELECT ISNULL(QT_INGRESSOS_POR_CPF, 0)
+						 FROM TABAPRESENTACAO A
+						 INNER JOIN TABPECA P ON P.CODPECA = A.CODPECA
+						 WHERE A.CODAPRESENTACAO = ?
+					 ) AS QT_INGRESSOS_POR_CPF, (
+						 SELECT SUM(CASE H.CODTIPLANCAMENTO WHEN 1 THEN 1 ELSE -1 END)
+						 FROM TABCLIENTE C
+						 INNER JOIN TABHISCLIENTE H ON H.CODIGO = C.CODIGO AND H.CODAPRESENTACAO = 1878
+						 WHERE C.CPF = ?
+					 ) AS QTDVENDIDO';
+		$result = executeSQL($conn, $query, array($codApresentacao, $cpf));
+		
+		if (hasRows($result)) {
+			$rs = fetchResult($result);
+			if ($rs['QT_INGRESSOS_POR_CPF'] != 0 and $rs['QT_INGRESSOS_POR_CPF'] <= $rs['QTDVENDIDO']) {
+				return 'Caro Sr(a)., este evento permite apenas '.$rs['QT_INGRESSOS_POR_CPF'].'
+						ingresso(s) por CPF. Seu saldo para compras é de '.($rs['QT_INGRESSOS_POR_CPF'] - $rs['QTDVENDIDO']).'
+						ingresso(s).';
+			}
+		}
+	}
+	return NULL;
+}
+
+
 
 
 /*  BANCO  */

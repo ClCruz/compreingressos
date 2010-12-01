@@ -106,10 +106,9 @@ $pRSGeral = executeSQL($connGeral, $strGeral, $paramsGeral);
 if(sqlErrors())
 	$err = "Erro #001 ". var_dump($paramsGeral) ."<br>". $strGeral."<br>";
 
-if(isset($err) && $err != ""){
-	echo $err."<br>";
-	print_r(sqlErrors());
-}
+if(!isset($err) && $err == ""){
+
+if(hasRows($pRSGeral)){
 ?>
 <html>
 <title>Relatório - Borderô de Vendas</title>
@@ -317,7 +316,11 @@ if(isset($err) && $err != ""){
             }
         ?>
     </table>
-
+<?php
+}else{
+    echo "<font color=\"red\" size=\"13\" align=\"center\"><center>Nenhum registro encontrado!</center></font>";
+}
+?>
     <br>
     <table width="770" border=0>
         <tr>
@@ -329,8 +332,10 @@ if(isset($err) && $err != ""){
         </tr>
     </table>
 <?php
-    if(sqlErrors())
-        print_r(sqlErrors());
+}else{
+    echo $err."<br>";
+    print_r(sqlErrors());
+}
 ?>
 </body>
 </html>

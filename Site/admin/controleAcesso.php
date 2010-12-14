@@ -151,7 +151,24 @@ $(function() {
     Data Final&nbsp;&nbsp;<input type="text" class="datepicker" value="<?php echo $MesAtual; ?>"
                  id="dt_final" name="dt_final" />&nbsp;&nbsp;
     Local&nbsp;&nbsp;<?php echo comboTeatro("local", $_GET["local"]); ?>&nbsp;&nbsp;
-    Eventos&nbsp;&nbsp;<?php echo comboEvento("evento", $_GET["local"], $_GET["cod_peca"]); ?>&nbsp;&nbsp;
+    <?php
+        $params = array($_SESSION["admin"], $_GET["local"]);
+        $name = "evento";
+        $selected = $_GET["cod_peca"];
+        $resultEventos = executeSQL($mainConnection, 'SELECT E.ID_EVENTO, E.DS_EVENTO
+        FROM MW_EVENTO E
+        INNER JOIN MW_ACESSO_CONCEDIDO AC ON AC.ID_USUARIO = ? AND AC.ID_BASE = E.ID_BASE AND AC.CODPECA = E.CODPECA
+        WHERE E.ID_BASE = ? AND E.IN_ATIVO = \'1\'', $params);
+        $combo = '<select name="'.$name.'" class="inputStyle" id="'.$name.'"><option value="">Selecione um evento...</option>';
+
+        while ($rs = fetchResult($resultEventos)) {
+                $combo .= '<option value="'.$rs['ID_EVENTO'].'"' .
+                            (($selected == $rs['ID_EVENTO']) ? ' selected' : '') .
+                            '>'.utf8_encode($rs['DS_EVENTO']).'</option>';
+        }
+        $combo .= '</select>';
+    ?>
+    Eventos&nbsp;&nbsp;<?php echo $combo; ?>&nbsp;&nbsp;
     <input type="button" class="button" id="btnRelatorio" value="Buscar" />&nbsp;
     <?php
         if(hasRows($pRSGeral)){

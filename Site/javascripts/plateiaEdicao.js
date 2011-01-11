@@ -197,9 +197,10 @@ $(function() {
 	$('#xScale').slider({
 		value: 630,
 		min: 300,
-		max: 630,
+		max: 1500,
 		step: 10,
-		slide: updateX
+		slide: updateX,
+		stop: stopX
 	});
 	
 	$('#yScale').slider({
@@ -226,6 +227,14 @@ $(function() {
 			$('#yScale').slider('option', 'max', 1500);
 		}
 		$('#yScale').slider('value', ui.value);
+	}
+	function stopX(event, ui) {
+		if (ui.value > 1000) {
+			$('#xScale').slider('option', 'max', ui.value * 2);
+		} else {
+			$('#xScale').slider('option', 'max', 1500);
+		}
+		$('#xScale').slider('value', ui.value);
 	}
 	
 	$('#xReset').click(function(event) {

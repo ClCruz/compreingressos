@@ -195,6 +195,10 @@
 	overflow:inherit;
 }
 
+.scroll {
+	overflow:auto;
+}
+
 #footer_ticket {
 	margin:10px 0 20px 0;
 }

@@ -113,7 +113,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
 							<iframe src="timeTable.php?evento=<?php echo $rs['ID_EVENTO']; ?>" style="width:inherit; width:100%; height:400px;" frameborder="0"></iframe>
 							<?php include "seloCertificado.php"; ?>
 						</div>
-						<div id="center_right">
+						<div id="center_right" class="scroll">
 							<div id="passos">
 								<ul>
 									<li class="passo_ativo"><span class="numero">1. </span>Escolha de assentos</li>

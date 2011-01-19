@@ -178,6 +178,24 @@ function comboEvento($name, $teatro, $selected) {
 	return $combo;
 }
 
+function comboEventoPermissao($name, $params, $selected) {
+	$mainConnection = mainConnection();
+        $result = executeSQL($mainConnection, 'SELECT E.ID_EVENTO, E.DS_EVENTO
+                                            FROM MW_EVENTO E
+                                            INNER JOIN MW_ACESSO_CONCEDIDO AC ON AC.ID_USUARIO = ? AND AC.ID_BASE = E.ID_BASE AND AC.CODPECA = E.CODPECA
+                                            WHERE E.ID_BASE = ? AND E.IN_ATIVO = \'1\'', $params);
+        $combo = '<select name="'.$name.'" class="inputStyle" id="'.$name.'"><option value="">Selecione um evento...</option>';
+
+        while ($rs = fetchResult($result)) {
+		$combo .= '<option value="'.$rs['ID_EVENTO'].'"' .
+						(($selected == $rs['ID_EVENTO']) ? ' selected' : '') .
+						'>'.utf8_encode($rs['DS_EVENTO']).'</option>';
+	}
+	$combo .= '</select>';
+
+	return $combo;
+}
+
 function comboEstado($name, $selected, $extenso = false, $isCombo = true) {
 	$mainConnection = mainConnection();
 	$query = 'SELECT ID_ESTADO, ' . (($extenso) ? 'DS_ESTADO' : 'SG_ESTADO') . ' FROM MW_ESTADO';

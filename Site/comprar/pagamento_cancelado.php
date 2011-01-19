@@ -96,6 +96,8 @@ if (isset($_COOKIE['ipagareError'])) {
 		}
 	}
 	
+	setcookie('binItau', '', -1);
+	
 	if (isset($_SESSION['operador'])) {
 		unset($_SESSION['user']);
 		setcookie('pedido', '', -1);

@@ -304,14 +304,18 @@ if ($errors and empty($sqlErrors)) {
 
 
 // compreingresos.com - 4 cartoes e tudo a vista
-$parametros['numero_opcoes_pagamento'] = '4'; //Número de opções de pagamento que serão enviadas.
-$parametros['codigo_opcao_1'] = '28'; //amex
-$parametros['codigo_opcao_2'] = '25'; //dinners
-$parametros['codigo_opcao_3'] = '27'; //visa moset cielo
-$parametros['codigo_opcao_4'] = '32'; //mastercard moset cielo
-$parametros['numero_formas_1'] = '1'; //Total de formas de pagamento disponíveis para a opção 1 (Visa).
-$parametros['codigo_forma_1_1'] = 'A01'; //Forma de pagamento à vista.
-
+/*if (isset($_COOKIE['binItau'])) {
+	$parametros['numero_opcoes_pagamento'] = '1';
+	$parametros['codigo_opcao_1'] = '14'; //Cartões Itaucard
+} else {*/
+	$parametros['numero_opcoes_pagamento'] = '4'; //Número de opções de pagamento que serão enviadas.
+	$parametros['codigo_opcao_1'] = '28'; //amex
+	$parametros['codigo_opcao_2'] = '25'; //dinners
+	$parametros['codigo_opcao_3'] = '27'; //visa moset cielo
+	$parametros['codigo_opcao_4'] = '32'; //mastercard moset cielo
+	$parametros['numero_formas_1'] = '1'; //Total de formas de pagamento disponíveis para a opção 1 (Visa).
+	$parametros['codigo_forma_1_1'] = 'A01'; //Forma de pagamento à vista.
+//}
 	//  * SITUAÇÃO 1: Exibir VISA À VISTA e BOLETO BANCÁRIO DO BANCO DO BRASIL. *
 	//
 	//  Descrição dos parâmetros utilizados:

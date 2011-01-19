@@ -210,12 +210,15 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 	$params = array($apresentacaoID);
 	$rs = executeSQL($mainConnection, $query, $params, true);
 	
-	$query = 'SELECT ID_APRESENTACAO_BILHETE, DS_TIPO_BILHETE, VL_LIQUIDO_INGRESSO
+	$query = 'SELECT ID_APRESENTACAO_BILHETE, DS_TIPO_BILHETE, VL_LIQUIDO_INGRESSO, P.IN_BIN_ITAU, ISNULL(P.QT_BIN_POR_CPF,0) AS QT_BIN_POR_CPF, EP.CODEVENTOPATROCINADO
 					FROM
 					 MW_APRESENTACAO_BILHETE AB 
 					 INNER JOIN 
 					 MW_APRESENTACAO   A
 					 ON A.ID_APRESENTACAO = AB.ID_APRESENTACAO
+					 INNER JOIN 
+					 MW_EVENTO   E
+					 ON E.ID_EVENTO = A.ID_EVENTO
 					 INNER JOIN
 					 '.$rs['DS_NOME_BASE_SQL'].'..TABTIPBILHETE B
 					 ON	 B.CODTIPBILHETE = AB.CODTIPBILHETE
@@ -229,6 +232,13 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 								WHEN 6 THEN IN_SEX 
 								ELSE IN_SAB
 								END
+					LEFT JOIN
+					'.$rs['DS_NOME_BASE_SQL'].'..TABEVENTOPATROCINADO EP
+					ON EP.CODTIPBILHETE = B.CODTIPBILHETE
+					AND EP.CODPECA = E.CODPECA
+					INNER JOIN
+					'.$rs['DS_NOME_BASE_SQL'].'..TABPECA   P
+					ON P.CODPECA = E.CODPECA
 					WHERE AB.ID_APRESENTACAO = ? 
 					AND AB.IN_ATIVO = \'1\'
 					AND NOT EXISTS (SELECT 1 FROM 
@@ -258,13 +268,17 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 	
 	$combo = '<select name="'.$name.'" class="'.$name.' inputStyle">';//<option value="">Selecione um bilhete...</option>';
 	while ($rs = fetchResult($result)) {
+		$BIN = ($rs['IN_BIN_ITAU'] and $rs['CODEVENTOPATROCINADO'] != '') ? 'qtBin="'.$rs['QT_BIN_POR_CPF'].'" codeBin="'.$rs['CODEVENTOPATROCINADO'].'"' : '';
+		
 		if (($selected == $rs['ID_APRESENTACAO_BILHETE'])) {
 			$isSelected = 'selected';
-			$text = '<input type="hidden" name="'.$name.'" value="'.$rs['ID_APRESENTACAO_BILHETE'].'"><span class="'.$name.' inputStyle">'.utf8_encode($rs['DS_TIPO_BILHETE']).' - R$ '.$rs['VL_LIQUIDO_INGRESSO'].'</span>';
+			$text = '<input type="hidden" name="'.$name.'" value="'.$rs['ID_APRESENTACAO_BILHETE'].'" '.$BIN.'><span class="'.$name.' inputStyle">'.utf8_encode($rs['DS_TIPO_BILHETE']).' - R$ '.$rs['VL_LIQUIDO_INGRESSO'].'</span>';
 		} else {
 			$isSelected = '';
 		}
-		$combo .= '<option value="'.$rs['ID_APRESENTACAO_BILHETE'].'" '.$isSelected.'>'.utf8_encode($rs['DS_TIPO_BILHETE']).' - R$ '.$rs['VL_LIQUIDO_INGRESSO'].'</option>';
+		
+		$combo .= '<option value="'.$rs['ID_APRESENTACAO_BILHETE'].'" '.$isSelected.' '.$BIN.'>';
+		$combo .= utf8_encode($rs['DS_TIPO_BILHETE']).' - R$ '.$rs['VL_LIQUIDO_INGRESSO'].'</option>';
 	}
 	$combo .= '</select>';
 	

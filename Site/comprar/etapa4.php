@@ -1,6 +1,9 @@
 <?php
-require('acessoLogado.php');
 require_once('../settings/functions.php');
+
+require('acessoLogado.php');
+require('verificarLimitePorCPF.php');
+require('validarBin.php');
 
 $edicao = false;
 session_start();
@@ -27,6 +30,7 @@ session_start();
 		<script type="text/javascript" src="../javascripts/contagemRegressiva.js?until=<?php echo tempoRestante(); ?>"></script>
 		<script type="text/javascript" src="../javascripts/carrinho.js"></script>
 		<script type="text/javascript" src="../javascripts/dadosEntrega.js"></script>
+		<?php echo $scriptLlimitePorCPF.$scriptValidarBin; ?>
 	</head>
 	<body>
 		<div id="background_holder">

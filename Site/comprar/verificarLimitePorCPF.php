@@ -6,7 +6,7 @@ if (isset($_SESSION['user'])) {
 	$rs = executeSQL($mainConnection, 'SELECT CD_CPF FROM MW_CLIENTE WHERE ID_CLIENTE = ?', array($_SESSION['user']), true);
 	$cpf = $rs[0];
 	
-	$query = 'SELECT E.ID_BASE, E.DS_EVENTO, A.CODAPRESENTACAO
+	$query = 'SELECT E.ID_BASE, E.DS_EVENTO, A.CODAPRESENTACAO, SUM(1) TOTAL
 				 FROM MW_RESERVA R
 				 INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
 				 INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
@@ -29,15 +29,16 @@ if (isset($_SESSION['user'])) {
 					 ) AS QT_INGRESSOS_POR_CPF, (
 						 SELECT SUM(CASE H.CODTIPLANCAMENTO WHEN 1 THEN 1 ELSE -1 END)
 						 FROM TABCLIENTE C
-						 INNER JOIN TABHISCLIENTE H ON H.CODIGO = C.CODIGO AND H.CODAPRESENTACAO = 1878
+						 INNER JOIN TABHISCLIENTE H ON H.CODIGO = C.CODIGO AND H.CODAPRESENTACAO = ?
 						 WHERE C.CPF = ?
 					 ) AS QTDVENDIDO';
-		$result2 = executeSQL($conn, $query, array($rs['CODAPRESENTACAO'], $cpf));
+		$result2 = executeSQL($conn, $query, array($rs['CODAPRESENTACAO'], $rs['CODAPRESENTACAO'], $cpf));
 		
 		if (hasRows($result2)) {
 			$evento = $rs['DS_EVENTO'];
+			$comprando = $rs['TOTAL'];
 			$rs = fetchResult($result2);
-			if ($rs['QT_INGRESSOS_POR_CPF'] != 0 and $rs['QT_INGRESSOS_POR_CPF'] <= $rs['QTDVENDIDO']) {
+			if ($rs['QT_INGRESSOS_POR_CPF'] != 0 and $rs['QT_INGRESSOS_POR_CPF'] < $rs['QTDVENDIDO'] + $comprando) {
 				$limitePorCPF .= '<tr><td>'.$evento.'</td><td>'.$rs['QT_INGRESSOS_POR_CPF'].'</td>';
 				$limitePorCPF .= '<td>'.($rs['QT_INGRESSOS_POR_CPF'] - $rs['QTDVENDIDO']).'</td></tr>';
 			}

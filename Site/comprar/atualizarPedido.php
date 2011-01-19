@@ -154,10 +154,13 @@ if (isset($_GET['action'])) {
 	} else if ($_GET['action'] == 'update' and isset($_POST['apresentacao']) and isset($_POST['cadeira'])) {
 	
 		$query = 'UPDATE MW_RESERVA SET
-					 ID_APRESENTACAO_BILHETE = ?
+					 ID_APRESENTACAO_BILHETE = ?,
+					 CD_BINITAU = ?
 					 WHERE ID_APRESENTACAO = ? AND ID_CADEIRA = ? AND ID_SESSION = ?';
 		$result = true;
-	
+		
+		$binArray = explode(',', $_POST['binArray']);
+		
 		beginTransaction($mainConnection);
 		
 		for ($i = 0; $i < count($_POST['apresentacao']); $i++) {
@@ -165,8 +168,11 @@ if (isset($_GET['action'])) {
 				$_POST['valorIngresso'][$i] = 'NULL';
 			}
 			
+			$bin = (in_array($_POST['apresentacao'][$i].'|'.$_POST['cadeira'][$i], $binArray)) ? $_POST['bin1'].$_POST['bin2'] : NULL;
+			
 			$params = array(
 									$_POST['valorIngresso'][$i],
+									$bin,
 									$_POST['apresentacao'][$i],
 									$_POST['cadeira'][$i],
 									session_id()
@@ -183,9 +189,17 @@ if (isset($_GET['action'])) {
 			} else {
 				setcookie('entrega', '', -1);
 			}
+			
 			if ($_POST['estado']) {
 				setcookie('entrega', '-2');
 			}
+			
+			if ($_POST['bin1']) {
+				setcookie('binItau', $_POST['bin1'].$_POST['bin2']);
+			} else {
+				setcookie('binItau', '', -1);
+			}
+			
 			//extenderTempo();
 			echo 'true';
 		} else {

@@ -1,10 +1,14 @@
 <?php
 require_once('../settings/functions.php');
 require_once('../settings/settings.php');
-require 'acessoLogado.php';
-require 'processarDadosCompra.php';
+
+require('acessoLogado.php');
+require('verificarLimitePorCPF.php');
+require('validarBin.php');
+require('processarDadosCompra.php');
+
 $json = json_encode(array('descricao' => 'entrada no etapa5 - chamada ao ipagare'));
-require 'logiPagareChamada.php';
+require('logiPagareChamada.php');
 ob_end_clean();//correção para faixa branca no topo
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">

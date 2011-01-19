@@ -38,7 +38,8 @@ if (isset($_POST['codigo_pedido'])) {
 						 C.DS_SOBRENOME,
 						 C.CD_CPF,
 						 C.CD_RG,
-						 R.ID_SESSION
+						 R.ID_SESSION,
+						 R.CD_BINITAU
 						 FROM MW_CLIENTE C
 						 INNER JOIN MW_PEDIDO_VENDA PV ON PV.ID_CLIENTE = C.ID_CLIENTE
 						 INNER JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
@@ -62,22 +63,22 @@ if (isset($_POST['codigo_pedido'])) {
 			$retornoProcedure = '';
 			
 			// Definir se cliente busca ingresso
-			if(isset($_SESSION["operador"])){
+			if (isset($_SESSION["operador"])){
 				//buscar ingresso
-				if(isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] == -1)
+				if (isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] == -1)
 					$caixa = 254;
 				//receber ingresso
-				else if(isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] != -1)
+				else if (isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] != -1)
 					$caixa = 252;
 				//buscar ingresso
 				else
 					$caixa = 254;				
-			}else{
+			} else {
 				//buscar ingresso
-				if(isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] == -1)
+				if (isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] == -1)
 					$caixa = 255;
 				//receber ingresso
-				else if(isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] != -1)
+				else if (isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] != -1)
 					$caixa = 253;
 				//buscar ingresso
 				else
@@ -85,14 +86,15 @@ if (isset($_POST['codigo_pedido'])) {
 			}
 
 			
-			beginTransaction($mainConnection);
+			//beginTransaction($mainConnection);
 			
 			while ($rs = fetchResult($result) and $noErrors) {
 				$query = 'EXEC '.strtoupper($rs['DS_NOME_BASE_SQL']).'..SP_VEN_INS001_WEB ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?';
 				$params = array($dados['ID_SESSION'], $rs['ID_BASE'], $_POST['codigo_pagamento'], $rs['CODAPRESENTACAO'],
 									 $dados['DS_DDD_TELEFONE'], $dados['DS_TELEFONE'], ($dados['DS_NOME'].' '.$dados['DS_SOBRENOME']),
 									 $dados['CD_CPF'], $dados['CD_RG'], $_POST['codigo_pedido'], $_POST['uid_pedido'],
-									 $_POST['numero_autorizacao'], $_POST['numero_transacao'], $_POST['numero_cartao'], $caixa);
+									 $_POST['numero_autorizacao'], $_POST['numero_transacao'], $_POST['numero_cartao'],
+									 $caixa);
 				$retornoProcedure = executeSQL($mainConnection, $query, $params, true);
 				$noErrors = ($retornoProcedure[0] and $noErrors);
 			}
@@ -100,7 +102,7 @@ if (isset($_POST['codigo_pedido'])) {
 			$sqlErrors = sqlErrors();
 			if ($noErrors and empty($sqlErrors)) {
 				executeSQL($mainConnection, 'DELETE MW_RESERVA WHERE ID_SESSION = ?', array($dados['ID_SESSION']));
-				commitTransaction($mainConnection);
+				//commitTransaction($mainConnection);
 
 				$json = json_encode(array('campainha' => '1.6 campainhaiPagare - retorno OK - Pedido = ' . $_POST['codigo_pedido']));
 				include('logiPagareChamada.php');
@@ -110,7 +112,7 @@ if (isset($_POST['codigo_pedido'])) {
 				echo 'OK';
 			} else {
 				include('errorMail.php');
-				rollbackTransaction($mainConnection);
+				//rollbackTransaction($mainConnection);
 
 				$json = json_encode(array('campainha' => '1.7 campainhaiPagare - retorno NOT OK - Pedido = ' . $_POST['codigo_pedido']));
 				include('logiPagareChamada.php');

@@ -41,22 +41,22 @@ if (isset($_POST['codigo_pedido'])) {
 			$sqlErrors = array();
 			
 			// Definir se cliente busca ingresso
-			if(isset($_SESSION["operador"])){
+			if (isset($_SESSION["operador"])){
 				//buscar ingresso
-				if(isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] == -1)
+				if (isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] == -1)
 					$caixa = 254;
 				//receber ingresso
-				else if(isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] != -1)
+				else if (isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] != -1)
 					$caixa = 252;
 				//buscar ingresso
 				else
 					$caixa = 254;				
-			}else{
+			} else {
 				//buscar ingresso
-				if(isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] == -1)
+				if (isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] == -1)
 					$caixa = 255;
 				//receber ingresso
-				else if(isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] != -1)
+				else if (isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] != -1)
 					$caixa = 253;
 				//buscar ingresso
 				else
@@ -107,6 +107,7 @@ if (isset($_POST['codigo_pedido'])) {
 	
 	setcookie('pedido', '', -1);
 	setcookie('entrega', '', -1);
+	setcookie('binItau', '', -1);
 }
 
 $json = json_encode(array('descricao' => '3. fim da chamada do pagamento_ok - codigo_pedido=' . $_POST['codigo_pedido'],'Post='=>$_POST ));

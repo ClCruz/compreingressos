@@ -34,6 +34,19 @@
 <file name="ui.slider.css" server="189.112.5.71/site/" local="128795312740000000" remote="129308676600000000" />
 <file name="ui.tabs.css" server="189.112.5.71/site/" local="128795312740000000" remote="129308676600000000" />
 <file name="ui.theme.css" server="189.112.5.71/site/" local="128796312260000000" remote="129308676600000000" />
+<<<<<<< .mine
+<file name="ui.accordion.css" server="//11.11.11.218/c$/inetpub/wwwroot/compreingressos/" local="129332723497852867" remote="129332723490000000" />
+<file name="ui.all.css" server="//11.11.11.218/c$/inetpub/wwwroot/compreingressos/" local="129332723498022901" remote="129332723490000000" />
+<file name="ui.base.css" server="//11.11.11.218/c$/inetpub/wwwroot/compreingressos/" local="129332723498302957" remote="129332723490000000" />
+<file name="ui.core.css" server="//11.11.11.218/c$/inetpub/wwwroot/compreingressos/" local="129332723498142925" remote="129332723490000000" />
+<file name="ui.datepicker.css" server="//11.11.11.218/c$/inetpub/wwwroot/compreingressos/" local="129332723498352967" remote="129332723490000000" />
+<file name="ui.dialog.css" server="//11.11.11.218/c$/inetpub/wwwroot/compreingressos/" local="129332723497722841" remote="129332723490000000" />
+<file name="ui.progressbar.css" server="//11.11.11.218/c$/inetpub/wwwroot/compreingressos/" local="129332723498212939" remote="129332723490000000" />
+<file name="ui.resizable.css" server="//11.11.11.218/c$/inetpub/wwwroot/compreingressos/" local="129332723497802857" remote="129332723490000000" />
+<file name="ui.slider.css" server="//11.11.11.218/c$/inetpub/wwwroot/compreingressos/" local="129332723497902877" remote="129332723490000000" />
+<file name="ui.tabs.css" server="//11.11.11.218/c$/inetpub/wwwroot/compreingressos/" local="129332723498262949" remote="129332723490000000" />
+<file name="ui.theme.css" server="//11.11.11.218/c$/inetpub/wwwroot/compreingressos/" local="129332723497962889" remote="129332723490000000" />
+=======
 <file name="ui.accordion.css" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129332723490000000" remote="129332723490000000" />
 <file name="ui.all.css" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129332723490000000" remote="129332723490000000" />
 <file name="ui.base.css" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129332723490000000" remote="129332723490000000" />
@@ -45,4 +58,5 @@
 <file name="ui.slider.css" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129332723490000000" remote="129332723490000000" />
 <file name="ui.tabs.css" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129332723490000000" remote="129332723490000000" />
 <file name="ui.theme.css" server="W:/Inetpub/wwwroot/CompreIngressos/" local="129332723490000000" remote="129332723490000000" />
+>>>>>>> .r80
 </dwsync>

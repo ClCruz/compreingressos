@@ -1,5 +1,7 @@
 ﻿<?php
 require_once('../settings/functions.php');
+require('Util.php');
+require('XMLUtil.php');
 session_start();
 
 $mainConnection = mainConnection();
@@ -32,14 +34,9 @@ foreach($rs as $key => $val) {
 	$rs[$key] = utf8_encode($val);
 }
 
-
-
-
-
-require "Util.php";
 $errors = true;
 
-$acao = "1"; //Parâmetro que indica que será criado um pedido.
+$acao = "2"; //Parâmetro que indica que será criado um pedido.
 
 //Busca dados do estabelecimento.
 $myFile = "../settings/dadosEstabelecimento.properties";
@@ -76,6 +73,14 @@ $parametros['nome_cliente'] = $rs['DS_NOME'] . ' ' . $rs['DS_SOBRENOME'];
 $parametros['cpf_cnpj_cliente'] = $rs['CD_CPF']; //CPF ou CNPJ, apenas números, sem formatação.
 $parametros['email_cliente'] = $rs['CD_EMAIL_LOGIN'];
 
+//Dados do cartão
+$parametros['codigo_pagamento'] = $_POST['codCartao']; //Código do meio de pagamento, específico para integração webservice. Ver códigos dos meios de pagamento no Guia de Integração Básica.
+$parametros['numero_cartao'] = $_POST['numCartao'][0].$_POST['numCartao'][1].$_POST['numCartao'][2].$_POST['numCartao'][3]; //Número do cartão de crédito, somente números, sem separadores. Ex: 4444333322221111
+$parametros['mes_validade_cartao'] = $_POST['validadeMes']; //Mês da validade do cartão com 2 dígitos. Ex: 05
+$parametros['ano_validade_cartao'] = $_POST['validadeAno']; //Ano da validade do cartão com 4 dígitos. Ex: 2008
+$parametros['codigo_seguranca_cartao'] = $_POST['codSeguranca']; //Código de segurança do cartão (3 dígitos para VISA, Master e Diners; 4 dígitos para AMEX). Ex: 123.
+$parametros['salvar_cartao']= "0"; //Parâmetro opcional que indica se os dados do cartão de crédito devem ser armazenados no cofre para futura utilização. Utilize o valor "1".
+
 //Dados do endereço de cobrança.
 $parametros['logradouro_cobranca'] = $rs['DS_ENDERECO'];
 $parametros['numero_cobranca'] = '';
@@ -109,25 +114,6 @@ if ($entrega) {
 		$parametros['pais_entrega'] = 'Brasil';
 		$idEstado = $rs['ID_ESTADO'];
 	}
-	/*
-	$pageURL = 'http';
-	if ($_SERVER["HTTPS"] == "on") {$pageURL .= "s";}
-	$pageURL .= "://";
-	if ($_SERVER["SERVER_PORT"] != "80") {
-		$pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
-	} else {
-		$pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
-	}
-	$url = str_replace(basename($pageURL), '', $pageURL);
-	
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, $url . 'calculaFrete.php?id=' . $idEstado);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	$frete = str_replace(',', '.', curl_exec($ch));
-	curl_close($ch);
-	*/
-	
-	// alternativa temporária
 	
 	$query = 'SELECT F.VL_TAXA_FRETE
 					FROM MW_TAXA_FRETE F
@@ -239,18 +225,19 @@ $query .= ($entrega) ?
 			,ID_ESTADO
 			,CD_CEP_ENTREGA
 			,DS_CUIDADOS_DE' : '';
-$query .= ',IN_SITUACAO_DESPACHO)
+$query .= ',IN_SITUACAO_DESPACHO
+			,CD_BIN_CARTAO)
 			VALUES
-			(?, ?, ?, GETDATE(), ?, ?, ?, ?, ?, ?' .($entrega ? ', ?, ?, ?, ?, ?, ?, ?' : ''). ', ?)';
+			(?, ?, ?, GETDATE(), ?, ?, ?, ?, ?, ?' .($entrega ? ', ?, ?, ?, ?, ?, ?, ?' : ''). ', ?, ?)';
 
 if ($entrega) {
 $params = array($newMaxId, $_SESSION['user'], $_SESSION['operador'], ($totalIngressos + $frete + $totalConveniencia), 'P', ($entrega ? 'E' : 'R'), $totalIngressos, $frete,
 					$totalConveniencia, $parametros['logradouro_entrega'], $parametros['complemento_entrega'],
 					$parametros['bairro_entrega'], $parametros['cidade_entrega'], $idEstado, $parametros['cep_entrega'],
-					($entrega ? $parametros['nome_cliente'] : ''), ($entrega ? 'D' : 'N'));
+					($entrega ? $parametros['nome_cliente'] : ''), ($entrega ? 'D' : 'N'), $parametros['numero_cartao']);
 } else {
 $params = array($newMaxId, $_SESSION['user'], $_SESSION['operador'], ($totalIngressos + $frete + $totalConveniencia), 'P', ($entrega ? 'E' : 'R'), $totalIngressos, $frete,
-					$totalConveniencia, ($entrega ? 'D' : 'N'));
+					$totalConveniencia, ($entrega ? 'D' : 'N'), $parametros['numero_cartao']);
 }
 if ($parametros['numero_itens'] > 0) {
 	$gravacao = executeSQL($mainConnection, $query, $params);
@@ -302,19 +289,19 @@ if ($errors and empty($sqlErrors)) {
 //  - Para referência dos parâmetros e dos códigos utilizados, ver o Guia de Integração Básica do I-PAGARE, seção "Definindo opções de pagamento para um pedido".
 //  - Para testar, remova o comentário do código HTML da situação desejada.
 
-
+$parametros['forma_pagamento'] = "A01";
 // compreingresos.com - 4 cartoes e tudo a vista
 /*if (isset($_COOKIE['binItau'])) {
 	$parametros['numero_opcoes_pagamento'] = '1';
 	$parametros['codigo_opcao_1'] = '14'; //Cartões Itaucard
 } else {*/
-	$parametros['numero_opcoes_pagamento'] = '4'; //Número de opções de pagamento que serão enviadas.
-	$parametros['codigo_opcao_1'] = '28'; //amex
-	$parametros['codigo_opcao_2'] = '25'; //dinners
-	$parametros['codigo_opcao_3'] = '27'; //visa moset cielo
-	$parametros['codigo_opcao_4'] = '32'; //mastercard moset cielo
-	$parametros['numero_formas_1'] = '1'; //Total de formas de pagamento disponíveis para a opção 1 (Visa).
-	$parametros['codigo_forma_1_1'] = 'A01'; //Forma de pagamento à vista.
+	//$parametros['numero_opcoes_pagamento'] = '4'; //Número de opções de pagamento que serão enviadas.
+	//$parametros['codigo_opcao_1'] = '28'; //amex
+	//$parametros['codigo_opcao_2'] = '25'; //dinners
+	//$parametros['codigo_opcao_3'] = '27'; //visa moset cielo
+	//$parametros['codigo_opcao_4'] = '32'; //mastercard moset cielo
+	//$parametros['numero_formas_1'] = '1'; //Total de formas de pagamento disponíveis para a opção 1 (Visa).
+	//$parametros['codigo_forma_1_1'] = 'A01'; //Forma de pagamento à vista.
 //}
 	//  * SITUAÇÃO 1: Exibir VISA À VISTA e BOLETO BANCÁRIO DO BANCO DO BRASIL. *
 	//
@@ -362,7 +349,7 @@ if ($errors and empty($sqlErrors)) {
 
 
 //Usado para boleto
-$dataVencimento = date("dmo");
+//$dataVencimento = date("dmo");
 
 	// * SITUAÇÃO 4: Somente BOLETO BANCÁRIO com data de vencimento para 5 dias *
 	//
@@ -395,16 +382,23 @@ $dataVencimento = date("dmo");
 //$parametros['codigo_forma_1_4'] = 'B05'; //Forma de pagamento 5 vezes com juros.
 //$parametros['codigo_forma_1_5'] = 'B12'; //Forma de pagamento 12 vezes com juros.
 
-$params = '';
-foreach ($parametros as $key => $val) {
-	$params .= $key . '=' . urlencode($val) . '&';
-}
+$xml = Util::postHttp($urlIpagare, $parametros);
 
-if ($parametros['numero_itens'] > 0) {
-	$iPagare = '<iframe title="pagamento" src="' . $urlIpagare.'?'.$params . '" width="100%" height="550px" scrolling="no" frameborder="0"></iframe>';
+$retorno = XMLUtil::parseXmlPedidoWebservices($xml);
+
+if (isset($retorno['codigo_erro'])) {
+	require_once('../settings/settings.php');
+	
+	foreach ($retorno as $key => $val) {
+		setcookie('ipagareError['.$key.']', $val, $cookieExpireTime);
+	}
+	
+	ob_end_clean();
+	header("Location: pagamento_cancelado.php");
+	exit();
 } else {
-	setcookie('pedido', '', -1);
-	$iPagare = '<p>Nenhum ingresso selecionado.</p>';
-	//header("Location: pagamento_cancelado.php?tempoExpirado");
+	ob_end_clean();
+	header("Location: pagamento_ok.php?pedido=".$retorno['codigo_pedido']);
+	exit();
 }
 ?>

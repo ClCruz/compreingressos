@@ -228,7 +228,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 	$params = array($apresentacaoID);
 	$rs = executeSQL($mainConnection, $query, $params, true);
 	
-	$query = 'SELECT ID_APRESENTACAO_BILHETE, DS_TIPO_BILHETE, VL_LIQUIDO_INGRESSO, P.IN_BIN_ITAU, ISNULL(P.QT_BIN_POR_CPF,0) AS QT_BIN_POR_CPF, EP.CODEVENTOPATROCINADO
+	$query = 'SELECT ID_APRESENTACAO_BILHETE, AB.CODTIPBILHETE, DS_TIPO_BILHETE, VL_LIQUIDO_INGRESSO, P.IN_BIN_ITAU, ISNULL(P.QT_BIN_POR_CPF,0) AS QT_BIN_POR_CPF, P.CODTIPBILHETEBIN
 					FROM
 					 MW_APRESENTACAO_BILHETE AB 
 					 INNER JOIN 
@@ -250,10 +250,6 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 								WHEN 6 THEN IN_SEX 
 								ELSE IN_SAB
 								END
-					LEFT JOIN
-					'.$rs['DS_NOME_BASE_SQL'].'..TABEVENTOPATROCINADO EP
-					ON EP.CODTIPBILHETE = B.CODTIPBILHETE
-					AND EP.CODPECA = E.CODPECA
 					INNER JOIN
 					'.$rs['DS_NOME_BASE_SQL'].'..TABPECA   P
 					ON P.CODPECA = E.CODPECA
@@ -286,7 +282,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 	
 	$combo = '<select name="'.$name.'" class="'.$name.' inputStyle">';//<option value="">Selecione um bilhete...</option>';
 	while ($rs = fetchResult($result)) {
-		$BIN = ($rs['IN_BIN_ITAU'] and $rs['CODEVENTOPATROCINADO'] != '') ? 'qtBin="'.$rs['QT_BIN_POR_CPF'].'" codeBin="'.$rs['CODEVENTOPATROCINADO'].'"' : '';
+		$BIN = ($rs['IN_BIN_ITAU'] and $rs['CODTIPBILHETEBIN'] == $rs['CODTIPBILHETE']) ? 'qtBin="'.$rs['QT_BIN_POR_CPF'].'" codeBin="'.$rs['CODTIPBILHETEBIN'].'"' : '';
 		
 		if (($selected == $rs['ID_APRESENTACAO_BILHETE'])) {
 			$isSelected = 'selected';
@@ -440,7 +436,71 @@ function comboEventos($idBase, $nomeBase, $idUsuario){
 		print("<option value=\"". $eventos["CODPECA"] ."\">". utf8_encode($eventos["NOMPECA"]) ."</option>\n");	
 	}	
 }
+
+function comboPatrocinador($name, $selected = '-1', $isCombo = true) {
+	$mainConnection = mainConnection();
+	$query = 'SELECT ID_PATROCINADOR, DS_NOMPATROCINADOR FROM MW_PATROCINADOR';
+	$result = executeSQL($mainConnection, $query);
+	
+	$combo = '<select name="'.$name.'" class="inputStyle" id="'.$name.'"><option value="">Selecione um patrocinador...</option>';
+	while ($rs = fetchResult($result)) {
+		if ($selected == $rs['ID_PATROCINADOR']) {
+			$isSelected = 'selected';
+			$text = utf8_encode($rs['DS_NOMPATROCINADOR']);
+		} else {
+			$isSelected = '';
+		}
+		$combo .= '<option value="'.$rs['ID_PATROCINADOR'].'"'.$isSelected.'>'.utf8_encode($rs['DS_NOMPATROCINADOR']).'</option>';
+	}
+	$combo .= '</select>';
+	
+	return $isCombo ? $combo : $text;
+}
+
+function comboCartaoPatrocinado($name, $selected = '-1', $isCombo = true) {
+	$mainConnection = mainConnection();
+	$query = 'SELECT ID_CARTAO_PATROCINADO, DS_CARTAO_PATROCINADO FROM MW_CARTAO_PATROCINADO';
+	$result = executeSQL($mainConnection, $query);
+	
+	$combo = '<select name="'.$name.'" class="inputStyle" id="'.$name.'"><option value="">Selecione um cart&atilde;o patrocinado...</option>';
+	while ($rs = fetchResult($result)) {
+		if ($selected == $rs['ID_CARTAO_PATROCINADO']) {
+			$isSelected = 'selected';
+			$text = utf8_encode($rs['DS_CARTAO_PATROCINADO']);
+		} else {
+			$isSelected = '';
+		}
+		$combo .= '<option value="'.$rs['ID_CARTAO_PATROCINADO'].'"'.$isSelected.'>'.utf8_encode($rs['DS_CARTAO_PATROCINADO']).'</option>';
+	}
+	$combo .= '</select>';
+	
+	return $isCombo ? $combo : $text;
+}
+
+function comboTabPeca($name, $conn, $selected = '-1', $isCombo = true) {
+	$query = 'SELECT CODPECA, NOMPECA FROM TABPECA';
+	$result = executeSQL($conn, $query);
+	
+	$combo = '<select name="'.$name.'" class="inputStyle" id="'.$name.'"><option value="">Selecione uma pe&ccedil;a...</option>';
+	while ($rs = fetchResult($result)) {
+		if ($selected == $rs['CODPECA']) {
+			$isSelected = 'selected';
+			$text = utf8_encode($rs['NOMPECA']);
+		} else {
+			$isSelected = '';
+		}
+		$combo .= '<option value="'.$rs['CODPECA'].'"'.$isSelected.'>'.utf8_encode($rs['NOMPECA']).'</option>';
+	}
+	$combo .= '</select>';
+	
+	return $isCombo ? $combo : $text;
+}
+
+
+
 /*  OUTROS  */
+
+
 
 require_once('../settings/mail.php');
 

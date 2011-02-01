@@ -1,15 +1,10 @@
 <?php
+ob_start();
 require_once('../settings/functions.php');
 require_once('../settings/settings.php');
 
 require('acessoLogado.php');
 require('verificarLimitePorCPF.php');
-require('validarBin.php');
-require('processarDadosCompra.php');
-
-$json = json_encode(array('descricao' => 'entrada no etapa5 - chamada ao ipagare'));
-require('logiPagareChamada.php');
-ob_end_clean();//correção para faixa branca no topo
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
@@ -27,6 +22,15 @@ ob_end_clean();//correção para faixa branca no topo
 		<script type="text/javascript" src="../javascripts/jquery.utils.js"></script>
 		
 		<script type="text/javascript" src="../javascripts/contagemRegressiva.js?until=<?php echo tempoRestante(); ?>"></script>
+		
+		<script>
+		$(function(){
+			$('.botao_pagamento').click(function(e){
+				e.preventDefault();
+				$('#dadosPagamento').submit();
+			});
+		});
+		</script>
 	</head>
 	<body>
 		<div id="background_holder">
@@ -57,28 +61,45 @@ ob_end_clean();//correção para faixa branca no topo
 								</ul>
 							</div>
 							<div id="header_ticket">
-								<a href="etapa4.php">
+								<a href="etapa4.php?eventoDS=<?php echo $_GET['eventoDS']; ?>">
 									<div class="botoes_ticket" id="botao_voltar">voltar</div>
 								</a>
-								<a href="pagamento_cancelado.php?manualmente<?php echo (isset($_SESSION['operador'])) ? '&operador' : '';?>">
-									<div class="botoes_ticket" id="botao_avancar">cancelar</div>
+								<?php if (isset($_SESSION['operador'])) { ?>
+								<a href="pagamento_cancelado.php?manualmente&operador" class="botao_cancelar">
+									<div class="botoes_ticket">cancelar</div>
 								</a>
+								<?php } ?>
+								<?php if (!$_POST) { ?>
+								<a href="#" id="botao_pagamento" class="botao_pagamento">
+									<div class="botoes_ticket">finalizar pedido</div>
+								</a>
+								<?php } else { ?>
+								<a href="etapa5.php?eventoDS=<?php echo $_GET['eventoDS']; ?>" id="botao_avancar" class="botao_avancar">
+									<div class="botoes_ticket">tentar novamente</div>
+								</a>
+								<?php } ?>
 							</div>
 							<div id="forma_pagamento">
-								<?php
-									echo $iPagare;
-									//echo '<pre>';
-									//print_r($parametros);
-									//echo '</pre>';
-								?>
+								<?php require('formCartao.php'); ?>
 							</div>
 							<div id="footer_ticket">
-								<a href="etapa4.php">
+								<a href="etapa4.php?eventoDS=<?php echo $_GET['eventoDS']; ?>">
 									<div class="botoes_ticket" id="botao_voltar">voltar</div>
 								</a>
-								<a href="pagamento_cancelado.php?manualmente<?php echo (isset($_SESSION['operador'])) ? '&operador' : '';?>">
-									<div class="botoes_ticket" id="botao_avancar">cancelar</div>
+								<?php if (isset($_SESSION['operador'])) { ?>
+								<a href="pagamento_cancelado.php?manualmente&operador" class="botao_cancelar">
+									<div class="botoes_ticket">cancelar</div>
 								</a>
+								<?php } ?>
+								<?php if (!$_POST) { ?>
+								<a href="#" id="botao_pagamento" class="botao_pagamento">
+									<div class="botoes_ticket">finalizar pedido</div>
+								</a>
+								<?php } else { ?>
+								<a href="etapa5.php?eventoDS=<?php echo $_GET['eventoDS']; ?>" id="botao_avancar" class="botao_avancar">
+									<div class="botoes_ticket">tentar novamente</div>
+								</a>
+								<?php } ?>
 							</div>
 						</div>
 					</div>

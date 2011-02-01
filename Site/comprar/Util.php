@@ -89,27 +89,21 @@ final class Util {
 	public function postHttp($url,$data){
 		$params = '';
 		foreach ($data as $name => $value) {
+			//echo $name . '=' . $value . '<br>';
 			$params = $params . $name . '=' . $value . '&';
 		}
 
-		$params = array('http' => array(
-                  'method' => 'POST',
-                  'content' => $params
-		));
-
-
-		$ctx = stream_context_create($params);
-		$fp = @fopen($url, 'rb', false, $ctx);
-		if (!$fp) {
-			throw new Exception("Problem with $url, $php_errormsg");
-		}
-		$response = @stream_get_contents($fp);
-		if ($response === false) {
-			throw new Exception("Problem reading data from $url, $php_errormsg");
-		}
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_POST, count($data));
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		$response = curl_exec($ch);
+	
 		return $response;
 	}
 
 
 }
-?>

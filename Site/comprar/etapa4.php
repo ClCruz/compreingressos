@@ -3,7 +3,6 @@ require_once('../settings/functions.php');
 
 require('acessoLogado.php');
 require('verificarLimitePorCPF.php');
-require('validarBin.php');
 
 $edicao = false;
 session_start();
@@ -78,7 +77,7 @@ session_start();
 								</a>
 								<?php } ?>
 								<a href="etapa5.php?eventoDS=<?php echo $_GET['eventoDS']; ?>" id="botao_pagamento" class="botao_pagamento">
-									<div class="botoes_ticket">finalizar pedido</div>
+									<div class="botoes_ticket">avan&ccedil;ar</div>
 								</a>
 							</div>
 							<?php require 'resumoPedido.php';?>
@@ -92,7 +91,7 @@ session_start();
 								</a>
 								<?php } ?>
 								<a href="etapa5.php?eventoDS=<?php echo $_GET['eventoDS']; ?>" id="botao_pagamento" class="botao_pagamento">
-									<div class="botoes_ticket">finalizar pedido</div>
+									<div class="botoes_ticket">avan&ccedil;ar</div>
 								</a>
 							</div>
 						</div>

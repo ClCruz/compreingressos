@@ -139,8 +139,8 @@ if (isset($_COOKIE['ipagareError'])) {
 								<?php
 								if (isset($_COOKIE['ipagareError'])) {
 								?>
-								<p><?php echo utf8_encode($_COOKIE['ipagareError']['descricao_erro']); ?></p>
-								<p><?php echo utf8_encode($_COOKIE['ipagareError']['mensagem_pagamento']); ?></p>
+								<p><?php echo $_COOKIE['ipagareError']['descricao_erro']; ?></p>
+								<p><?php echo $_COOKIE['ipagareError']['mensagem-financeira']; ?></p>
 								<p>Por favor clique no botão abaixo para tentar novamente ou cancele esse pedido.</p>
 							</div>
 							<div id="footer_ticket">

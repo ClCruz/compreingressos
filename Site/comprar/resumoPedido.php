@@ -93,15 +93,6 @@ function finalizar() {
 <?php
 }
 ?>
-								<div id="binItau" class="resumo_pedido">
-									<h5><?php echo ($edicao) ? 'Informe os ' : ''; ?>8 primeiros d&iacute;gitos de seu cart&atilde;o Itaucard (BIN)</h5>
-									<div style="width:220px; display:inline-block">
-										<input type="text" name="bin1" size="4" maxlength="4" class="number" value="<?php echo substr($_COOKIE['binItau'], 0, 4); ?>" <?php echo ($edicao) ? '' : 'readonly'; ?> />&nbsp;&nbsp;&nbsp;
-										<input type="text" name="bin2" size="4" maxlength="4" class="number" value="<?php echo substr($_COOKIE['binItau'], -4); ?>" <?php echo ($edicao) ? '' : 'readonly'; ?> />
-										<?php if ($edicao) { ?><a id="validarBin" href="validarBin.php"><div class="calcular_btn">validar</div></a><?php } ?>
-									</div>
-								</div>
-								
 								<div id="forma_entrega">
 									<div id="forma_entrega_left">
 										<h2>Escolha a forma de entrega</h2>

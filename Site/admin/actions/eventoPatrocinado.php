@@ -21,8 +21,8 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 				 ID_CARTAO_PATROCINADO = ?
 				 ,ID_BASE = ?
 				 ,CODPECA = ?
-				 ,DT_INICIO = ?
-				 ,DT_FIM = ?
+				 ,DT_INICIO = CONVERT(DATETIME, ?, 103)
+				 ,DT_FIM = CONVERT(DATETIME, ?, 103)
 				 WHERE ID_CARTAO_PATROCINADO = ? AND ID_BASE = ? AND CODPECA = ?";
 	$params = array($_POST['idCartaoPatrocinado'], $_POST['teatro'], $_POST['codpeca'], $_POST['dtInicio'], $_POST['dtFim'],
 					$_GET['idCartaoPatrocinado'], $_GET['teatro'], $_GET['codpeca']);

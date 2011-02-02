@@ -13,7 +13,17 @@ if (isset($_GET['action'])) {
 	
 } else {
 	
-	$result = executeSQL($mainConnection, 'SELECT ID_CARTAO_PATROCINADO, CODPECA, CONVERT(VARCHAR(10), DT_INICIO, 103) DT_INICIO, CONVERT(VARCHAR(10), DT_FIM, 103) DT_FIM FROM MW_EVENTO_PATROCINADO WHERE ID_BASE = ? AND CODPECA = ?', array($_GET['teatro'], $_GET['codpeca']));
+	$result = executeSQL($mainConnection,
+						'SELECT EP.ID_CARTAO_PATROCINADO, EP.CODPECA,
+						P.ID_PATROCINADOR, CP.DS_CARTAO_PATROCINADO,
+						P.DS_NOMPATROCINADOR,
+						CONVERT(VARCHAR(10), EP.DT_INICIO, 103) DT_INICIO,
+						CONVERT(VARCHAR(10), EP.DT_FIM, 103) DT_FIM
+						FROM MW_EVENTO_PATROCINADO EP
+						INNER JOIN MW_CARTAO_PATROCINADO CP ON CP.ID_CARTAO_PATROCINADO = EP.ID_CARTAO_PATROCINADO
+						INNER JOIN MW_PATROCINADOR P ON P.ID_PATROCINADOR = CP.ID_PATROCINADOR
+						WHERE EP.ID_BASE = ? AND EP.CODPECA = ?',
+						array($_GET['teatro'], $_GET['codpeca']));
 	
 	$conn = getConnection($_GET['teatro']);
 	
@@ -30,7 +40,8 @@ $(function() {
 		var $this = $(this),
 			 href = $this.attr('href'),
 			 id = 'idCartaoPatrocinado=' + $.getUrlVar('idCartaoPatrocinado', href) + '&teatro=' + $.getUrlVar('teatro', href) + '&codpeca=' + $.getUrlVar('codpeca', href),
-			 tr = $this.closest('tr');
+			 tr = $this.closest('tr'),
+			 idPatrocinador = $.getUrlVar('idPatrocinador', href);
 		
 		if (href.indexOf('?action=add') != -1 || href.indexOf('?action=update') != -1) {
 			if (!validateFields()) return false;
@@ -43,9 +54,10 @@ $(function() {
 					if (data.substr(0, 4) == 'true') {
 						var id = $.serializeUrlVars(data);
 						
-						tr.find('td:not(.button):eq(0)').html($('#idCartaoPatrocinado option:selected').text());
-						tr.find('td:not(.button):eq(1)').html($('#dtInicio').val());
-						tr.find('td:not(.button):eq(2)').html($('#dtFim').val());
+						tr.find('td:not(.button):eq(0)').html($('#idPatrocinador option:selected').text());
+						tr.find('td:not(.button):eq(1)').html($('#idCartaoPatrocinado option:selected').text());
+						tr.find('td:not(.button):eq(2)').html($('#dtInicio').val());
+						tr.find('td:not(.button):eq(3)').html($('#dtFim').val());
 						
 						$this.text('Editar').attr('href', pagina + '?action=edit&' + id);
 						tr.find('td.button a:last').attr('href', pagina + '?action=delete&' + id);
@@ -66,10 +78,12 @@ $(function() {
 				values.push($(this).text());
 			});
 			
-			tr.find('td:not(.button):eq(0)').html('<?php echo comboCartaoPatrocinado('idCartaoPatrocinado'); ?>');
-			$('#idCartaoPatrocinado option').filter(function(){return $(this).text() == values[0]}).attr('selected', 'selected');
-			tr.find('td:not(.button):eq(1)').html('<input name="dtInicio" type="text" class="datePicker inputStyle" id="dtInicio" maxlength="10" value="' + values[1] + '" readonly />');
-			tr.find('td:not(.button):eq(2)').html('<input name="dtFim" type="text" class="datePicker inputStyle" id="dtFim" maxlength="10" value="' + values[2] + '" readonly />');
+			tr.find('td:not(.button):eq(0)').html('<?php echo comboPatrocinador('idPatrocinador'); ?>');
+			tr.find('td:not(.button):eq(1)').html('<?php echo comboCartaoPatrocinado('idCartaoPatrocinado', -1); ?>');
+			$('#idPatrocinador').val(idPatrocinador).change();
+			$('#idCartaoPatrocinado option').filter(function(){return $(this).text() == values[1]}).attr('selected', 'selected');
+			tr.find('td:not(.button):eq(2)').html('<input name="dtInicio" type="text" class="datePicker inputStyle" id="dtInicio" maxlength="10" value="' + values[2] + '" readonly />');
+			tr.find('td:not(.button):eq(3)').html('<input name="dtFim" type="text" class="datePicker inputStyle" id="dtFim" maxlength="10" value="' + values[3] + '" readonly />');
 			
 			$this.text('Salvar').attr('href', pagina + '?action=update&' + id);
 			
@@ -108,7 +122,10 @@ $(function() {
 		
 		var newLine = '<tr id="newLine">' +
 								'<td>' +
-									'<?php echo comboCartaoPatrocinado('idCartaoPatrocinado'); ?>' +
+									'<?php echo comboPatrocinador('idPatrocinador'); ?>' +
+								'</td>' +
+								'<td>'+
+									'<?php echo comboCartaoPatrocinado('idCartaoPatrocinado', -1); ?>' +
 								'</td>' +
 								'<td>'+
 									'<input name="dtInicio" type="text" class="datePicker inputStyle" id="dtInicio" maxlength="10" readonly />' +
@@ -121,6 +138,9 @@ $(function() {
 							'</tr>';
 		$(newLine).appendTo('#app table tbody');
 		setDatePickers();
+		$('#dtInicio').change(function() {
+			$("#dtFim").datepicker("option", "minDate", $(this).val());
+		});
 	});
 	
 	function validateFields() {
@@ -147,14 +167,27 @@ $(function() {
 	$('#codpeca').change(function() {
 		document.location = '?p=' + pagina.replace('.php', '') + '&teatro=' + $('#teatro').val() + '&codpeca=' + $(this).val();
 	});
+	
+	$('table').delegate('#idPatrocinador', 'change', function(){
+		$.ajax({
+			url: '../settings/functions.php',
+			type: 'post',
+			data: 'exec=echo comboCartaoPatrocinado("idCartaoPatrocinado", '+$(this).val()+');',
+			async: false,
+			success: function(data) {
+				$('#idCartaoPatrocinado').parent().html(data);
+			}
+		});
+	});
 });
 </script>
-<h2>Cart&otilde;es Patrocinados</h2>
+<h2>Eventos Patrocinados</h2>
 <form id="dados" name="dados" method="post">
 	<p style="width:400px;"><?php echo comboTeatro('teatro', $_GET['teatro']) . comboTabPeca('codpeca', $conn, $_GET['codpeca']); ?></p>
 	<table class="ui-widget ui-widget-content">
 		<thead>
 			<tr class="ui-widget-header ">
+				<th>Patrocinador</th>
 				<th>Cart&atilde;o Patrocinado</th>
 				<th>Data de In&iacute;cio</th>
 				<th>Data de Fim</th>
@@ -165,14 +198,18 @@ $(function() {
 			<?php
 				while($rs = fetchResult($result)) {
 					$idCartaoPatrocinado = $rs['ID_CARTAO_PATROCINADO'];
+					$idPatrocinador = $rs['ID_PATROCINADOR'];
+					$nomeCartao = $rs['DS_CARTAO_PATROCINADO'];
+					$nomePatrocinador = $rs['DS_NOMPATROCINADOR'];
 					$dtInicio = $rs['DT_INICIO'];
 					$dtFim = $rs['DT_FIM'];
 			?>
 			<tr>
-				<td><?php echo comboCartaoPatrocinado('idCartaoPatrocinado', $idCartaoPatrocinado, false); ?></td>
+				<td><?php echo utf8_encode($nomePatrocinador); ?></td>
+				<td><?php echo utf8_encode($nomeCartao); ?></td>
 				<td><?php echo $dtInicio; ?></td>
 				<td><?php echo $dtFim; ?></td>
-				<td class="button"><a href="<?php echo $pagina; ?>?action=edit&idCartaoPatrocinado=<?php echo $idCartaoPatrocinado; ?>&teatro=<?php echo $_GET['teatro']; ?>&codpeca=<?php echo $_GET['codpeca']; ?>">Editar</a></td>
+				<td class="button"><a href="<?php echo $pagina; ?>?action=edit&idCartaoPatrocinado=<?php echo $idCartaoPatrocinado; ?>&teatro=<?php echo $_GET['teatro']; ?>&codpeca=<?php echo $_GET['codpeca']; ?>&idPatrocinador=<?php echo $idPatrocinador; ?>">Editar</a></td>
 				<td class="button"><a href="<?php echo $pagina; ?>?action=delete&idCartaoPatrocinado=<?php echo $idCartaoPatrocinado; ?>&teatro=<?php echo $_GET['teatro']; ?>&codpeca=<?php echo $_GET['codpeca']; ?>">Apagar</a></td>
 			</tr>
 			<?php

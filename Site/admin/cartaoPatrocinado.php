@@ -13,7 +13,7 @@ if (isset($_GET['action'])) {
 	
 } else {
 	
-	$result = executeSQL($mainConnection, 'SELECT ID_CARTAO_PATROCINADO, ID_PATROCINADOR, DS_CARTAO_PATROCINADO, CD_BIN FROM MW_CARTAO_PATROCINADO', array());
+	$result = executeSQL($mainConnection, 'SELECT ID_CARTAO_PATROCINADO, DS_CARTAO_PATROCINADO, CD_BIN FROM MW_CARTAO_PATROCINADO WHERE ID_PATROCINADOR = ?', array($_GET['idPatrocinador']));
 	
 ?>
 
@@ -41,9 +41,8 @@ $(function() {
 					if (data.substr(0, 4) == 'true') {
 						var id = $.serializeUrlVars(data);
 						
-						tr.find('td:not(.button):eq(0)').html($('#idPatrocinador option:selected').text());
-						tr.find('td:not(.button):eq(1)').html($('#nome').val());
-						tr.find('td:not(.button):eq(2)').html($('#bin').val());
+						tr.find('td:not(.button):eq(0)').html($('#nome').val());
+						tr.find('td:not(.button):eq(1)').html($('#bin').val());
 						
 						$this.text('Editar').attr('href', pagina + '?action=edit&' + id);
 						tr.find('td.button a:last').attr('href', pagina + '?action=delete&' + id);
@@ -64,10 +63,8 @@ $(function() {
 				values.push($(this).text());
 			});
 			
-			tr.find('td:not(.button):eq(0)').html('<?php echo comboPatrocinador('idPatrocinador'); ?>');
-			$('#idPatrocinador option').filter(function(){return $(this).text() == values[0]}).attr('selected', 'selected');
-			tr.find('td:not(.button):eq(1)').html('<input name="nome" type="text" class="inputStyle" id="nome" maxlength="50" value="' + values[1] + '" />');
-			tr.find('td:not(.button):eq(2)').html('<input name="bin" type="text" class="inputStyle" id="bin" maxlength="6" value="' + values[2] + '" />');
+			tr.find('td:not(.button):eq(0)').html('<input name="nome" type="text" class="inputStyle" id="nome" maxlength="50" value="' + values[0] + '" />');
+			tr.find('td:not(.button):eq(1)').html('<input name="bin" type="text" class="inputStyle" id="bin" maxlength="6" value="' + values[1] + '" />');
 			
 			$this.text('Salvar').attr('href', pagina + '?action=update&' + id);
 		} else if (href == '#delete') {
@@ -131,14 +128,18 @@ $(function() {
 		});
 		return valido;
 	}
+	
+	$('#idPatrocinador').change(function() {
+		document.location = '?p=' + pagina.replace('.php', '') + '&idPatrocinador=' + $(this).val();
+	});
 });
 </script>
 <h2>Cart&otilde;es Patrocinados</h2>
 <form id="dados" name="dados" method="post">
 	<table class="ui-widget ui-widget-content">
+		<p style="width:200px;"><?php echo comboPatrocinador('idPatrocinador', $_GET['idPatrocinador']); ?></p>
 		<thead>
 			<tr class="ui-widget-header ">
-				<th>Patrocinador</th>
 				<th>Cart&atilde;o Patrocinado</th>
 				<th>BIN</th>
 				<th colspan="2">A&ccedil;&otilde;es</th>
@@ -148,12 +149,10 @@ $(function() {
 			<?php
 				while($rs = fetchResult($result)) {
 					$idCartaoPatrocinado = $rs['ID_CARTAO_PATROCINADO'];
-					$idPatrocinador = $rs['ID_PATROCINADOR'];
 					$nome = $rs['DS_CARTAO_PATROCINADO'];
 					$bin = $rs['CD_BIN'];
 			?>
 			<tr>
-				<td><?php echo comboPatrocinador('idPatrocinador', $idPatrocinador, false); ?></td>
 				<td><?php echo utf8_encode($nome); ?></td>
 				<td><?php echo $bin; ?></td>
 				<td class="button"><a href="<?php echo $pagina; ?>?action=edit&idCartaoPatrocinado=<?php echo $idCartaoPatrocinado; ?>">Editar</a></td>

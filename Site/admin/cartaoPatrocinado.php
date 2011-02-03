@@ -96,9 +96,6 @@ $(function() {
 		if(!hasNewLine()) return false;
 		
 		var newLine = '<tr id="newLine">' +
-								'<td>' +
-									'<?php echo comboPatrocinador('idPatrocinador'); ?>' +
-								'</td>' +
 								'<td>'+
 									'<input name="nome" type="text" class="inputStyle" id="nome" maxlength="50" />' +
 								'</td>' +

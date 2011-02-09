@@ -171,7 +171,7 @@ function comboEvento($name, $teatro, $selected) {
 	while ($rs = fetchResult($result)) {
 		$combo .= '<option value="'.$rs['ID_EVENTO'].'"' .
 						(($selected == $rs['ID_EVENTO']) ? ' selected' : '') .
-						'>'.utf8_encode($rs['DS_EVENTO']).'</option>';
+						'>'.str_replace("'", "\'", (utf8_encode($rs['DS_EVENTO'])).'</option>';
 	}
 	$combo .= '</select>';
 	

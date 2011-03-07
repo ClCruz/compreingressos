@@ -73,12 +73,12 @@ while ($rs = fetchResult($result)) {
 				$rs = executeSQL($conn, $query3, array($cpf, $codapresentacao, $numeroDoCartao), true);
 				
 				if ($rs['TOTAL'] >= $limite) {
-					$erro = 'Você atingiu o limite de '.$limite.' ingresso(s) promocional(is) para esse BIN em um ou mais eventos.<br><br>Favor revisar o pedido.';
+					$erro = 'Você atingiu o limite de '.$limite.' ingresso(s) promocional(is) para esse cartão em um ou mais eventos.<br><br>Favor revisar o pedido.';
 				} else if ($rs['TOTAL'] + $comprando > $limite) {
-					$erro = 'Você tem apenas '.($limite - $rs['TOTAL']).' ingresso(s) promocional(is) disponível(is) para esse BIN em um ou mais eventos.<br><br>Favor revisar o pedido.';
+					$erro = 'Você pode comprar apenas '.$limite.' ingresso(s) promocional(is) com este cartão.<br><br>Clique em Alterar Pedido e selecione apenas 1 ingresso promocional por apresentação.';
 				}
 			} else {
-				$erro = 'O BIN informado não é válido para um ou mais eventos.';
+				$erro = 'Atenção! Este cartão não é participante da promoção vigente para esta apresentação!<br><br>Informe outro cartão ou indique outro tipo de ingresso não participante da promoção.';
 			}
 		}
 	}

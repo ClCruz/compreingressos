@@ -77,6 +77,9 @@ require('verificarLimitePorCPF.php');
 								<a href="etapa5.php?eventoDS=<?php echo $_GET['eventoDS']; ?>" id="botao_avancar" class="botao_avancar">
 									<div class="botoes_ticket">tentar novamente</div>
 								</a>
+								<a href="etapa2.php?eventoDS=<?php echo $_GET['eventoDS']; ?>" style="margin-right:15px;" id="botao_avancar" class="botao_avancar">
+									<div class="botoes_ticket">alterar pedido</div>
+								</a>
 								<?php } ?>
 							</div>
 							<div id="forma_pagamento">
@@ -98,6 +101,9 @@ require('verificarLimitePorCPF.php');
 								<?php } else { ?>
 								<a href="etapa5.php?eventoDS=<?php echo $_GET['eventoDS']; ?>" id="botao_avancar" class="botao_avancar">
 									<div class="botoes_ticket">tentar novamente</div>
+								</a>
+								<a href="etapa2.php?eventoDS=<?php echo $_GET['eventoDS']; ?>" style="margin-right:15px;" id="botao_avancar" class="botao_avancar">
+									<div class="botoes_ticket">alterar pedido</div>
 								</a>
 								<?php } ?>
 							</div>

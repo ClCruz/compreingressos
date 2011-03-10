@@ -39,7 +39,7 @@ $(function() {
 		
 		var $this = $(this),
 			 href = $this.attr('href'),
-			 id = 'idCartaoPatrocinado=' + $.getUrlVar('idCartaoPatrocinado', href) + '&teatro=' + $.getUrlVar('teatro', href) + '&codpeca=' + $.getUrlVar('codpeca', href),
+			 id = 'idCartaoPatrocinado=' + $.getUrlVar('idCartaoPatrocinado', href) + '&teatro=' + $.getUrlVar('teatro', href) + '&codpeca=' + $.getUrlVar('codpeca', href) + '&idPatrocinador=' + $.getUrlVar('idPatrocinador', href),
 			 tr = $this.closest('tr'),
 			 idPatrocinador = $.getUrlVar('idPatrocinador', href);
 		
@@ -62,6 +62,10 @@ $(function() {
 						$this.text('Editar').attr('href', pagina + '?action=edit&' + id);
 						tr.find('td.button a:last').attr('href', pagina + '?action=delete&' + id);
 						tr.removeAttr('id');
+						
+						if ($.getUrlVar('idCartaoPatrocinado', $this.attr('href')) == 'TODOS') {
+							document.location = document.location;
+						}
 					} else {
 						$.dialog({text: data});
 					}
@@ -144,7 +148,7 @@ $(function() {
 	});
 	
 	function validateFields() {
-		var campos = $(':input'),
+		var campos = $(':input:not(button)'),
 			 valido = true;
 			 
 		$.each(campos, function() {
@@ -176,6 +180,7 @@ $(function() {
 			async: false,
 			success: function(data) {
 				$('#idCartaoPatrocinado').parent().html(data);
+				
 			}
 		});
 	});

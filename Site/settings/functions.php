@@ -171,7 +171,7 @@ function comboEvento($name, $teatro, $selected) {
 	while ($rs = fetchResult($result)) {
 		$combo .= '<option value="'.$rs['ID_EVENTO'].'"' .
 						(($selected == $rs['ID_EVENTO']) ? ' selected' : '') .
-						'>'.str_replace("'", "\'", (utf8_encode($rs['DS_EVENTO'])).'</option>';
+						'>'.str_replace("'", "\'", utf8_encode($rs['DS_EVENTO'])).'</option>';
 	}
 	$combo .= '</select>';
 	
@@ -462,7 +462,7 @@ function comboCartaoPatrocinado($name, $idPatrocinador, $selected = '-1', $isCom
 	$query = 'SELECT ID_CARTAO_PATROCINADO, DS_CARTAO_PATROCINADO FROM MW_CARTAO_PATROCINADO WHERE ID_PATROCINADOR = ?';
 	$result = executeSQL($mainConnection, $query, array($idPatrocinador));
 	
-	$combo = '<select name="'.$name.'" class="inputStyle" id="'.$name.'"><option value="">Selecione um cart&atilde;o patrocinado...</option>';
+	$combo = '<select name="'.$name.'" class="inputStyle" id="'.$name.'"><option value="">Selecione um cart&atilde;o patrocinado...</option><option value="TODOS">&lt; TODOS &gt;</option>';
 	while ($rs = fetchResult($result)) {
 		if ($selected == $rs['ID_CARTAO_PATROCINADO']) {
 			$isSelected = 'selected';

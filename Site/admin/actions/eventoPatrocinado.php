@@ -1,15 +1,53 @@
 <?php
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 24, true)) {
 
-if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
+if ($_GET['action'] == 'add' or ($_GET['action'] == 'update' and $_POST['idCartaoPatrocinado'] == 'TODOS')) { /*------------ INSERT ------------*/
 	
-	$query = "INSERT INTO MW_EVENTO_PATROCINADO
-					(ID_CARTAO_PATROCINADO, ID_BASE, CODPECA, DT_INICIO, DT_FIM)
-					VALUES (?, ?, ?, CONVERT(DATETIME, ?, 103), CONVERT(DATETIME, ?, 103))";
-	$params = array($_POST['idCartaoPatrocinado'], $_POST['teatro'], $_POST['codpeca'], $_POST['dtInicio'], $_POST['dtFim']);
+	if ($_POST['idCartaoPatrocinado'] == 'TODOS') {
+		$query = "SELECT C.ID_CARTAO_PATROCINADO, E.ID_CARTAO_PATROCINADO TO_UPDATE
+					FROM MW_CARTAO_PATROCINADO C
+					INNER JOIN MW_PATROCINADOR P
+						ON C.ID_PATROCINADOR = P.ID_PATROCINADOR
+					LEFT JOIN MW_EVENTO_PATROCINADO E
+						ON C.ID_CARTAO_PATROCINADO = E.ID_CARTAO_PATROCINADO
+						AND E.ID_BASE = ?
+						AND E.CODPECA = ?
+					WHERE C.ID_PATROCINADOR = ?";
+		$params = array($_POST['teatro'], $_POST['codpeca'], $_POST['idPatrocinador']);
+		$result = executeSQL($mainConnection, $query, $params);
+		
+		while ($rs = fetchResult($result)) {
+			if ($rs['TO_UPDATE']) {
+				$query = 'UPDATE MW_EVENTO_PATROCINADO
+							SET DT_INICIO = CONVERT(DATETIME, ?, 103),
+							DT_FIM = CONVERT(DATETIME, ?, 103)
+							WHERE ID_BASE = ? AND CODPECA = ? AND ID_CARTAO_PATROCINADO = ?';
+				$params = array($_POST['dtInicio'], $_POST['dtFim'], $_POST['teatro'], $_POST['codpeca'], $rs['ID_CARTAO_PATROCINADO']);
+				executeSQL($mainConnection, $query, $params);
+			} else if ($_GET['action'] != 'update') {
+				$query = 'INSERT INTO MW_EVENTO_PATROCINADO
+							(ID_CARTAO_PATROCINADO, ID_BASE, CODPECA, DT_INICIO, DT_FIM)
+							VALUES (?, ?, ?, CONVERT(DATETIME, ?, 103), CONVERT(DATETIME, ?, 103))';
+				$params = array($rs['ID_CARTAO_PATROCINADO'], $_POST['teatro'], $_POST['codpeca'], $_POST['dtInicio'], $_POST['dtFim']);
+				executeSQL($mainConnection, $query, $params);
+			}
+			
+			$errors = sqlErrors();
+			
+			if (!empty($errors)) break;
+		}
+	} else {
+		$query = "INSERT INTO MW_EVENTO_PATROCINADO
+						(ID_CARTAO_PATROCINADO, ID_BASE, CODPECA, DT_INICIO, DT_FIM)
+						VALUES (?, ?, ?, CONVERT(DATETIME, ?, 103), CONVERT(DATETIME, ?, 103))";
+		$params = array($_POST['idCartaoPatrocinado'], $_POST['teatro'], $_POST['codpeca'], $_POST['dtInicio'], $_POST['dtFim']);
+		executeSQL($mainConnection, $query, $params);
+	}
 	
-	if (executeSQL($mainConnection, $query, $params)) {
-		$retorno = 'true?idCartaoPatrocinado='.$_POST['idCartaoPatrocinado'].'&teatro='.$_POST['teatro'].'&codpeca='.$_POST['codpeca'];
+	$errors = sqlErrors();
+	
+	if (empty($errors)) {
+		$retorno = 'true?idCartaoPatrocinado='.$_POST['idCartaoPatrocinado'].'&teatro='.$_POST['teatro'].'&codpeca='.$_POST['codpeca'].'&idPatrocinador='.$_POST['idPatrocinador'];
 	} else {
 		$retorno = sqlErrors();
 	}
@@ -28,7 +66,7 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 					$_GET['idCartaoPatrocinado'], $_GET['teatro'], $_GET['codpeca']);
 	
 	if (executeSQL($mainConnection, $query, $params)) {
-		$retorno = 'true?idCartaoPatrocinado='.$_POST['idCartaoPatrocinado'].'&teatro='.$_POST['teatro'].'&codpeca='.$_POST['codpeca'];
+		$retorno = 'true?idCartaoPatrocinado='.$_POST['idCartaoPatrocinado'].'&teatro='.$_POST['teatro'].'&codpeca='.$_POST['codpeca'].'&idPatrocinador='.$_POST['idPatrocinador'];
 	} else {
 		$retorno = sqlErrors();
 	}

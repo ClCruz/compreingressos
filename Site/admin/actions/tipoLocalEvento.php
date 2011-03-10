@@ -8,7 +8,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 27, true)) {
         $params = array(utf8_decode($_POST['nome']));
 
         if (executeSQL($mainConnection, $query, $params)) {
-            $retorno = 'true?id='.$_GET["id"];
+            $query2 = "SELECT ID_TIPO_LOCAL FROM MW_TIPO_LOCAL WHERE DS_TIPO_LOCAL = ?";
+            $params2 = array($_POST["nome"]);
+            $rs = executeSQL($mainConnection, $query2, $params, true);
+            $retorno = 'true?id='.$rs["ID_TIPO_LOCAL"];
         }else{
             $retorno = sqlErrors();
         }

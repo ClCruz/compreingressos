@@ -111,7 +111,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 28, true)) {
                 });
 
                 function validateFields() {
-                    var campos = $(':input'),
+                    var campos = $(':input:not(button)'),
                     idestado = $('#idestado'),
                     valido = true;
 

@@ -11,7 +11,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 28, true)) {
         require('actions/' . $pagina);
     } else {
         if ($_GET["idestado"]) {
-            $query = "SELECT ID_MUNICIPIO, DS_MUNICIPIO, ID_ESTADO FROM MW_MUNICIPIO WHERE ID_ESTADO = ?";
+            $query = "SELECT ID_MUNICIPIO, DS_MUNICIPIO, ID_ESTADO FROM MW_MUNICIPIO WHERE ID_ESTADO = ? ORDER BY DS_MUNICIPIO";
             $params = array($_GET["idestado"]);
             $result = executeSQL($mainConnection, $query, $params);
         }
@@ -111,19 +111,19 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 28, true)) {
                 });
 
                 function validateFields() {
-                    var campos = $(':text'),
-                    idestado = $('#idestado')
+                    var campos = $(':input'),
+                    idestado = $('#idestado'),
                     valido = true;
-        
-                    $.each(campos, function() {
-                        var $this = $(this);
 
-                        if (idestado.val() == "" || idestado.val() == -1) {
-                            idestado.parent().addClass('ui-state-error');
-                            valido = false;
-                        } else {
-                            idestado.parent().removeClass('ui-state-error');
-                        }
+                    if (idestado.val() == '') {
+                        idestado.parent().addClass('ui-state-error');
+                        valido = false;
+                    } else {
+                        idestado.parent().removeClass('ui-state-error');
+                    }
+
+                    $.each(campos, function() {
+                        var $this = $(this);                        
 
                         if ($this.val() == '') {
                             $this.parent().addClass('ui-state-error');

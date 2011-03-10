@@ -1,6 +1,6 @@
 <?php
 
-if (acessoPermitido($mainConnection, $_SESSION['admin'], 9, true)) {
+if (acessoPermitido($mainConnection, $_SESSION['admin'], 27, true)) {
 
     if ($_GET['action'] == 'add') { /* ------------ INSERT ------------ */
 

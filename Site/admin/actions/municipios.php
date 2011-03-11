@@ -9,7 +9,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 28, true)) {
 
         $rs = executeSQL($mainConnection, $query, $params);
         $retorno = 'true?id=' . $rs["ID"];
-        if(sqlErrors()){
+        if (sqlErrors ()) {
             $retorno = sqlErrors();
         }
     } else if ($_GET['action'] == 'update' and isset($_GET['id'])) { /* ------------ UPDATE ------------ */

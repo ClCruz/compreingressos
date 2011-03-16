@@ -216,6 +216,88 @@ function comboEstado($name, $selected, $extenso = false, $isCombo = true) {
 	return $isCombo ? $combo : $text;
 }
 
+function comboEstadoOptions($name, $selected, $extenso = false, $isCombo = true) {
+	$mainConnection = mainConnection();
+	$query = 'SELECT ID_ESTADO, ' . (($extenso) ? 'DS_ESTADO' : 'SG_ESTADO') . ' FROM MW_ESTADO';
+	$result = executeSQL($mainConnection, $query);
+
+	$combo = '<option value="">Selecione um estado...</option>';
+	while ($rs = fetchResult($result)) {
+		if (($selected == $rs['ID_ESTADO'])) {
+			$isSelected = 'selected';
+			$text = '<span name="'.$name.'" class="inputStyle">'.utf8_encode($rs[(($extenso) ? 'DS_ESTADO' : 'SG_ESTADO')]).'</span>';
+		} else {
+			$isSelected = '';
+		}
+		$combo .= '<option value="'.$rs['ID_ESTADO'].'"'.$isSelected.'>'.utf8_encode($rs[(($extenso) ? 'DS_ESTADO' : 'SG_ESTADO')]).'</option>';
+	}
+        if(sqlErrors())
+            return print_r(sqlErrors());
+        else
+            return $isCombo ? $combo : $text;
+}
+
+function comboMunicipio($name, $selected, $idEstado, $isCombo = true) {
+	$mainConnection = mainConnection();
+	$query = 'SELECT ID_MUNICIPIO,DS_MUNICIPIO FROM MW_MUNICIPIO WHERE ID_ESTADO = ?';
+        $params = array($idEstado);
+	$result = executeSQL($mainConnection, $query, $params);
+
+	$combo = '<option value="">Selecione um município...</option>';
+	while ($rs = fetchResult($result)) {
+		if (($selected == $rs['ID_MUNICIPIO'])) {
+			$isSelected = 'selected';
+			$text = '<span name="'.$name.'" class="inputStyle">'.utf8_encode($rs["DS_MUNICIPIO"]).'</span>';
+		} else {
+			$isSelected = '';
+		}
+		$combo .= '<option value="'.$rs['ID_MUNICIPIO'].'"'.$isSelected.'>'.utf8_encode($rs["DS_MUNICIPIO"]).'</option>';
+	}
+        if(sqlErrors())
+            return print_r(sqlErrors()) . print_r($params);
+        else
+            return $isCombo ? $combo : $text;
+}
+
+function comboTipoLocal($name, $selected, $isCombo = true) {
+	$mainConnection = mainConnection();
+	$query = 'SELECT ID_TIPO_LOCAL, DS_TIPO_LOCAL FROM MW_TIPO_LOCAL';
+	$result = executeSQL($mainConnection, $query);
+
+	$combo = '<select name="'.$name.'" class="inputStyle" id="'.$name.'"><option value="">Selecione um tipo...</option>';
+	while ($rs = fetchResult($result)) {
+		if (($selected == $rs['ID_TIPO_LOCAL'])) {
+			$isSelected = 'selected';
+			$text = '<span name="'.$name.'" class="inputStyle">'.utf8_encode($rs["DS_TIPO_LOCAL"]).'</span>';
+		} else {
+			$isSelected = '';
+		}
+		$combo .= '<option value="'.$rs['ID_TIPO_LOCAL'].'"'.$isSelected.'>'.utf8_encode($rs["DS_TIPO_LOCAL"]).'</option>';
+	}
+	$combo .= '</select>';
+
+	return $isCombo ? $combo : $text;
+}
+
+function comboTipoLocalOptions($name, $selected, $isCombo = true) {
+	$mainConnection = mainConnection();
+	$query = 'SELECT ID_TIPO_LOCAL, DS_TIPO_LOCAL FROM MW_TIPO_LOCAL';
+	$result = executeSQL($mainConnection, $query);
+
+	$combo = '<option value="">Selecione um tipo...</option>';
+	while ($rs = fetchResult($result)) {
+		if (($selected == $rs['ID_TIPO_LOCAL'])) {
+			$isSelected = 'selected';
+			$text = '<span name="'.$name.'" class="inputStyle">'.utf8_encode($rs["DS_TIPO_LOCAL"]).'</span>';
+		} else {
+			$isSelected = '';
+		}
+		$combo .= '<option value="'.$rs['ID_TIPO_LOCAL'].'"'.$isSelected.'>'.utf8_encode($rs["DS_TIPO_LOCAL"]).'</option>';
+	}
+
+	return $isCombo ? $combo : $text;
+}
+
 function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NULL, $isCombo = true) {
 	$mainConnection = mainConnection();
 	

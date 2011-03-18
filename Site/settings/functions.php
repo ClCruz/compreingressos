@@ -578,6 +578,55 @@ function comboTabPeca($name, $conn, $selected = '-1', $isCombo = true) {
 	return $isCombo ? $combo : $text;
 }
 
+function comboEventosItau($name, $user, $selected = '-1') {
+	$mainConnection = mainConnection();
+	$query = 'SELECT E.ID_EVENTO, E.DS_EVENTO
+				FROM MW_EVENTO E
+				INNER JOIN MW_USUARIO_ITAU_EVENTO U ON E.ID_EVENTO = U.ID_EVENTO
+				WHERE U.ID_USUARIO = ? AND E.IN_VENDE_ITAU = 1';
+	$result = executeSQL($mainConnection, $query, array($user));
+	
+	$combo = '<select name="'.$name.'" class="inputStyle" id="'.$name.'"><option value="">Selecione um evento...</option>';
+	while ($rs = fetchResult($result)) {
+		if ($selected == $rs['ID_EVENTO']) {
+			$isSelected = ' selected';
+		} else {
+			$isSelected = '';
+		}
+		$combo .= '<option value="'.$rs['ID_EVENTO'].'"'.$isSelected.'>'.utf8_encode($rs['DS_EVENTO']).'</option>';
+	}
+	$combo .= '</select>';
+	
+	return $combo;
+}
+
+function comboApresentacoesItau($name, $user, $evento, $selected = '-1') {
+	$mainConnection = mainConnection();
+	$query = "SELECT A.ID_APRESENTACAO, CONVERT(VARCHAR(10),
+				DT_APRESENTACAO, 103) + ' - ' + A.HR_APRESENTACAO + ' || ' + DS_PISO DS_APRESENTACAO,
+				A.DT_APRESENTACAO, A.HR_APRESENTACAO
+				FROM MW_EVENTO E
+				INNER JOIN MW_USUARIO_ITAU_EVENTO U ON E.ID_EVENTO = U.ID_EVENTO
+				INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
+				WHERE E.ID_EVENTO = ? AND E.IN_VENDE_ITAU = 1 AND U.ID_USUARIO = ? AND A.IN_ATIVO = 1
+				AND CONVERT(VARCHAR(8), A.DT_APRESENTACAO,112) >= CONVERT(VARCHAR(8), GETDATE(), 112)
+				ORDER BY DT_APRESENTACAO, HR_APRESENTACAO";
+	$result = executeSQL($mainConnection, $query, array($evento, $user));
+	
+	$combo = '<select name="'.$name.'" class="inputStyle" id="'.$name.'"><option value="">Selecione uma apresenta&ccedil;&atilde;o...</option>';
+	while ($rs = fetchResult($result)) {
+		if ($selected == $rs['ID_APRESENTACAO']) {
+			$isSelected = ' selected';
+		} else {
+			$isSelected = '';
+		}
+		$combo .= '<option value="'.$rs['ID_APRESENTACAO'].'"'.$isSelected.'>'.utf8_encode($rs['DS_APRESENTACAO']).'</option>';
+	}
+	$combo .= '</select>';
+	
+	return $combo;
+}
+
 
 
 /*  OUTROS  */

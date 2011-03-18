@@ -6,7 +6,7 @@
 						CASE WHEN U.ID_USUARIO IS NOT NULL THEN 'checked' ELSE NULL END AS CHECKED
 						FROM MW_EVENTO E
 						LEFT JOIN MW_USUARIO_ITAU_EVENTO U ON U.ID_USUARIO = ? and E.ID_EVENTO = U.ID_EVENTO
-						WHERE E.ID_BASE = ?";
+						WHERE E.ID_BASE = ? AND E.IN_VENDE_ITAU = 1";
 		
 		$params = array($idUsuario, $idBase);
 		$total = numRows($conn, $queryTotal, $params);
@@ -43,7 +43,7 @@
 					CASE WHEN U.ID_USUARIO IS NOT NULL THEN \'checked\' ELSE NULL END AS CHECKED
 					FROM MW_EVENTO E
 					LEFT JOIN MW_USUARIO_ITAU_EVENTO U ON U.ID_USUARIO = ? and E.ID_EVENTO = U.ID_EVENTO
-					WHERE E.ID_BASE = ?)
+					WHERE E.ID_BASE = ? AND E.IN_VENDE_ITAU = 1)
 					SELECT * FROM RESULTADO ' . $between . ' ORDER BY 2';
 		$params = array($idUsuario, $idBase);
 		$result = executeSQL($conn, $query, $params);

@@ -218,7 +218,7 @@ function comboEstado($name, $selected, $extenso = false, $isCombo = true) {
 
 function comboEstadoOptions($name, $selected, $extenso = false, $isCombo = true) {
 	$mainConnection = mainConnection();
-	$query = 'SELECT ID_ESTADO, ' . (($extenso) ? 'DS_ESTADO' : 'SG_ESTADO') . ' FROM MW_ESTADO';
+	$query = 'SELECT ID_ESTADO, ' . (($extenso) ? 'DS_ESTADO' : 'SG_ESTADO') . ' FROM MW_ESTADO ORDER BY DS_ESTADO';
 	$result = executeSQL($mainConnection, $query);
 
 	$combo = '<option value="">Selecione um estado...</option>';
@@ -239,7 +239,7 @@ function comboEstadoOptions($name, $selected, $extenso = false, $isCombo = true)
 
 function comboMunicipio($name, $selected, $idEstado, $isCombo = true) {
 	$mainConnection = mainConnection();
-	$query = 'SELECT ID_MUNICIPIO,DS_MUNICIPIO FROM MW_MUNICIPIO WHERE ID_ESTADO = ?';
+	$query = 'SELECT ID_MUNICIPIO,DS_MUNICIPIO FROM MW_MUNICIPIO WHERE ID_ESTADO = ? ORDER BY DS_MUNICIPIO';
         $params = array($idEstado);
 	$result = executeSQL($mainConnection, $query, $params);
 

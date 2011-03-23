@@ -194,6 +194,7 @@ $(function() {
 	});
 	
 	$('#local').change(function() {$('#btnProcurar').click();});
+	$('#usuario').change(function() {$('#btnProcurar').click();});
 });	
 
 function validar(){

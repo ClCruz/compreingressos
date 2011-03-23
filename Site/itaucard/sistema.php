@@ -178,7 +178,7 @@ $userData = executeSQL($mainConnection, 'SELECT DS_NOME FROM MW_USUARIO_ITAU WHE
 										<p>Nº do Cart&atilde;o Participante da Promo&ccedil;&atilde;o</p>
 										<div class="cont_input dark">
 											<div class="contorno_left"></div>
-											<input type="text" name="ncartao" maxlength="30" style="width:270px" />
+											<input type="text" name="ncartao" maxlength="16" style="width:270px" />
 											<div class="contorno_right"></div>
 										</div>
 									</div>

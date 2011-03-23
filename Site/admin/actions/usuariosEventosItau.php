@@ -89,7 +89,7 @@
 		}
 		
 		if (!sqlErrors()) {
-			return "";
+			return "OK";
 		} else {
 			echo "Erro #003: ";
 			print_r(sqlErrors());
@@ -99,9 +99,9 @@
 	
 	function deletarAcessoEvento($idUsuario, $idEvento, $idBase, $conn){
 		if (is_array($idEvento)) {
-			foreach($evento as $value){
-				$params = array($idUsuario, $value);
+			foreach($idEvento as $value){
 				$sql = "DELETE FROM MW_USUARIO_ITAU_EVENTO WHERE ID_USUARIO = ? AND ID_EVENTO = ?";	
+				$params = array($idUsuario, $value);
 				executeSQL($conn, $sql, $params);
 			}
 		} else if ($idEvento == "geral") {
@@ -116,7 +116,7 @@
 		}
 		
 		if (!sqlErrors()) {
-			return "";
+			return "OK";
 		} else {
 			echo "Erro #004: ";
 			print_r(sqlErrors());

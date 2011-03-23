@@ -20,19 +20,20 @@ if (isset($_GET['action'])) {
 	// Alterar programas 
 	if (isset($_GET["action"]) && $_GET["action"] == "cad") {
 		if(isset($_GET["tipo"]) && $_GET["tipo"] == "todos")
-			return cadastrarAcessoEvento($_POST["usuario"], $_POST["eventos"], $idBase, $mainConnection);
+			echo cadastrarAcessoEvento($_POST["usuario"], $_POST["eventos"], $idBase, $mainConnection);
 		else if(isset($_GET["tipo"]) && $_GET["tipo"] == "geral")
-			return cadastrarAcessoEvento($_POST["usuario"], "geral", $idBase, $mainConnection);
+			echo cadastrarAcessoEvento($_POST["usuario"], "geral", $idBase, $mainConnection);
 		else
-			return cadastrarAcessoEvento($_POST["usuario"], $_GET["idevento"], $idBase, $mainConnection);
+			echo cadastrarAcessoEvento($_POST["usuario"], $_GET["idevento"], $idBase, $mainConnection);
 	} else if (isset($_GET["action"]) && $_GET["action"] == "del"){
 		if(isset($_GET["tipo"]) && $_GET["tipo"] == "todos")
-			return deletarAcessoEvento($_POST["usuario"], $_POST["eventos"], $idBase, $mainConnection);		
+			echo deletarAcessoEvento($_POST["usuario"], $_POST["eventos"], $idBase, $mainConnection);		
 		else if(isset($_GET["tipo"]) && $_GET["tipo"] == "geral")
-			return deletarAcessoEvento($_POST["usuario"], "geral", $idBase, $mainConnection);
+			echo deletarAcessoEvento($_POST["usuario"], "geral", $idBase, $mainConnection);
 		else
-			return deletarAcessoEvento($_POST["usuario"], $_GET["idevento"], $idBase, $mainConnection);	
+			echo deletarAcessoEvento($_POST["usuario"], $_GET["idevento"], $idBase, $mainConnection);	
 	}
+	die();
 	
 } else {
 	
@@ -60,13 +61,14 @@ if (isset($_GET["local"]) && isset($_GET["usuario"])) {
 	$hasRows = hasRows($resultEventos);
 }
 ?>
-
 <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
 <script>
 $(function() {
 	var pagina = '<?php echo $pagina; ?>';
 	
-    $.fn.alterarTodosEventos = function(checkbox) {
+    $('.btnSelecionarGeral').click(function(){
+		var checkbox = $(this);
+		
 		if (validar()) {
 			if (checkbox.is(':checked')) {
 				var check = true;
@@ -84,8 +86,7 @@ $(function() {
 				type: 'post',
 				data: $('#dados').serialize(),
 				success: function(data){
-					if(data != "")
-						$.dialog();	
+					if (data != "OK") $.dialog({text: data});
 				},
 				complete: function(){
 					$('loadingIcon').fadeOut('slow');	
@@ -93,9 +94,11 @@ $(function() {
 			}); 
 			if (!check) $(".chm").attr('checked', false);
 		}
-    }
+    });
 	
-	$.fn.atualizarPermissao = function(checkbox) {
+	$('.chm').click(function(){
+		var checkbox = $(this);
+		
 		if (validar()) {
 			if (checkbox.is(':checked')) {
 				var check = true;
@@ -113,22 +116,17 @@ $(function() {
 				type: 'post',
 				data: $('#dados').serialize(),
 				success: function(data) {
-					if(data != "")
-						$.dialog();
+					if (data != "OK")	$.dialog({text: data});
 				},
 				complete: function() {
 					$('loadingIcon').fadeOut('slow');
 				}
 			});
-			$.fn.verificaCheckbox();
+			verificaCheckbox();
 		}
-	}
+	});
 	
-	$.fn.selecionarTodos = function() {
-		$('.chm').attr('checked', !$('.chm').attr('checked'));
-	}
-	
-	$.fn.verificaCheckbox = function() {
+	verificaCheckbox = function() {
 		var numCheckbox = $('.chm').length;
 		var chm = $('.chm').get();
 		var cont = 0;
@@ -140,7 +138,7 @@ $(function() {
 			$('.btnSelecionarTodos').attr('checked', true);
 		else
 			$('.btnSelecionarTodos').attr('checked', false);		
-	};
+	}; verificaCheckbox();
 
 	$('.button').button();
 
@@ -149,8 +147,6 @@ $(function() {
 	}, function() {
 		$(this).removeClass('ui-state-hover');
 	});
-	
-	$.fn.verificaCheckbox();
 	
 	// Alterar permissão dos eventos
 	$('#btnAlterar').click(function(){
@@ -180,8 +176,7 @@ $(function() {
 				type: 'post',
 				data: $('#dados').serialize(),
 				success: function(data) {
-					if(data != "")
-						$.dialog();
+					if(data != "OK") $.dialog();
 				}, 
 				complete: function() {
 					$('loadingIcon').fadeOut('slow');
@@ -189,15 +184,6 @@ $(function() {
 			});
 			if (!v) $('.chm').attr('checked', false);
 		}
-	});
-	
-	$('.btnSelecionarGeral').click(function(){
-		$.fn.alterarTodosEventos($(this));
-	});
-	
-	//Atualizar permissão do evento
-	$('.chm').click(function(){
-		$.fn.atualizarPermissao($(this));
 	});
 		
 	// Executar busca de eventos

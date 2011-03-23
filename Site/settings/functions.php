@@ -583,7 +583,8 @@ function comboEventosItau($name, $user, $selected = '-1') {
 	$query = 'SELECT E.ID_EVENTO, E.DS_EVENTO
 				FROM MW_EVENTO E
 				INNER JOIN MW_USUARIO_ITAU_EVENTO U ON E.ID_EVENTO = U.ID_EVENTO
-				WHERE U.ID_USUARIO = ? AND E.IN_VENDE_ITAU = 1';
+				WHERE U.ID_USUARIO = ? AND E.IN_VENDE_ITAU = 1
+				ORDER BY DS_EVENTO';
 	$result = executeSQL($mainConnection, $query, array($user));
 	
 	$combo = '<select name="'.$name.'" class="inputStyle" id="'.$name.'"><option value="">Selecione um evento...</option>';
@@ -609,7 +610,7 @@ function comboApresentacoesItau($name, $user, $evento, $selected = '-1') {
 				INNER JOIN MW_USUARIO_ITAU_EVENTO U ON E.ID_EVENTO = U.ID_EVENTO
 				INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
 				WHERE E.ID_EVENTO = ? AND E.IN_VENDE_ITAU = 1 AND U.ID_USUARIO = ? AND A.IN_ATIVO = 1
-				AND CONVERT(VARCHAR(8), A.DT_APRESENTACAO,112) >= CONVERT(VARCHAR(8), GETDATE(), 112)
+				AND CONVERT(VARCHAR(8), A.DT_APRESENTACAO,112) >= CONVERT(VARCHAR(8), GETDATE()-2, 112)
 				ORDER BY DT_APRESENTACAO, HR_APRESENTACAO";
 	$result = executeSQL($mainConnection, $query, array($evento, $user));
 	

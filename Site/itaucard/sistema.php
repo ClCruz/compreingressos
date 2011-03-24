@@ -190,7 +190,7 @@ $userData = executeSQL($mainConnection, 'SELECT DS_NOME FROM MW_USUARIO_ITAU WHE
 							<div class="select">
 								<div class="left"></div>
 								<select name="pagamento">
-									<option value="">Cr&eacute;dito</option>
+									<option value="">Cr&eacute;dito/D&eacute;bito</option>
 								</select>
 							</div>
 							<div class="resumo">

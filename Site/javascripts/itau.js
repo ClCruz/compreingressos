@@ -59,7 +59,9 @@ $(function(){
 					$cbApresentacoes.find('option').remove();
 					$cbApresentacoes.append($options);
 					
+					$('.qtd').val('0').blur();
 					$('#apresentacao').change();
+					$('input[name="cpf"]').val('').blur();
 				} else {
 					confirmar_enabled(false);
 					displayError(data.error);
@@ -79,7 +81,8 @@ $(function(){
 			success: function(data) {
 				if (data.error === undefined) {
 					$('table.ing_qtd tbody').html(data.html);
-					$('.qtd').numeric(false);
+					$('.qtd').numeric(false).blur();
+					displayError(false);
 				} else {
 					confirmar_enabled(false);
 					displayError(data.error);
@@ -113,27 +116,45 @@ $(function(){
 			$email = $('input[name="email"]'),
 			$ncartao = $('input[name="ncartao"]');
 		
-		$.ajax({
-			url: 'sistema.php?action=cpf_search',
-			type: 'post',
-			data: 'cpf=' + $cpf.val(),
-			dataType: 'json',
-			success: function(data) {
-				if (data.error === undefined) {
-					if (data.nome !== undefined) {
-						$rg.val(data.rg);
-						$ddd.val(data.ddd);
-						$telefone.val(data.telefone);
-						$ramal.val(data.ramal);
-						$nome.val(data.nome);
-						$email.val(data.email);
-						$ncartao.val(data.ncartao).focus();
+		if ($cpf.val() != '') {
+			$.ajax({
+				url: 'sistema.php?action=cpf_search',
+				type: 'post',
+				data: 'cpf=' + $cpf.val(),
+				dataType: 'json',
+				success: function(data) {
+					if (data.error === undefined) {
+						if (data.nome !== undefined) {
+							$rg.val(data.rg);
+							$ddd.val(data.ddd);
+							$telefone.val(data.telefone);
+							$ramal.val(data.ramal);
+							$nome.val(data.nome);
+							$email.val(data.email);
+							$ncartao.val(data.ncartao).focus();
+						} else {
+							$rg.val('').focus();
+							$ddd.val('');
+							$telefone.val('');
+							$ramal.val('');
+							$nome.val('');
+							$email.val('');
+							$ncartao.val('');
+						}
+					} else {
+						displayError(data.error);
 					}
-				} else {
-					displayError(data.error);
 				}
-			}
-		});
+			});
+		} else {
+			$rg.val('');
+			$ddd.val('');
+			$telefone.val('');
+			$ramal.val('');
+			$nome.val('');
+			$email.val('');
+			$ncartao.val('');
+		}
 	});
 	
 	$('#compra').submit(function(e) {

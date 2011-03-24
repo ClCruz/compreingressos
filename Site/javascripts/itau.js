@@ -212,19 +212,18 @@ $(function(){
 	
 	function displayError(text) {
 		if (text !== false) {
-			$('#errorBox')
-				.stop(true, true)
-				.fadeOut('fast')
-				.html(text)
-				.addClass('ui-state-error ui-corner-all')
-				.css({
-						'padding':'10px',
-						'width':'auto',
-						'margin-top':'30px'
-				})
-				.fadeIn('fast');
-		} else {
-			$('#errorBox').fadeOut('fast')
+			if (!$('#errorBox').lenght) {
+				$('<div title="Aten&ccedil;&atilde;o!" class="ui-helper-hidden ui-state-error ui-corner-all" id="errorBox"></div>').appendTo('body');
+			}
+			$('#errorBox').html(text).dialog({
+				resizable: false,
+				modal: true,
+				buttons: {
+					Ok: function() {
+						$(this).dialog("close");
+					}
+				}
+			});
 		}
 	}
 

@@ -218,7 +218,6 @@ $userData = executeSQL($mainConnection, 'SELECT DS_NOME FROM MW_USUARIO_ITAU WHE
 						</div>
 					</div>
 				</form>
-				<div class="ui-helper-hidden" id="errorBox"></div>
 				<div id="dialog-confirm" title="Confirma&ccedil;&atilde;o..." class="ui-helper-hidden">
 					<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>Os dados informados est&atilde;o corretos?<br/><br/>Efetivar a venda?</p>
 				</div>

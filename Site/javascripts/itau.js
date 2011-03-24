@@ -232,7 +232,7 @@ $(function(){
 			$('#errorBox').html(text).dialog({
 				resizable: false,
 				modal: true,
-				width: 300,
+				width: 500,
 				buttons: {
 					Ok: function() {
 						$(this).dialog("close");

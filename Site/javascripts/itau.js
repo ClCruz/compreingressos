@@ -207,6 +207,20 @@ $(function(){
 		this.focus();
 		this.select()
 	});
+	
+	$('input[name="ncartao"]').keyup(function(e){
+		var $ncartao = $(this)
+			$qtd = $('.qtd'),
+			qtd = 0;
+		if ($ncartao.val().length == $ncartao.attr('maxlength')) {
+			$qtd.each(function(i, e){
+				qtd += $(e).val();
+			});
+			if (qtd == 0) {
+				displayError("Pelo menos 1 ingresso promocional deve ser selecionado para participar da promo\u00e7\u00e3o.");
+			}
+		}
+	});
 
 	//functions
 	
@@ -218,6 +232,7 @@ $(function(){
 			$('#errorBox').html(text).dialog({
 				resizable: false,
 				modal: true,
+				width: 300,
 				buttons: {
 					Ok: function() {
 						$(this).dialog("close");

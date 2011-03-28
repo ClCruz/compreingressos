@@ -165,6 +165,7 @@ $(function(){
 			$('#dialog-confirm').dialog({
 				resizable: false,
 				modal: true,
+				width: 500,
 				buttons: {
 					'Sim': function() {
 						$.ajax({
@@ -255,7 +256,7 @@ $(function(){
 		var evento = $('#evento').val(),
 			apresentacao = $('#apresentacao').val(),
 			$ingressos_qtd = $('.qtd').filter(function(){return parseInt($(this).val())}).length,
-			$dados_cliente = $('.dados_cli input:not([name="rg"], [name="ramal"])'),
+			$dados_cliente = $('.dados_cli input:not([name="rg"], [name="ddd"], [name="telefone"], [name="ramal"], [name="email"])'),
 			valid = true;
 
 		if (evento == '' || apresentacao == '') return false;

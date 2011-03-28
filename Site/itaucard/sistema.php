@@ -128,7 +128,7 @@ $userData = executeSQL($mainConnection, 'SELECT DS_NOME FROM MW_USUARIO_ITAU WHE
 									
 									<div class="campo">
 										<p>DDD</p>
-										<div class="cont_input dark">
+										<div class="cont_input">
 											<div class="contorno_left"></div>
 											<input type="text" name="ddd" maxlength="2" style="width:20px" />
 											<div class="contorno_right"></div>
@@ -137,7 +137,7 @@ $userData = executeSQL($mainConnection, 'SELECT DS_NOME FROM MW_USUARIO_ITAU WHE
 									
 									<div class="campo">
 										<p>Telefone</p>
-										<div class="cont_input dark">
+										<div class="cont_input">
 											<div class="contorno_left"></div>
 											<input type="text" name="telefone" maxlength="9" style="width:70px" />
 											<div class="contorno_right"></div>
@@ -166,7 +166,7 @@ $userData = executeSQL($mainConnection, 'SELECT DS_NOME FROM MW_USUARIO_ITAU WHE
 								<div class="linha">
 									<div class="campo nomargin">
 										<p>E-mail do Cliente</p>
-										<div class="cont_input dark">
+										<div class="cont_input">
 											<div class="contorno_left"></div>
 											<input type="text" name="email" maxlength="250" style="width:470px" />
 											<div class="contorno_right"></div>
@@ -224,5 +224,6 @@ $userData = executeSQL($mainConnection, 'SELECT DS_NOME FROM MW_USUARIO_ITAU WHE
 			</div>
 			<div class="bar_bottom"></div>
 		</div>
+		<?php require 'mensagens.php'; ?>
 	</body>
 </html>

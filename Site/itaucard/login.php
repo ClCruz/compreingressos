@@ -14,6 +14,7 @@ if ($_POST) {
 		$rs = fetchResult($result);
 		$_SESSION['userItau'] = $rs['ID_USUARIO'];
 		if ($_POST['senha'] == '123456') $_SESSION['senha'] = true;
+		$_SESSION['mensagens'] = true;
 		
 		$data['redirect'] = 'sistema.php';
 	} else {

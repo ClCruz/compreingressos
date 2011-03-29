@@ -145,14 +145,14 @@ if ($num_ingressos <= $limite) {
 		//$errors = false (ocorreu um erro)
 		$errors = true;
 		
-		$query = 'DELETE FROM MW_RESERVA WHERE ID_APRESENTACAO = ? AND ID_SESSION = ?';
-		$params = array($_POST['apresentacao'], session_id());
+		$query = 'DELETE FROM MW_RESERVA WHERE ID_SESSION = ?';
+		$params = array(session_id());
 		$result = executeSQL($mainConnection, $query, $params);
 		
 		$errors = $result and $errors;
 		
-		$query = 'DELETE FROM TABLUGSALA WHERE CODAPRESENTACAO = ? AND ID_SESSION = ?';
-		$params = array($cod_apresentacao, session_id());
+		$query = 'DELETE FROM TABLUGSALA WHERE ID_SESSION = ?';
+		$params = array(session_id());
 		$result = executeSQL($conn, $query, $params);
 		
 		$errors = $result and $errors;

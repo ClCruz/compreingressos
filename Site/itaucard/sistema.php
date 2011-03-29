@@ -224,6 +224,8 @@ $userData = executeSQL($mainConnection, 'SELECT DS_NOME FROM MW_USUARIO_ITAU WHE
 			</div>
 			<div class="bar_bottom"></div>
 		</div>
-		<?php require 'mensagens.php'; ?>
+		<?php
+		//require 'mensagens.php';
+		?>
 	</body>
 </html>

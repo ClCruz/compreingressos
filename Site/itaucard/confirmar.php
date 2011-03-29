@@ -24,9 +24,9 @@ if (!is_numeric($_POST['cpf'])) {
 if (!verificaCPF($_POST['cpf'])) {
 	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('CPF inválido.'))));
 }
-if (!is_numeric($_POST['ddd']) or !is_numeric($_POST['telefone'])) {
+/*if (!is_numeric($_POST['ddd']) or !is_numeric($_POST['telefone'])) {
 	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('Favor informar apenas números nos campos DDD e telefone.'))));
-}
+}*/
 $nome_completo = explode(' ', $_POST['nome'], 2);
 if (count($nome_completo) > 1) {
 	$nome = $nome_completo[0];
@@ -34,9 +34,9 @@ if (count($nome_completo) > 1) {
 } else {
 	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('Favor informar o nome completo.'))));
 }
-if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+/*if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
 	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('Favor informar um e-mail válido.'))));
-}
+}*/
 if (!is_numeric($_POST['ncartao'])) {
 	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('Favor informar apenas números no campo Nº do Cartão.'))));
 }

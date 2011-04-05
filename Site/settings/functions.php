@@ -628,6 +628,47 @@ function comboApresentacoesItau($name, $user, $evento, $selected = '-1') {
 	return $combo;
 }
 
+function comboEventoPorUsuario($name, $teatro, $usuario, $selected) {
+	$mainConnection = mainConnection();
+	$result = executeSQL($mainConnection, "SELECT AC.CODPECA, E.DS_EVENTO
+											FROM MW_EVENTO E
+											INNER JOIN MW_ACESSO_CONCEDIDO AC ON E.ID_BASE = AC.ID_BASE
+											AND AC.ID_USUARIO = ? AND AC.CODPECA = E.CODPECA
+											WHERE E.ID_BASE = ?
+											AND E.IN_ATIVO = '1'
+											ORDER BY DS_EVENTO",
+						array($usuario, $teatro));
+	
+	$combo = '<select name="'.$name.'" class="inputStyle" id="'.$name.'"><option value="">Selecione um evento...</option>';
+	while ($rs = fetchResult($result)) {
+		$combo .= '<option value="'.$rs['CODPECA'].'"' .
+						(($selected == $rs['CODPECA']) ? ' selected' : '') .
+						'>'.str_replace("'", "\'", utf8_encode($rs['DS_EVENTO'])).'</option>';
+	}
+	$combo .= '</select>';
+	
+	return $combo;
+}
+
+function comboTeatroPorUsuario($name, $usuario, $selected) {
+	$mainConnection = mainConnection();
+	$result = executeSQL($mainConnection, "SELECT DISTINCT B.ID_BASE, B.DS_NOME_TEATRO
+											FROM MW_BASE B
+											INNER JOIN MW_ACESSO_CONCEDIDO AC ON B.ID_BASE = AC.ID_BASE
+											AND AC.ID_USUARIO = ?
+											WHERE IN_ATIVO = '1'
+											ORDER BY DS_NOME_TEATRO",
+						array($usuario));
+	
+	$combo = '<select name="'.$name.'" class="inputStyle" id="'.$name.'"><option value="">Selecione um local...</option>';
+	while ($rs = fetchResult($result)) {
+		$combo .= '<option value="'.$rs['ID_BASE'].'"'.(($selected == $rs['ID_BASE']) ? ' selected' : '').'>'.utf8_encode($rs['DS_NOME_TEATRO']).'</option>';
+	}
+	$combo .= '</select>';
+	
+	return $combo;
+}
+
 
 
 /*  OUTROS  */

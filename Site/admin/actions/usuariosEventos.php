@@ -105,7 +105,7 @@
 		}
 		
 		if(!sqlErrors()){
-			return "";
+			return "OK";
 		}
 		else{
 			echo "Erro #003: ";
@@ -138,7 +138,7 @@
 			executeSQL($conn, "DELETE FROM MW_ACESSO_CONCEDIDO WHERE ID_USUARIO = ". $idUsuario ." AND ID_BASE = ". $idBase ." AND CODPECA = ". $evento); 	
 		}
 		if(!sqlErrors()){
-			return "";
+			return "OK";
 		}else{
 			echo "Erro #004: ";
 			print_r(sqlErrors());

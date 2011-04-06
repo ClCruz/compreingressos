@@ -147,15 +147,16 @@ $parametros['ddd_telefone_2'] = $rs['DS_DDD_CELULAR'];;
 $parametros['numero_telefone_2'] = $rs['DS_CELULAR'];
 
 //Dados dos itens de pedido
-$query = 'SELECT R.ID_RESERVA, R.ID_APRESENTACAO, R.ID_APRESENTACAO_BILHETE, R.ID_CADEIRA, R.DS_CADEIRA, R.DS_SETOR, E.ID_EVENTO, E.DS_EVENTO, B.DS_NOME_TEATRO, CONVERT(VARCHAR(10), A.DT_APRESENTACAO, 103) DT_APRESENTACAO, A.HR_APRESENTACAO,
-			 AB.VL_LIQUIDO_INGRESSO
-			 FROM MW_RESERVA R
-			 INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO AND A.IN_ATIVO = \'1\'
-			 INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO AND E.IN_ATIVO = \'1\'
-			 INNER JOIN MW_BASE B ON B.ID_BASE = E.ID_BASE
-			 INNER JOIN MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE AND AB.IN_ATIVO = \'1\'
-			 WHERE R.ID_SESSION = ? AND R.DT_VALIDADE >= GETDATE()
-			 ORDER BY E.DS_EVENTO, R.ID_APRESENTACAO, R.DS_CADEIRA';
+$query = "SELECT R.ID_RESERVA, R.ID_APRESENTACAO, R.ID_APRESENTACAO_BILHETE, R.ID_CADEIRA, R.DS_CADEIRA, R.DS_SETOR, E.ID_EVENTO, E.DS_EVENTO, ISNULL(LE.DS_LOCAL_EVENTO, B.DS_NOME_TEATRO) DS_NOME_TEATRO, CONVERT(VARCHAR(10), A.DT_APRESENTACAO, 103) DT_APRESENTACAO, A.HR_APRESENTACAO,
+			AB.VL_LIQUIDO_INGRESSO, AB.DS_TIPO_BILHETE
+			FROM MW_RESERVA R
+			INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO AND A.IN_ATIVO = '1'
+			INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO AND E.IN_ATIVO = '1'
+			INNER JOIN MW_BASE B ON B.ID_BASE = E.ID_BASE
+			INNER JOIN MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE AND AB.IN_ATIVO = '1'
+			LEFT JOIN MW_LOCAL_EVENTO LE ON E.ID_LOCAL_EVENTO = LE.ID_LOCAL_EVENTO
+			WHERE R.ID_SESSION = ? AND R.DT_VALIDADE >= GETDATE()
+			ORDER BY E.DS_EVENTO, R.ID_APRESENTACAO, R.DS_CADEIRA";
 $params = array(session_id());	
 $result = executeSQL($mainConnection, $query, $params);
 
@@ -189,7 +190,7 @@ while ($itens = fetchResult($result)) {
 	$valorConveniencia = executeSQL($mainConnection, 'SELECT VL_TAXA_CONVENIENCIA FROM MW_TAXA_CONVENIENCIA WHERE ID_EVENTO = ? AND DT_INICIO_VIGENCIA <= GETDATE() ORDER BY DT_INICIO_VIGENCIA DESC', array($itens['ID_EVENTO']), true);
 	
 	$parametros['codigo_item_'.$i] = $itens['ID_CADEIRA']; //Código ou chave única do item do pedido no Site.
-	$parametros['descricao_item_'.$i] = utf8_encode($itens['DS_EVENTO'] . ' (' . $itens['DT_APRESENTACAO']) . ' às ' . utf8_encode($itens['HR_APRESENTACAO'] . ') - ' . $itens['DS_NOME_TEATRO'] . ' - ' . $itens['DS_SETOR'] . ' - ' . $itens['DS_CADEIRA']);
+	$parametros['descricao_item_'.$i] = utf8_encode($itens['DS_EVENTO'] . ' (' . $itens['DT_APRESENTACAO']) . ' às ' . utf8_encode($itens['HR_APRESENTACAO'] . ') - ' . $itens['DS_NOME_TEATRO'] . ' - ' . $itens['DS_SETOR'] . ' - ' . $itens['DS_CADEIRA'] . ' - ' . $itens['DS_TIPO_BILHETE']);
 	$parametros['quantidade_item_'.$i] = "100"; //Quantidade com duas casas decimais e sem pontos nem vírgulas. Ex: 1,00 -> 100; 100,00 -> 10000
 	$parametros['valor_item_'.$i] = ($itens['VL_LIQUIDO_INGRESSO'] + $valorConveniencia[0]) * 100; //Valor unitário em centavos, somente números, sem pontos nem vírgulas. Ex: 50,00 -> 5000;
 	$totalIngressos += $itens['VL_LIQUIDO_INGRESSO'];

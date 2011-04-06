@@ -170,12 +170,12 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
 								?>
 								</select></p>
 								
-								<p>Quantidade de Ingressos: <select name="numIngressos" id="numIngressos" ><?php
+								<p>Escolha a quantidade de Ingressos: <select name="numIngressos" id="numIngressos" ><?php
 								$maxIngressos = ($ingressosDisponiveis < $maxIngressos) ? $ingressosDisponiveis : $maxIngressos;
 								for ($i = 1; $i <= $maxIngressos; $i++) {
 									echo '<option value="'.$i.'"'.(($ingressosSelecionados == $i) ? ' selected' : '').'>'.$i.'</option>';
 								}
-								?></select> de <?php echo $ingressosDisponiveis; ?> dispon&iacute;veis</p><?php
+								?></select></p><?php
 							}
 							?>
 							<?php } ?>

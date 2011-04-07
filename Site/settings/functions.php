@@ -765,14 +765,30 @@ function acessoPermitido($conn, $idUser, $idPrograma, $echo = false) {
 				 FROM MW_PROGRAMA P
 				 INNER JOIN MW_USUARIO_PROGRAMA UP ON UP.ID_PROGRAMA = P.ID_PROGRAMA
 				 INNER JOIN MW_USUARIO U ON U.ID_USUARIO = UP.ID_USUARIO
-				 WHERE U.ID_USUARIO = ? AND P.ID_PROGRAMA = ?
-				 ORDER BY P.ID_ORDEM_EXIBICAO, P.DS_PROGRAMA';
+				 WHERE U.ID_USUARIO = ? AND P.ID_PROGRAMA = ?';
 	$params = array($idUser, $idPrograma);
 	$result = executeSQL($conn, $query, $params);
 	
 	$hasRows = hasRows($result);
 	
 	if ($echo and !$hasRows) echo '<h2>Acesso Negado!</h2>';
+	
+	return $hasRows;
+}
+
+function acessoPermitidoEvento($idBase, $idUser, $codPeca, $die = false) {
+	$mainConnection = mainConnection();
+	$query = 'SELECT 1
+				FROM MW_ACESSO_CONCEDIDO
+				WHERE ID_BASE = ? AND ID_USUARIO = ? AND CODPECA = ?';
+	$params = array($idBase, $idUser, $codPeca);
+	$result = executeSQL($mainConnection, $query, $params);
+	
+	$hasRows = hasRows($result);
+	
+	if (!$hasRows) echo '<h2>Acesso Negado!</h2>';
+	
+	if ($die and !$hasRows) die();
 	
 	return $hasRows;
 }

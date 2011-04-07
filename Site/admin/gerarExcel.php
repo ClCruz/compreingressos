@@ -1,8 +1,8 @@
 <?php
 header("Content-type: application/vnd.ms-excel");
 header("Content-type: application/force-download");
-header("Content-Disposition: attachment; filename=relatorio.xls");
-header("Pragma: no-cache");
+header("Content-Disposition: attachment; filename=movimentacao.xls");
+
 require_once('acessoLogadoDie.php');
 
 require_once('../settings/functions.php');

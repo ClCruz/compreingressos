@@ -1,16 +1,14 @@
 <?php
+header("Content-type: application/vnd.ms-excel");
+header("Content-type: application/force-download");
+header("Content-Disposition: attachment; filename=relVendasLocalUsuario.xls");
+
 require_once('../settings/functions.php');
+
 $mainConnection = mainConnection();
-session_start();
-
-if (acessoPermitido($mainConnection, $_SESSION['admin'], 30, true)) {
-
-$pagina = basename(__FILE__);
-
-require_once('../settings/Paginator.php');
 
 if(isset($_GET["dt_inicial"]) && isset($_GET["dt_final"])){
-		
+	
 	$strSql = "SELECT
 					UI.DS_NOME,
 					ISNULL(LE.DS_LOCAL_EVENTO, 'Não informado no cadastro de evento') DS_LOCAL_EVENTO,
@@ -61,48 +59,12 @@ if(isset($_GET["dt_inicial"]) && isset($_GET["dt_final"])){
 	$rs = executeSQL($mainConnection, $query, $params, true);
 	$total['TOTAL_PEDIDO'] = $rs['TOTAL_VENDA'];
 	$total['QUANTIDADE'] = $rs['QT_INGRESSOS'];
+
 }
 ?>
-<script type="text/javascript" src="../javascripts/jquery.ui.datepicker-pt-BR.js"></script>
-<script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
-<script>
-$(function() {
-	var pagina = '<?php echo $pagina; ?>'
-	$('.button').button();
-	$(".datepicker").datepicker();
-		$('tr:not(.ui-widget-header)').hover(function() {
-		$(this).addClass('ui-state-hover');
-	}, function() {
-		$(this).removeClass('ui-state-hover');
-	});
-	
-	$("#btnRelatorio").click(function(){
-		var data1 = $('#dt_inicial').val().split('/'),
-			data2 = $('#dt_final').val().split('/');
-		
-		data1 = Number(data1[2] + data1[1] + data1[0]);
-		data2 = Number(data2[2] + data2[1] + data2[0]);
-		
-		if (data1 > data2) {
-			$.dialog({title:'Alerta...', text:'A data inicial não pode ser maior que a final.'});
-			return false;
-		}
-		
-		document.location = '?p=' + pagina.replace('.php', '') + '&dt_inicial=' + $("#dt_inicial").val() + '&dt_final='+ $("#dt_final").val();
-	});
-	
-	$('.excell').click(function(e) {
-		e.preventDefault();
-		
-		document.location = 'xls<?php echo ucfirst($pagina); ?>?' + $.serializeUrlVars();
-	});
-});
-</script>
 <style type="text/css">
-#paginacao{
-	width: 100%;
-	text-align: center;
-	margin-top: 10px;	
+.moeda {
+	mso-number-format:"_\(\[$R$ -416\]* \#\,\#\#0\.00_\)\;_\(\[$R$ -416\]* \\\(\#\,\#\#0\.00\\\)\;_\(\[$R$ -416\]* \0022-\0022??_\)\;_\(\@_\)";
 }
 .number {
 	text-align: right;
@@ -112,18 +74,14 @@ $(function() {
 }
 </style>
 <h2>Relatório de Vendas por Local/Usuário Itaú</h2>
-
-<p style="width:1000px;">Data Inicial <input type="text" value="<?php echo (isset($_GET["dt_inicial"])) ? $_GET["dt_inicial"] : date("d/m/Y") ?>" class="datepicker" id="dt_inicial" name="dt_inicial" />
-&nbsp;&nbsp;Data Final <input type="text" class="datepicker" value="<?php echo (isset($_GET["dt_final"])) ? $_GET["dt_final"] : date("d/m/Y") ?>" id="dt_final" name="dt_final" />
-&nbsp;&nbsp;<input type="submit" class="button" id="btnRelatorio" value="Buscar" />
-<?php if(isset($result) && hasRows($result)) { ?>
-&nbsp;&nbsp;<a class="button excell" href="#">Exportar Excel</a>
-<?php } ?>
-</p>
-
-<!-- Tabela de pedidos -->
 <table class="ui-widget ui-widget-content" id="tabPedidos">
 	<thead>
+		<tr class="ui-widget-header">
+			<th>Data Inicial:</th>
+            <th><?php echo $_GET["dt_inicial"]; ?></th>
+			<th>Data Final:</th>
+			<th><?php echo $_GET["dt_final"]; ?></th>
+		</tr>
 		<tr class="ui-widget-header">
 			<th>Local</th>
             <th>Usuário</th>
@@ -198,7 +156,4 @@ $(function() {
 		?>
 	</tbody>
 </table>
-
-<?php
-}
-?>
+<?php print_r(sqlErrors()); ?>

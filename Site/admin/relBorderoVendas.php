@@ -382,6 +382,48 @@ end function
                     
                 </table>
                 <br>
+                <table width=656 class="tabela" border="0" bgcolor="LightGrey" cellspacing="0">
+                    <tr>
+                        <td align="center" colspan="4"><font size=2 face="tahoma,verdana,arial"><B>ESTATÍSTICA POR PONTO DE VENDA</B></font></td>
+                    </tr>
+                    <tr>	
+                        <td	align="left" width="162" class="titulogrid">Ponto de Venda</td>
+                        <td	align="right" width="162" class="titulogrid">Qtde Ingressos</td>
+                        <td	align="right" width="162" class="titulogrid">Total</td>
+                        <td	align="right" width="163" class="titulogrid">% do Total de Ingressos</td>
+                    </tr>					
+            		<?php
+						$strSqlDet = "SP_REL_BORDERO_VENDAS;8 '". $DataIni ."','". $DataFim ."',". $CodPeca .",". $CodSala .",'". $HorSessao ."','".$_SESSION["NomeBase"]."'";
+						$queryDet2 = executeSQL($connGeral, $strSqlDet);
+						$nQt = 0;
+						$nBrutoTot = 0;
+						$cont = 0;
+						if($totPublico == 0)
+							$totPublico = 1;
+						
+						while($pRSDet = fetchResult($queryDet2)){						
+					?>
+                            <tr>
+                                <td	align=left  class=texto><?php echo $pRSDet["Venda"]; ?></td>
+                                <td	align=right  class=texto><?php echo $pRSDet["Quant"]; ?></td>
+                                <td	align=right class=texto>R$&nbsp;<?php echo number_format($pRSDet["Total"], 2, ",", "."); ?></td>
+                                <td	align=right class=texto><?php echo number_format(($pRSDet["Quant"] / $totPagantes) * 100, 2, ",", "."); ?>%</td>
+                            </tr>
+            		<?php
+							$nQt = $nQt + $pRSDet["Quant"];
+							$nBrutoTot = $nBrutoTot + $pRSDet["Total"];
+							$cont = $cont + number_format(($pRSDet["Quant"] / $totPagantes ) * 100, 2);
+						}
+					?>
+                    <tr>
+                        <td bgcolor="LightGrey" align="left" class="label"><b>TOTAL DE VENDAS</b></td>
+                        <td bgcolor="LightGrey" align="right" class="label"><b><?php echo $nQt; ?></b></td>
+                        <td bgcolor="LightGrey" align="right" class="label"><b>R$&nbsp;&nbsp;<?php echo number_format($nBrutoTot, 2, ",", "."); ?></b></td>
+                        <td bgcolor="LightGrey" align="right" class="label"><b><?php echo number_format($cont, 0); ?>%</b></td>
+                    </tr>		
+                    
+                </table>
+                <br>
                 <br>
                 <table width="656" border=0>
                     <tr>

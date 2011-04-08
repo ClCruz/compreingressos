@@ -10,7 +10,7 @@ require_once('../settings/Paginator.php');
 $pagina = basename(__FILE__);
 
 if(isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["local"]) && isset($_GET["evento"])
-	and acessoPermitidoEvento($_GET["local"], $_SESSION['admin'], $_GET["evento"], true)){
+	and acessoPermitidoEvento($_GET["local"], $_SESSION['admin'], $_GET["evento"])){
 
 	$conn = getConnection($_GET["local"]);
 	

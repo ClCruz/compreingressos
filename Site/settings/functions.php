@@ -786,7 +786,7 @@ function acessoPermitidoEvento($idBase, $idUser, $codPeca, $die = false) {
 	
 	$hasRows = hasRows($result);
 	
-	if (!$hasRows) echo '<h2>Acesso Negado!</h2>';
+	//if (!$hasRows) echo '<h2>Acesso Negado!</h2>';
 	
 	if ($die and !$hasRows) die();
 	

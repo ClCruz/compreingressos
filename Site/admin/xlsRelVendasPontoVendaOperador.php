@@ -61,7 +61,7 @@ if(isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["local"
 	font-weight: bold;
 }
 </style>
-<h2>Relatório de Vendas por Ponto de Venda e Operador</h2>
+<h2>Relatório Canais de Venda (Por Data de Venda)</h2>
 <table class="ui-widget ui-widget-content" id="tabPedidos">
 	<thead>
 		<tr class="ui-widget-header">

@@ -73,7 +73,7 @@ if(isset($_GET["dt_inicial"]) && isset($_GET["dt_final"])){
 	font-weight: bold;
 }
 </style>
-<h2>Relatório de Vendas por Local/Usuário Itaú</h2>
+<h2>Relatório SISBIN (Lançamentos)</h2>
 <table class="ui-widget ui-widget-content" id="tabPedidos">
 	<thead>
 		<tr class="ui-widget-header">

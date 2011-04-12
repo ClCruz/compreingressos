@@ -109,8 +109,8 @@ $(function() {
 </style>
 <h2>Relatório de Vendas por Ponto de Venda e Operador</h2>
 
-<p style="width:1000px;">Data Inicial <input type="text" value="<?php echo (isset($_GET["dt_inicial"])) ? $_GET["dt_inicial"] : date("d/m/Y") ?>" class="datepicker" id="dt_inicial" name="dt_inicial" />
-&nbsp;&nbsp;Data Final <input type="text" class="datepicker" value="<?php echo (isset($_GET["dt_final"])) ? $_GET["dt_final"] : date("d/m/Y") ?>" id="dt_final" name="dt_final" />
+<p style="width:1000px;">Data Inicial da Venda <input type="text" value="<?php echo (isset($_GET["dt_inicial"])) ? $_GET["dt_inicial"] : date("d/m/Y") ?>" class="datepicker" id="dt_inicial" name="dt_inicial" />
+&nbsp;&nbsp;Data Final da Venda <input type="text" class="datepicker" value="<?php echo (isset($_GET["dt_final"])) ? $_GET["dt_final"] : date("d/m/Y") ?>" id="dt_final" name="dt_final" />
 &nbsp;&nbsp;<?php echo comboTeatroPorUsuario('local', $_SESSION['admin'], $_GET['local']); ?>
 &nbsp;&nbsp;<?php echo comboEventoPorUsuario('evento', $_GET['local'], $_SESSION['admin'], $_GET['evento']); ?>
 &nbsp;&nbsp;<input type="submit" class="button" id="btnRelatorio" value="Buscar" />
@@ -124,7 +124,7 @@ $(function() {
 	<thead>
 		<tr class="ui-widget-header">
 			<th>Canal de venda</th>
-            <th>Ponto de Venda</th>
+            <th>Nome do Ponto de Venda (Descrição)</th>
 			<th>Operador</th>
 			<th>Tipo de Ingresso</th>
 			<th>Quantidade de Ingressos</th>

@@ -143,7 +143,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 28, true)) {
             });
         </script>
 
-        <h2>Municípios</h2>
+        <h2>Municípios (para BI)</h2>
         <form id="dados" name="dados" method="post">
             <p style="width:200px;"><?php echo comboEstado("idestado", $_GET["idestado"], true) ?></p>
 

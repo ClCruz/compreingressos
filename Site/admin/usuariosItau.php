@@ -154,7 +154,7 @@ $(function() {
 	}
 });
 </script>
-<h2>Usu&aacute;rios Itau</h2>
+<h2>SISBIN x Usuários</h2>
 <form id="dados" name="dados" method="post">
 	<table class="ui-widget ui-widget-content">
 		<thead>

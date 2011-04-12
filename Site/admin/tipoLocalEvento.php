@@ -118,7 +118,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 27, true)) {
             });
         </script>
 
-        <h2>Tipos do Local do Evento</h2>
+        <h2>Tipos do Local do Evento (para BI)</h2>
         <form id="dados" name="dados" method="post">
             <table class="ui-widget ui-widget-content">
                 <thead>

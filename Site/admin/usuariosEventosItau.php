@@ -224,7 +224,7 @@ function validar(){
 		padding-top: 5px;
 	}
 </style>
-<h2>Usuários x Eventos (Itaú)</h2>
+<h2>SISBIN x Permissões x Bases x Eventos</h2>
 <form id="dados" name="dados" action="?p=programaUsuarioEventos" method="post" style="text-align: left;">
 	<select name="usuario" id="usuario">
     <option value="vazio">Escolha o usuário</option>

@@ -113,7 +113,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 29, true)) {
                 }
             });
         </script>
-        <h2>Local do Evento</h2>
+        <h2>Local do Evento (para BI)</h2>
         <form id="dados" name="dados" method="post">
             <table class="ui-widget ui-widget-content">
                 <thead>

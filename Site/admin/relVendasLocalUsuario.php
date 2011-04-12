@@ -111,7 +111,7 @@ $(function() {
 	font-weight: bold;
 }
 </style>
-<h2>Relatório de Vendas por Local/Usuário Itaú</h2>
+<h2>Relatório SISBIN (Lançamentos)</h2>
 
 <p style="width:1000px;">Data Inicial <input type="text" value="<?php echo (isset($_GET["dt_inicial"])) ? $_GET["dt_inicial"] : date("d/m/Y") ?>" class="datepicker" id="dt_inicial" name="dt_inicial" />
 &nbsp;&nbsp;Data Final <input type="text" class="datepicker" value="<?php echo (isset($_GET["dt_final"])) ? $_GET["dt_final"] : date("d/m/Y") ?>" id="dt_final" name="dt_final" />

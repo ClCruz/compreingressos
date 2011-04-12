@@ -40,7 +40,9 @@ if (isset($_POST['codigo_pedido'])) {
 						 C.CD_RG,
 						 PV.CD_BIN_CARTAO,
 						 R.ID_SESSION,
-						 R.CD_BINITAU
+						 R.CD_BINITAU,
+						 PV.ID_USUARIO_CALLCENTER,
+						 PV.IN_RETIRA_ENTREGA
 						 FROM MW_CLIENTE C
 						 INNER JOIN MW_PEDIDO_VENDA PV ON PV.ID_CLIENTE = C.ID_CLIENTE
 						 INNER JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
@@ -64,22 +66,16 @@ if (isset($_POST['codigo_pedido'])) {
 			$retornoProcedure = '';
 			
 			// Definir se cliente busca ingresso
-			if (isset($_SESSION["operador"])){
-				//buscar ingresso
-				if (isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] == -1)
-					$caixa = 254;
+			if ($dados["ID_USUARIO_CALLCENTER"])){
 				//receber ingresso
-				else if (isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] != -1)
+				if ($dados["IN_RETIRA_ENTREGA"] != 'R')
 					$caixa = 252;
 				//buscar ingresso
 				else
 					$caixa = 254;				
 			} else {
-				//buscar ingresso
-				if (isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] == -1)
-					$caixa = 255;
 				//receber ingresso
-				else if (isset($_COOKIE["entrega"]) && $_COOKIE["entrega"] != -1)
+				if ($dados["IN_RETIRA_ENTREGA"] != 'R')
 					$caixa = 253;
 				//buscar ingresso
 				else

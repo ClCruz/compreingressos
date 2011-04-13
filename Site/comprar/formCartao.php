@@ -9,6 +9,25 @@ if ($_POST) {
 	}
 } else {
 ?>
+<script>
+$(function(){
+	$('.number').onlyNumbers();
+	
+	$('#dadosPagamento').submit(function(e) {
+		var valido = true;
+		
+		$('.number, select').each(function(i,e) {
+			var e = $(e);
+			if (e.val().length < e.attr('maxlength') || e.val() == '') {
+				e.css({'border-color':'#F55'});
+				valido = false;
+			} else e.css({'border-color':'#DDD'});
+		});
+		
+		return valido;
+	});
+});
+</script>
 <br/>
 <h3>Dados do pagamento:</h3>
  <form id="dadosPagamento" method="post">
@@ -22,14 +41,14 @@ if ($_POST) {
 	</p>
 	
 	<p>N&uacute;mero do cart&atilde;o:<br/>
-		<input name="numCartao[]" maxlength="4" size="4"/>&nbsp;
-		<input name="numCartao[]" maxlength="4" size="4"/>&nbsp;
-		<input name="numCartao[]" maxlength="4" size="4"/>&nbsp;
-		<input name="numCartao[]" maxlength="4" size="4"/>
+		<input name="numCartao[]" maxlength="4" size="4" class="number"/>&nbsp;
+		<input name="numCartao[]" maxlength="4" size="4" class="number"/>&nbsp;
+		<input name="numCartao[]" maxlength="4" size="4" class="number"/>&nbsp;
+		<input name="numCartao[]" maxlength="4" size="4" class="number"/>
 	</p>
 	
 	<p>C&oacute;digo de seguran&ccedil;a:<br/>
-		<input name="codSeguranca" maxlength="3" size="3"/>
+		<input name="codSeguranca" maxlength="3" size="3" class="number"/>
 	</p>
 	
 	<p>Data de validade do cart&atilde;o:<br/>

@@ -29,6 +29,13 @@ if(isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["local"
 				inner join tabapresentacao a on l.codapresentacao = a.codapresentacao
 				where a.codpeca = ?
 					and l.datvenda between convert(datetime, ? + ' 00:00:00', 103) and convert(datetime, ? + ' 23:59:59', 103)
+					and not exists (select 1
+									from tablancamento l2
+									where l2.numlancamento = l.numlancamento
+										and l2.codtipbilhete = l.codtipbilhete
+										and l2.codapresentacao = l.codapresentacao
+										and l2.indice = l.indice
+										and l2.codtiplancamento = 2)
 				group by
 					cv.ds_canal_venda,
 					c.descrcaixa,

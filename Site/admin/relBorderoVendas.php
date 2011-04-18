@@ -251,7 +251,7 @@ end function
 								while($pRSDetalhamento = fetchResult($queryDet)){
                         ?>
                                     <tr>
-                                        <td	align=left  class=texto><?php echo $pRSDetalhamento["forpagto"]; ?></td>
+                                        <td	align=left  class=texto><?php echo utf8_encode($pRSDetalhamento["forpagto"]); ?></td>
                                         <td	align=right class=texto><?php echo $pRSDetalhamento["qtdBilh"]; ?></td>
                                         <td	align=right class=texto>R$&nbsp;<?php echo number_format($pRSDetalhamento["totfat"], 2, ",", "."); ?></td>
                                         <td	align=right class=texto>R$&nbsp;<?php echo number_format($pRSDetalhamento["Descontos"], 2, ",", "."); ?></td>
@@ -362,7 +362,7 @@ end function
 						while($pRSDet = fetchResult($queryDet2)){						
 					?>
                             <tr>
-                                <td	align=left  class=texto><?php echo $pRSDet["Venda"]; ?></td>
+                                <td	align=left  class=texto><?php echo utf8_encode($pRSDet["Venda"]); ?></td>
                                 <td	align=right  class=texto><?php echo $pRSDet["Quant"]; ?></td>
                                 <td	align=right class=texto>R$&nbsp;<?php echo number_format($pRSDet["Total"], 2, ",", "."); ?></td>
                                 <td	align=right class=texto><?php echo number_format(($pRSDet["Quant"] / $totPagantes) * 100, 2, ",", "."); ?>%</td>
@@ -404,7 +404,7 @@ end function
 						while($pRSDet = fetchResult($queryDet2)){						
 					?>
                             <tr>
-                                <td	align=left  class=texto><?php echo $pRSDet["Venda"]; ?></td>
+                                <td	align=left  class=texto><?php echo utf8_encode($pRSDet["Venda"]); ?></td>
                                 <td	align=right  class=texto><?php echo $pRSDet["Quant"]; ?></td>
                                 <td	align=right class=texto>R$&nbsp;<?php echo number_format($pRSDet["Total"], 2, ",", "."); ?></td>
                                 <td	align=right class=texto><?php echo number_format(($pRSDet["Quant"] / $totPagantes) * 100, 2, ",", "."); ?>%</td>

@@ -18,7 +18,9 @@ $(document).ready(function(){
 });
 //DataBase, Tipo, Procedure
 function ExibePeca(NmDB, Tipo, Procedure)
-{	
+{
+	//limpar();
+	
 	if (NmDB != "")
 	{	
 		switch(Tipo)
@@ -75,6 +77,7 @@ function PreencheDescricao(){
 				success: function(data){
 					$('#cboApresentacao').html(data);	
 					CarregaHorario();
+					document.fPeca.cboSala.value = "";
 				}
 			});
 		};
@@ -260,7 +263,7 @@ function PreencheDescricao(){
 				<tr>
 					<td><strong>Teatro:</strong><br>
 						<?php
-							$funcJavascript  = 'onChange="ExibePeca(this.value, \'Peca\', \'SP_PEC_CON009;1\', '. $_SESSION["admin"] .' );PreencheDescricao()"';
+							$funcJavascript  = 'onChange="ExibePeca(this.value, \'Peca\', \'SP_PEC_CON009;5\');PreencheDescricao()"';
 						 	echo comboTeatro("cboTeatro", "", $funcJavascript); 
 						 ?>
 					</td>

@@ -19,7 +19,7 @@ function mostraDataSimple($vData){
 
 function buscarDatas(){
 	$CodPeca = ($_REQUEST["CodPeca"] == "") ? "null" : $_REQUEST["CodPeca"];
-	$gSQL =	$_SESSION["NomeBase"]."..SP_PEC_CON009;2 'Emerson', ".$CodPeca;
+	$gSQL =	$_SESSION["NomeBase"]."..SP_PEC_CON009;6 ".$_SESSION["admin"].", ".$_SESSION["IdBase"].", ".$CodPeca;
 	$conn = getConnection($_SESSION["IdBase"]);
 	$rsGeral = executeSQL($conn, $gSQL);
 	if(!sqlErrors()){
@@ -42,7 +42,7 @@ function buscarDatas(){
 function buscarHorarios(){
 	$CodPeca = ($_REQUEST["CodPeca"] == "") ? "null" :  $_REQUEST["CodPeca"];
 	$DatApresentacao = ($_REQUEST["DatApresentacao"] == "") ? "null" : $_REQUEST["DatApresentacao"];
-	$gSQL = $_SESSION["NomeBase"]."..SP_PEC_CON009;3 'Emerson', ". $CodPeca .", ". $DatApresentacao;
+	$gSQL = $_SESSION["NomeBase"]."..SP_PEC_CON009;7 ".$_SESSION["admin"].", ".$_SESSION["IdBase"].", ". $CodPeca .", ". $DatApresentacao;
 	$conn = getConnection($_SESSION["IdBase"]);	
 	$rsGeral = executeSQL($conn, $gSQL);
 	if(!sqlErrors()){
@@ -86,7 +86,7 @@ if($_POST["NomeBase"] != "" && $_POST["Proc"] != "" && !isset($_REQUEST["Acao"])
 	$strQuery = "SELECT DS_NOME_BASE_SQL FROM MW_BASE WHERE ID_BASE = ".$_POST["NomeBase"];
 	if( $stmt = executeSQL($mainConnection, $strQuery, array(), true) ){
 		$conn = getConnection($_POST["NomeBase"]);
-		$query = "EXEC ". $stmt["DS_NOME_BASE_SQL"] ."..". $_POST['Proc'] ." 'Emerson'";
+		$query = "EXEC ". $stmt["DS_NOME_BASE_SQL"] ."..". $_POST['Proc'] ." ". $_SESSION['admin'] .", ". $_POST["NomeBase"];
 		if(	$result = executeSQL($conn, $query) ){
 			// Cria sessao com nome da base utilizada
 			$_SESSION["IdBase"] = $_POST["NomeBase"];

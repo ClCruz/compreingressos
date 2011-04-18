@@ -199,7 +199,7 @@ end function
 							if($Resumido == "0"){
 					?>
                                 <tr>
-                                    <td	align=left  class=texto><?php echo $pRSBilhete["TipBilhete"]; ?></td>
+                                    <td	align=left  class=texto><?php echo utf8_encode($pRSBilhete["TipBilhete"]); ?></td>
                                     <td	align=right  class=texto><?php echo $pRSBilhete["Qtde"]; ?></td>
                                     <td	align=left class=texto><?php echo utf8_encode($pRSBilhete["NomSetor"]); ?></td>
                                     <td	align=right class=texto>R$&nbsp;<?php echo number_format($pRSBilhete["Preco"], 2, ",", "."); ?></td>

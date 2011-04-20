@@ -75,12 +75,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 32, true)) {
 
 					tr.find('td:not(.button):eq(0)').html('<input name="dia" type="text" class="inputStyle datePicker" id="dia" maxlength="10" value="' + values[0] + '" readonly />');
 					tr.find('td:not(.button):eq(1)').html('<?php echo comboPaginas('pagina', $_GET['pagina']); ?>');
-					tr.find('td:not(.button):eq(2)').html('<input name="acessos" type="text" class="inputStyle" id="acessos" value="' + values[2] + '" />');
+					tr.find('td:not(.button):eq(2)').html('<input name="acessos" type="text" class="inputStyle" id="acessos" value="' + values[2].replace(/\./g, '') + '" maxlength="9" />');
 					$('#pagina').find('option').filter(function(){return $(this).text() == values[1];}).attr('selected', 'selected');
 					$this.text('Salvar').attr('href', pagina + '?action=update&' + id);
 
 					setDatePickers();
-					$(".datePicker").datepicker("option", "minDate", '');
+					setDatePickers2();
+					$('#dia').val(values[0]);
 				} else if (href == '#delete') {
 					tr.remove();
 				} else if (href.indexOf('?action=delete') != -1) {
@@ -109,17 +110,19 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 32, true)) {
 				event.preventDefault();
 
 				if(!hasNewLine()) return false;
+				
+				if(!validateFields()) return false;
 
 				var newLine = '<tr id="newLine">' +
 					'<td><input name="dia" type="text" class="inputStyle datePicker" id="dia" maxlength="10" readonly /></td>' +
 					'<td>' + '<?php echo comboPaginas('pagina', $_GET['pagina']); ?>' + '</td>' +
-					'<td align="right"><input name="acessos" type="text" class="inputStyle" id="acessos" /></td>' +
+					'<td align="right"><input name="acessos" type="text" class="inputStyle" id="acessos" maxlength="9" /></td>' +
 					'<td class="button"><a href="' + pagina + '?action=add">Salvar</a></td>' +
 					'<td class="button"><a href="#delete">Apagar</a></td>' +
 					'</tr>';
 				$('#app table tbody tr.total').before(newLine);
 				setDatePickers();
-				$(".datePicker").datepicker("option", "minDate", '');
+				setDatePickers2();
             });
 			
 			$('#btnRelatorio').click(function() {
@@ -127,11 +130,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 32, true)) {
 			});
 			
 			function validateFields() {
-				var campos = $(':input:not(button)'),
+				var campos = $(':input:not(button, .button)'),
 				valido = true;
 				
-				$.each(campos, function() {
-					var $this = $(this);                        
+				$.each(campos, function(i, e) {
+					var $this = $(e);
 
 					if ($this.val() == '') {
 						$this.parent().addClass('ui-state-error');
@@ -143,6 +146,18 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 32, true)) {
 				return valido;
 			}
         });
+		function setDatePickers2() {
+			var minDate = new Date($('#ano').val(), $('#mes').val()-1, 1),
+				maxDate = new Date($('#ano').val(), $('#mes').val(), 0);
+			
+			$(".datePicker").datepicker("option", "minDate", minDate)
+							.datepicker("option", "maxDate", maxDate)
+							.datepicker("option", "changeMonth", false)
+							.datepicker("option", "changeYear", false);
+			
+			$('#acessos').onlyNumbers();
+		}
+
     </script>
     <h2>Cadastro de Acessos ao Site</h2>
 <form id="dados" name="dados" method="post">
@@ -156,7 +171,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 32, true)) {
         <tr class="ui-widget-header">
             <th>Dia</th>
             <th>Página</th>
-            <th	align="right">Acessos</th>
+            <th	align="right" style="text-align: right;">Acessos</th>
             <th colspan="2">Ações</th>
         </tr>
     </thead>
@@ -172,7 +187,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 32, true)) {
                 <tr>
                     <td><?php echo $dia; ?></td>
                     <td><?php echo utf8_encode($rs["DS_PAGINA"]); ?></td>
-                    <td align="right"><?php echo $rs["QT_ACESSO"]; ?></td>
+                    <td align="right"><?php echo number_format($rs["QT_ACESSO"], 0, ',', '.'); ?></td>
                     <td class="button"><a href="<?php echo $pagina; ?>?action=edit&<?php echo $id; ?>">Editar</a></td>
                     <td class="button"><a href="<?php echo $pagina; ?>?action=delete&<?php echo $id; ?>">Apagar</a></td>
                 </tr>
@@ -182,7 +197,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 32, true)) {
         ?>
         <tr class="total">
             <td align="right" colspan="2" style="font-weight: bold;">Total</td>
-            <td align="right" width="104" style="font-weight: bold;"><?php echo $totalAcessos; ?></td>
+            <td align="right" width="104" style="font-weight: bold;"><?php echo number_format($totalAcessos, 0, ',', '.'); ?></td>
 			<td class="button" colspan="2">&nbsp;</td>
         </tr>
     </tbody>

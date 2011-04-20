@@ -1,92 +1,196 @@
 <?php
 require_once('../settings/functions.php');
 $mainConnection = mainConnection();
+$conn = getConnectionDw();
 session_start();
 
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 32, true)) {
+    $pagina = basename(__FILE__);
+
+    if (isset($_GET['action'])) {
+
+        require('actions/' . $pagina);
+		
+    } else {
+	
+		$query = "SELECT A.ID_DIA, A.ID_PAGINA, A.QT_ACESSO, P.DS_PAGINA
+					FROM FATO_ACESSO_SITE A
+					INNER JOIN DIM_PAGINA P ON A.ID_PAGINA = P.ID_PAGINA
+					WHERE A.ID_DIA LIKE ? + '__'
+					ORDER BY ID_DIA";
+		$params = array($_GET['ano'].$_GET['mes']);
+		$result = executeSQL($conn, $query, $params);
+	
 ?>
     <script type="text/javascript" src="../javascripts/jquery.ui.datepicker-pt-BR.js"></script>
     <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
     <script type="text/javascript" language="javascript">
         $(function() {
             var pagina = '<?php echo $pagina; ?>'
-            $('.button').button();
-            $(".datepicker").datepicker();
+            $('input.button, a.button').button();
+			
+			$('#app table').delegate('a', 'click', function(event) {
+				event.preventDefault();
 
-            $('#btnNovo').click(function(){
-                $.dialog({
-                    text: 'teste'
+				var $this = $(this),
+				href = $this.attr('href'),
+				id = 'dia=' + $.getUrlVar('dia', href) + '&pagina=' + $.getUrlVar('pagina', href),
+				tr = $this.closest('tr');
 
-                })
-            })
+				if (href.indexOf('?action=add') != -1 || href.indexOf('?action=update') != -1) {
+					if (!validateFields()) return false;
+
+					$.ajax({
+						url: href,
+						type: 'post',
+						data: $('#dados').serialize(),
+						success: function(data) {
+							if (trim(data).substr(0, 4) == 'true') {
+								var id = $.serializeUrlVars(data);
+
+								tr.find('td:not(.button):eq(0)').html($('#dia').val());
+								tr.find('td:not(.button):eq(1)').html($('#pagina option:selected').text());
+								tr.find('td:not(.button):eq(2)').html($('#acessos').val());
+
+								$this.text('Editar').attr('href', pagina + '?action=edit&' + id);
+								tr.find('td.button a:last').attr('href', pagina + '?action=delete&' + id);
+								tr.removeAttr('id');
+								
+								$('#btnRelatorio').click();
+							} else {
+								$.dialog({text: data});
+							}
+						}
+					});
+				} else if (href.indexOf('?action=edit') != -1) {
+					if(!hasNewLine()) return false;
+
+					var values = new Array();
+
+					tr.attr('id', 'newLine');
+
+					$.each(tr.find('td:not(.button)'), function() {
+						values.push($(this).text());
+					});
+
+					tr.find('td:not(.button):eq(0)').html('<input name="dia" type="text" class="inputStyle datePicker" id="dia" maxlength="10" value="' + values[0] + '" readonly />');
+					tr.find('td:not(.button):eq(1)').html('<?php echo comboPaginas('pagina', $_GET['pagina']); ?>');
+					tr.find('td:not(.button):eq(2)').html('<input name="acessos" type="text" class="inputStyle" id="acessos" value="' + values[2] + '" />');
+					$('#pagina').find('option').filter(function(){return $(this).text() == values[1];}).attr('selected', 'selected');
+					$this.text('Salvar').attr('href', pagina + '?action=update&' + id);
+
+					setDatePickers();
+					$(".datePicker").datepicker("option", "minDate", '');
+				} else if (href == '#delete') {
+					tr.remove();
+				} else if (href.indexOf('?action=delete') != -1) {
+					$.confirmDialog({
+						text: 'Tem certeza que deseja apagar este registro?',
+						uiOptions: {
+							buttons: {
+								'Sim': function() {
+									$(this).dialog('close');
+									$.get(href, function(data) {
+										if (data.replace(/^\s*/, "").replace(/\s*$/, "") == 'true') {
+											tr.remove();
+											$('#btnRelatorio').click();
+										} else {
+											$.dialog({text: data});
+										}
+									});
+								}
+							}
+						}
+					});
+				}
+			});
+
+            $('#new').click(function(event){
+				event.preventDefault();
+
+				if(!hasNewLine()) return false;
+
+				var newLine = '<tr id="newLine">' +
+					'<td><input name="dia" type="text" class="inputStyle datePicker" id="dia" maxlength="10" readonly /></td>' +
+					'<td>' + '<?php echo comboPaginas('pagina', $_GET['pagina']); ?>' + '</td>' +
+					'<td align="right"><input name="acessos" type="text" class="inputStyle" id="acessos" /></td>' +
+					'<td class="button"><a href="' + pagina + '?action=add">Salvar</a></td>' +
+					'<td class="button"><a href="#delete">Apagar</a></td>' +
+					'</tr>';
+				$('#app table tbody tr.total').before(newLine);
+				setDatePickers();
+				$(".datePicker").datepicker("option", "minDate", '');
+            });
+			
+			$('#btnRelatorio').click(function() {
+				document.location = '?p='+pagina.replace('.php', '')+'&ano='+$('#ano').val()+'&mes='+$('#mes').val();
+			});
+			
+			function validateFields() {
+				var campos = $(':input:not(button)'),
+				valido = true;
+				
+				$.each(campos, function() {
+					var $this = $(this);                        
+
+					if ($this.val() == '') {
+						$this.parent().addClass('ui-state-error');
+						valido = false;
+					} else {
+						$this.parent().removeClass('ui-state-error');
+					}
+				});
+				return valido;
+			}
         });
     </script>
-    <style type="text/css">
-        #paginacao{
-            width: 100%;
-            text-align: center;
-            margin-top: 10px;
-        }
-        .tableData{
-            width: 600px !important;
-        }
-    </style>
     <h2>Cadastro de Acessos ao Site</h2>
-    <p style="width:1150px;">
-        Ano&nbsp;<select name="ano">
-        <?php
-        $param = 2010 + 10;
-        $ano = date("Y");
-        ?>
-        <?php
-        for ($i = 2000; $i <= $param; $i++) {
-            $checked = "";
-            if ($i == $ano)
-                $checked = "selected=\"selecteded\"";
-        ?>
-            <option <?php echo $checked; ?> ><?php echo $i; ?></option>
-        <?php
-        }
-        ?>
-    </select>&nbsp;&nbsp;Mês&nbsp;&nbsp;<input type="text" name="mes"/>&nbsp;
-    <input type="button" class="button" id="btnRelatorio" value="Buscar" />&nbsp;
-    <input type="button" class="button" id="btnNovo" value="Novo" />
+<form id="dados" name="dados" method="post">
+<p style="width:600px;">Ano&nbsp;<?php echo comboAnos('ano', $_GET['ano'], 2010, 2020); ?>
+&nbsp;&nbsp;Mês&nbsp;&nbsp;<?php echo comboMeses('mes', $_GET['mes']); ?>&nbsp;
+<input type="button" class="button" id="btnRelatorio" value="Buscar" />&nbsp;
 </p>
 
-<table width="760" class="ui-widget ui-widget-content" >
+<table class="ui-widget ui-widget-content" >
     <thead>
         <tr class="ui-widget-header">
-            <th	align="left" width="240" class="titulogrid">Dia</th>
-            <th	align="center" width="104" class="titulogrid">Página</th>
-            <th	align="center" width="104" class="titulogrid">Qtd</th>
+            <th>Dia</th>
+            <th>Página</th>
+            <th	align="right">Acessos</th>
+            <th colspan="2">Ações</th>
         </tr>
     </thead>
 
     <?php
-        $totQuantidade = 0;
-        $cont = 0;
-        $sql = "SELECT AS.ID_DIA, P.DS_PAGINA, AS.QT_ACESSO FROM FATO_ACESSO_SITE AS
-            INNER JOIN DIM_PAGINA P ON P.ID_PAGINA = AS.ID_PAGINA";
-        while ($dados = fetchResult($rs)) {
+        $totalAcessos = 0;
+        while ($rs = fetchResult($result)) {
+			$dia = $rs['ID_DIA'];
+			$id = 'dia='.$dia.'&pagina='.$rs['ID_PAGINA'];
+			$dia = substr($rs['ID_DIA'], -2).'/'.substr($rs['ID_DIA'], 4, 2).'/'.substr($rs['ID_DIA'], 0, 4);
     ?>
             <tbody>
                 <tr>
-                    <td align="left"  class="texto"><?php echo $dados["DATAPRESENTACAO"]; ?></td>
-                    <td align="center"  class="texto"><?php echo $dados["HORSESSAO"]; ?></td>
-                    <td align="center" class="texto"><?php echo $dados["QTD"]; ?></td>
+                    <td><?php echo $dia; ?></td>
+                    <td><?php echo utf8_encode($rs["DS_PAGINA"]); ?></td>
+                    <td align="right"><?php echo $rs["QT_ACESSO"]; ?></td>
+                    <td class="button"><a href="<?php echo $pagina; ?>?action=edit&<?php echo $id; ?>">Editar</a></td>
+                    <td class="button"><a href="<?php echo $pagina; ?>?action=delete&<?php echo $id; ?>">Apagar</a></td>
                 </tr>
         <?php
-            $totQuantidade += $dados["QTD"];
+            $totalAcessos += $rs["QT_ACESSO"];
         }
         ?>
-        <tr>
-            <td align="left" colspan="4" class="titulogrid">Quantidade Total</td>
-            <td align="center" width="104" class="texto"><?php echo $totQuantidade; ?></td>
+        <tr class="total">
+            <td align="right" colspan="2" style="font-weight: bold;">Total</td>
+            <td align="right" width="104" style="font-weight: bold;"><?php echo $totalAcessos; ?></td>
+			<td class="button" colspan="2">&nbsp;</td>
         </tr>
     </tbody>
-</table><br>
+</table>
+<a id="new" class="button" href="#new">Novo</a>
+</form>
+
 <?php
+        }
     }
-    if (sqlErrors ())
-        print_r(sqlErrors());
 ?>

@@ -669,6 +669,54 @@ function comboTeatroPorUsuario($name, $usuario, $selected) {
 	return $combo;
 }
 
+function comboMeses($name, $selected, $number = false) {
+	$meses = array(
+		'01' => 'Janeiro',
+		'02' => 'Fevereiro',
+		'03' => 'Março',
+		'04' => 'Abril',
+		'05' => 'Maio',
+		'06' => 'Julho',
+		'07' => 'Julho',
+		'08' => 'Agosto',
+		'09' => 'Setembro',
+		'10' => 'Outubro',
+		'11' => 'Novembro',
+		'12' => 'Dezembro'
+	);
+	
+	$combo = '<select name="'.$name.'" class="inputStyle" id="'.$name.'"><option value="">Selecione um m&ecirc;s...</option>';
+	foreach ($meses as $key => $val) {
+		$combo .= '<option value="'.$key.'"'.(($selected == $key) ? ' selected' : '').'>'.(($number) ? $key : $val).'</option>';
+	}
+	$combo .= '</select>';
+	
+	return $combo;
+}
+
+function comboAnos($name, $selected, $inicial = 0, $final = 0) {
+	$combo = '<select name="'.$name.'" class="inputStyle" id="'.$name.'"><option value="">Selecione um ano...</option>';
+	for ($i = $inicial; $i <= $final; $i++) {
+		$combo .= '<option value="'.$i.'"'.(($selected == $i) ? ' selected' : '').'>'.$i.'</option>';
+	}
+	$combo .= '</select>';
+	
+	return $combo;
+}
+
+function comboPaginas($name, $selected) {
+	$conn = getConnectionDw();
+	$result = executeSQL($conn, "SELECT ID_PAGINA, DS_PAGINA FROM DIM_PAGINA ORDER BY 2", array());
+	
+	$combo = '<select name="'.$name.'" class="inputStyle" id="'.$name.'"><option value="">Selecione uma p&aacute;gina...</option>';
+	while ($rs = fetchResult($result)) {
+		$combo .= '<option value="'.$rs['ID_PAGINA'].'"'.(($selected == $rs['ID_PAGINA']) ? ' selected' : '').'>'.utf8_encode($rs['DS_PAGINA']).'</option>';
+	}
+	$combo .= '</select>';
+	
+	return $combo;
+}
+
 
 
 /*  OUTROS  */

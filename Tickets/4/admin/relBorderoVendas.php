@@ -335,7 +335,7 @@ echo DiaSemana($weekDay);
 			    		<td bgcolor="LightGrey" align="right" class="label" valign="top"><b>R$&nbsp;&nbsp;&nbsp;<?php echo number_format(($nTotLiqu - $nTotalDesp), 2, ",", "."); ?></b></td>
 			    	    </tr>
                                     <tr>
-                                        <td colspan="4" bgcolor="#FFFFFF" width="550"><font size=1 face="tahoma,verdana,arial">
+                                        <td colspan="4" bgcolor="#FFFFFF" width="650"><font size=1 face="tahoma,verdana,arial">
                                            O Borderô de vendas assinados pelas partes envolvidas, dará a plena  quitação dos valores pagos em dinheiro no momento do fechamento,  portanto, confira atentamente os valores recebidos em dinheiro, vales/recibos de saques e comprovantes de depósito.<br>
                                             Os valores vendidos através dos cartões de crédito e débito serão  repassados aos favorecidos de acordo com os prazos firmados  através do contrato prestação de serviços assinado pelas partes.</font>
                                         </td>

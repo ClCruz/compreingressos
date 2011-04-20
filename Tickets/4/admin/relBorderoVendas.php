@@ -139,11 +139,11 @@ echo DiaSemana($weekDay);
 ?></td>
 			</tr>
 			<tr>
-			    <td align="right"><font size=1 face="tahoma,verdana,arial"><b>Sala:</b></font></td>
+			    <td align="right"><font size=1 face="tahoma,verdana,arial"><b>Local:</b></font></td>
 			    <td align="left"><?php echo utf8_encode($pRSGeral["NomSala"]); ?></td>
 			</tr>
 			<tr>
-			    <td align="right"><font size=1 face="tahoma,verdana,arial"><b>Lotação:</b></font></td>
+			    <td align="right"><font size=1 face="tahoma,verdana,arial"><b>Lotação/Capacidade:</b></font></td>
 			    <td align="left"><?php echo $pRSGeral["Lugares"]; ?></td>
 			</tr>
 		    </table>
@@ -222,7 +222,7 @@ echo DiaSemana($weekDay);
 <?php ob_start(); ?>
 					<table width="656" class="tabela" border="0" bgcolor="LightGrey">
 					    <tr>
-						<td align="center" colspan="5"><font size=2 face="tahoma,verdana,arial"><B>3 - DETALHAMENTO FORMA DE PAGAMENTO</B></font></td>
+						<td align="center" colspan="5"><font size=2 face="tahoma,verdana,arial"><B>3 - DETALHAMENTO POR FORMA DE PAGAMENTO</B></font></td>
 					    </tr>
 					    <tr>
 						<td	align="left" width="240" class="titulogrid">Tipo de Forma de Pagamento</td>
@@ -301,7 +301,7 @@ echo DiaSemana($weekDay);
 					//$nTotalDesp += $taxaDosCartoes;
 ?>
 				    <tr>
-					<td	align=left  class=texto>TAXA DOS CARTÕES</td>
+					<td	align=left  class=texto>TAXA DOS CARTÕES (DÉBITO E CRÉDITO)</td>
 					<td	align=right class=texto> - </td>
 					<td	align=right class=texto><?php echo number_format($taxaDosCartoes, 2, ",", "."); ?></td>
 				    </tr>
@@ -334,6 +334,12 @@ echo DiaSemana($weekDay);
 			    		</td>
 			    		<td bgcolor="LightGrey" align="right" class="label" valign="top"><b>R$&nbsp;&nbsp;&nbsp;<?php echo number_format(($nTotLiqu - $nTotalDesp), 2, ",", "."); ?></b></td>
 			    	    </tr>
+                                    <tr>
+                                        <td colspan="4" bgcolor="#FFFFFF" width="550"><font size=1 face="tahoma,verdana,arial">
+                                           O Borderô de vendas assinados pelas partes envolvidas, dará a plena  quitação dos valores pagos em dinheiro no momento do fechamento,  portanto, confira atentamente os valores recebidos em dinheiro, vales/recibos de saques e comprovantes de depósito.<br>
+                                            Os valores vendidos através dos cartões de crédito e débito serão  repassados aos favorecidos de acordo com os prazos firmados  através do contrato prestação de serviços assinado pelas partes.</font>
+                                        </td>
+                                    </tr>
 			    	</table>
 				<br clear=all>
 <?php echo $table3; ?>

@@ -404,7 +404,9 @@ if (isset($retorno['codigo_erro'])) {
 		setcookie('ipagareError['.$key.']', $val, $cookieExpireTime);
 	}
 
-	executeSQL($mainConnection, 'DELETE FROM MW_RESERVA WHERE ID_SESSION = ?', array(session_id()));
+	if ($retorno['codigo_erro'] == '201') {
+	    executeSQL($mainConnection, 'DELETE FROM MW_RESERVA WHERE ID_SESSION = ?', array(session_id()));
+	}
 	
 	ob_end_clean();
 	header("Location: pagamento_cancelado.php");

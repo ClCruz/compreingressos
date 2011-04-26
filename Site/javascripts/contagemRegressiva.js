@@ -28,11 +28,11 @@ $(function() {
 	var until = $.getUrlVar('until', $("script[src*='contagemRegressiva']").attr('src'));
 	until = eval('new Date(' + until + ')');
 	$('#center_left hr').before(
-		'<p class="help_text cronometro">Voc&ecirc; tem at&eacute; &agrave;s <span id="tempoRestante">' +
+		'<p class="help_text cronometro">Seu pedido expirará em <span id="tempoRestante">' +
 		(until.getHours() < 10 ? '0' + until.getHours() : until.getHours()) + ':' +
 		(until.getMinutes() < 10 ? '0' + until.getMinutes() : until.getMinutes()) + ':' +
 		(until.getSeconds() < 10 ? '0' + until.getSeconds() : until.getSeconds()) +
-		'</span> para concluir a opera&ccedil;&atilde;o.<br>\n\
+		'</span>.<br>\n\
                 Após esse prazo seu pedido será cancelado automaticamente e os lugares liberados.</p>'
 	);
 	

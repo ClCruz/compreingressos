@@ -177,7 +177,10 @@ if (hasRows($resultIdPedidoVenda)) {
 	$newMaxId = fetchResult($resultIdPedidoVenda);
 	$newMaxId = $newMaxId['id_pedido_venda'];
 
-	$pedidoExistente = true;
+	executeSQL($mainConnection, 'DELETE FROM MW_ITEM_PEDIDO_VENDA
+				    WHERE ID_PEDIDO_VENDA = ?', array($newMaxId));
+	executeSQL($mainConnection, 'DELETE FROM MW_PEDIDO_VENDA
+				    WHERE ID_PEDIDO_VENDA = ?', array($newMaxId));
 } else {
 	$newMaxId = executeSQL($mainConnection, 'SELECT ISNULL(MAX(ID_PEDIDO_VENDA), 0) + 1 FROM MW_PEDIDO_VENDA', array(), true);
 	$newMaxId = $newMaxId[0];
@@ -188,7 +191,6 @@ if (hasRows($resultIdPedidoVenda)) {
 	$resultIdPedidoVenda = executeSQL($mainConnection, $queryIdPedidoVenda,
 				array($newMaxId, session_id()));
 
-	$pedidoExistente = false;
 	extenderTempo(11);
 }
 
@@ -250,7 +252,7 @@ $params = array($newMaxId, $_SESSION['user'], $_SESSION['operador'], ($totalIngr
 $params = array($newMaxId, $_SESSION['user'], $_SESSION['operador'], ($totalIngressos + $frete + $totalConveniencia), 'P', ($entrega ? 'E' : 'R'), $totalIngressos, $frete,
 					$totalConveniencia, ($entrega ? 'D' : 'N'), $parametros['numero_cartao']);
 }
-if ($parametros['numero_itens'] > 0 && ! $pedidoExistente) {
+if ($parametros['numero_itens'] > 0) {
 	$gravacao = executeSQL($mainConnection, $query, $params);
 }
 
@@ -269,7 +271,7 @@ $query = 'INSERT INTO MW_ITEM_PEDIDO_VENDA (
 			 )
 			 VALUES
 			 (?, ?, ?, ?, ?, ?, ?, ?, ISNULL(?, 0), ?)';
-if ($parametros['numero_itens'] > 0 && ! $pedidoExistente) {
+if ($parametros['numero_itens'] > 0) {
 	foreach($params2 as $params) {
 		$result2 = executeSQL($mainConnection, $query, $params);
 		$errors = $result2 and $errors;

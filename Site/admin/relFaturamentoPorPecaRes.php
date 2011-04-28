@@ -73,8 +73,7 @@ $pagina = basename(__FILE__);
         $var_NomePeca = $_GET["local"];
 
         // URL usada para exportar dados para excel
-        $var_url = "relFaturamentoPorPecaRes.php?dt_inicial=" . $dataInicial . "&dt_final=" . $dataFinal . "&local=" . $var_NomePeca . "&DescPeca=" . $var_DescPeca . "&eventos=" . $_GET["eventos"] . "&teatro=" . $var_Teatro;
-        print $var_url;
+        $var_url = "relFaturamentoPorPecaRes.php?dt_inicial=" . $dataInicial . "&dt_final=" . $dataFinal . "&local=" . $var_NomePeca . "&DescPeca=" . $var_DescPeca . "&eventos=" . $_GET["eventos"] . "&teatro=" . $var_Teatro;        
 
         if (isset($_GET["periodo"]) && $_GET["periodo"] == "ocorrencia") {
             $gSQL = "EXECUTE SP_REL_FAT002 '" . $dataInicial . "', '" . $dataFinal . "' ," . $codPeca;

@@ -12,7 +12,7 @@ $mainConnection = mainConnection();
 
 if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situacao"]) && isset($_GET["nm_cliente"]) && isset($_GET["cd_cpf"]) && isset($_GET["num_pedido"])) {
 
-    $where = "WHERE CONVERT(DATETIME,CONVERT(CHAR(8), PV.DT_PEDIDO_VENDA, 112)) BETWEEN CONVERT(DATETIME, ?, 103) AND CONVERT(DATETIME, ?, 103) AND PV.IN_SITUACAO = ?";
+    $where = "WHERE CONVERT(DATETIME,CONVERT(CHAR(8), PV.DT_PEDIDO_VENDA, 112)) BETWEEN CONVERT(DATETIME, '". $_GET["dt_inicial"] ."', 103) AND CONVERT(DATETIME, '". $_GET["dt_final"] ."', 103) AND PV.IN_SITUACAO = '". $_GET["situacao"] ."'";
 
     $params = array($_GET["dt_inicial"], $_GET["dt_final"], $_GET["situacao"]);
 
@@ -20,7 +20,7 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
 
     if (!empty($_GET["num_pedido"])) {
 
-        $where .= " AND PV.ID_PEDIDO_VENDA = ?";
+        $where .= " AND PV.ID_PEDIDO_VENDA = ". $_GET["num_pedido"];
 
         $params[] = $_GET["num_pedido"];
         $paramsTotal[] = $_GET["num_pedido"];
@@ -32,7 +32,7 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
         //$params[] = $_GET["nm_cliente"];
     }
     if (!empty($_GET["cd_cpf"])) {
-        $where .= " AND C.CD_CPF = ?";
+        $where .= " AND C.CD_CPF = '". $_GET["cd_cpf"] ."'";
         $join = true;
 
         $params[] = $_GET["cd_cpf"];
@@ -47,15 +47,66 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
 		  PV.VL_TOTAL_PEDIDO_VENDA,
 		  PV.IN_SITUACAO,
                   U.DS_NOME,
-                  PV.IN_RETIRA_ENTREGA
+                  PV.IN_RETIRA_ENTREGA,
+                  C.DS_DDD_TELEFONE,
+                  C.DS_TELEFONE,
+                  COUNT(1) AS QUANTIDADE
 	FROM
 		  MW_PEDIDO_VENDA PV
 		  INNER JOIN
 		  MW_CLIENTE C
 		  ON C.ID_CLIENTE = PV.ID_CLIENTE
-                  LEFT JOIN MW_USUARIO U ON U.ID_USUARIO=PV.ID_USUARIO_CALLCENTER " . $where;
+                  LEFT JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
+                  LEFT JOIN MW_USUARIO U ON U.ID_USUARIO=PV.ID_USUARIO_CALLCENTER " . $where ."
 
-    $result = executeSQL($mainConnection, $sql, $params);
+        GROUP BY
+          CONVERT(CHAR(10), PV.DT_PEDIDO_VENDA,103),
+          PV.ID_PEDIDO_VENDA,
+          C.DS_NOME,
+          DS_SOBRENOME,
+          PV.VL_TOTAL_PEDIDO_VENDA,
+          PV.IN_SITUACAO,
+          U.DS_NOME,
+          PV.IN_RETIRA_ENTREGA,
+          C.DS_DDD_TELEFONE,
+          C.DS_TELEFONE
+
+UNION ALL
+
+          SELECT
+                  (CONVERT(VARCHAR(10), PV.DT_PEDIDO_VENDA, 103) + ' - ' + CONVERT(VARCHAR(8), PV.DT_PEDIDO_VENDA, 114)) AS DT_PEDIDO_VENDA,
+                  PV.ID_PEDIDO_VENDA,
+                  C.DS_NOME AS CLIENTE,
+                  C.DS_SOBRENOME,
+                  PV.VL_TOTAL_PEDIDO_VENDA,
+                  PV.IN_SITUACAO,
+                  U.DS_NOME,
+                  PV.IN_RETIRA_ENTREGA,
+                  C.DS_DDD_TELEFONE,
+                  C.DS_TELEFONE,
+                  COUNT(1) AS QUANTIDADE
+          FROM
+                  MW_PEDIDO_VENDA PV
+                  INNER JOIN
+                  MW_CLIENTE C
+                  ON C.ID_CLIENTE = PV.ID_CLIENTE
+                  INNER JOIN MW_ITEM_PEDIDO_VENDA_HIST IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
+                  LEFT JOIN MW_USUARIO U ON U.ID_USUARIO=PV.ID_USUARIO_CALLCENTER " . $where . "
+          GROUP BY
+                  (CONVERT(VARCHAR(10), PV.DT_PEDIDO_VENDA, 103) + ' - ' + CONVERT(VARCHAR(8), PV.DT_PEDIDO_VENDA, 114)),
+                  PV.ID_PEDIDO_VENDA,
+                  C.DS_NOME,
+                  C.DS_SOBRENOME,
+                  PV.VL_TOTAL_PEDIDO_VENDA,
+                  PV.IN_SITUACAO,
+                  DT_PEDIDO_VENDA,
+                  U.DS_NOME,
+                  PV.IN_RETIRA_ENTREGA,
+                  C.DS_DDD_TELEFONE,
+                  C.DS_TELEFONE";
+
+    $result = executeSQL($mainConnection, $sql);
+
 }
 ?>
 <style type="text/css">
@@ -63,15 +114,38 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
         mso-number-format:"_\(\[$R$ -416\]* \#\,\#\#0\.00_\)\;_\(\[$R$ -416\]* \\\(\#\,\#\#0\.00\\\)\;_\(\[$R$ -416\]* \0022-\0022??_\)\;_\(\@_\)";
     }
 </style>
+<p style="width:1000px;" align="center">
+   <h2>Consulta de Pedidos</h2>
+    <?php
+        if(!empty($_GET["num_pedido"])){
+   ?>
+    <b>Pedido nº</b> <?php echo $_GET["num_pedido"]?> &nbsp;&nbsp;
+    <?php
+        }
+        if(!empty($_GET["nm_cliente"])){
+    ?>
+           <b>Nome do Cliente</b> <?php echo $_GET["nm_cliente"]?> &nbsp;&nbsp;
+    <?php
+        }
+        if(!empty($_GET["cd_cpf"])){
+    ?>
+            <b>CPF</b> <?php echo $_GET["cd_cpf"] ?> &nbsp;&nbsp;
+    <?php
+        }
+
+    ?>
+    <br/> <b>Data Inicial</b> <?php echo $_GET["dt_inicial"]?>&nbsp;&nbsp;<b>Data Final</b> <?php echo $_GET["dt_final"]?>&nbsp;&nbsp;<b>Situação</b> <?php echo comboSituacao($_GET["situacao"], false)?>
+</p>
+
 <table class="ui-widget ui-widget-content">
     <thead>
         <tr class="ui-widget-header">
-            <th>Número do Pedido</th>
+            <th>Pedido nº</th>
             <th>Operador</th>
             <th>Data</th>
-            <th>Nome</th>
-            <th>Sobrenome</th>
+            <th>Cliente e Telefone</th>
             <th>Valor total</th>
+            <th>Qtde Ingressos</th>
             <th>Situação</th>
             <th>Forma de Entrega</th>
         </tr>
@@ -94,9 +168,9 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
                         ?>
                     </td>
                     <td><?php echo $rs['DT_PEDIDO_VENDA'] ?></td>
-                    <td><?php echo utf8_encode($rs['CLIENTE']); ?></td>
-                    <td><?php echo utf8_encode($rs['DS_SOBRENOME']); ?></td>
+                    <td><?php echo utf8_encode($rs['CLIENTE'] . " " . $rs['DS_SOBRENOME']) . " / " . $rs['DS_DDD_TELEFONE'] . " " . $rs['DS_TELEFONE']; ?></td>
                     <td class="moeda"><?php echo str_replace(".", ",", $rs['VL_TOTAL_PEDIDO_VENDA']); ?></td>
+                    <td><?php echo $rs["QUANTIDADE"];?></td>
                     <td><?php echo comboSituacao($rs['IN_SITUACAO'], false)?></td>
                     <td><?php echo comboFormaEntrega($rs['IN_RETIRA_ENTREGA']); ?></td>
                 </tr>

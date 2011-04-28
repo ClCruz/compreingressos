@@ -57,8 +57,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
 
         $strSql = "WITH RESULTADO AS (
 				 SELECT
-                                    (CONVERT(VARCHAR(10), PV.DT_PEDIDO_VENDA, 103) + ' - ' + CONVERT(VARCHAR(8),
-                                    PV.DT_PEDIDO_VENDA, 114)) AS DT_PEDIDO_VENDA,
+                                    (CONVERT(VARCHAR(10), PV.DT_PEDIDO_VENDA, 103) + ' - ' + CONVERT(VARCHAR(8), PV.DT_PEDIDO_VENDA, 114)) AS DT_PEDIDO_VENDA,
                                     PV.ID_PEDIDO_VENDA,
                                     C.DS_NOME AS CLIENTE,
                                     C.DS_SOBRENOME,
@@ -175,7 +174,17 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
         $(function() {
             var pagina = '<?php echo $pagina; ?>'
             $('.button').button();
-            $(".datepicker").datepicker();
+            //$(".datepicker").datepicker();
+            $('input.datepicker').datepicker({
+              changeMonth: true,
+              changeYear: true,
+              onSelect: function(date, e) {
+                  if ($(this).is('#dt_inicial')) {
+               $('#dt_final').datepicker('option', 'minDate', $(this).datepicker('getDate'));
+                  }
+              }
+                 }).datepicker('option', $.datepicker.regional['pt-BR']);
+
             $("#btnRelatorio").click(function(){
                 if(!verificaCPF($('#cd_cpf').val()))
                 {
@@ -224,8 +233,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
     <p style="width:1000px;">Pedido nº <input size="10" type="text" value="<?php echo (isset($_GET["num_pedido"])) ? $_GET["num_pedido"] : "" ?>" id="num_pedido" name="num_pedido" /> Nome do Cliente <input size="40" type="text" value="<?php echo (isset($_GET["nm_cliente"])) ? $_GET["nm_cliente"] : "" ?>" id="nm_cliente" name="nm_cliente" /> CPF <input type="text" value="<?php echo (isset($_GET["cd_cpf"])) ? $_GET["cd_cpf"] : "" ?>" id="cd_cpf" name="cd_cpf" maxlength="13" /><br/> Data Inicial <input type="text" value="<?php echo (isset($_GET["dt_inicial"])) ? $_GET["dt_inicial"] : date("d/m/Y") ?>" class="datepicker" id="dt_inicial" name="dt_inicial" />&nbsp;&nbsp;Data Final <input type="text" class="datepicker" value="<?php echo (isset($_GET["dt_final"])) ? $_GET["dt_final"] : date("d/m/Y") ?>" id="dt_final" name="dt_final" />&nbsp;&nbsp;Situação <?php echo (isset($_GET["situacao"])) ? combosituacao($_GET["situacao"]) : comboSituacao() ?>&nbsp;&nbsp;<input type="submit" class="button" id="btnRelatorio" value="Buscar" />
     <?php if (isset($result) && hasRows($result)) {
     ?>
-        &nbsp;&nbsp;<a class="button" href="gerarExcel.php?dt_inicial=<?php echo $_GET["dt_inicial"]; ?>&dt_final=<?php echo $_GET["dt_final"]; ?>&situacao=<?php echo $_GET["situacao"]; ?>&num_pedido=<?php echo $_GET["num_pedido"]; ?>&nm_cliente=<?php echo $_GET["nm_cliente"]; ?>&cd_cpf=<?php echo $_GET["cd_cpf"]; ?>">Exportar Excel</a>
-    <?php } ?>
+        &nbsp;&nbsp;<a class="button" href="gerarExcel.php?dt_inicial=<?php echo $_GET["dt_inicial"]; ?>&dt_final=<?php echo $_GET["dt_final"]; ?>&situacao=<?php echo $_GET["situacao"]; ?>&num_pedido=<?php if (isset($_GET["num_pedido"])) {
+            echo $_GET["num_pedido"];
+        } else {
+            echo "";
+        } ?>&nm_cliente=<?php echo $_GET["nm_cliente"]; ?>&cd_cpf=<?php echo $_GET["cd_cpf"]; ?>">Exportar Excel</a>
+<?php } ?>
 </p>
 
 <!-- Tabela de pedidos -->
@@ -244,28 +257,27 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
         </tr>
     </thead>
     <tbody>
-        <?php
-        if (isset($result)) {
-            while ($rs = fetchResult($result)) {
-        ?>
-                <tr>
-                    <td style="text-align: center;"><a style="cursor: pointer;" destino="listaItens.php?pedido=<?php echo $rs['ID_PEDIDO_VENDA']; ?>">+</a></td>
-                    <td><?php echo $rs['ID_PEDIDO_VENDA']; ?></td>
-                    <td>
-                        <?php if(empty($rs['DS_NOME'])){
-                                    echo 'Web';
-                              }
-                              else
-                              {
-                                  echo $rs['DS_NOME'];
-                              }
-                        ?>
-                    </td>
-                    <td><?php echo $rs['DT_PEDIDO_VENDA'] ?></td>
-                    <td><?php echo utf8_encode($rs['CLIENTE'] . " " . $rs['DS_SOBRENOME']) . "<br/>" . $rs['DS_DDD_TELEFONE'] . " " . $rs['DS_TELEFONE']; ?></td>
-                    <td><?php echo number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, ",", "."); ?></td>
-                    <td><?php echo $rs['QUANTIDADE']; ?></td>
-                    <td><?php echo combosituacao($rs['IN_SITUACAO'], false); ?></td>
+<?php
+    if (isset($result)) {
+        while ($rs = fetchResult($result)) {
+?>
+            <tr>
+                <td style="text-align: center;"><a style="cursor: pointer;" destino="listaItens.php?pedido=<?php echo $rs['ID_PEDIDO_VENDA']; ?>">+</a></td>
+            <td><?php echo $rs['ID_PEDIDO_VENDA']; ?></td>
+            <td>
+                <?php
+                if (empty($rs['DS_NOME'])) {
+                    echo 'Web';
+                } else {
+                    echo $rs['DS_NOME'];
+                }
+                ?>
+            </td>
+            <td><?php echo $rs['DT_PEDIDO_VENDA'] ?></td>
+            <td><?php echo utf8_encode($rs['CLIENTE'] . " " . $rs['DS_SOBRENOME']) . "<br/>" . $rs['DS_DDD_TELEFONE'] . " " . $rs['DS_TELEFONE']; ?></td>
+            <td><?php echo number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, ",", "."); ?></td>
+            <td><?php echo $rs['QUANTIDADE']; ?></td>
+            <td><?php echo combosituacao($rs['IN_SITUACAO'], false); ?></td>
                     <td><?php echo comboFormaEntrega($rs['IN_RETIRA_ENTREGA']); ?></td>
                 </tr>
 <?php
@@ -282,13 +294,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
     </tbody>
 </table>
 <div id="paginacao">
-<?php
+    <?php
         //paginacao($pc, $intervalo, $tp, true);
         $link = "?p=listaMovimentacao&dt_inicial=" . $_GET["dt_inicial"] . "&dt_final=" . $_GET["dt_final"] . "&situacao=" . $_GET["situacao"] . "&num_pedido=" . $_GET["num_pedido"] . "&nm_cliente=" . $_GET["nm_cliente"] . "&cd_cpf=" . $_GET["cd_cpf"] . "&controle=" . $total_reg . "&bar=2&baz=3&offset=";
         //$link = "?p=listaMovimentacao&dt_inicial=" . $_GET["dt_inicial"] . "&dt_final=" . $_GET["dt_final"] . "&situacao=" . $_GET["situacao"] . "&controle=" . $total_reg . "&bar=2&baz=3&offset=";
         Paginator::paginate($offset, $tr, $total_reg, $link, true);
-?>
-    </div>
+    ?>
+        </div>
 
 <?php
     }

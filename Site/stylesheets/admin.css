@@ -2,7 +2,7 @@
 	text-decoration:none;
 }
 
-a {color:#CE3B53}
+a {color:#cc0607}
 a:hover {text-decoration:underline;}
 
 html, body {
@@ -39,11 +39,17 @@ body {
 	border-left:0px;
 	border-style:solid;
 	border-color:#F1A2A4;
+        background: #ce0b09;
 }
+
+#mainMenu.ui-state-active .ui-icon {background-image: url(customred/images/ui-icons_cc0000_256x2402.png); }
+#mainMenu.ui-state-hover .ui-icon, #mainMenu.ui-state-focus .ui-icon {background-image: url(customred/images/ui-icons_cc0000_256x2402.png); }
+#mainMenu.ui-state-default .ui-icon { background-image: url(customred/images/ui-icons_cc0000_256x2402.png); }
 	
 	.fg-button {
 		border-color:transparent;
-	}
+                background: #ce0b09;
+	} 
 
 #content {
 	width:100%;

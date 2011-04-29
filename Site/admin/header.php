@@ -13,7 +13,8 @@ session_start();
 	 
     <link rel='stylesheet' type='text/css' href='../javascripts/fg-menu/fg.menu.css' />
     <link rel='stylesheet' type='text/css' href='../javascripts/fg-menu/theme/ui.all.css' />
-	 <link rel="stylesheet" type="text/css" href="../stylesheets/customred/jquery-ui-1.8.12.custom.css"/>
+        <link rel="stylesheet" type="text/css" href="../stylesheets/customred/jquery-ui-1.8.12.custom.css"/>
+	<link rel="stylesheet" type="text/css" href="../stylesheets/customred/jquery-ui-1.7.3.custom.css"/>
 	 
     <link rel='stylesheet' type='text/css' href='../stylesheets/admin.css' />
     <link rel='stylesheet' type='text/css' href='../stylesheets/ajustes.css' /> 
@@ -23,7 +24,7 @@ session_start();
 	<![endif]-->
     
     <script type='text/javascript' src='../javascripts/jquery.js'></script>
-    <script type='text/javascript' src='../javascripts/jquery-ui.js'></script>
+    <script type='text/javascript' src='../javascripts/jquery-ui-1.8.12.custom.min.js'></script>
     <script type='text/javascript' src='../javascripts/fg-menu/fg.menu.js'></script>
     <script type='text/javascript' src='../javascripts/jquery.ui.datepicker-pt-BR.js'></script>
     <script type='text/javascript' src='../javascripts/jquery.utils.js'></script>

@@ -2289,7 +2289,8 @@ set @query =
 	@Indice		int,
 	@Preco		money,
 	@VlrAgregados	money,
-	@OUTROSVALORES	money
+	@OUTROSVALORES	money,
+	@codapresentacao int
 IF EXISTS
 	(SELECT 1 FROM
 		' + @DataBase + '..tabLugSala 
@@ -2367,6 +2368,7 @@ IF EXISTS
 				TipBilhete, 
 				DatMovimento,
 				NomSetor,
+				codapresentacao,
 				Indice,
 				Preco,
 				VlrAgregados,
@@ -2381,6 +2383,7 @@ IF EXISTS
 			@TipBilhete, 
 			@DatMovimento,
 			@NomSetor,
+			@codapresentacao,
 			@Indice,
 			@Preco,
 			@VlrAgregados,
@@ -2444,6 +2447,7 @@ IF EXISTS
 			Set	Preco = @Preco - @VlrAgregados + @OutrosValores
 			,	OutrosValores = @OutrosValores
 			where	Indice = @Indice
+			and  codapresentacao = @codapresentacao
 				
 	
 			fetch next from C1 into
@@ -2451,6 +2455,7 @@ IF EXISTS
 				@TipBilhete, 
 				@DatMovimento,
 				@NomSetor,
+				@codapresentacao,
 				@Indice,
 				@Preco,
 				@VlrAgregados,

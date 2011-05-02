@@ -267,10 +267,10 @@ if (isset($err) && $err != "") {
 							<td	align=right class=texto>R$&nbsp;<?php echo number_format($pRSDetalhamento["liquido"], 2, ",", "."); ?></td>
 						    </tr>
 <?php
-						    $nQt = $nQt + $pRSDetalhamento["qtdBilh"];
-						    $nBrutoTot = $nBrutoTot + $pRSDetalhamento["totfat"];
-						    $nTotDesc = $nTotDesc + $pRSDetalhamento["Descontos"];
-						    $nTotLiqu = $nTotLiqu + $pRSDetalhamento["liquido"];
+						    $nQt += $pRSDetalhamento["qtdBilh"];
+						    $nBrutoTot += $pRSDetalhamento["totfat"];
+						    $nTotDesc += $pRSDetalhamento["Descontos"];
+						    $nTotLiqu += $pRSDetalhamento["liquido"];
 						}
 					    }
 ?>
@@ -298,37 +298,45 @@ if (isset($err) && $err != "") {
 					    $paramsApresentacoes = (($_GET['Small'] == '1')
 								    ? array($DataIni, $DataFim, $CodPeca)
 								    : array($DataIni, $DataFim, $CodPeca, $HorSessao));
-					    
+					    //print_r(array($gSQL, $paramsApresentacoes));
 					    $resultApresentacoes = executeSQL($connGeral, $gSQL, $paramsApresentacoes);
 					    $rsApresentacoes = fetchResult($resultApresentacoes);
 					}
+
+					$despesas = array();
 
 					do {
 					    $strSqlDebito = ($CodSala == 'TODOS')
 								? "SP_REL_BORDERO_VENDAS;4 " . $CodPeca . "," . $rsApresentacoes["CodApresentacao"] . ",'" . $DataIni . "','" . $_SESSION["NomeBase"] . "'"
 								: "SP_REL_BORDERO_VENDAS;4 " . $pRSBordero["CodPeca"] . "," . $pRSBordero["CodApresentacao"] . ",'" . $pRSBordero["DatApresentacao"]->format("Ymd") . "','" . $_SESSION["NomeBase"] . "'";
 					    $queryDebito = executeSQL($connGeral, $strSqlDebito);
+
 					    while ($pRSDebito = fetchResult($queryDebito)) {
 						if ($pRSDebito["TipValor"] == "P")
 						    $simbolo = "%";
 						else
 						    $simbolo = "R$";
 
-						if ($Resumido == "0") {
-?>
-						    <tr>
-							<td	align=left  class=texto><?php echo utf8_encode($pRSDebito["DebBordero"]); ?></td>
-							<td	align=right class=texto><?php echo $simbolo . " " . number_format($pRSDebito["PerDesconto"], 2, ",", "."); ?></td>
-							<td	align=right class=texto><?php echo number_format($pRSDebito["Valor"], 2, ",", "."); ?></td>
-						    </tr>
-<?php
-						}
 						$nTotalDesp += $pRSDebito["Valor"];
+						$despesas[$pRSDebito["CodTipDebBordero"]]['nome'] = $pRSDebito["DebBordero"];
+						$despesas[$pRSDebito["CodTipDebBordero"]]['tipoValor'] = $simbolo . " " . number_format($pRSDebito["PerDesconto"], 2, ",", ".");
+						$despesas[$pRSDebito["CodTipDebBordero"]]['valor'] += $pRSDebito["Valor"];
 					    }
 					} while ($rsApresentacoes = fetchResult($resultApresentacoes));
 
 					$taxaDosCartoes = $nBrutoTot - $nTotLiqu;
 					//$nTotalDesp += $taxaDosCartoes;
+					foreach ($despesas as $desp) {
+					    if ($Resumido == "0") {
+    ?>
+						<tr>
+						    <td	align=left  class=texto><?php echo utf8_encode($desp["nome"]); ?></td>
+						    <td	align=right class=texto><?php echo $desp["tipoValor"]; ?></td>
+						    <td	align=right class=texto><?php echo number_format($desp["valor"], 2, ",", "."); ?></td>
+						</tr>
+    <?php
+					    }
+					}
 ?>
 			    	    <tr>
 			    		<td	align=left  class=texto>TAXA DOS CARTÕES (DÉBITO E CRÉDITO)</td>

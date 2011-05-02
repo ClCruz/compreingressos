@@ -1593,12 +1593,14 @@ set @NomBase	= 'TSP_TAUGUSTA'
 declare @query varchar(8000)
 declare @hora varchar(1000)
 declare @horaAux2 varchar(1000)
+declare @horaAux3 varchar(1000)
 declare @comment varchar(10)
 
 if @HorSessao = '' or @HorSessao = 'null' or @HorSessao is null or @HorSessao = '--'
 begin
 	set @hora = ''
 	set @horaAux2 = ''
+	set @horaAux3 = ''
 	set @comment = ''
 	if @HorSessao = '--'
 	begin
@@ -1609,6 +1611,7 @@ else
 begin
 	set @hora = 'and	(tbAp.HorSessao = ''' + convert(varchar(5),@HorSessao) + ''' or ''' + convert(varchar(5),@HorSessao) + ''' is null)'
 	set @horaAux2 = 'and	(tbAp.HorSessao = @horaAux or @horaAux is null)'
+	set @horaAux3 = 'and	(tbA2.HorSessao = @horaAux or @horaAux is null)'
 	set @comment = ''
 end
 set @query = 
@@ -1654,7 +1657,7 @@ with resultado as (
 				(tbA2.CodPeca = ' + convert(varchar(10),@CodPeca) + ' or ' + convert(varchar(10),@CodPeca) + ' is null)
 				and (tbA2.DatApresentacao >= @DtIAux or @DtIAux is null)
 				and (tbA2.DatApresentacao <= @DtFAux or @DtFAux is null)
-				' + @horaAux2 + '
+				' + @horaAux3 + '
 			where tbSDet.TipObjeto <> ''I'') as Lugares,
 		(select coalesce(count(Indice), 0) from ' + @NomBase + '..tabLugSala (nolock)
 			where		CodApresentacao = tbAp.CodApresentacao
@@ -1698,8 +1701,18 @@ with resultado as (
 --		and 	(AC.NOMBASEDADOS = ''' + @NomBase + ''' or ''' + @NomBase + ''' is null)
 )
 select 
-	CodPeca,
-	NumBordero,
+	CodPeca,'
+if @CodSala = 'TODOS'
+begin
+	set @query = @query + '
+	max(NumBordero) NumBordero,'
+end
+else
+begin
+	set @query = @query + '
+	NumBordero,'
+end
+set @query = @query + '
 	NomPeca,
 	NomSala,
 	NomResPeca,
@@ -1711,8 +1724,13 @@ select
 	sum(ValVendas) ValVendas
 from resultado
 group by
-	CodPeca,
-	NumBordero,
+	CodPeca,'
+if @CodSala <> 'TODOS'
+begin
+	set @query = @query + '
+	NumBordero,'
+end
+set @query = @query + '
 	NomPeca,
 	NomSala,
 	NomResPeca,
@@ -1799,6 +1817,7 @@ set @query =
 			' + @DataBase + '..tabSetor.NomSetor,
 			' + @DataBase + '..tabforpagamento.ForPagto,
 			' + @DataBase + '..tabLugSala.Indice,
+			' + @DataBase + '..tabLugSala.CodApresentacao,
 			' + @DataBase + '..tabLancamento.ValPagto as Preco2,
 			' + @DataBase + '..tabLancamento.ValPagto as Preco,
 			sum(isnull(' + @DataBase + '..tabIngressoAgregados.valor,0))  as VlrAgregados,			
@@ -1855,6 +1874,7 @@ set @query =
 			' + @DataBase + '..tabLancamento.DatMovimento,
 			' + @DataBase + '..tabSetor.NomSetor,
 			' + @DataBase + '..tabLugSala.Indice,
+			' + @DataBase + '..tabLugSala.CodApresentacao,
 			' + @DataBase + '..tabLancamento.ValPagto,
 			' + @DataBase + '..tabforpagamento.ForPagto, pctxadm
 
@@ -2291,6 +2311,7 @@ IF EXISTS
 			' + @DataBase + '..tabSetor.NomSetor,
 			' + @DataBase + '..tabLugSala.Indice,
 			' + @DataBase + '..tabLancamento.ValPagto as Preco,
+			' + @DataBase + '..tabLugSala.CodApresentacao,
 			sum(isnull(' + @DataBase + '..tabIngressoAgregados.valor,0))  as VlrAgregados,
 			0 AS OUTROSVALORES
 		INTO #TMP_RESUMO
@@ -2336,7 +2357,8 @@ IF EXISTS
 			' + @DataBase + '..tabLancamento.DatMovimento,
 			' + @DataBase + '..tabSetor.NomSetor,
 			' + @DataBase + '..tabLugSala.Indice,
-			' + @DataBase + '..tabLancamento.ValPagto
+			' + @DataBase + '..tabLancamento.ValPagto,
+			' + @DataBase + '..tabLugSala.CodApresentacao
 
 
 		declare C1 cursor for

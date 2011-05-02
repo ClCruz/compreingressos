@@ -14,7 +14,7 @@ session_start();
     <link rel='stylesheet' type='text/css' href='../javascripts/fg-menu/fg.menu.css' />
     <link rel='stylesheet' type='text/css' href='../javascripts/fg-menu/theme/ui.all.css' />
         <link rel="stylesheet" type="text/css" href="../stylesheets/customred/jquery-ui-1.8.12.custom.css"/>
-	<link rel="stylesheet" type="text/css" href="../stylesheets/customred/jquery-ui-1.7.3.custom.css"/>
+	<!--<link rel="stylesheet" type="text/css" href="../stylesheets/customred/jquery-ui-1.7.3.custom.css"/>-->
 	 
     <link rel='stylesheet' type='text/css' href='../stylesheets/admin.css' />
     <link rel='stylesheet' type='text/css' href='../stylesheets/ajustes.css' /> 

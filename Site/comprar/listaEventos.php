@@ -4,9 +4,9 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador']) and isset
 	require_once('../settings/functions.php');
 	
 	$mainConnection = mainConnection();
-	$query = 'WITH RESULTADO AS
+	$query = "WITH RESULTADO AS
 				(SELECT
-					  E.ID_EVENTO, E.DS_EVENTO, A.ID_APRESENTACAO, A.DT_APRESENTACAO, A.DS_PISO
+					  E.ID_EVENTO, E.DS_EVENTO, A.ID_APRESENTACAO, A.DT_APRESENTACAO, A.DS_PISO, A.HR_APRESENTACAO
 					  FROM MW_EVENTO E
 					  INNER JOIN MW_APRESENTACAO A 
 					  ON A.ID_EVENTO = E.ID_EVENTO 
@@ -16,14 +16,14 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador']) and isset
 						  FROM 
 						  MW_APRESENTACAO A1 
 						  WHERE A1.ID_EVENTO = A.ID_EVENTO
-						  AND A1.IN_ATIVO = \'1\'
+						  AND A1.IN_ATIVO = '1'
 							AND CONVERT(CHAR(8), A1.DT_APRESENTACAO,112) >= CONVERT(CHAR(8), GETDATE(),112))
 				) 
-				SELECT ID_EVENTO, DS_EVENTO, MIN(ID_APRESENTACAO) ID_APRESENTACAO
+				SELECT ID_EVENTO, DS_EVENTO, ID_APRESENTACAO
 				FROM RESULTADO R
 				WHERE R.DS_PISO IN (SELECT MIN(DS_PISO) FROM RESULTADO R2 WHERE R2.ID_EVENTO = R.ID_EVENTO GROUP BY R2.ID_EVENTO)
-				GROUP BY ID_EVENTO, DS_EVENTO
-				ORDER BY DS_EVENTO';
+				AND R.HR_APRESENTACAO IN (SELECT MIN(HR_APRESENTACAO) FROM RESULTADO R3 WHERE R3.ID_EVENTO = R.ID_EVENTO GROUP BY R3.ID_EVENTO)
+				ORDER BY DS_EVENTO";
 	$params = array($_GET['teatro']);
 	$result = executeSQL($mainConnection, $query, $params);
 	

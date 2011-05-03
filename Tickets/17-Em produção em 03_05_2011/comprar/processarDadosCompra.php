@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once('../settings/functions.php');
 require('Util.php');
 require('XMLUtil.php');
@@ -9,8 +9,8 @@ $mainConnection = mainConnection();
 $entrega = isset($_COOKIE['entrega']);
 $enderecoDif = $_COOKIE['entrega'] != -1;
 
-$queryReserva="SELECT ID_RESERVA FROM MW_RESERVA WHERE ID_SESSION ='". session_id() ."'";
-$resultReserva = executeSQL($mainConnection, $queryReserva);
+$queryReserva="SELECT ID_RESERVA FROM MW_RESERVA WHERE ID_SESSION = ?";
+$resultReserva = executeSQL($mainConnection, $queryReserva, array(session_id()));
 
 if(!hasRows($resultReserva)){
     ob_end_clean();
@@ -194,8 +194,8 @@ if (hasRows($resultIdPedidoVenda)) {
         $newMaxId = $newMaxId[0];
 
         $queryIdPedidoVenda = "update mw_reserva set
-                                id_pedido_venda =". $newMaxId ."
-                                where id_session ='". session_id() ."'";
+                                id_pedido_venda = ?
+                                where id_session = ?";
         $resultIdPedidoVenda = executeSQL($mainConnection, $queryIdPedidoVenda,
                                 array($newMaxId, session_id()));
 
@@ -207,7 +207,7 @@ $parametros['codigo_pedido'] = $newMaxId;
 while ($itens = fetchResult($result)) {
         $i++;
 
-        $valorConveniencia = executeSQL($mainConnection, "SELECT VL_TAXA_CONVENIENCIA FROM MW_TAXA_CONVENIENCIA WHERE ID_EVENTO =". $newMaxId ." AND DT_INICIO_VIGENCIA <= GETDATE() ORDER BY DT_INICIO_VIGENCIA DESC", array($itens['ID_EVENTO']), true);
+        $valorConveniencia = executeSQL($mainConnection, "SELECT VL_TAXA_CONVENIENCIA FROM MW_TAXA_CONVENIENCIA WHERE ID_EVENTO = ? AND DT_INICIO_VIGENCIA <= GETDATE() ORDER BY DT_INICIO_VIGENCIA DESC", array($itens['ID_EVENTO']), true);
 
         $parametros['codigo_item_'.$i] = $itens['ID_CADEIRA']; //Código ou chave única do item do pedido no Site.
         $parametros['descricao_item_'.$i] = utf8_encode($itens['DS_EVENTO'] . ' (' . $itens['DT_APRESENTACAO']) . ' às ' . utf8_encode($itens['HR_APRESENTACAO'] . ') - ' . $itens['DS_NOME_TEATRO'] . ' - ' . $itens['DS_SETOR'] . ' - ' . $itens['DS_CADEIRA'] . ' - ' . $itens['DS_TIPO_BILHETE']);

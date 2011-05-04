@@ -174,7 +174,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
 
         $query = "SELECT
 					  COUNT(1) AS QUANTIDADE,
-                                          PV.VL_TOTAL_TAXA_CONVENIENCIA
+                                          SUM(IPV.VL_TAXA_CONVENIENCIA) AS TOTALSERVICO
 				  FROM 
 					  MW_PEDIDO_VENDA PV 
 					  LEFT JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA ";
@@ -189,14 +189,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
             $query .= "LEFT JOIN MW_USUARIO U ON U.ID_USUARIO=PV.ID_USUARIO_CALLCENTER ";
         }
         $query .= $where ."
-                            GROUP BY
-                                PV.VL_TOTAL_TAXA_CONVENIENCIA
-				  
                           UNION ALL
 
                           SELECT
                                   COUNT(1) AS QUANTIDADE,
-                                  PV.VL_TOTAL_TAXA_CONVENIENCIA
+                                  SUM(IPV.VL_TAXA_CONVENIENCIA) AS TOTALSERVICO
                           FROM
                                   MW_PEDIDO_VENDA PV
                                   INNER JOIN MW_ITEM_PEDIDO_VENDA_HIST IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA ";
@@ -209,15 +206,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
         if(isset($join3)){
             $query .= "LEFT JOIN MW_USUARIO U ON U.ID_USUARIO=PV.ID_USUARIO_CALLCENTER ";
         }
-        $query .= $where ." GROUP BY
-                                PV.VL_TOTAL_TAXA_CONVENIENCIA ";
+        $query .= $where;
         $result2 = executeSQL($mainConnection, $query, $paramsTotal);
         $total['QUANTIDADE'] = 0;
         $total['SERVICO'] = 0;
         while ($rs = fetchResult($result2)) {
             $total['QUANTIDADE'] += $rs['QUANTIDADE'];
-            $total['SERVICO'] += $rs["VL_TOTAL_TAXA_CONVENIENCIA"];
+            $total['SERVICO'] += $rs["TOTALSERVICO"];
         }
+        
     }
 ?>
     <script type="text/javascript" src="../javascripts/jquery.ui.datepicker-pt-BR.js"></script>

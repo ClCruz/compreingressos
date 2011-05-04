@@ -1796,7 +1796,8 @@ set @query =
 	@Indice		int,
 	@Preco		money,
 	@VlrAgregados	money,
-	@OUTROSVALORES	money
+	@OUTROSVALORES	money,
+	@codapresentacao int
 	
 /*IF EXISTS
 	(SELECT 1 FROM
@@ -1885,6 +1886,7 @@ set @query =
 				TipBilhete, 
 				DatMovimento,
 				NomSetor,
+				CodApresentacao,
 				Indice,
 				Preco,
 				VlrAgregados,
@@ -1900,6 +1902,7 @@ set @query =
 			@TipBilhete, 
 			@DatMovimento,
 			@NomSetor,
+			@codapresentacao,
 			@Indice,
 			@Preco,
 			@VlrAgregados,
@@ -1963,7 +1966,8 @@ set @query =
 			Update #TMP_RESUMO
 			Set	Preco = @Preco - @VlrAgregados + @OutrosValores			
 			,	OutrosValores = @OutrosValores
-			where	Indice = @Indice
+			where	Indice = @Indice and
+					CodApresentacao = @codapresentacao
 				
 	
 			fetch next from C1 into
@@ -1971,6 +1975,7 @@ set @query =
 				@TipBilhete, 
 				@DatMovimento,
 				@NomSetor,
+				@codapresentacao,
 				@Indice,
 				@Preco,
 				@VlrAgregados,

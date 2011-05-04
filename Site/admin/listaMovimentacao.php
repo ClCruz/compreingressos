@@ -28,7 +28,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                     C.DS_SOBRENOME,
                     PV.VL_TOTAL_PEDIDO_VENDA,
                     PV.IN_SITUACAO,
-                    ROW_NUMBER() OVER(ORDER BY DT_PEDIDO_VENDA DESC) AS 'LINHA',
+                    ROW_NUMBER() OVER(ORDER BY PV.ID_PEDIDO_VENDA DESC) AS 'LINHA',
                     COUNT(1) AS QUANTIDADE,
                     PV.IN_RETIRA_ENTREGA,
                     C.DS_DDD_TELEFONE,
@@ -81,7 +81,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                             C.DS_SOBRENOME,
                             PV.VL_TOTAL_PEDIDO_VENDA,
                             PV.IN_SITUACAO,
-                            ROW_NUMBER() OVER(ORDER BY DT_PEDIDO_VENDA DESC) AS 'LINHA',
+                            ROW_NUMBER() OVER(ORDER BY PV.ID_PEDIDO_VENDA DESC) AS 'LINHA',
                             COUNT(1) AS QUANTIDADE,
                             PV.IN_RETIRA_ENTREGA,
                             C.DS_DDD_TELEFONE,
@@ -149,7 +149,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                                   $from2 .
                                   $where .
                                   $group .")
-				  SELECT * FROM RESULTADO WHERE LINHA BETWEEN " . $offset . " AND " . $final ." ORDER BY DT_PEDIDO_VENDA DESC";
+				  SELECT * FROM RESULTADO WHERE LINHA BETWEEN " . $offset . " AND " . $final ." ORDER BY ID_PEDIDO_VENDA DESC";
 
         $result = executeSQL($mainConnection, $strSql, $params);
 

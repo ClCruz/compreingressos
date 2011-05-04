@@ -165,6 +165,7 @@ if (isset($err) && $err != "") {
 	<br>
 
 	<?php
+				$lotacao = $pRSGeral["Lugares"];
 				$totNVendidos = 0;
 				$totPagantes = 0;
 				$totNPagantes = 0;
@@ -223,7 +224,7 @@ if (isset($err) && $err != "") {
 					if ($Resumido == "0") {
 ?>
 					    <tr>
-						<td colspan="3" bgcolor="#FFFFFF" rowspan="2" align="center" class="tabela"><font size=2 face="tahoma,verdana,arial"><b>Taxa de Ocupação:</b>&nbsp;&nbsp;  <?php echo number_format(((number_format($totPublico, 2) / number_format($pRSBordero["Lugares"], 2)) * 100), 2, ",", "."); ?> %</font></td>
+						<td colspan="3" bgcolor="#FFFFFF" rowspan="2" align="center" class="tabela"><font size=2 face="tahoma,verdana,arial"><b>Taxa de Ocupação:</b>&nbsp;&nbsp;  <?php echo number_format((($totPublico / $lotacao) * 100), 2, ",", "."); ?> %</font></td>
 						<td bgcolor="LightGrey" colspan="2" align="center" class="label"><b>TOTAL DE VENDAS BRUTO</b></td>
 					    </tr>
 					    <tr>
@@ -325,7 +326,8 @@ if (isset($err) && $err != "") {
 					} while ($rsApresentacoes = fetchResult($resultApresentacoes));
 
 					$taxaDosCartoes = $nBrutoTot - $nTotLiqu;
-					//$nTotalDesp += $taxaDosCartoes;
+					$nTotalDesp += $taxaDosCartoes;
+					
 					foreach ($despesas as $desp) {
 					    if ($Resumido == "0") {
     ?>
@@ -348,7 +350,7 @@ if (isset($err) && $err != "") {
 			    		<td bgcolor="LightGrey" colspan="2" align="center" class="label"><b>TOTAL DE DESPESAS</b></td>
 			    	    </tr>
 			    	    <tr>
-			    		<td align="right" bgcolor="LightGrey" class="label">R$&nbsp;&nbsp;&nbsp;<?php echo number_format($nTotalDesp + $taxaDosCartoes, 2, ",", "."); ?><br>
+			    		<td align="right" bgcolor="LightGrey" class="label">R$&nbsp;&nbsp;&nbsp;<?php echo number_format($nTotalDesp, 2, ",", "."); ?><br>
 			    		    <br>
 			    		</td>
 			    	    </tr>
@@ -370,7 +372,7 @@ if (isset($err) && $err != "") {
 			    			</tr>
 			    		    </table>
 			    		</td>
-			    		<td bgcolor="LightGrey" align="right" class="label" valign="top"><b>R$&nbsp;&nbsp;&nbsp;<?php echo number_format(($nTotLiqu - $nTotalDesp), 2, ",", "."); ?></b></td>
+			    		<td bgcolor="LightGrey" align="right" class="label" valign="top"><b>R$&nbsp;&nbsp;&nbsp;<?php echo number_format(($nTotalVendas - $nTotalDesp), 2, ",", "."); ?></b></td>
 			    	    </tr>
 			    	    <tr>
 			    		<td colspan="4" bgcolor="#FFFFFF" width="650"><font size=1 face="tahoma,verdana,arial">

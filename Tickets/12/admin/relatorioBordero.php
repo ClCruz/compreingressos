@@ -182,7 +182,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 18, true)) {
 				? "TODOS"
 				: document.fPeca.cboSala.value
 				);
-    	    Janela = window.open (url, "", "width=720, height=600, scrollbars=yes", "");
+	    Janela = window.open ('esperaProcesso.php?redirect=' + escape(url), "", "width=720, height=600, scrollbars=yes", "");
     	};
 
     	function limpar()

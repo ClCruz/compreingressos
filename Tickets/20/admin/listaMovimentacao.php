@@ -342,7 +342,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                 <td><?php echo number_format($total['TOTAL_PEDIDO'], 2, ",", "."); ?></td>
                 <td><?php echo $total['QUANTIDADE']; ?></td>
                 <td colspan="2"><strong>Total de Serviços</strong> <?php echo number_format($total['SERVICO'], 2, ",", "."); ?></td>
-                
             </tr>
 <?php
         }

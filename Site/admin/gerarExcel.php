@@ -25,7 +25,7 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
                     C.DS_SOBRENOME,
                     PV.VL_TOTAL_PEDIDO_VENDA,
                     PV.IN_SITUACAO,
-                    ROW_NUMBER() OVER(ORDER BY DT_PEDIDO_VENDA DESC) AS 'LINHA',
+                    ROW_NUMBER() OVER(ORDER BY PV.ID_PEDIDO_VENDA DESC) AS 'LINHA',
                     COUNT(1) AS QUANTIDADE,
                     PV.IN_RETIRA_ENTREGA,
                     C.DS_DDD_TELEFONE,
@@ -77,7 +77,7 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
                             C.DS_SOBRENOME,
                             PV.VL_TOTAL_PEDIDO_VENDA,
                             PV.IN_SITUACAO,
-                            ROW_NUMBER() OVER(ORDER BY DT_PEDIDO_VENDA DESC) AS 'LINHA',
+                            ROW_NUMBER() OVER(ORDER BY PV.ID_PEDIDO_VENDA DESC) AS 'LINHA',
                             COUNT(1) AS QUANTIDADE,
                             PV.IN_RETIRA_ENTREGA,
                             C.DS_DDD_TELEFONE,
@@ -126,6 +126,72 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
     $result = executeSQL($mainConnection, $sql);
 
 }
+
+   $query = "SELECT
+                                      SUM (VL_TOTAL_PEDIDO_VENDA) AS TOTAL_PEDIDO
+                              FROM
+                                      MW_PEDIDO_VENDA PV ";
+    if (isset($join)) {
+        $query .= "INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE ";
+    }
+    if(isset($join2)){
+        $query .= "INNER JOIN MW_CLIENTE CL ON CL.ID_CLIENTE = PV.ID_CLIENTE AND PV.ID_USUARIO_CALLCENTER IS NULL ";
+    }
+    if(isset($join3)){
+        $query .= "LEFT JOIN MW_USUARIO U ON U.ID_USUARIO=PV.ID_USUARIO_CALLCENTER ";
+    }
+    $query .= $where;
+    $rs = executeSQL($mainConnection, $query, $paramsTotal, true);
+    $total['TOTAL_PEDIDO'] = $rs['TOTAL_PEDIDO'];
+
+    $paramsTotal = array_merge($paramsTotal, $paramsTotal);
+
+    $query = "SELECT
+                                      COUNT(1) AS QUANTIDADE,
+                                      PV.VL_TOTAL_TAXA_CONVENIENCIA
+                              FROM
+                                      MW_PEDIDO_VENDA PV
+                                      LEFT JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA ";
+
+    if (isset($join)) {
+        $query .= "INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE ";
+    }
+    if(isset($join2)){
+        $query .= "INNER JOIN MW_CLIENTE CL ON CL.ID_CLIENTE = PV.ID_CLIENTE AND PV.ID_USUARIO_CALLCENTER IS NULL ";
+    }
+    if(isset($join3)){
+        $query .= "LEFT JOIN MW_USUARIO U ON U.ID_USUARIO=PV.ID_USUARIO_CALLCENTER ";
+    }
+    $query .= $where ."
+                        GROUP BY
+                            PV.VL_TOTAL_TAXA_CONVENIENCIA
+
+                      UNION ALL
+
+                      SELECT
+                              COUNT(1) AS QUANTIDADE,
+                              PV.VL_TOTAL_TAXA_CONVENIENCIA
+                      FROM
+                              MW_PEDIDO_VENDA PV
+                              INNER JOIN MW_ITEM_PEDIDO_VENDA_HIST IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA ";
+    if (isset($join)) {
+        $query .= "INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE ";
+    }
+    if(isset($join2)){
+        $query .= "INNER JOIN MW_CLIENTE CL ON CL.ID_CLIENTE = PV.ID_CLIENTE AND PV.ID_USUARIO_CALLCENTER IS NULL ";
+    }
+    if(isset($join3)){
+        $query .= "LEFT JOIN MW_USUARIO U ON U.ID_USUARIO=PV.ID_USUARIO_CALLCENTER ";
+    }
+    $query .= $where ." GROUP BY
+                            PV.VL_TOTAL_TAXA_CONVENIENCIA ";
+    $result2 = executeSQL($mainConnection, $query, $paramsTotal);
+    $total['QUANTIDADE'] = 0;
+    $total['SERVICO'] = 0;
+    while ($rs = fetchResult($result2)) {
+        $total['QUANTIDADE'] += $rs['QUANTIDADE'];
+        $total['SERVICO'] += $rs["VL_TOTAL_TAXA_CONVENIENCIA"];
+    }
 ?>
 <style type="text/css">
     .moeda {
@@ -199,6 +265,14 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
                 </tr>
         <?php
             }
+        ?>
+            <tr class="total">
+                <td align="right" colspan="4"><strong>Totais</strong></td>
+                <td><?php echo number_format($total['TOTAL_PEDIDO'], 2, ",", "."); ?></td>
+                <td><?php echo $total['QUANTIDADE']; ?></td>
+                <td colspan="2"><strong>Total de Serviços</strong> <?php echo number_format($total['SERVICO'], 2, ",", "."); ?></td>
+            </tr>
+       <?php
         }
         ?>
     </tbody>

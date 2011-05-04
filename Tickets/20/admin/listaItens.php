@@ -70,11 +70,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                 <td><?php echo str_replace(".", ",", $rs['VL_TAXA_CONVENIENCIA']); ?></td>
             </tr>
         <?php } ?>
-            <tr>
-                <td colspan="10" align="right" class="ui-state-error-text"><b>Total Valor do Serviço</b></td>
-                <td class="ui-state-error-text"><?php echo $totalservico;?></td>
-            </tr>
-
     </tbody>
 </table>
 <?php

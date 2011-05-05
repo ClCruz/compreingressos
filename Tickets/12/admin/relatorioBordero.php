@@ -86,6 +86,16 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 18, true)) {
     		    document.fPeca.cboSala.value = "";
     		}
     	    });
+	    $.ajax({
+    		url: 'relatorioBorderoActions.php',
+    		type: 'post',
+    		data: 'Acao=requestDates&CodPeca='+ CodPeca,
+		dataType: 'json',
+    		success: function(data){
+    		    $('input[name="txtData1"]').datepicker('option', 'minDate', data.inicial);
+    		    $('input[name="txtData2"]').datepicker('option', 'maxDate', data.final);
+    		}
+    	    });
     	};
 
     	function CarregaHorario()

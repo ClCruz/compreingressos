@@ -83,6 +83,21 @@ function buscarSala(){
 	}
 }
 
+if ($_REQUEST["Acao"] == 'requestDates' and $CodPeca) {
+    $conn = getConnection($_SESSION["IdBase"]);
+    $query = 'SELECT CONVERT(VARCHAR(10), MIN(DATAPRESENTACAO), 103) INICIAL,
+		CONVERT(VARCHAR(10), MAX(DATAPRESENTACAO), 103) FINAL
+		FROM TABAPRESENTACAO WHERE CODPECA = ?';
+    $params = array($CodPeca);
+    $rs = executeSQL($conn, $query, $params, true);
+
+    if (empty($rs)) {
+	die(json_encode(array('inicial'=>'01/01/2005', 'final'=>'')));
+    }
+
+    die(json_encode(array('inicial'=>$rs['INICIAL'], 'final'=>$rs['FINAL'])));
+}
+
 if($_POST["NomeBase"] != "" && $_POST["Proc"] != "" && !isset($_REQUEST["Acao"])){
 	$strQuery = "SELECT DS_NOME_BASE_SQL FROM MW_BASE WHERE ID_BASE = ".$_POST["NomeBase"];
 	if( $stmt = executeSQL($mainConnection, $strQuery, array(), true) ){

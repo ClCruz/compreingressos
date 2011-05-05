@@ -2024,7 +2024,7 @@ ALTER  procedure [dbo].[SP_REL_BORDERO_VENDAS];12
 	@DtFimApr varchar(8), 
 	@codPeca int = null,
 	@codSala varchar(5) = null,	
-	@hora varchar(6),
+	@horaSessao varchar(6),
 	@DataBase varchar(30)
 as
 /*
@@ -2043,6 +2043,17 @@ set @hora = '21:00'
 set @DataBase = 'CI_RAULCORTEZ'*/
 	
 declare @query varchar(8000)
+declare @hora varchar(1000)
+
+if @horaSessao = '' or @horaSessao = 'null' or @horaSessao is null
+begin
+	set @hora = ''
+end
+else
+begin
+	set @hora = 'and 	' + @DataBase + '..tabApresentacao.HorSessao = ''' + @horaSessao + ''''
+end
+
 set @query =
 'declare @CodTipBilhete 	int,
 	@TipBilhete	varchar(20),
@@ -2111,7 +2122,7 @@ set @query =
 		WHERE
 			(' + @DataBase + '..tabLugSala.CodVenda IS NOT NULL) 
 		AND 	(convert(varchar(8), ' + @DataBase + '..tabApresentacao.DatApresentacao,112) between ''' + @DtIniApr + ''' and ''' + @DtFimApr + ''')
-		and 	' + @DataBase + '..tabApresentacao.HorSessao = ''' + @hora + '''
+		' + @hora + '
 		and	(' + @DataBase + '..tabApresentacao.codpeca = ' + convert(varchar(6),@codPeca) + ' or ' + convert(varchar(6),@codPeca) + ' is null)		
 		--and	(' + @DataBase + '..tabSala.codsala = ' + convert(varchar(6),@codSala) + ' or ' + convert(varchar(6),@codSala) + ' is null)
 		AND	not exists (Select 1 from ' + @DataBase + '..tabLancamento bb

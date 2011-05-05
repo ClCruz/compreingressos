@@ -382,7 +382,7 @@ if (isset($err) && $err != "") {
 			    	    </tr>
 			    	</table>
 			    	<br clear=all>
-<?php if ($_REQUEST['Small'] != '1') {
+<?php if ($_REQUEST['Small'] != '2') {
 				echo $table3; ?>
 			    	<table width=656 class="tabela" border="0" bgcolor="LightGrey">
 			    	    <tr>

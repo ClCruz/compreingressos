@@ -6,6 +6,14 @@ if (isset($_GET["exportar"]) && $_GET["exportar"] == "true") {
     header("Pragma: no-cache");
 }
 
+function tratarData($data) {
+    $array = explode("/", $data);
+    $dia = $array[0];
+    $mes = $array[1];
+    $ano = $array[2];
+    return $ano . "" . $mes . "" . $dia;
+}
+
 require_once('../settings/functions.php');
 if (isset($_GET["local"])) {
     $mainConnection = getConnection($_GET["local"]);
@@ -63,7 +71,7 @@ $pagina = basename(__FILE__);
 
 
         <?php
-//carrega variaveis
+        //carrega variaveis
         $var_Teatro = $_GET["teatro"];
         $codPeca = ($_GET["eventos"] == "null") ? "Null" : $_GET["eventos"];
         $dataInicial = $_GET["dt_inicial"];
@@ -73,18 +81,19 @@ $pagina = basename(__FILE__);
         $var_NomePeca = $_GET["local"];
 
         // URL usada para exportar dados para excel
-        $var_url = "relFaturamentoPorPecaRes.php?dt_inicial=" . $dataInicial . "&dt_final=" . $dataFinal . "&local=" . $var_NomePeca . "&DescPeca=" . $var_DescPeca . "&eventos=" . $_GET["eventos"] . "&teatro=" . $var_Teatro;        
+        $var_url = "relFaturamentoPorPecaRes.php?dt_inicial=" . $dataInicial . "&dt_final=" . $dataFinal . "&local=" . $var_NomePeca . "&DescPeca=" . $var_DescPeca . "&eventos=" . $_GET["eventos"] . "&teatro=" . $var_Teatro;
 
         if (isset($_GET["periodo"]) && $_GET["periodo"] == "ocorrencia") {
-            $gSQL = "EXECUTE SP_REL_FAT002 '" . $dataInicial . "', '" . $dataFinal . "' ," . $codPeca;
+            $gSQL = "EXECUTE SP_REL_FAT002 '" . tratarData($dataInicial) . "', '" . tratarData($dataFinal) . "' ," . $codPeca;
             $descricao = "Relatório de Faturamento/Repasse por Espetáculo (Resumido)";
         } else {
-            $gSQL = "EXECUTE SP_REL_FAT002a '" . $dataInicial . "', '" . $dataFinal . "' ," . $codPeca;
+            $gSQL = "EXECUTE SP_REL_FAT002a '" . tratarData($dataInicial) . "', '" . tratarData($dataFinal) . "' ," . $codPeca;
             $descricao = "Relatório de Faturamento/Repasse por Espetáculo <BR>(Resumido - Base na data da Venda)";
         }
 
         $stmt = executeSQL($mainConnection, $gSQL);
-
+        $stmt2 = executeSQL($mainConnection, $gSQL);
+        print $gSQL;
         if (sqlErrors($stmt) == "") {
             if (hasRows($stmt)) {
                 $nPag = 1;
@@ -93,42 +102,41 @@ $pagina = basename(__FILE__);
                 // Mostra cabeçalho somento no modo HTML e não no Excel
                 if (!isset($_GET["exportar"]))
                     Cabec(&$nPag, &$nLin, $descricao);
-        ?>
-                <form name="frmVisaoSint" method="post">
-                    <table width="670" border="<?php echo (!isset($_GET["exportar"])) ? 0 : 1; ?>" bgcolor="<?php echo (!isset($_GET["exportar"])) ? "LightGrey" : ""; ?>" class="tabela">
-                        <tr height="15">
-                            <td	width="100" align="left"><font class="label">Teatro: </font></td>
-                            <td width="350" align="left" class="texto" colspan="3"><?php echo $var_Teatro; ?></td>
-                            <td	width="100" align="right"><font class="label">Peça: </font></td>
-                            <td width="350" align="left" class="texto"><?php echo $var_DescPeca; ?></td>
-                        </tr>
-                        <tr height="15">
-                            <td	width="100" align="left"><font class="label">Data Inicial:</font></td>
-                            <td width="125" align="left" class="texto"><?php echo $dataInicial; ?></td>
-                            <td	width="100" align="right"><font class="label">Data Final:</font></td>
-                            <td width="125" align="left" class="texto"><?php echo $dataFinal; ?></td>
-                        </tr>
-                    </table>
+        ?>                
+                <table width="670" border="<?php echo (!isset($_GET["exportar"])) ? 0 : 1; ?>" bgcolor="<?php echo (!isset($_GET["exportar"])) ? "LightGrey" : ""; ?>" class="tabela">
+                    <tr height="15">
+                        <td	width="100" align="left"><font class="label">Teatro: </font></td>
+                        <td width="350" align="left" class="texto" colspan="3"><?php echo $var_Teatro; ?></td>
+                        <td	width="100" align="right"><font class="label">Peça: </font></td>
+                        <td width="350" align="left" class="texto"><?php echo $var_DescPeca; ?></td>
+                    </tr>
+                    <tr height="15">
+                        <td	width="100" align="left"><font class="label">Data Inicial:</font></td>
+                        <td width="125" align="left" class="texto"><?php echo $dataInicial; ?></td>
+                        <td	width="100" align="right"><font class="label">Data Final:</font></td>
+                        <td width="125" align="left" class="texto"><?php echo $dataFinal; ?></td>
+                    </tr>
+                </table>
 
-                    <br clear="all">
-            <?php
+                <br clear="all">
+        <?php
                 $bPularSubTotal = true;
                 while ($pForma = fetchResult($stmt)) {
                     if ($var_NomePeca != $pForma["NomPeca"]) {
                         if ($bPularSubTotal == false) {
-            ?>
-                            <tr height=2px><td colspan="7">&nbsp</td></tr>
-                            <tr>
-                                <td align="left" class="label"><strong>Subtotal:</strong></td>
-                                <td align="right" class="texto"><strong><?php echo $cont2_2_sub; ?></strong></td>
-                                <td align="right" class="texto"><strong><?php echo number_format($cont9_9_sub, 2, ",", "."); ?></strong></td>
-                                <td align="right" class="texto"><strong><?php echo number_format($cont3_3_sub, 2, ",", "."); ?></strong></td>
-                                <td align="right" class="texto"><strong><?php echo number_format($cont7_7a_sub, 2, ",", "."); ?></strong></td>
-                                <td align="right" class="texto"><strong><?php echo number_format($cont8_8_sub, 2, ",", "."); ?></strong></td>
-                                <td align="right" class="texto"><strong><?php echo number_format($cont5_5_sub, 2, ",", "."); ?></strong></td>
-                            </tr>
-                        </table>
-        <?php
+        ?>
+                        <tr height=2px><td colspan="7">&nbsp</td></tr>
+                        <tr>
+                            <td align="left" class="label"><strong>Subtotal:</strong></td>
+                            <td align="right" class="texto"><strong><?php echo $cont2_2_sub; ?></strong></td>
+                            <td align="right" class="texto"><strong><?php echo number_format($cont9_9_sub, 2, ",", "."); ?></strong></td>
+                            <td align="right" class="texto"><strong><?php echo number_format($cont3_3_sub, 2, ",", "."); ?></strong></td>
+                            <td align="right" class="texto"><strong><?php echo number_format($cont7_7a_sub, 2, ",", "."); ?></strong></td>
+                            <td align="right" class="texto"><strong><?php echo number_format($cont8_8_sub, 2, ",", "."); ?></strong></td>
+                            <td align="right" class="texto"><strong><?php echo number_format($cont5_5_sub, 2, ",", "."); ?></strong></td>
+                        </tr>
+                    </table>
+<?php
                             $cont1_1_sub = 0;
                             $cont2_2_sub = 0;
                             $cont3_3_sub = 0;
@@ -141,7 +149,7 @@ $pagina = basename(__FILE__);
                             $cont9_9_sub = 0;
                         }
                         $bPularSubTotal = false;
-        ?>
+?>
                         <br clear=all>
                         <table width="670px" border="1" bgcolor="<?php echo (!isset($_GET["exportar"])) ? "LightGrey" : ""; ?>" class="tabela">
                             <tr>
@@ -158,7 +166,7 @@ $pagina = basename(__FILE__);
                                 <td align="center" class="titulogrid" style="with: 100px;">Resultado</td>
                                 <td align="center" class="titulogrid" style="with: 100px;">Valor do Repasse</td>
                             </tr>
-            <?php
+    <?php
                         $var_NomePeca = $pForma["NomPeca"];
                     }
 
@@ -174,10 +182,10 @@ $pagina = basename(__FILE__);
                     $cont8 = 0;
                     $cont9 = 0;
 
-                    // Repete valores faturados
-                    while ($pRs = fetchResult($stmt)) {
-                        // Condição para criação de funções de cálculo
-                        if ($var_forPagto == $pRs["forpagto"]) {
+                    // Repete valores faturados           
+                    while ($pRs = fetchResult($stmt2)) {                        
+                        // Condição para criação de funções de cálculo                        
+                        if ($var_forPagto == $pRs["forpagto"] && $pRs['NomPeca'] == $var_NomePeca) {
                             $formula1 = $pRs["totfat"] - $pRs["TotTxConveniencia"] - $pRs["TotSpread"];
 
                             if (!is_null($pRs["PcTxAdm"])) {
@@ -208,7 +216,7 @@ $pagina = basename(__FILE__);
                             break;
                         }// Fecha else
                     } //fecha while
-            ?>
+    ?>
                     <tr>
                         <td align="left" class="label"><strong><?php echo utf8_encode($var_forPagto); ?></strong></td>
                         <td align="right" class="texto"><strong><?php echo $cont2; ?></strong></td>
@@ -218,7 +226,7 @@ $pagina = basename(__FILE__);
                         <td align="right" class="texto"><strong><?php echo number_format($cont8, 2, ",", "."); ?></strong></td>
                         <td align="right" class="texto"><strong><?php echo number_format($cont5, 2, ",", "."); ?></strong></td>
                     </tr>
-<?php
+    <?php
                     $cont1_1_sub = $cont1_1_sub + $cont1;
                     $cont2_2_sub = $cont2_2_sub + $cont2;
                     $cont3_3_sub = $cont3_3_sub + $cont3;
@@ -241,7 +249,7 @@ $pagina = basename(__FILE__);
                     $cont8_8 = $cont8_8 + $cont8;
                     $cont9_9 = $cont9_9 + $cont9;
                 }
-?>
+    ?>
                 <tr height=2px><td colspan="7">&nbsp</td></tr>
                 <tr>
                     <td align="left" class="label"><strong>Subtotal:</strong></td>
@@ -287,7 +295,6 @@ $pagina = basename(__FILE__);
                         <td align="center"><input class="botao" type="button" value="Fechar Janela" name="cmdFecha" onClick="window.close()"></td>
                     </tr>
                 </table>
-            </form>
 <?php
             }
         } else {

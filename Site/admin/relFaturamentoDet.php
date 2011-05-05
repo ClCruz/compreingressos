@@ -6,6 +6,14 @@ if (isset($_GET["exportar"]) && $_GET["exportar"] == "true") {
     header("Pragma: no-cache");
 }
 
+function tratarData($data){
+    $array = explode("/",$data);
+    $dia = $array[0];
+    $mes = $array[1];
+    $ano = $array[2];
+    return $ano."".$mes."".$dia;
+}
+
 require_once('../settings/functions.php');
 if (isset($_GET["local"])) {
     $mainConnection = getConnection($_GET["local"]);
@@ -79,10 +87,10 @@ $pagina = basename(__FILE__);
         $var_url = "relFaturamentoDet.php?dt_inicial=" . $dataInicial . "&dt_final=" . $dataFinal . "&local=" . $var_NomeBase . "&DescPeca=" . $var_DescPeca . "&eventos=" . $_GET["eventos"] . "&teatro=" . $var_Teatro;
 
         if (isset($_GET["periodo"]) && $_GET["periodo"] == "ocorrencia") {
-            $gSQL = "EXECUTE SP_REL_FAT001 '" . $dataInicial . "', '" . $dataFinal . "' ," . $codPeca;
+            $gSQL = "EXECUTE SP_REL_FAT001 '" . tratarData($dataInicial) . "', '" . tratarData($dataFinal) . "' ," . $codPeca;
             $descricao = "Repasses por Forma de Pagamento (Detalhado)";
         } else {
-            $gSQL = "EXECUTE SP_REL_FAT001a '" . $dataInicial . "', '" . $dataFinal . "' ," . $codPeca;
+            $gSQL = "EXECUTE SP_REL_FAT001a '" . tratarData($dataInicial) . "', '" . tratarData($dataFinal) . "' ," . $codPeca;
             $descricao = "Repasses por Forma de Pagamento por Data de Venda (Detalhado)";
         }
 

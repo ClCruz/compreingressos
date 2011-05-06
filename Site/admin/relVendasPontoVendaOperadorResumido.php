@@ -88,7 +88,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 33, true)) {
 		    INNER JOIN tabUsuario ON tabLancamento.codUsuario = tabUsuario.codUsuario
 	    WHERE
 		    (tabLugSala.CodVenda IS NOT NULL)
-	    AND 	(convert(varchar(8), tabApresentacao.DatApresentacao,112) between @DtIniApr and @DtFimApr)
+	    AND 	(convert(varchar(8), tabLancamento.DatVenda,112) between @DtIniApr and @DtFimApr)
 	    and	(tabApresentacao.codpeca = convert(varchar(6),@codPeca) or convert(varchar(6),@codPeca) is null)
 	    AND	not exists (Select 1 from tabLancamento bb
 				    where tabLancamento.numlancamento = bb.numlancamento

@@ -133,9 +133,9 @@ $pagina = basename(__FILE__);
                 <form name="frmVisaoSint" method="post">
                     <table width="900" border="<?php echo (!isset($_GET["exportar"])) ? 0 : 1; ?>" bgcolor="<?php echo (!isset($_GET["exportar"])) ? "LightGrey" : ""; ?>" class="tabela">
                         <tr height="15">
-                            <td	width="100" align="left"><font class="label">Teatro: </font></td>
+                            <td	width="100" align="left"><font class="label">Local: </font></td>
                             <td width="350" align="left" class="texto" colspan="3"><?php echo $var_Teatro; ?></td>
-                            <td	width="100" align="right"><font class="label">Peça: </font></td>
+                            <td	width="100" align="right"><font class="label">Evento: </font></td>
                             <td width="350" align="left" class="texto"><?php echo $var_DescPeca; ?></td>
                         </tr>
                         <tr height="15">
@@ -161,7 +161,7 @@ $pagina = basename(__FILE__);
                         if ($bPularSubTotal == false) {
             ?>
                             <tr>
-                                <td	align="left"   class="div1"><STRONG>Total por Peça:</STRONG></td>
+                                <td	align="left"   class="div1"><STRONG>Total por Evento:</STRONG></td>
                                 <td	align="center" class="div4">---</td>
                                 <td	align="right"  class="div3"><STRONG><?php echo number_format($cont1_1_sub, 2, ",", "."); ?></STRONG></td>
                                 <td	align="right"  class="div3"><STRONG><?php echo $cont2_2_sub; ?></STRONG></td>
@@ -188,7 +188,7 @@ $pagina = basename(__FILE__);
                         <br clear=all>
                         <table width="900" class="tabela" border="<?php echo (!isset($_GET["exportar"])) ? 0 : 1; ?>" bgcolor="<?php echo (!isset($_GET["exportar"])) ? "LightGrey" : ""; ?>">
                             <tr>
-                                <td align="left" width="900" colspan="13" class="label" style="font-size: 12;"><STRONG>Nome da Peça</STRONG>:   <?php echo utf8_encode($pRs["NomPeca"]); ?></td>
+                                <td align="left" width="900" colspan="13" class="label" style="font-size: 12;"><STRONG>Nome da Evento</STRONG>:   <?php echo utf8_encode($pRs["NomPeca"]); ?></td>
                             </tr>
                         </table>
         <?php
@@ -351,7 +351,7 @@ $pagina = basename(__FILE__);
                 }//Fecha while
 ?>
                 <tr>
-                    <td	align="left"  class="div1"><STRONG>Total por Peça:</STRONG></td>
+                    <td	align="left"  class="div1"><STRONG>Total por Evento:</STRONG></td>
                     <td	align="center" class="div4">---</td>
                     <td	align="right"  class="div3"><STRONG><?php echo number_format($cont1_1_sub, 2, ",", "."); ?></STRONG></td>
                     <td	align="right"  class="div3"><STRONG><?php echo $cont2_2_sub; ?></STRONG></td>

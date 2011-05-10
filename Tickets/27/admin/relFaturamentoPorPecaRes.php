@@ -99,9 +99,9 @@ $pagina = basename(__FILE__);
         ?>                
                 <table width="670" border="<?php echo (!isset($_GET["exportar"])) ? 0 : 1; ?>" bgcolor="<?php echo (!isset($_GET["exportar"])) ? "LightGrey" : ""; ?>" class="tabela">
                     <tr height="15">
-                        <td	width="100" align="left"><font class="label">Teatro: </font></td>
+                        <td	width="100" align="left"><font class="label">Local: </font></td>
                         <td width="350" align="left" class="texto" colspan="3"><?php echo $var_Teatro; ?></td>
-                        <td	width="100" align="right"><font class="label">Peça: </font></td>
+                        <td	width="100" align="right"><font class="label">Evento: </font></td>
                         <td width="350" align="left" class="texto"><?php echo $var_DescPeca; ?></td>
                     </tr>
                     <tr height="15">
@@ -141,7 +141,7 @@ $pagina = basename(__FILE__);
                         <br clear=all>
                         <table width="670px" border="1" bgcolor="<?php echo (!isset($_GET["exportar"])) ? "LightGrey" : ""; ?>" class="tabela">
                             <tr>
-                                <td colspan=7 align=left width="900" class=label style="font-size: 12;"><STRONG>Nome da Peça</STRONG>:   <?php echo utf8_encode($pRs["NomPeca"]); ?></td>
+                                <td colspan=7 align=left width="900" class=label style="font-size: 12;"><STRONG>Nome da Evento</STRONG>:   <?php echo utf8_encode($pRs["NomPeca"]); ?></td>
                             </tr>
                         </table>
                         <table width="670" border="<?php echo (!isset($_GET["exportar"])) ? 0 : 1; ?>" bgcolor="<?php echo (!isset($_GET["exportar"])) ? "LightGrey" : ""; ?>" class="tabela">

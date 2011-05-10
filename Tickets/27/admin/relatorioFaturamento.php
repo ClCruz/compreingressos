@@ -108,9 +108,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 15, true)) {
     	    <td>
 		<select name="tipo" id="tipo">
     		    <option value="detalhado">Detalhado</option>
-    		    <option value="detalhado_peca">Detalhado por peça</option>
+    		    <option value="detalhado_peca">Detalhado por evento</option>
     		    <option value="resumido">Resumido</option>
-    		    <option value="resumido_peca">Resumido por peça</option>
+    		    <option value="resumido_peca">Resumido por evento</option>
     		</select>
 	    </td>
     	</tr>

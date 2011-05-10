@@ -367,7 +367,7 @@ if (isset($err) && $err != "") {
 			    			</tr>
 			    			<tr>
 			    			    <td align="center">BILHETERIA</td>
-			    			    <td align="center">TEATRO</td>
+			    			    <td align="center">LOCAL</td>
 			    			    <td align="center">PRODUÇÃO</td>
 			    			</tr>
 			    		    </table>

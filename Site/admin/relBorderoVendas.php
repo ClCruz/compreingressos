@@ -3,6 +3,29 @@ require_once("../settings/functions.php");
 $connGeral = getConnectionTsp();
 session_start();
 
+function gerarNotacaoIntervalo($arrayNums) {
+    $str = '';
+    $lastNum = '';
+
+    foreach ($arrayNums as $i) {
+	if ($lastNum === '') {
+	    $str .= $i;
+	} else {
+	    if ($i === $lastNum + 1 && substr($str, -1) !== '-') {
+		$str .= '-';
+	    } else if ($i !== $lastNum + 1 && substr($str, -1) === '-') {
+		$str .= $lastNum . ', ' . $i;
+	    } else if ($i !== $lastNum + 1) {
+		$str .= ', ' . $i;
+	    }
+	}
+	$lastNum = $i;
+    }
+    if (substr($str, -1) === '-') $str .= $lastNum;
+    
+    return $str;
+}
+
 function retornaData($Data) {
     if (!checkdate($Data))
 	return "";
@@ -69,6 +92,24 @@ $array = explode(":", $pRSGeral["NomResPeca"]);
 $PPArray = ($array[0] != "") ? $array[0] : "Não Cadastrado";
 $SPArray = ($array[1] != "") ? $array[1] : "Não Cadastrado";
 $TPArray = ($array[2] != "") ? $array[2] : "Não Cadastrado";
+
+if (isset($err) && $err != "") {
+    echo $err . "<br>";
+    print_r(sqlErrors());
+}
+
+if ($_GET['Small'] == '1') {
+    $strBordero = "SP_REL_BORDERO_VENDAS;14 'Emerson', " . $CodPeca . "," . $CodSala . "," . $DataIni . "," . $DataFim . ",'--','" . $_SESSION["NomeBase"] . "'";
+    $resultBordero = executeSQL($connGeral, $strBordero, array());
+
+    if (hasRows($resultBordero)) {
+	$numsArray = array();
+	while ($rsBordero = fetchResult($resultBordero)) {
+	    $numsArray[] = $rsBordero['NumBordero'];
+	}
+	$pRSGeral['NumBordero'] = gerarNotacaoIntervalo($numsArray);
+    }
+}
 
 if (isset($err) && $err != "") {
     echo $err . "<br>";

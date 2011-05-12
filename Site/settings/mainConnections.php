@@ -32,11 +32,11 @@ function getConnectionTsp(){
 }
 
 function getConnectionDw(){
-        $host = '172.16.13.3';
+        $host = '11.11.11.218';
 	$port = '1433';
 	$dbname = 'CI_DW';
-	$user = 'mstr';
-	$pass = 'mstr';
+	$user = 'sa';
+	$pass = 'sa';
 
 	return sqlsrv_connect($host.','.$port, array("UID" => $user, "PWD" => $pass, "Database" => $dbname));
 }

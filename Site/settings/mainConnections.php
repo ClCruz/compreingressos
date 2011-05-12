@@ -40,4 +40,5 @@ function getConnectionDw(){
 
 	return sqlsrv_connect($host.','.$port, array("UID" => $user, "PWD" => $pass, "Database" => $dbname));
 }
+
 ?>

@@ -38,7 +38,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 32, true)) {
 	$params = array($_POST['dia'], $_POST['origem'], $_POST['tipo'], $_POST['resolucao'], $_POST['diaResolucao'], $_POST['obs'], $_GET['id']);
 
 	if (executeSQL($conn, $query, $params)) {
-	    $retorno = 'true?dia=' . $_GET['id'];
+	    $retorno = 'true?id=' . $_GET['id'];
 	} else {
 	    $retorno = sqlErrors();
 	}

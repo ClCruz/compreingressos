@@ -57,7 +57,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 213, true)) {
 				    tr.find('td:not(.button):eq(3)').html($('#resolucao option:selected').text());
 				    tr.find('td:not(.button):eq(4)').html($('#diaResolucao').val());
 				    tr.find('td:not(.button):eq(5)').html($('#obs').val());
-
+                                    
 				    $this.text('Editar').attr('href', pagina + '?action=edit&' + id);
 				    tr.find('td.button a:last').attr('href', pagina + '?action=delete&' + id);
 				    tr.removeAttr('id');
@@ -82,7 +82,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 213, true)) {
 			tr.find('td:not(.button):eq(2)').html('<?php echo comboTipoChamado('tipo', $_GET['tipo']); ?>');
 			tr.find('td:not(.button):eq(3)').html('<?php echo comboTipoResolucao('resolucao', $_GET['resolucao']); ?>');
 			tr.find('td:not(.button):eq(4)').html('<input name="diaResolucao" type="text" class="inputStyle datePicker" id="diaResolucao" maxlength="10" size="10" readonly />');
-			tr.find('td:not(.button):eq(5)').html('<input name="obs" type="text" class="inputStyle" id="obs" maxlength="250"' + values[5] + '/>');
+			tr.find('td:not(.button):eq(5)').html('<input name="obs" type="text" class="inputStyle" id="obs" maxlength="250" value="' + values[5] + '"/>');
 
 			$('#origem').find('option').filter(function(){return $(this).text() == values[1];}).attr('selected', 'selected');
 			$('#tipo').find('option').filter(function(){return $(this).text() == values[2];}).attr('selected', 'selected');
@@ -90,7 +90,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 213, true)) {
 
 			$this.text('Salvar').attr('href', pagina + '?action=update&' + id);
 
-			setDatePickers();
+                        setDatePickers3();
 			setDatePickers2();
 			$('#dia').val(values[0]);
 			$('#diaResolucao').val(values[4]);
@@ -135,8 +135,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 213, true)) {
 			'<td class="button"><a href="#delete">Apagar</a></td>' +
 			'</tr>';
 		    $('#app table tbody').append(newLine);
-		    setDatePickers();
-		    setDatePickers2();
+		   setDatePickers3();
+		   setDatePickers2();
+
 		});
 
 		$('#btnRelatorio').click(function() {
@@ -171,6 +172,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 213, true)) {
 
 		$('select').width(180);
 	    }
+
+            function setDatePickers3() {
+                $('input.datePicker').datepicker({
+                        minDate: new Date($('#ano').val(), $('#mes').val()-1, 1),
+                        changeMonth: true,
+                        changeYear: true
+            });
+            $('input.datePicker').datepicker('option', $.datepicker.regional['pt-BR']);
+}
 
 	</script>
 	<h2>Chamados SAC</h2>
@@ -209,7 +219,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 213, true)) {
     		<td><?php echo utf8_encode($rs["DS_TIPO_CHAMADO"]); ?></td>
     		<td><?php echo utf8_encode($rs["DS_TIPO_RESOLUCAO"]); ?></td>
     		<td><?php echo $diaRes; ?></td>
-    		<td><?php echo utf8_encode($rs["DS_OBSERVACAO"]); ?></td>
+    		<td><?php echo $rs["DS_OBSERVACAO"]; ?></td>
     		<td class="button"><a href="<?php echo $pagina; ?>?action=edit&<?php echo $id; ?>">Editar</a></td>
     		<td class="button"><a href="<?php echo $pagina; ?>?action=delete&<?php echo $id; ?>">Apagar</a></td>
     	    </tr>

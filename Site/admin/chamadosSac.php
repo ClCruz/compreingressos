@@ -27,6 +27,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 213, true)) {
 ?>
 	<script type="text/javascript" src="../javascripts/jquery.ui.datepicker-pt-BR.js"></script>
 	<script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
+        <script type="text/javascript" src="../javascripts/jquery.cookie.js"></script>
 	<script type="text/javascript" language="javascript">
 	    $(function() {
 		var pagina = '<?php echo $pagina; ?>'
@@ -77,23 +78,29 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 213, true)) {
 			    values.push($(this).text());
 			});
 
-			tr.find('td:not(.button):eq(0)').html('<input name="dia" type="text" class="inputStyle datePicker" id="dia" maxlength="10" size="10" readonly />');
+			tr.find('td:not(.button):eq(0)').html('<input name="dia" type="text" class="inputStyle datePicker dia" id="dia" maxlength="10" size="10" readonly />');
 			tr.find('td:not(.button):eq(1)').html('<?php echo comboOrigemChamado('origem', $_GET['origem']); ?>');
 			tr.find('td:not(.button):eq(2)').html('<?php echo comboTipoChamado('tipo', $_GET['tipo']); ?>');
 			tr.find('td:not(.button):eq(3)').html('<?php echo comboTipoResolucao('resolucao', $_GET['resolucao']); ?>');
 			tr.find('td:not(.button):eq(4)').html('<input name="diaResolucao" type="text" class="inputStyle datePicker" id="diaResolucao" maxlength="10" size="10" readonly />');
 			tr.find('td:not(.button):eq(5)').html('<input name="obs" type="text" class="inputStyle" id="obs" maxlength="250" value="' + values[5] + '"/>');
 
-			$('#origem').find('option').filter(function(){return $(this).text() == values[1];}).attr('selected', 'selected');
-			$('#tipo').find('option').filter(function(){return $(this).text() == values[2];}).attr('selected', 'selected');
-			$('#resolucao').find('option').filter(function(){return $(this).text() == values[3];}).attr('selected', 'selected');
+                        $('#origem').find('option[text=' + values[1] + ']').attr('selected', 'selected');
+                        $('#tipo').find('option[text=' + values[2] + ']').attr('selected', 'selected');
+                        $('#resolucao').find('option[text=' + values[3] + ']').attr('selected', 'selected');
+			//$('#origem').find('option').filter(function(){return $(this).text() == values[1];}).attr('selected','selected');
+			//$('#tipo').find('option').filter(function(){return $(this).text() == values[2];}).attr('selected', 'selected');
+			//$('#resolucao').find('option').filter(function(){return $(this).text() == values[3];}).attr('selected', 'selected');
 
 			$this.text('Salvar').attr('href', pagina + '?action=update&' + id);
 
-                        setDatePickers3();
-			setDatePickers2();
 			$('#dia').val(values[0]);
 			$('#diaResolucao').val(values[4]);
+                        setDatePickers3();
+			setDatePickers2();
+                        $('#dia').change(function() {
+                                $("#diaResolucao").datepicker("option", "minDate", $(this).val());
+                        });
 		    } else if (href == '#delete') {
 			tr.remove();
 		    } else if (href.indexOf('?action=delete') != -1) {
@@ -125,7 +132,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 213, true)) {
 		    if(!validateFields()) return false;
 
 		    var newLine = '<tr id="newLine">' +
-			'<td><input name="dia" type="text" class="inputStyle datePicker" id="dia" maxlength="10" size="10" readonly /></td>' +
+			'<td><input name="dia" type="text" class="inputStyle datePicker dia" id="dia" maxlength="10" size="10" readonly /></td>' +
 			'<td>' + '<?php echo comboOrigemChamado('origem', $_GET['origem']); ?>' + '</td>' +
 			'<td>' + '<?php echo comboTipoChamado('tipo', $_GET['tipo']); ?>' + '</td>' +
 			'<td>' + '<?php echo comboTipoResolucao('resolucao', $_GET['resolucao']); ?>' + '</td>' +
@@ -135,8 +142,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 213, true)) {
 			'<td class="button"><a href="#delete">Apagar</a></td>' +
 			'</tr>';
 		    $('#app table tbody').append(newLine);
-		   setDatePickers3();
+                   setDatePickers3();
 		   setDatePickers2();
+                   $('#dia').change(function() {
+                        $("#diaResolucao").datepicker("option", "minDate", $(this).val());
+                    });
 
 		});
 
@@ -174,14 +184,17 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 213, true)) {
 	    }
 
             function setDatePickers3() {
-                $('input.datePicker').datepicker({
-                        minDate: new Date($('#ano').val(), $('#mes').val()-1, 1),
+               $('input.datePicker').datepicker({
+                        minDate: new Date($('#ano').val(), $('#mes').val()-1,  $('#dia').val()),
+                        maxDate: new Date($('#ano').val(), $('#mes').val(),0),
                         changeMonth: true,
                         changeYear: true
-            });
-            $('input.datePicker').datepicker('option', $.datepicker.regional['pt-BR']);
-}
-
+                });
+                
+                $('#diaResolucao').click(function() {
+                       $("#diaResolucao").datepicker("option", "minDate", $('#dia').val());
+                });
+            }
 	</script>
 	<h2>Chamados SAC</h2>
 	<form id="dados" name="dados" method="post">
@@ -195,7 +208,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 213, true)) {
 		    <tr class="ui-widget-header">
 			<th>Dia</th>
 			<th>Origem</th>
-			<th>Tipo</th>
+			<th>Tipo de Chamado</th>
 			<th>Resolução</th>
 			<th>Dia da Resolução</th>
 			<th>Observações</th>
@@ -206,15 +219,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 213, true)) {
 
 <?php
 	$totalAcessos = 0;
+        $cont = 0;
 	while ($rs = fetchResult($result)) {
 	    $dia = $rs['ID_DIA'];
 	    $id = 'id=' . $rs['ID_NR_CHAMADO'];
 	    $dia = substr($rs['ID_DIA'], -2) . '/' . substr($rs['ID_DIA'], 4, 2) . '/' . substr($rs['ID_DIA'], 0, 4);
-	    
 	    $diaRes = (($rs['ID_DIA_RESOLUCAO']) ? substr($rs['ID_DIA_RESOLUCAO'], -2) . '/' . substr($rs['ID_DIA_RESOLUCAO'], 4, 2) . '/' . substr($rs['ID_DIA_RESOLUCAO'], 0, 4) : '');
 ?>
     	    <tr>
-    		<td><?php echo $dia; ?></td>
+    		<td><input name="diatemp[]" type="hidden" class="dia" id="diatemp<?php echo $cont;?>" maxlength="10" size="10" value="<?php echo $dia; ?>" /><?php echo $dia; ?></td>
     		<td><?php echo utf8_encode($rs["DS_ORIGEM_CHAMADO"]); ?></td>
     		<td><?php echo utf8_encode($rs["DS_TIPO_CHAMADO"]); ?></td>
     		<td><?php echo utf8_encode($rs["DS_TIPO_RESOLUCAO"]); ?></td>
@@ -224,6 +237,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 213, true)) {
     		<td class="button"><a href="<?php echo $pagina; ?>?action=delete&<?php echo $id; ?>">Apagar</a></td>
     	    </tr>
 <?php
+            $cont++;
 	}
 ?>
 	</tbody>

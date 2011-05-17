@@ -771,7 +771,7 @@ function comboTipoResolucao($name, $selected) {
 	$conn = getConnectionDw();
 	$result = executeSQL($conn, "SELECT ID_TIPO_RESOLUCAO, DS_TIPO_RESOLUCAO FROM DIM_TIPO_RESOLUCAO ORDER BY 2", array());
 
-	$combo = '<select name="'.$name.'" class="inputStyle" id="'.$name.'"><option value="">Selecione um tipo...</option>';
+	$combo = '<select name="'.$name.'" class="inputStyle" id="'.$name.'"><option value="">Selecione uma resolução...</option>';
 	while ($rs = fetchResult($result)) {
 		$combo .= '<option value="'.$rs['ID_TIPO_RESOLUCAO'].'"'.(($selected == $rs['ID_TIPO_RESOLUCAO']) ? ' selected' : '').'>'.utf8_encode($rs['DS_TIPO_RESOLUCAO']).'</option>';
 	}

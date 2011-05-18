@@ -2063,7 +2063,8 @@ set @query =
 	@Preco		money,
 	@VlrAgregados	money,
 	@OUTROSVALORES	money,
-	@ds_canal_venda	varchar(20)	
+	@ds_canal_venda	varchar(20),
+	@CodApresentacao int	
 
 	set nocount on
 	BEGIN
@@ -2075,6 +2076,7 @@ set @query =
 			' + @DataBase + '..tabSetor.NomSetor,
 			' + @DataBase + '..tabforpagamento.tipcaixa,
 			' + @DataBase + '..tabLugSala.Indice,
+			' + @DataBase + '..tabLugSala.CodApresentacao,
 			' + @DataBase + '..tabLancamento.ValPagto as Preco2,
 			' + @DataBase + '..tabLancamento.ValPagto as Preco,
 			ci_middleway..mw_canal_venda.ds_canal_venda,
@@ -2138,6 +2140,7 @@ set @query =
 			' + @DataBase + '..tabLancamento.DatMovimento,
 			' + @DataBase + '..tabSetor.NomSetor,
 			' + @DataBase + '..tabLugSala.Indice,
+			' + @DataBase + '..tabLugSala.CodApresentacao,
 			' + @DataBase + '..tabLancamento.ValPagto,
 			' + @DataBase + '..tabforpagamento.tipcaixa,
 			ci_middleway..mw_canal_venda.ds_canal_venda
@@ -2149,6 +2152,7 @@ set @query =
 				TipBilhete, 
 				DatMovimento,
 				NomSetor,
+				CodApresentacao,
 				Indice,
 				Preco,
 				VlrAgregados,
@@ -2165,6 +2169,7 @@ set @query =
 			@TipBilhete, 
 			@DatMovimento,
 			@NomSetor,
+			@codapresentacao,
 			@Indice,
 			@Preco,
 			@VlrAgregados,
@@ -2174,6 +2179,7 @@ set @query =
 
 		while @@fetch_Status = 0
 		BEGIN
+		
 			Select  
 				@OutrosValores = (@Preco - @VlrAgregados) * case TTLB.icdebcre when ''D'' then (isnull(TTBTL.valor,0)/100) else (isnull(TTBTL.valor,0)/100) * -1 end
 			FROM
@@ -2224,20 +2230,22 @@ set @query =
 						  and TTLB1.icusolcto    != ''C''
 						  and TTLB1.inativo       = ''A'')
 			and 	TTBTL.inativo        = ''A''
-	
-	
+			
+			
 			Update #TMP_RESUMO
 			Set	Preco = @Preco - @VlrAgregados + @OutrosValores			
 			,	OutrosValores = @OutrosValores
 			
-			where	Indice = @Indice
-				
+			where	Indice = @Indice and
+					CodApresentacao = @codapresentacao
+			
 	
 			fetch next from C1 into
 				@CodTipBilhete,
 				@TipBilhete, 
 				@DatMovimento,
 				@NomSetor,
+				@codapresentacao,
 				@Indice,
 				@Preco,
 				@VlrAgregados,

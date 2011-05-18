@@ -28,7 +28,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 			    @DtFimApr		varchar(8),
 			    @codPeca		int,
 			    @descrcaixa		varchar(50),
-			    @nomusuario		varchar(30)
+			    @nomusuario		varchar(30),
+                            @CodApresentacao    int
 
 	    set @codPeca = ?
 	    set @DtIniApr = ?
@@ -43,6 +44,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 		    tabSetor.NomSetor,
 		    tabforpagamento.tipcaixa,
 		    tabLugSala.Indice,
+                    tabLugSala.CodApresentacao,
 		    tabLancamento.ValPagto as Preco2,
 		    tabLancamento.ValPagto as Preco,
 		    ci_middleway..mw_canal_venda.ds_canal_venda,
@@ -107,6 +109,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 		    tabLancamento.DatMovimento,
 		    tabSetor.NomSetor,
 		    tabLugSala.Indice,
+                    tabLugSala.CodApresentacao,
 		    tabLancamento.ValPagto,
 		    tabforpagamento.tipcaixa,
 		    ci_middleway..mw_canal_venda.ds_canal_venda,
@@ -121,6 +124,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 			    DatMovimento,
 			    NomSetor,
 			    Indice,
+                            CodApresentacao,
 			    Preco,
 			    VlrAgregados,
 			    OUTROSVALORES,
@@ -139,6 +143,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 		    @DatMovimento,
 		    @NomSetor,
 		    @Indice,
+                    @CodApresentacao,
 		    @Preco,
 		    @VlrAgregados,
 		    @OUTROSVALORES,
@@ -205,7 +210,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 		    Set	Preco = @Preco - @VlrAgregados + @OutrosValores
 		    ,	OutrosValores = @OutrosValores
 
-		    where	Indice = @Indice
+		    where	Indice = @Indice and
+                                CodApresentacao = @CodApresentacao
 
 
 		    fetch next from C1 into
@@ -214,6 +220,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 			    @DatMovimento,
 			    @NomSetor,
 			    @Indice,
+                            @CodApresentacao,
 			    @Preco,
 			    @VlrAgregados,
 			    @OUTROSVALORES,

@@ -124,16 +124,16 @@ $(function() {
 		if(!hasNewLine()) return false;
 		
 		var newLine = '<tr id="newLine">' +
-								'<td><input name="nome" type="text" class="inputStyle" id="nome" maxlength="100" /></td>' +
-								'<td><input name="email" type="text" class="inputStyle" id="email" maxlength="100" /></td>' +
-								'<td><input name="login" type="text" class="inputStyle" id="login" maxlength="10" /></td>' +
-								'<td><input name="admin" type="checkbox" class="inputStyle" id="admin" /></td>' +
-								'<td><input name="ativo" type="checkbox" class="inputStyle" id="ativo" /></td>' +
-								'<td><input name="telemarketing" type="checkbox" class="inputStyle" id="telemarketing" /></td>' +
-								'<td class="button"><a href="' + pagina + '?action=add">Salvar</a></td>' +
-								'<td class="button"><a href="#reset">Restaurar Senha</a></td>' +
-								'<td class="button"><a href="#delete">Apagar</a></td>' +
-							'</tr>';
+                                                    '<td><input name="nome" type="text" class="inputStyle" id="nome" maxlength="100" /></td>' +
+                                                    '<td><input name="email" type="text" class="inputStyle" id="email" maxlength="100" /></td>' +
+                                                    '<td><input name="login" type="text" class="inputStyle" id="login" maxlength="10" /></td>' +
+                                                    '<td><input name="admin" type="checkbox" class="inputStyle" id="admin" /></td>' +
+                                                    '<td><input name="ativo" type="checkbox" class="inputStyle" id="ativo" /></td>' +
+                                                    '<td><input name="telemarketing" type="checkbox" class="inputStyle" id="telemarketing" /></td>' +
+                                                    '<td class="button"><a href="' + pagina + '?action=add">Salvar</a></td>' +
+                                                    '<td class="button"><a href="#reset">Restaurar Senha</a></td>' +
+                                                    '<td class="button"><a href="#delete">Apagar</a></td>' +
+                                            '</tr>';
 		$(newLine).appendTo('#app table tbody');
 		setDatePickers();
 	});

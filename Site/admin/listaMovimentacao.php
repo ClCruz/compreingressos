@@ -327,7 +327,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
         Situação &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo (isset($_GET["situacao"])) ? combosituacao($_GET["situacao"]) : comboSituacao() ?>&nbsp;&nbsp;
     <?php
         $name = "evento";
-        $queryEvento = 'SELECT E.ID_EVENTO, E.DS_EVENTO FROM MW_EVENTO E';
+        $queryEvento = 'SELECT E.ID_EVENTO, E.DS_EVENTO FROM MW_EVENTO E ORDER BY DS_EVENTO ASC';
         $resultEventos = executeSQL($mainConnection, $queryEvento, null);
         $combo = '<select name="'.$name.'" class="inputStyle" id="'.$name.'"><option value="">Selecione um evento...</option>';
 

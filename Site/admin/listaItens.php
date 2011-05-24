@@ -17,7 +17,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
 			INNER JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
 			INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO
 			INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
-			WHERE PV.ID_PEDIDO_VENDA = ? AND E.ID_EVENTO = ?
+			WHERE PV.ID_PEDIDO_VENDA = ?
                         GROUP BY
                             (CONVERT(VARCHAR(10), A.DT_APRESENTACAO, 103) + ' ' + CONVERT(VARCHAR(5), A.HR_APRESENTACAO)),
                             E.DS_EVENTO,
@@ -38,8 +38,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                             INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO
                             INNER JOIN MW_EVENTO E ON A.ID_EVENTO = E.ID_EVENTO
                         WHERE
-                            PV.ID_PEDIDO_VENDA = ? AND E.ID_EVENTO = ?";
-        $params = array($_GET["pedido"],$_GET["evento"],$_GET["pedido"],$_GET["evento"]);
+                            PV.ID_PEDIDO_VENDA = ?";
+        $params = array($_GET["pedido"],$_GET["pedido"]);
         $result = executeSQL($mainConnection, $sql, $params);
     }
     if (isset($result) && hasRows($result)) {

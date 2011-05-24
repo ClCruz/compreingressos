@@ -73,7 +73,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
 
         if(!empty($_GET["nm_evento"])){
             $from .= "  LEFT JOIN MW_APRESENTACAO A ON IPV.ID_APRESENTACAO = A.ID_APRESENTACAO
-                        INNER JOIN MW_EVENTO E ON E.ID_EVENTO=A.ID_EVENTO ";
+                        LEFT JOIN MW_EVENTO E ON E.ID_EVENTO=A.ID_EVENTO ";
         }
         
         if (!empty($_GET["nm_operador"])) {
@@ -172,6 +172,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                                   $where .
                                   $group .")
 				  SELECT * FROM RESULTADO WHERE LINHA BETWEEN " . $offset . " AND " . $final ." ORDER BY ID_PEDIDO_VENDA DESC";
+        
+        // EXECUTA QUERY PRINCIPAL PARA CONSULTAR PEDIDOS VENDIDOS       
         $result = executeSQL($mainConnection, $strSql, $params);
 
         $query = "SELECT
@@ -193,6 +195,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                           INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO ";
         }
         $query .= $where;
+
+        // Executa query para somar total de ingressos
         $rs = executeSQL($mainConnection, $query, $paramsTotal, true);
         $total['TOTAL_PEDIDO'] = $rs['TOTAL_PEDIDO'];
 
@@ -241,7 +245,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                           LEFT JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO ";
         }
         $query .= $where;
+
+        //Executa query para somar total de ingressos e calcular valor total dos serviços
         $result2 = executeSQL($mainConnection, $query, $paramsTotal);
+        
         $total['QUANTIDADE'] = 0;
         $total['SERVICO'] = 0;
         while ($rs = fetchResult($result2)) {
@@ -354,7 +361,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
 <table class="ui-widget ui-widget-content" id="tabPedidos">
     <thead>
         <tr class="ui-widget-header">
-            <th style="text-align: center;">Visualizar</th>
+            <th style="text-align: center; width: 10px;">Visualizar</th>
             <th>Pedido nº</th>
             <th>Operador</th>
             <th>Data do Pedido</th>
@@ -372,7 +379,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
 ?>
             <tr>
                 <td style="text-align: center;"><a style="cursor: pointer;" destino="listaItens.php?pedido=<?php echo $rs['ID_PEDIDO_VENDA']; ?>&evento=<?php echo $_GET["nm_evento"];?>">+</a></td>
-            <td><?php echo $rs['ID_PEDIDO_VENDA']; ?></td>
+                <td><?php echo $rs['ID_PEDIDO_VENDA']; ?></td>
             <td>
                 <?php
                 if (empty($rs['DS_NOME'])) {

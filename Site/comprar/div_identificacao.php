@@ -14,9 +14,7 @@
 										<div class="botoes_ticket">autentique-se</div>
 									</a>
 									<p class="err_msg">Combinação de E-mail/senha inválida<br>Por favor tente novamente.</p>
-									<a id="esqueci" href="#esqueci">
-										<div class="botoes_ticket">esqueci a senha</div>
-									</a>
+									<a id="esqueci" href="#esqueci">esqueci a senha</a>
 									<div id="esqueciForm">
 										<h2>Insira seu e-mail</h2>
 										<input type="text" id="recupera_por_email" size="30" maxlength="100"/>

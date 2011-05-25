@@ -171,6 +171,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
 
         <script type="text/javascript" src="../javascripts/jquery.ui.datepicker-pt-BR.js"></script>
         <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
+        <script type="text/javascript" src="../javascripts/date.format.js"></script>
         <script>
             $(function() {
                 var pagina = '<?php echo $pagina; ?>';
@@ -190,8 +191,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
                     if(!verificaCPF($('#cd_cpf').val()))
                     {
                         $.dialog({title: 'Alerta...', text: 'CPF inválido.'});
-                    }else{ if($('#cboSituacao').val() == "V"){
-                            $.dialog({title: 'Alerta...', text: 'Selecione a situação'});
+                    }else{ if($('#cboSituacao').val() == 0){
+                            $.dialog({title: 'Alerta...', text: 'Selecione uma situação para efetuar a pesquisa.'});
                         }else{
                             document.location = '?p=' + pagina.replace('.php', '') + '&dt_inicial=' + $("#dt_inicial").val() + '&dt_final='+ $("#dt_final").val() + '&situacao=' + $("#cboSituacao").val() + '&nm_cliente=' + $("#nm_cliente").val() + '&cd_cpf=' + $("#cd_cpf").val() + '&num_pedido=' + $("#num_pedido").val();
                         }}
@@ -242,6 +243,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
                             values.push($(this).text());
                         });
 
+                        if(trim(values[7])=='-'){
+                            data = new Date();
+                            data2 = data.format("d/m/yyyy H:M");
+                        }else{
+                            data2 = values[7];
+                        }
+
                         tr.find('td:not(.button):eq(0)').html('<input name="detalhes" size="10" type="text" class="readonly inputStyle" id="detalhes" maxlength="100" value="' + values[0] + '" />');
                         tr.find('td:not(.button):eq(1)').html('<input name="pedido" size="10" type="text" class="inputStyle readonly" id="pedido" maxlength="100" value="' + values[1] + '" readonly />');
                         tr.find('td:not(.button):eq(2)').html('<input name="dt_pedido" type="text" class="inputStyle readonly" id="dt_pedido" maxlength="100" value="' + values[2] + '" readonly />');
@@ -249,31 +257,31 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
                         tr.find('td:not(.button):eq(4)').html('<input name="total" type="text" size="10" class="inputStyle readonly" id="total" maxlength="100" value="' + values[4] + '" readonly />');
                         tr.find('td:not(.button):eq(5)').html('<input name="qtde_ingressos" size="5" type="text" class="inputStyle readonly" id="qtde_ingressos" maxlength="100" value="' + values[5] + '" readonly />');
                         tr.find('td:not(.button):eq(6)').html('<input name="situacao" type="text" class="inputStyle readonly" id="situacao" maxlength="100" value="' + trim(values[6]) + '"  readonly/>');
-                        tr.find('td:not(.button):eq(7)').html('<input name="dt_entrega" size="10" type="text" class="inputStyle datePicker" id="dt_entrega" maxlength="100" value="' + values[7] + '" />');
+                        tr.find('td:not(.button):eq(7)').html('<input name="dt_entrega" size="15" type="text" class="inputStyle" id="dt_entrega" maxlength="100" value="' + data2 + '" />');
 
                         $this.text('Salvar').attr('href', pagina + '?action=update&' + id);
 
-                        setDatePickers();
+                        // setDatePickers();
                     } else if (href == '#delete') {
                         tr.remove();
                     }
                 });
 
-            $('.itensDetalhe').click(function() {
-                $('loadingIcon').fadeIn('fast');
-                var $this = $(this),
-                url = $this.attr('destino');
-                $.ajax({
-                    url: url,
-                    success: function(data) {
-                        $('#tabPedidos').find('.itensDoPedido').hide();
-                        $this.parent().parent().after('<tr class="itensDoPedido"><td colspan="10">' + data + '</td></tr>');
-                    },
-                    complete: function() {
-                        $('loadingIcon').fadeOut('slow');
-                    }
+                $('.itensDetalhe').click(function() {
+                    $('loadingIcon').fadeIn('fast');
+                    var $this = $(this),
+                    url = $this.attr('destino');
+                    $.ajax({
+                        url: url,
+                        success: function(data) {
+                            $('#tabPedidos').find('.itensDoPedido').hide();
+                            $this.parent().parent().after('<tr class="itensDoPedido"><td colspan="10">' + data + '</td></tr>');
+                        },
+                        complete: function() {
+                            $('loadingIcon').fadeOut('slow');
+                        }
+                    });
                 });
-            });
             });
 
         </script>
@@ -298,30 +306,30 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
             Data Inicial <input type="text" value="<?php echo (isset($_GET["dt_inicial"])) ? $_GET["dt_inicial"] : date("d/m/Y") ?>" class="datepicker" id="dt_inicial" readonly name="dt_inicial" />&nbsp;&nbsp;&nbsp;
             Data Final <input type="text" class="datepicker" value="<?php echo (isset($_GET["dt_final"])) ? $_GET["dt_final"] : date("d/m/Y") ?>" id="dt_final" name="dt_final" readonly/> &nbsp;&nbsp;&nbsp;
             Situação <select name="cboSituacao" class="inputStyle" id="cboSituacao">
-                    <?php
-                        $opcoes = array(0 => 'Selecione uma situação',
-                                        1 => 'Ingressos Entregues',
-                                        2 => 'Ingressos a Entregar');
-                        foreach($opcoes as $i => $valor){
-                            $selected = '';
-                            if($_GET['situacao'] == $i)
-                                $selected = 'selected';
-                                echo "<option value=". $i ." ". $selected .">". $valor ."</option>";
-                        }
-                     ?>
-            </select>
-            <input type="submit" class="button" id="btnRelatorio" value="Buscar" />
-        </p><br/>
-        <!--<p>
-    <// if (isset($result) && hasRows($result)) {
-    ?>
-            &nbsp;&nbsp;<a class="button" href="gerarExcel.php?dt_inicial=< echo $_GET["dt_inicial"]; ?>&dt_final=< echo $_GET["dt_final"]; ?>&situacao=< echo $_GET["situacao"]; ?>&num_pedido=<
-            if (isset($_GET["num_pedido"])) {
-                echo $_GET["num_pedido"];
-            } else {
-                echo "";
-            } ?>&nm_cliente=<echo $_GET["nm_cliente"]; ?>&cd_cpf=< echo $_GET["cd_cpf"]; ?>">Exportar Excel</a>
-                   < } ?>
+        <?php
+        $opcoes = array(0 => 'Selecione uma situação',
+            1 => 'Ingressos Entregues',
+            2 => 'Ingressos a Entregar');
+        foreach ($opcoes as $i => $valor) {
+            $selected = '';
+            if ($_GET['situacao'] == $i)
+                $selected = 'selected';
+            echo "<option value=" . $i . " " . $selected . ">" . $valor . "</option>";
+        }
+        ?>
+    </select>
+    <input type="submit" class="button" id="btnRelatorio" value="Buscar" />
+</p><br/>
+<!--<p>
+<// if (isset($result) && hasRows($result)) {
+?>
+    &nbsp;&nbsp;<a class="button" href="gerarExcel.php?dt_inicial=< echo $_GET["dt_inicial"]; ?>&dt_final=< echo $_GET["dt_final"]; ?>&situacao=< echo $_GET["situacao"]; ?>&num_pedido=<
+    if (isset($_GET["num_pedido"])) {
+        echo $_GET["num_pedido"];
+    } else {
+        echo "";
+    } ?>&nm_cliente=<echo $_GET["nm_cliente"]; ?>&cd_cpf=< echo $_GET["cd_cpf"]; ?>">Exportar Excel</a>
+           < } ?>
 </p><br>-->
 
 <form id="dados" name="dados" method="post">
@@ -341,19 +349,19 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
         </thead>
         <tbody>
             <?php
-               while ($rs = fetchResult($result)) {
-                   $id = $rs['ID_PEDIDO_VENDA'];
-                   $diaEntrega = $rs["DT_ENTREGA_INGRESSO"];
-                   $diaEntrega = substr($rs['DT_ENTREGA_INGRESSO'], -2) . '/' . substr($rs['DT_ENTREGA_INGRESSO'], 4, 2) . '/' . substr($rs['DT_ENTREGA_INGRESSO'], 0, 4);
+            while ($rs = fetchResult($result)) {
+                $id = $rs['ID_PEDIDO_VENDA'];
+                $diaEntrega = $rs["DT_ENTREGA_INGRESSO"];
+                $diaEntrega = substr($rs['DT_ENTREGA_INGRESSO'], -2) . '/' . substr($rs['DT_ENTREGA_INGRESSO'], 4, 2) . '/' . substr($rs['DT_ENTREGA_INGRESSO'], 0, 4);
             ?>
-                   <tr>
-                       <td style="text-align: center;"><a style="cursor: pointer;" class="itensDetalhe" destino="listaItens.php?pedido=<?php echo $rs['ID_PEDIDO_VENDA']; ?>">+</a></td>
-                       <td><?php echo $rs['ID_PEDIDO_VENDA']; ?></td>
-                       <td><?php echo $rs['DT_PEDIDO_VENDA']; ?></td>
-                       <td><?php echo utf8_encode($rs['CLIENTE'] . " " . $rs['DS_SOBRENOME']) . "<br/>" . $rs['DS_DDD_TELEFONE'] . " " . $rs['DS_TELEFONE']; ?></td>
-                       <td><?php echo number_format($rs['TOTAL_UNIT'], 2, ",", "."); ?></td>
-                       <td><?php echo $rs['QUANTIDADE']; ?></td>
-                       <td>
+                <tr>
+                    <td style="text-align: center;"><a style="cursor: pointer;" class="itensDetalhe" destino="listaItens.php?pedido=<?php echo $rs['ID_PEDIDO_VENDA']; ?>">+</a></td>
+                    <td><?php echo $rs['ID_PEDIDO_VENDA']; ?></td>
+                    <td><?php echo $rs['DT_PEDIDO_VENDA']; ?></td>
+                    <td><?php echo utf8_encode($rs['CLIENTE'] . " " . $rs['DS_SOBRENOME']) . "<br/>" . $rs['DS_DDD_TELEFONE'] . " " . $rs['DS_TELEFONE']; ?></td>
+                    <td><?php echo number_format($rs['TOTAL_UNIT'], 2, ",", "."); ?></td>
+                    <td><?php echo $rs['QUANTIDADE']; ?></td>
+                    <td>
                     <?php
                     if ($rs['DT_ENTREGA_INGRESSO'] == NULL) {
                         echo "Ingresso a Entregar";
@@ -366,7 +374,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
                 </td>
                 <td><?php
                     if ($rs["DT_ENTREGA_INGRESSO"] != NULL) {
-                        echo $rs["DT_ENTREGA_INGRESSO"]->format("d/m/Y");
+                        echo $rs["DT_ENTREGA_INGRESSO"]->format("d/m/Y H:i");
                     } else {
                         echo " - ";
                     }
@@ -377,9 +385,22 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
             <?php
                 }
             ?>
+            <tr class="total">
+                <td align="right" colspan="4"><strong>Totais</strong></td>
+                <td><?php echo number_format($total['TOTAL_PEDIDO'], 2, ",", "."); ?></td>
+                <td><?php echo $total['QUANTIDADE']; ?></td>
+                <td colspan="2"><strong>Total de Serviços</strong> <?php echo number_format($total['SERVICO'], 2, ",", "."); ?></td>
+            </tr>
             </tbody>
         </table>
     </form>
+    <div id="paginacao">
+    <?php
+        //paginacao($pc, $intervalo, $tp, true);
+        $link = "?p=entregarIngressos&dt_inicial=" . $_GET["dt_inicial"] . "&dt_final=" . $_GET["dt_final"] . "&situacao=" . $_GET["situacao"] . "&num_pedido=" . $_GET["num_pedido"] . "&nm_cliente=" . $_GET["nm_cliente"] . "&cd_cpf=" . $_GET["cd_cpf"] . "&controle=" . $total_reg . "&bar=2&baz=3&offset=";
+        Paginator::paginate($offset, $tr, $total_reg, $link, true);
+    ?>
+    </div>
 <?php
             }
         }

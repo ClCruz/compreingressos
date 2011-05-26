@@ -1,5 +1,6 @@
 <?php
 require_once('../settings/functions.php');
+include('../settings/Log.class.php');
 $mainConnection = mainConnection();
 session_start();
 
@@ -76,14 +77,14 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 9, true)) {
                                         tr.find('td:not(.button):eq(0)').html($('#cdEstabelecimento').val());        
                                         tr.find('td:not(.button):eq(1)').html($('#nome').val());        
                                         tr.find('td:not(.button):eq(2)').html($('#cdSeguranca').val());        
-                                        tr.find('td:not(.button):eq(4)').html($('#ativo').is(':checked') ? 'sim' : 'n&atilde;o');        
+                                        tr.find('td:not(.button):eq(3)').html($('#ativo').is(':checked') ? 'sim' : 'n&atilde;o');
         
                                         $this.text('Editar').attr('href', pagina + '?action=edit&' + id);        
                                         tr.removeAttr('id');        
                                         document.location.href = "?p=contaIpagare";        
                                     } else {        
                                         $.dialog({text: data});        
-                                    }        
+                                    }
                                 }        
                             });
                         }
@@ -98,10 +99,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 9, true)) {
                             values.push($(this).text());
                         });
 
-                        tr.find('td:not(.button):eq(0)').html('<input name="cdEstabelecimento" type="text" class="readonly inputStyle" id="cdEstabelecimento" maxlength="100" value="' + values[0] + '" />');
-                        tr.find('td:not(.button):eq(1)').html('<input name="nome" type="text" class="inputStyle" id="nome" maxlength="100" value="' + values[1] + '" />');
+                        tr.find('td:not(.button):eq(0)').html('<input name="cdEstabelecimento" type="text" class="readonly inputStyle" id="cdEstabelecimento" maxlength="8" value="' + values[0] + '" />');
+                        tr.find('td:not(.button):eq(1)').html('<input name="nome" type="text" class="inputStyle" id="nome" maxlength="40" value="' + values[1] + '" />');
                         tr.find('td:not(.button):eq(2)').html('<input name="cdSeguranca" type="text" class="inputStyle" id="cdSeguranca" maxlength="10" value="' + values[2] + '" />');
-                        tr.find('td:not(.button):eq(3)').html('<input name="ativo" type="checkbox" class="inputStyle" id="ativo" ' + (values[3] == 'sim' ? 'checked readonly' : ''  )+ ' />');
+                        tr.find('td:not(.button):eq(3)').html('<input name="ativo" type="checkbox" class="inputStyle" id="ativo" ' + (values[3] == 'sim' ? 'checked readonly disabled' : ''  )+ ' />');
 
                         $this.text('Salvar').attr('href', pagina + '?action=update&' + id);
 

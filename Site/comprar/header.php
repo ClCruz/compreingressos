@@ -29,7 +29,7 @@
 					</div>
 					</a>
 					<a href="minha_conta.php"  <?php echo (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) ? 'target="_blank"' : ''; ?>>
-					<div class="btn_menu_principal">
+					<div class="btn_menu_principal selected">
 						Minha Conta
 					</div>
 					</a>

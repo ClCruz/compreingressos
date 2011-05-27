@@ -121,16 +121,21 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
                     $where .
                     $group . ")
 				  SELECT * FROM RESULTADO WHERE LINHA BETWEEN " . $offset . " AND " . $final . " ORDER BY ID_PEDIDO_VENDA DESC";
-            $result = executeSQL($mainConnection, $strSql, $params);
-
+            $result = executeSQL($mainConnection, $strSql, $params);            
+            
             $query = "SELECT
                           SUM (IPV.VL_UNITARIO) AS TOTAL_PEDIDO
                   FROM
                           MW_PEDIDO_VENDA PV
                           LEFT JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA ";
 
+            if ($join OR $join2) {
+                $query .= "INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE ";
+            }
+            
             $query .= $where;
             $rs = executeSQL($mainConnection, $query, $paramsTotal, true);
+            
             $total['TOTAL_PEDIDO'] = $rs['TOTAL_PEDIDO'];
 
             $paramsTotal = array_merge($paramsTotal, $paramsTotal);
@@ -142,7 +147,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
 					  MW_PEDIDO_VENDA PV
                                           LEFT JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA ";
 
-            if (isset($join)) {
+            if ($join OR $join2) {
                 $query .= "INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE ";
             }
 
@@ -155,7 +160,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
                           FROM
                                   MW_PEDIDO_VENDA PV
                                   INNER JOIN MW_ITEM_PEDIDO_VENDA_HIST IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA ";
-            if (isset($join)) {
+            if ($join OR $join2) {
                 $query .= "INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE ";
             }
             $query .= $where;

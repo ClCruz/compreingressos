@@ -175,7 +175,16 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
         <script>
             $(function() {
                 var pagina = '<?php echo $pagina; ?>';
+                var dtInicialOpc = '<?php echo $_GET["dt_inicial"] ?>';
+                var dtFinalOpc = '<?php echo $_GET["dt_final"] ?>';
+
                 $('input.button, a.button').button();
+
+                $('#dt_final').datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    minDate: dtInicialOpc
+                });
 
                 $('input.datepicker').datepicker({
                     changeMonth: true,
@@ -187,7 +196,33 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
                     }
                 }).datepicker('option', $.datepicker.regional['pt-BR']);
 
+
+                function setDatePickers2() {
+                    $("input.datepicker").datepicker({
+                        maxDate: '' + dtFinalOpc +'',
+                        changeMonth: true,
+                        changeYear: true,
+                        dateFormate: 'dd/mm/yy',
+                        onSelect: function(dateText, inst){
+                            var the_date = new Date(dateText);
+                            $("#dt_entrega").datepicker('option', 'maxDate',  the_date);
+                        }
+                    }).datepicker('option', $.datepicker.regional['pt-BR']);
+                    $("dt_entrega").datepicker({ dateFormat: 'dd/mm/yy' });
+                }
+
                 $("#btnRelatorio").click(function(){
+                    $('input.datepicker').datepicker({
+                        changeMonth: true,        
+                        changeYear: true,        
+                        onSelect: function(date, e) {        
+                            if ($(this).is('#dt_inicial')) {        
+                                $('#dt_final').datepicker('option', 'minDate', $(this).datepicker('getDate'));        
+                            }        
+                        }        
+                    }).datepicker('option', $.datepicker.regional['pt-BR']);
+
+
                     if(!verificaCPF($('#cd_cpf').val()))
                     {
                         $.dialog({title: 'Alerta...', text: 'CPF inválido.'});
@@ -245,7 +280,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
 
                         if(trim(values[7])=='-'){
                             data = new Date();
-                            data2 = data.format("d/m/yyyy H:M");
+                            data2 = data.format("d/m/yyyy");
                         }else{
                             data2 = values[7];
                         }
@@ -257,11 +292,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
                         tr.find('td:not(.button):eq(4)').html('<input name="total" type="text" size="10" class="inputStyle readonly" id="total" maxlength="100" value="' + values[4] + '" readonly />');
                         tr.find('td:not(.button):eq(5)').html('<input name="qtde_ingressos" size="5" type="text" class="inputStyle readonly" id="qtde_ingressos" maxlength="100" value="' + values[5] + '" readonly />');
                         tr.find('td:not(.button):eq(6)').html('<input name="situacao" type="text" class="inputStyle readonly" id="situacao" maxlength="100" value="' + trim(values[6]) + '"  readonly/>');
-                        tr.find('td:not(.button):eq(7)').html('<input name="dt_entrega" size="15" type="text" class="inputStyle" id="dt_entrega" maxlength="100" value="' + data2 + '" />');
+                        tr.find('td:not(.button):eq(7)').html('<input name="dt_entrega" size="15" type="text" class="inputStyle datepicker" id="dt_entrega" maxlength="100" value="' + data2 + '" />');
 
                         $this.text('Salvar').attr('href', pagina + '?action=update&' + id);
 
-                        // setDatePickers();
+                        setDatePickers2();
                     } else if (href == '#delete') {
                         tr.remove();
                     }
@@ -385,22 +420,22 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
             <?php
                 }
             ?>
-            <tr class="total">
-                <td align="right" colspan="4"><strong>Totais</strong></td>
-                <td><?php echo number_format($total['TOTAL_PEDIDO'], 2, ",", "."); ?></td>
-                <td><?php echo $total['QUANTIDADE']; ?></td>
-                <td colspan="2"><strong>Total de Serviços</strong> <?php echo number_format($total['SERVICO'], 2, ",", "."); ?></td>
-            </tr>
+                <tr class="total">
+                    <td align="right" colspan="4"><strong>Totais</strong></td>
+                    <td><?php echo number_format($total['TOTAL_PEDIDO'], 2, ",", "."); ?></td>
+                    <td><?php echo $total['QUANTIDADE']; ?></td>
+                    <td colspan="2"><strong>Total de Serviços</strong> <?php echo number_format($total['SERVICO'], 2, ",", "."); ?></td>
+                </tr>
             </tbody>
         </table>
     </form>
     <div id="paginacao">
     <?php
-        //paginacao($pc, $intervalo, $tp, true);
-        $link = "?p=entregarIngressos&dt_inicial=" . $_GET["dt_inicial"] . "&dt_final=" . $_GET["dt_final"] . "&situacao=" . $_GET["situacao"] . "&num_pedido=" . $_GET["num_pedido"] . "&nm_cliente=" . $_GET["nm_cliente"] . "&cd_cpf=" . $_GET["cd_cpf"] . "&controle=" . $total_reg . "&bar=2&baz=3&offset=";
-        Paginator::paginate($offset, $tr, $total_reg, $link, true);
+                //paginacao($pc, $intervalo, $tp, true);
+                $link = "?p=entregarIngressos&dt_inicial=" . $_GET["dt_inicial"] . "&dt_final=" . $_GET["dt_final"] . "&situacao=" . $_GET["situacao"] . "&num_pedido=" . $_GET["num_pedido"] . "&nm_cliente=" . $_GET["nm_cliente"] . "&cd_cpf=" . $_GET["cd_cpf"] . "&controle=" . $total_reg . "&bar=2&baz=3&offset=";
+                Paginator::paginate($offset, $tr, $total_reg, $link, true);
     ?>
-    </div>
+            </div>
 <?php
             }
         }

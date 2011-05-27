@@ -22,7 +22,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
         }
         else
         {
-            $data = tratarData($_POST['dt_entrega']);
+            $data = tratarData($_POST['dt_entrega']) . " " .date("H:i:s");
         }
 
         $params = array($data , $_GET['id']);

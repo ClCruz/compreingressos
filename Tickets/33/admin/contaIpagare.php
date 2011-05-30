@@ -101,7 +101,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 9, true)) {
 
                         tr.find('td:not(.button):eq(0)').html('<input name="cdEstabelecimento" type="text" class="readonly inputStyle" id="cdEstabelecimento" maxlength="8" value="' + values[0] + '" />');
                         tr.find('td:not(.button):eq(1)').html('<input name="nome" type="text" class="inputStyle" id="nome" maxlength="40" value="' + values[1] + '" />');
-                        tr.find('td:not(.button):eq(2)').html('<input name="cdSeguranca" type="text" class="inputStyle" id="cdSeguranca" maxlength="10" value="' + values[2] + '" />');
+                        tr.find('td:not(.button):eq(2)').html('<input name="cdSeguranca" type="text" class="inputStyle" id="cdSeguranca" maxlength="8" value="' + values[2] + '" />');
                         tr.find('td:not(.button):eq(3)').html('<input name="ativo" type="checkbox" class="inputStyle" id="ativo" ' + (values[3] == 'sim' ? 'checked readonly disabled' : ''  )+ ' />');
 
                         $this.text('Salvar').attr('href', pagina + '?action=update&' + id);

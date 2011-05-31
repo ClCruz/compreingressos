@@ -86,7 +86,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 33, true)) {
 
                 $('#dtFinal').datepicker({
                     minDate: dtInicialOpc,
-                    maxDate: ''+dtFinal+''
+                    maxDate: ''+dtFinal+'',
+                    changeYear: true,
+                    changeMonth: true
                 });
 
                 $('input.datePicker').datepicker({
@@ -120,7 +122,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 33, true)) {
             if ($funcionalidade["DS_FUNCIONALIDADE"] == $_GET["funcionalidade"])
                 $selected = "selected=\"selecteded\"";
 ?>
-            <option <?php echo $selected; ?> value="<?php echo $funcionalidade["DS_FUNCIONALIDADE"]; ?>"><?php echo $funcionalidade["DS_FUNCIONALIDADE"]; ?></option>
+            <option <?php echo $selected; ?> value="<?php echo $funcionalidade["DS_FUNCIONALIDADE"]; ?>"><?php echo utf8_encode($funcionalidade["DS_FUNCIONALIDADE"]) ?></option>
 <?php
         }
 ?>

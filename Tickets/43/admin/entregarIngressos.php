@@ -372,10 +372,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
         $mes = date("m") - 1;
 ?>
         <p>
-            Pedido nº&nbsp;&nbsp;&nbsp; <input size="10" type="text" value="<?php echo (isset($_GET["num_pedido"])) ? $_GET["num_pedido"] : "" ?>" id="num_pedido" name="num_pedido" /> &nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            CPF <input type="text" value="<?php echo (isset($_GET["cd_cpf"])) ? $_GET["cd_cpf"] : "" ?>" id="cd_cpf" name="cd_cpf" maxlength="13" /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            Nome do Cliente <input size="40" type="text" value="<?php echo (isset($_GET["nm_cliente"])) ? $_GET["nm_cliente"] : "" ?>" id="nm_cliente" name="nm_cliente" /><br/>
+            Pedido nº&nbsp;&nbsp; <input size="10" type="text" value="<?php echo (isset($_GET["num_pedido"])) ? $_GET["num_pedido"] : "" ?>" id="num_pedido" name="num_pedido" /> &nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            CPF <input type="text" value="<?php echo (isset($_GET["cd_cpf"])) ? $_GET["cd_cpf"] : "" ?>" id="cd_cpf" name="cd_cpf" maxlength="13" /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Cliente <input size="40" type="text" value="<?php echo (isset($_GET["nm_cliente"])) ? $_GET["nm_cliente"] : "" ?>" id="nm_cliente" name="nm_cliente" /><br/>
         </p><br/>
         <p>
             Data Inicial <input type="text" value="<?php echo (isset($_GET["dt_inicial"])) ? $_GET["dt_inicial"] : date("d/m/Y") ?>" class="datepicker" id="dt_inicial" readonly name="dt_inicial" />&nbsp;&nbsp;&nbsp;
@@ -393,7 +393,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
         }
         ?>
     </select>
-</p>
+</p><br/>
 <p>
     <?php
         $name = "evento";
@@ -408,7 +408,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
         }
         $combo .= '</select>';
     ?>
-        Nome do Evento <?php echo $combo; ?> &nbsp;&nbsp;&nbsp;
+        Evento &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $combo; ?> &nbsp;&nbsp;&nbsp;
         <input type="submit" class="button" id="btnRelatorio" value="Buscar" />
     </p><br/>
     <!--<p>

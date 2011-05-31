@@ -11,7 +11,7 @@ function tratarData($data) {
     return $data[2] . $data[1] . $data[0];
 }
 
-if (acessoPermitido($mainConnection, $_SESSION['admin'], 33, true)) {
+if (acessoPermitido($mainConnection, $_SESSION['admin'], 34, true)) {
     $pagina = basename(__FILE__);
     if (isset($_GET['action'])) {
         require('actions/' . $pagina);
@@ -55,7 +55,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 33, true)) {
                         $funcOpcao . "
                      )
                      SELECT * FROM RESULTADO WHERE LINHA BETWEEN " . $offset . " AND " . $final ." ORDER BY DT_OCORRENCIA DESC";
-                        
+
             $result = executeSQL($mainConnection, $query, $params);            
         }
 

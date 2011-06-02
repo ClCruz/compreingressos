@@ -545,7 +545,7 @@ function comboEventos($idBase, $nomeBase, $idUsuario){
 
 function comboPatrocinador($name, $selected = '-1', $isCombo = true) {
 	$mainConnection = mainConnection();
-	$query = 'SELECT ID_PATROCINADOR, DS_NOMPATROCINADOR FROM MW_PATROCINADOR';
+	$query = 'SELECT ID_PATROCINADOR, DS_NOMPATROCINADOR FROM MW_PATROCINADOR ORDER BY DS_NOMPATROCINADOR ASC';
 	$result = executeSQL($mainConnection, $query);
 	
 	$combo = '<select name="'.$name.'" class="inputStyle" id="'.$name.'"><option value="">Selecione um patrocinador...</option>';

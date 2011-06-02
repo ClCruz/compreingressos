@@ -1,4 +1,5 @@
 <?php
+
 require_once('functions.php');
 
 /**
@@ -36,14 +37,14 @@ class Log {
     }
 
     function __set($key, $value) {
-        if (empty($value))
+        if (empty($value) && $key != "parametros")
             throw new Exception($key . ' é inválida.', 002);
         if ($key == "funcionalidade")
             $this->funcionalidade = $value;
         else if ($key == "parametros")
             $this->parametros = $value;
         else if ($key == "log") {
-            foreach($this->parametros as $i => $v) {
+            foreach ($this->parametros as $i => $v) {
                 $value = $this->str_replace_once('?', $v, $value);
             }
 
@@ -51,7 +52,7 @@ class Log {
         }
     }
 
-    function __get($name){
+    function __get($name) {
         return $this->$name;
     }
 
@@ -60,18 +61,22 @@ class Log {
      * @return boolean
      */
     function save($conn) {
-        $query = "INSERT INTO ci_middleway.dbo.mw_log_middleway(dt_ocorrencia,
+        if (empty($conn)) {
+            throw new Exception("O ponteiro de conexão não existe!", 003);
+        } else {
+            $query = "INSERT INTO ci_middleway.dbo.mw_log_middleway(dt_ocorrencia,
                                                                id_usuario,
                                                                ds_funcionalidade,
                                                                ds_log_middleway)
                                                         VALUES(?, ?, ?, ?)";
 
-        $params = array($this->dataOcorrencia, $this->usuario, $this->funcionalidade, $this->log);
+            $params = array($this->dataOcorrencia, $this->usuario, utf8_decode($this->funcionalidade), $this->log);
 
-        if (executeSQL($conn, $query, $params))
-            return true;
-        else
-            return false;
+            if (executeSQL($conn, $query, $params))
+                return true;
+            else
+                return false;
+        }
     }
 
 }

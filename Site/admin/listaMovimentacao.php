@@ -413,7 +413,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
        </table>
        <div id="paginacao">
     <?php
-               echo "Total" . $tr;
                if ($tr) {
                    //paginacao($pc, $intervalo, $tp, true);
                    $link = "?p=" . basename($pagina, '.php') . "&dt_inicial=" . $_GET["dt_inicial"] . "&dt_final=" . $_GET["dt_final"] . "&situacao=" . $_GET["situacao"] . "&num_pedido=" . $_GET["num_pedido"] . "&nm_cliente=" . $_GET["nm_cliente"] . "&nm_operador=" . $_GET["nm_operador"] . "&cd_cpf=" . $_GET["cd_cpf"] . "&nm_evento=" . $_GET["nm_evento"] . "&controle=" . $total_reg . "&bar=2&baz=3&offset=";

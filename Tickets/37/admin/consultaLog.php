@@ -62,9 +62,21 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 34, true)) {
         $dataInicial = executeSQL($mainConnection,
                         "SELECT TOP 1 DT_OCORRENCIA FROM MW_LOG_MIDDLEWAY ORDER BY DT_OCORRENCIA",
                         array(), true);
+
+        if(empty($dataInicial["DT_OCORRENCIA"])){
+            $dtInicial = '';
+        }else{
+            $dtInicial = $dataInicial["DT_OCORRENCIA"]->format("d/m/Y");
+        }
+
         $dataFinal = executeSQL($mainConnection,
                         "SELECT TOP 1 DT_OCORRENCIA FROM MW_LOG_MIDDLEWAY ORDER BY DT_OCORRENCIA DESC",
                         array(), true);
+        if(empty($dataFinal["DT_OCORRENCIA"])){
+            $dtFinal = '';
+        }else{
+            $dtFinal = $dataFinal["DT_OCORRENCIA"]->format("d/m/Y");
+        }
 
         $funcionalidades = executeSQL($mainConnection,
                         "SELECT DISTINCT DS_FUNCIONALIDADE
@@ -74,8 +86,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 34, true)) {
         <script type="text/javascript" language="javascript">
             $(function() {
                 var pagina = '<?php echo $pagina; ?>';
-                var dtInicial = '<?php echo $dataInicial["DT_OCORRENCIA"]->format("d/m/Y"); ?>';
-                var dtFinal = '<?php echo $dataFinal["DT_OCORRENCIA"]->format("d/m/Y"); ?>';
+                //FAZER IF PARA VERIFICAR SE A VARIAVEL DTINICIAL ESTÁ VAZIA SE SIM NÃO PROSSEGUE
+                var dtInicial = '<?php echo $dtInicial; ?>';
+                var dtFinal = '<?php echo $dtFinal; ?>';
                 var dtInicialOpc = '<?php echo $_GET["dtInicial"]; ?>';
 
                 $('.button').button();
@@ -122,7 +135,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 34, true)) {
             if ($funcionalidade["DS_FUNCIONALIDADE"] == $_GET["funcionalidade"])
                 $selected = "selected=\"selecteded\"";
 ?>
-            <option <?php echo $selected; ?> value="<?php echo $funcionalidade["DS_FUNCIONALIDADE"]; ?>"><?php echo utf8_encode($funcionalidade["DS_FUNCIONALIDADE"]) ?></option>
+            <option <?php echo $selected; ?> value="<?php echo utf8_encode($funcionalidade["DS_FUNCIONALIDADE"]); ?>"><?php echo utf8_encode($funcionalidade["DS_FUNCIONALIDADE"]) ?></option>
 <?php
         }
 ?>

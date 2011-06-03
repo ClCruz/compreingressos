@@ -18,7 +18,7 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 	
 	if (executeSQL($mainConnection, $query, $params)) {
 		$query = 'SELECT ID_PATROCINADOR FROM MW_PATROCINADOR WHERE DS_NOMPATROCINADOR = ?';
-		$params = array(utf8_decode($_POST['nome']));
+		$params = array($_POST['nome']);
 		
 		$rs = executeSQL($mainConnection, $query, $params, true);
 		
@@ -27,16 +27,16 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 		$retorno = sqlErrors();
 	}
 	
-} else if ($_GET['action'] == 'update' and isset($_GET['codpatrocinador'])) { /*------------ UPDATE ------------*/
+} else if ($_GET['action'] == 'update' and isset($_GET['id'])) { /*------------ UPDATE ------------*/
 	
 	$query = "UPDATE MW_PATROCINADOR SET
 					DS_NOMPATROCINADOR = ?
 				WHERE
 					ID_PATROCINADOR = ?";
-	$params = array(utf8_decode($_POST['nome']), $_GET['codpatrocinador']);
+	$params = array(utf8_decode($_POST['nome']), $_GET['id']);
 	
 	if (executeSQL($mainConnection, $query, $params)) {
-		$retorno = 'true?codpatrocinador='.$_GET['codpatrocinador'];
+		$retorno = 'true?id='.$_GET['id'];
 	} else {
 		$retorno = sqlErrors();
 	}

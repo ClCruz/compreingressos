@@ -31,7 +31,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 22, true)) {
 
                     var $this = $(this),
                     href = $this.attr('href'),
-                    id = 'codpatrocinador=' + $.getUrlVar('codpatrocinador', href),
+                    id = 'id=' + $.getUrlVar('id', href),
                     tr = $this.closest('tr');
 
                     if (href.indexOf('?action=add') != -1 || href.indexOf('?action=update') != -1) {
@@ -41,8 +41,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 22, true)) {
                             url: href,
                             type: 'post',
                             data: $('#dados').serialize(),
-                            success: function(data) {
-                                console.log(trim(data).substr(0, 4));
+                            success: function(data) {                                
                                 if (trim(data).substr(0, 4) == 'true') {
                                     var id = $.serializeUrlVars(data);
 
@@ -148,7 +147,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 22, true)) {
 ?>
             <tr>
                 <td><?php echo utf8_encode($rs['DS_NOMPATROCINADOR']); ?></td>
-                <td class="button"><a href="<?php echo $pagina; ?>?action=edit&codpatrocinador=<?php echo $id; ?>">Editar</a></td>
+                <td class="button"><a href="<?php echo $pagina; ?>?action=edit&id=<?php echo $id; ?>">Editar</a></td>
                 <td class="button"><a href="<?php echo $pagina; ?>?action=delete&id=<?php echo $id; ?>">Apagar</a></td>
             </tr>
 <?php

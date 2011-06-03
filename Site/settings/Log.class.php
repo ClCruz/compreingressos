@@ -3,10 +3,11 @@
 require_once('functions.php');
 
 /**
+ * Classe para manter histórico de Log das aplicações
  * @author Jacqueline Barbosa <jacqueline.barbosa@cc.com.br>
  * @since 26/05/2011 10:05
- * @version 1.0.0
- * Classe para manter histórico de Log das aplicações
+ * @version 1.1.0 $03/06/2011 10:17
+ * 
  */
 class Log {
 
@@ -17,14 +18,28 @@ class Log {
     private $parametros;
 
     /**
-     *
-     * @param Integer $Pusuario
+     * Classe para manter histórico de Log das aplicações
+     * @param Integer $Pusuario Identificador do usuário no sistema
+     * @param String $pFunc [optional]<br> Descrição da Funcionalidade
+     * @param String $pLog [optional]<br> Descrição da ocorrência, e.g. SQL executado
+     * @param mixed $pParam [optional]<br> Array de parametros usados na Query SQL
+     * 
      */
-    function __construct($Pusuario) {
+    function __construct($Pusuario, $pFunc = null, $pLog = null, $pParam = null) {
         $this->dataOcorrencia = date("Y-m-d H:i:s");
         if (empty($Pusuario))
             throw new Exception('Identificador de usuário inválido.', 001);
         $this->usuario = $Pusuario;
+
+        //Atributos adicionais para o objeto log
+        $params = array($pFunc => "funcionalidade",
+            $pLog => "log",
+            $pParam => "parametros");
+
+        foreach ($params as $key => $value) {
+            if ($key != null)
+                $this->__set($value, $key);
+        }
     }
 
     private function str_replace_once($search, $replace, $subject) {
@@ -36,6 +51,11 @@ class Log {
         return($ret);
     }
 
+    /**
+     * Método para atribuir valor ao atributo da classe
+     * @param String $key Nome do atributo na classe
+     * @param mixed $value Valor do atributo a ser adicionado
+     */
     function __set($key, $value) {
         if (empty($value) && $key != "parametros")
             throw new Exception($key . ' é inválida.', 002);
@@ -57,10 +77,11 @@ class Log {
     }
 
     /**
-     * @param resource connection $conn
-     * @return boolean
+     * Salva o registro do log no banco de dados
+     * @param resource $conn Ponteiro de conexão com o banco
+     * @return boolean retorna true caso tenha salvo o log no banco
      */
-    function save($conn) {
+    public function save($conn) {
         if (empty($conn)) {
             throw new Exception("O ponteiro de conexão não existe!", 003);
         } else {

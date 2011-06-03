@@ -42,6 +42,14 @@ class Log {
         }
     }
 
+    /**
+     * Método substitui string pela primeira ocorrência encontrada
+     * @param String $search String a ser procurada
+     * @param String $replace Nova string a ser substituida
+     * @param String String completa onde será feita a busca
+     * @return String Retorna a nova string substituida
+     * @access private Método somente para uso interno
+     */
     private function str_replace_once($search, $replace, $subject) {
         if (($pos = strpos($subject, $search)) !== false) {
             $ret = substr($subject, 0, $pos) . $replace . substr($subject, $pos + strlen($search));
@@ -67,11 +75,15 @@ class Log {
             foreach ($this->parametros as $i => $v) {
                 $value = $this->str_replace_once('?', $v, $value);
             }
-
             $this->log = $value;
         }
     }
 
+    /**
+     * Método retorna o valor do atributo
+     * @param String $name Nome do atributo da classe
+     * @return mixed Retorna o valor do atributo da classe
+     */
     function __get($name) {
         return $this->$name;
     }
@@ -90,9 +102,7 @@ class Log {
                                                                ds_funcionalidade,
                                                                ds_log_middleway)
                                                         VALUES(?, ?, ?, ?)";
-
             $params = array($this->dataOcorrencia, $this->usuario, utf8_decode($this->funcionalidade), $this->log);
-
             if (executeSQL($conn, $query, $params))
                 return true;
             else
@@ -101,5 +111,4 @@ class Log {
     }
 
 }
-
 ?>

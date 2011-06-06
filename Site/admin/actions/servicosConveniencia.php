@@ -18,6 +18,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
 					(ID_EVENTO, DT_INICIO_VIGENCIA, VL_TAXA_CONVENIENCIA)
 					VALUES (?, CONVERT(DATETIME, ?, 103), ?)";
         $params = array($_POST['idEvento'], $_POST['data'], $_POST['valor']);
+	$queryToLog = $query;
+	$paramsToLog = $params;
 
         if (executeSQL($mainConnection, $query, $params)) {
             $query = 'SELECT DS_EVENTO FROM MW_EVENTO WHERE ID_EVENTO = ?';
@@ -29,8 +31,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
             try {
                 $log = new Log($_SESSION["admin"]);
                 $log->__set("funcionalidade", "Valor de Serviço");
-                $log->__set("parametros", $params);
-                $log->__set("log", $query);
+                $log->__set("parametros", $paramsToLog);
+                $log->__set("log", $queryToLog);
                 $log->save($mainConnection);                
             } catch (Exception $e) {
                 echo $e->getMessage();               
@@ -58,6 +60,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
 						R.DS_EVENTO = ?
 						AND T.DT_INICIO_VIGENCIA = CONVERT(DATETIME, ?, 103)";
             $params = array($_POST['idEvento'], $_POST['data'], $_POST['valor'], $_GET['idEvento'], $_GET['data']);
+	    $queryToLog = $query;
+	    $paramsToLog = $params;
 
             if (executeSQL($mainConnection, $query, $params)) {
                 $query = 'SELECT DS_EVENTO FROM MW_EVENTO WHERE ID_EVENTO = ?';
@@ -68,8 +72,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                 try {
                     $log = new Log($_SESSION["admin"]);
                     $log->__set("funcionalidade", "Valor de Serviço");
-                    $log->__set("parametros", $params);
-                    $log->__set("log", $query);
+                    $log->__set("parametros", $paramsToLog);
+                    $log->__set("log", $queryToLog);
                     $log->save($mainConnection);
                 } catch (Exception $e) {
                     echo $e->getMessage();                    

@@ -65,7 +65,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                         });
 
                         tr.find('td:not(.button):eq(0)').html('<?php echo comboEvento('idEvento', $_GET['teatro']); ?>');
-                        $('#idEvento').find('option[text=' + values[0] + ']').attr('selected', 'selected');
+			$('#idEvento option').filter(function(){return $(this).text() == values[0]}).attr('selected', 'selected');
                         tr.find('td:not(.button):eq(1)').html('<input name="data" type="text" class="datePicker inputStyle" id="data" maxlength="10" value="' + values[1] + '" readonly>');
                         tr.find('td:not(.button):eq(2)').html('R$ <input name="valor" type="text" class="number inputStyle" id="valor" maxlength="6" value="' + values[2].substr(3, values[2].length) + '" >');
 

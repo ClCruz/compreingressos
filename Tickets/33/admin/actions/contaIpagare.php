@@ -34,6 +34,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 9, true)) {
         $params2 = array(utf8_decode($_POST['nome']), $_POST['cdSeguranca'], $_GET['codestabelecimento']);
         
         if (executeSQL($mainConnection, $query, $params2)) {
+
+                $log = new Log($_SESSION['admin']);
+                $log->__set('funcionalidade', 'Conta IPAGARE');
+                $log->__set('parametros', $params2);
+                $log->__set('log', $query);
+                $log->save($mainConnection);
+
                 $retorno = 'true?codestabelecimento='.$_GET['codestabelecimento'];
         } else {
                 $retorno = sqlErrors();

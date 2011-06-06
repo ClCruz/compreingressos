@@ -11,7 +11,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 9, true)) {
 
         $query2 = "UPDATE MW_CONTA_IPAGARE SET IN_ATIVO = 0 WHERE CD_ESTABELECIMENTO <> ". $_GET['codestabelecimento'];
 
-        $params = array($_POST['nome'], $_POST['cdSeguranca'], $_GET['codestabelecimento']);
+        $params = array(utf8_decode($_POST['nome']), $_POST['cdSeguranca'], $_GET['codestabelecimento']);
         
         if (executeSQL($mainConnection, $query, $params)) {
                 executeSQL($mainConnection, $query2, $params);
@@ -31,9 +31,16 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 9, true)) {
     {
         $query = "UPDATE MW_CONTA_IPAGARE SET NM_CONTA_ESTABELECIMENTO = ?, CD_SEGURANCA = ? WHERE CD_ESTABELECIMENTO = ?";
 
-        $params2 = array($_POST['nome'], $_POST['cdSeguranca'], $_GET['codestabelecimento']);
+        $params2 = array(utf8_decode($_POST['nome']), $_POST['cdSeguranca'], $_GET['codestabelecimento']);
         
         if (executeSQL($mainConnection, $query, $params2)) {
+
+                $log = new Log($_SESSION['admin']);
+                $log->__set('funcionalidade', 'Conta IPAGARE');
+                $log->__set('parametros', $params2);
+                $log->__set('log', $query);
+                $log->save($mainConnection);
+
                 $retorno = 'true?codestabelecimento='.$_GET['codestabelecimento'];
         } else {
                 $retorno = sqlErrors();

@@ -143,7 +143,7 @@ require "Util.php";
         $result = executeSQL($mainConnection, 'SELECT CD_ESTABELECIMENTO, CD_SEGURANCA, IN_ATIVO FROM MW_CONTA_IPAGARE WHERE IN_ATIVO = 1');
         while ($rsResult = fetchResult($result)) {
               $codigoEstabelecimento = $rsResult['CD_ESTABELECIMENTO'];
-              $codigoSeguranca = md5($rsResult['CD_SEGURANCA']); //Busca o código do segurança e gera a hash com o algoritmo MD5.
+              $codigoSeguranca = trim(md5($rsResult['CD_SEGURANCA'])); //Busca o código do segurança e gera a hash com o algoritmo MD5.
         }
         
 	$chaveVerificacao = md5($codigoSeguranca . $parametros);

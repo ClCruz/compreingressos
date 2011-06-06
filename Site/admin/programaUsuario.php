@@ -52,7 +52,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 15, true)) {
             } else {
 
                 $query = "INSERT INTO MW_USUARIO_PROGRAMA (ID_USUARIO, ID_PROGRAMA) VALUES(" . $_POST["usuario"] . "," . $_POST["programas"] . ")";
-                print_r($query);
                 executeSQL($mainConnection, $query);
 
                 while ($rs = fetchResult($result)) {
@@ -85,9 +84,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 15, true)) {
             }
         } else {
 
-            /*$query = "DELETE FROM MW_USUARIO_PROGRAMA WHERE ID_USUARIO = " . $_POST["usuario"] . " AND ID_PROGRAMA = " . $_POST["programas"];
-            executeSQL($mainConnection, $query);*/
-
             $queryProg = "SELECT ID_PROGRAMA FROM MW_PROGRAMA WHERE ID_PARENT = " . $_POST["programas"];
             $result = executeSQL($mainConnection, $queryProg);
 
@@ -106,7 +102,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 15, true)) {
                     executeSQL($mainConnection, $query);
 
                     $queryProg2 = "SELECT ID_PROGRAMA FROM MW_PROGRAMA WHERE ID_PARENT = " . $rs['ID_PROGRAMA'];
-                    print_r($queryProg2);
                     $result2 = executeSQL($mainConnection, $queryProg2);
 
                     $rows2 = numRows($mainConnection, $queryProg2);
@@ -122,7 +117,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 15, true)) {
                          while ($rs2 = fetchResult($result2)) {
 
                             $query2 = "DELETE FROM MW_USUARIO_PROGRAMA WHERE ID_USUARIO = " . $_POST["usuario"] . " AND ID_PROGRAMA = " . $rs2['ID_PROGRAMA'];
-                            print_r($query2);
                             executeSQL($mainConnection, $query2);
 
                             $log = new Log($_SESSION['admin'], 'Direitos de Acesso', $query2);
@@ -131,13 +125,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 15, true)) {
                     }
                 }
             }
-
-            //$query = "DELETE FROM MW_USUARIO_PROGRAMA WHERE ID_USUARIO = " . $_POST["usuario"] . " AND ID_PROGRAMA = " . $_POST["programas"];
         }
-
-        //executeSQL($mainConnection, $query);
-        // $log = new Log($_SESSION['admin'], 'Direitos de Acesso', $query);
-        //  $log->save($mainConnection);
 
         if (sqlErrors ()) {
             echo sqlErrors();

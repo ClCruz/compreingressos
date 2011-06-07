@@ -4,7 +4,7 @@ require('../settings/Log.class.php');
 $mainConnection = mainConnection();
 session_start();
 
-if (acessoPermitido($mainConnection, $_SESSION['admin'], 15, true)) {
+if (acessoPermitido($mainConnection, $_SESSION['admin'], 14, true)) {
 
     function getChildren($conn, $idPrograma, $idUsuario, $nivel) {
         $query = 'SELECT P.ID_PROGRAMA, P.ID_PARENT, P.DS_PROGRAMA, P.DS_URL,
@@ -108,12 +108,16 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 15, true)) {
 
                     if ($rows2 == 0) {
 
-                        $query2 = "DELETE FROM MW_USUARIO_PROGRAMA WHERE ID_USUARIO = " . $_POST["usuario"] . " AND ID_PROGRAMA = " . $rs['ID_PROGRAMA'];
+                        $query2 = "DELETE FROM MW_USUARIO_PROGRAMA WHERE ID_USUARIO = " . $_POST["usuario"] . " AND ID_PROGRAMA = " . $_POST["programas"];
                         executeSQL($mainConnection, $query2);
 
                         $log = new Log($_SESSION['admin'], 'Direitos de Acesso', $query2);
                         $log->save($mainConnection);
                     }else{
+
+                        $query = "DELETE FROM MW_USUARIO_PROGRAMA WHERE ID_USUARIO = " . $_POST["usuario"] . " AND ID_PROGRAMA = " . $_POST["programas"];
+                        executeSQL($mainConnection, $query);
+
                          while ($rs2 = fetchResult($result2)) {
 
                             $query2 = "DELETE FROM MW_USUARIO_PROGRAMA WHERE ID_USUARIO = " . $_POST["usuario"] . " AND ID_PROGRAMA = " . $rs2['ID_PROGRAMA'];

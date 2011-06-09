@@ -3,7 +3,7 @@
 			  		<a href="http://www.compreingressos.com/institucional">Institucional</a> |
 					<a href="http://www.compreingressos.com/politica">Pol&iacute;tica de Venda</a> |
 					<a href="http://www.compreingressos.com/privacidade">Privacidade</a> |
-					<a href="https://compra.compreingressos.com/comprar/loginBordero.php?redirect=..%2Fadmin%2F%3Fp%3DrelatorioBordero">Borderô Web</a> |
+					<a href="loginBordero.php?redirect=..%2Fadmin%2F%3Fp%3DrelatorioBordero">Borderô Web</a> |
 					<a href="http://www.compreingressos.com/suporte">Suporte T&eacute;cnico</a> |
 					<a href="http://www.compreingressos.com/cadastro_espetaculo">Cadastre sua Atração</a> |
 					<a href="http://www.compreingressos.com/pontosdevenda">Pontos de Venda</a>

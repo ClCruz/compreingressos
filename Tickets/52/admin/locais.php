@@ -39,7 +39,6 @@ $(function() {
 				type: 'post',
 				data: $('#dados').serialize(),
 				success: function(data) {
-					console.log(trim(data).substr(0, 4));
 					if (trim(data).substr(0, 4) == 'true') {
 						var id = $.serializeUrlVars(data);
 						

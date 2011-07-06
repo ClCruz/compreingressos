@@ -53,7 +53,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
 		}
 		
 		if (!$numerado) {
-			$query = 'SELECT SUM(1) FROM TABSALDETALHE D
+			$query = 'SELECT ISNULL(SUM(1), 0) FROM TABSALDETALHE D
 						INNER JOIN TABAPRESENTACAO A ON A.CODSALA = D.CODSALA
 						WHERE D.TIPOBJETO = \'C\' AND A.CODAPRESENTACAO = ?
 						AND NOT EXISTS (SELECT 1 FROM TABLUGSALA L
@@ -170,12 +170,16 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
 								?>
 								</select></p>
 								
-								<p>Escolha a quantidade de Ingressos: <select name="numIngressos" id="numIngressos" ><?php
-								$maxIngressos = ($ingressosDisponiveis < $maxIngressos) ? $ingressosDisponiveis : $maxIngressos;
-								for ($i = 1; $i <= $maxIngressos; $i++) {
-									echo '<option value="'.$i.'"'.(($ingressosSelecionados == $i) ? ' selected' : '').'>'.$i.'</option>';
+								<?php if ($ingressosDisponiveis == 0) { ?>
+									<p>Não ha lugares disponíveis no momento.</p>
+								<?php } else { ?>
+									<p>Escolha a quantidade de Ingressos: <select name="numIngressos" id="numIngressos" ><?php
+									$maxIngressos = ($ingressosDisponiveis < $maxIngressos) ? $ingressosDisponiveis : $maxIngressos;
+									for ($i = 1; $i <= $maxIngressos; $i++) {
+										echo '<option value="'.$i.'"'.(($ingressosSelecionados == $i) ? ' selected' : '').'>'.$i.'</option>';
+									}
+									?></select></p><?php
 								}
-								?></select></p><?php
 							}
 							?>
 							<?php } ?>

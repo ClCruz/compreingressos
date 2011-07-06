@@ -15,7 +15,8 @@ declare @ds_nome_base_sql varchar(50),
 		@id_cadeira int,
 		@id_session varchar(32),
 		@strSql varchar(500),
-		@dataatual datetime
+		@dataatual datetime,
+		@error varchar
 
 set @dataatual = getdate()
 
@@ -30,12 +31,24 @@ and p.in_situacao = 'P'
 where id_reserva in (select id_reserva from mw_reserva where dt_validade < @dataatual)
 
 
+IF @@ERROR <> 0 
+BEGIN
+	SET @error = 'Não foi possível criar a tabela temporária'
+	GOTO ERRO
+END
+
 -- delete from mw_item_pedido_venda where id_pedido_venda in (select id_pedido_venda from #TMP)
 
 update mw_pedido_venda
 set in_situacao = 'E'
 where id_pedido_venda in (select id_pedido_venda from #TMP)
 and in_situacao = 'P'
+
+IF @@ERROR <> 0 
+BEGIN
+	SET @error = 'Não foi possível alterar a situação do pedido'
+	GOTO ERRO
+END
 
 declare c1 cursor for 
 			select
@@ -61,12 +74,24 @@ open c1
 
 fetch next from c1 into @ds_nome_base_sql, @id_reserva, @codapresentacao, @id_cadeira, @id_session
 
+IF @@ERROR <> 0 
+BEGIN
+	SET @error = 'Não foi possível criar o cursor'
+	GOTO ERRO
+END
+
 while @@fetch_status = 0
 begin
 
 	select @strSql = 'Delete from ' + rtrim(@ds_nome_base_sql) + '..tablugsala where stacadeira = ''T'' and codapresentacao = ' + convert(varchar, @codapresentacao) + ' and indice = ' + convert(varchar, @id_cadeira) + ' and id_session = ''' + @id_session + ''''
 --	print @strsql
 	exec (@strSql)
+
+	IF @@ERROR <> 0 
+	BEGIN
+		SET @error = 'Não foi possível executar o delete na tablugsala'
+		GOTO ERRO
+	END
 
 	fetch next from c1 into @ds_nome_base_sql, @id_reserva, @codapresentacao, @id_cadeira, @id_session
 
@@ -76,4 +101,20 @@ deallocate c1
 
 delete from mw_reserva where dt_validade <= @dataatual
 
+IF @@ERROR <> 0 
+BEGIN
+	SET @error = 'Não foi possível apagar a reserva'
+	GOTO ERRO
+END
+
 drop table #TMP
+
+return
+
+
+ERRO:
+
+	INSERT INTO mw_log_middleway (dt_ocorrencia, id_usuario, ds_funcionalidade, ds_log_middleway) 
+	Values (GetDate(), null, 'prc_limpa_reserva', @error + ': ' + @@ERROR)
+	drop table #TMP
+	RETURN

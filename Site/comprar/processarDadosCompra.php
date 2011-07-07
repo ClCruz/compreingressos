@@ -183,12 +183,50 @@ if (hasRows($resultIdPedidoVenda)) {
 
         executeSQL($mainConnection, 'DELETE FROM MW_ITEM_PEDIDO_VENDA
                                     WHERE ID_PEDIDO_VENDA = ?', array($newMaxId));
-        executeSQL($mainConnection, 'DELETE FROM MW_PEDIDO_VENDA
-                                    WHERE ID_PEDIDO_VENDA = ?', array($newMaxId));
 } else {
-        $newMaxId = executeSQL($mainConnection, 'SELECT ISNULL(MAX(ID_PEDIDO_VENDA), 0) + 1 FROM MW_PEDIDO_VENDA', array(), true);
-        $newMaxId = $newMaxId[0];
+		$prosseguir = false;
+		//enquanto ele não achar um id disponível (não duplicado) ele não para de tentar
+		while (!$prosseguir) {
+			$newMaxId = executeSQL($mainConnection, 'SELECT ISNULL(MAX(ID_PEDIDO_VENDA), 0) + 1 FROM MW_PEDIDO_VENDA', array(), true);
+			$newMaxId = $newMaxId[0];
 
+			$query = 'INSERT INTO MW_PEDIDO_VENDA
+									(ID_PEDIDO_VENDA
+									,ID_CLIENTE
+									,ID_USUARIO_CALLCENTER
+									,DT_PEDIDO_VENDA
+									,VL_TOTAL_PEDIDO_VENDA
+									,IN_SITUACAO
+									,IN_RETIRA_ENTREGA
+									,VL_TOTAL_INGRESSOS
+									,VL_FRETE
+									,VL_TOTAL_TAXA_CONVENIENCIA';
+			$query .= ($entrega) ?
+									',DS_ENDERECO_ENTREGA
+									,DS_COMPL_ENDERECO_ENTREGA
+									,DS_BAIRRO_ENTREGA
+									,DS_CIDADE_ENTREGA
+									,ID_ESTADO
+									,CD_CEP_ENTREGA
+									,DS_CUIDADOS_DE' : '';
+			$query .= ',IN_SITUACAO_DESPACHO
+									,CD_BIN_CARTAO)
+									VALUES
+									(?, ?, ?, GETDATE(), ?, ?, ?, ?, ?, ?' .($entrega ? ', ?, ?, ?, ?, ?, ?, ?' : ''). ', ?, ?)';
+
+			if ($entrega) {
+				$params = array($newMaxId, $_SESSION['user'], $_SESSION['operador'], 0, 'P', ($entrega ? 'E' : 'R'), 0, $frete,
+													0, $parametros['logradouro_entrega'], $parametros['complemento_entrega'],
+													$parametros['bairro_entrega'], $parametros['cidade_entrega'], $idEstado, $parametros['cep_entrega'],
+													($entrega ? $parametros['nome_cliente'] : ''), ($entrega ? 'D' : 'N'), $parametros['numero_cartao']);
+			} else {
+				$params = array($newMaxId, $_SESSION['user'], $_SESSION['operador'], 0, 'P', ($entrega ? 'E' : 'R'), 0, $frete,
+													$totalConveniencia, ($entrega ? 'D' : 'N'), $parametros['numero_cartao']);
+			}
+			
+			$prosseguir = executeSQL($mainConnection, $query, $params);
+		}
+		
         $queryIdPedidoVenda = "update mw_reserva set
                                 id_pedido_venda = ?
                                 where id_session = ?";
@@ -222,42 +260,21 @@ $parametros['valor_total'] = Util::formataParaIpagare($totalIngressos + $frete +
 //chave = MD5(estabelecimento + MD5(codigo_seguranca) + acao + valor_total)
 $parametros['chave'] = md5($codigoEstabelecimento . $codigoSeguranca . $acao . $parametros['valor_total']);
 
-//------------ GRAVAÇÂO DO PEDIDO
-$query = 'INSERT INTO MW_PEDIDO_VENDA
-                        (ID_PEDIDO_VENDA
-                        ,ID_CLIENTE
-                        ,ID_USUARIO_CALLCENTER
-                        ,DT_PEDIDO_VENDA
-                        ,VL_TOTAL_PEDIDO_VENDA
-                        ,IN_SITUACAO
-                        ,IN_RETIRA_ENTREGA
-                        ,VL_TOTAL_INGRESSOS
-                        ,VL_FRETE
-                        ,VL_TOTAL_TAXA_CONVENIENCIA';
-$query .= ($entrega) ?
-                        ',DS_ENDERECO_ENTREGA
-                        ,DS_COMPL_ENDERECO_ENTREGA
-                        ,DS_BAIRRO_ENTREGA
-                        ,DS_CIDADE_ENTREGA
-                        ,ID_ESTADO
-                        ,CD_CEP_ENTREGA
-                        ,DS_CUIDADOS_DE' : '';
-$query .= ',IN_SITUACAO_DESPACHO
-                        ,CD_BIN_CARTAO)
-                        VALUES
-                        (?, ?, ?, GETDATE(), ?, ?, ?, ?, ?, ?' .($entrega ? ', ?, ?, ?, ?, ?, ?, ?' : ''). ', ?, ?)';
+//------------ ATUALIZAÇÃO DO PEDIDO
+$query = 'UPDATE MW_PEDIDO_VENDA SET
+                        VL_TOTAL_PEDIDO_VENDA = ?
+                        ,VL_TOTAL_INGRESSOS = ?
+                        ,VL_TOTAL_TAXA_CONVENIENCIA = ?
+			WHERE ID_PEDIDO_VENDA = ?
+				AND ID_CLIENTE = ?';
 
-if ($entrega) {
-$params = array($newMaxId, $_SESSION['user'], $_SESSION['operador'], ($totalIngressos + $frete + $totalConveniencia), 'P', ($entrega ? 'E' : 'R'), $totalIngressos, $frete,
-                                        $totalConveniencia, $parametros['logradouro_entrega'], $parametros['complemento_entrega'],
-                                        $parametros['bairro_entrega'], $parametros['cidade_entrega'], $idEstado, $parametros['cep_entrega'],
-                                        ($entrega ? $parametros['nome_cliente'] : ''), ($entrega ? 'D' : 'N'), $parametros['numero_cartao']);
-} else {
-$params = array($newMaxId, $_SESSION['user'], $_SESSION['operador'], ($totalIngressos + $frete + $totalConveniencia), 'P', ($entrega ? 'E' : 'R'), $totalIngressos, $frete,
-                                        $totalConveniencia, ($entrega ? 'D' : 'N'), $parametros['numero_cartao']);
-}
+$params = array(($totalIngressos + $frete + $totalConveniencia), $totalIngressos, $totalConveniencia, $newMaxId, $_SESSION['user']);
+
 if ($parametros['numero_itens'] > 0) {
-        $gravacao = executeSQL($mainConnection, $query, $params);
+    $gravacao = executeSQL($mainConnection, $query, $params);
+} else {
+	executeSQL($mainConnection, 'DELETE FROM MW_PEDIDO_VENDA
+                                    WHERE ID_PEDIDO_VENDA = ? AND ID_CLIENTE = ?', array($newMaxId, $_SESSION['user']));
 }
 
 //------------ GRAVAÇÂO DOS ITENS DO PEDIDO

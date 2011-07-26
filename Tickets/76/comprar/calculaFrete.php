@@ -81,7 +81,8 @@ if (isset($_GET['id']) and is_numeric($_GET['id']) and isset($_SESSION['user']))
 							$.dialog({title:"Aviso...", text:\'Tempo não suficiente para entrega dos ingressos.<br>Favor alterar o tipo de forma de entrega.\', uiOptions:{width:500}});
 						});
 					</script>';
-	    } else {
+	    } else if (basename($_SERVER['SCRIPT_FILENAME']) !== 'etapa4.php'
+			&& basename($_SERVER['SCRIPT_FILENAME']) !== 'etapa5.php') {
 		if ($_SESSION["dataEvento"] >= $dataLimiteTemp)
 		    echo "true";
 		else {

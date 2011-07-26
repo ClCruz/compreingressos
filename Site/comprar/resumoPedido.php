@@ -25,8 +25,9 @@ while ($rs = fetchResult($result)) {
 	$hora = explode('h', $rs['HR_APRESENTACAO']);
 	$data = explode('/', $rs['DT_APRESENTACAO']);
 	$tempo = mktime($hora[0], $hora[1], 0, $data[1], $data[0], $data[2]);
-	if($_SESSION["dataEvento"] == "")
-		$_SESSION["dataEvento"] = $rs['DT_APRESENTACAO'];
+	if($_SESSION["dataEvento"] == "" || $tempo < $_SESSION["dataEvento"]) {
+		$_SESSION["dataEvento"] = $tempo;
+	}
 	
 	if ($eventoAtual != $rs['ID_EVENTO'] . $rs['ID_APRESENTACAO']) {
 		

@@ -61,7 +61,7 @@ $(function() {
 		});
 	});
 	
-	$('#estado, .endereco_radio :radio').change(function() {
+	$('#estado').change(function() {//, .endereco_radio :radio
 		$('#calculaFrete').click();
 	});
 	
@@ -103,6 +103,7 @@ $(function() {
 							}
 						}
 					}
+					window.location = window.location;
 				}
 			},
 			complete: function() {

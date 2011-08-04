@@ -6,6 +6,7 @@ require_once('../settings/functions.php');
 
 require('acessoLogado.php');
 require('verificarLimitePorCPF.php');
+require('verificarEntrega.php');
 
 if (isset($_COOKIE['entrega'])) {
     $action = "verificatempo";
@@ -36,7 +37,7 @@ if (isset($_COOKIE['entrega'])) {
 		<script type="text/javascript" src="../javascripts/contagemRegressiva.js?until=<?php echo tempoRestante(); ?>"></script>
 		<script type="text/javascript" src="../javascripts/carrinho.js"></script>
 		<script type="text/javascript" src="../javascripts/dadosEntrega.js"></script>
-		<?php echo $scriptTempoLimiteFrete.$scriptLlimitePorCPF.$scriptValidarBin; ?>
+		<?php echo $scriptTempoLimiteFrete.$scriptLlimitePorCPF.$scriptValidarBin.$scriptEntrega; ?>
 	</head>
 	<body>
 		<div id="background_holder">

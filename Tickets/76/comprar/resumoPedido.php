@@ -5,7 +5,7 @@ require_once('../settings/settings.php');
 session_start();
 
 $mainConnection = mainConnection();
-$query = 'SELECT R.ID_APRESENTACAO, R.ID_APRESENTACAO_BILHETE, R.ID_CADEIRA, R.DS_CADEIRA, R.DS_SETOR, E.ID_EVENTO, E.DS_EVENTO, B.DS_NOME_TEATRO, CONVERT(VARCHAR(10), A.DT_APRESENTACAO, 103) DT_APRESENTACAO, A.HR_APRESENTACAO
+$query = 'SELECT R.ID_APRESENTACAO, R.ID_APRESENTACAO_BILHETE, R.ID_CADEIRA, R.DS_CADEIRA, R.DS_SETOR, E.ID_EVENTO, E.DS_EVENTO, B.DS_NOME_TEATRO, CONVERT(VARCHAR(10), A.DT_APRESENTACAO, 103) DT_APRESENTACAO, A.HR_APRESENTACAO, E.IN_ENTREGA_INGRESSO
 				FROM MW_RESERVA R
 				INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO AND A.IN_ATIVO = \'1\'
 				INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO AND E.IN_ATIVO = \'1\'
@@ -19,6 +19,7 @@ setlocale(LC_ALL, "pt_BR", "pt_BR.iso-8859-1", "pt_BR.utf-8", "portuguese");
 
 $eventoAtual = NULL;
 $_SESSION["dataEvento"] = "";
+$habilitar_entrega = false;
 while ($rs = fetchResult($result)) {
 	
 	$removeUrl = 'apresentacao='.$rs['ID_APRESENTACAO'].'&'.'id='.$rs['ID_CADEIRA'];
@@ -27,6 +28,9 @@ while ($rs = fetchResult($result)) {
 	$tempo = mktime($hora[0], $hora[1], 0, $data[1], $data[0], $data[2]);
 	if($_SESSION["dataEvento"] == "" || $tempo < $_SESSION["dataEvento"]) {
 		$_SESSION["dataEvento"] = $tempo;
+	}
+	if ($rs['IN_ENTREGA_INGRESSO'] == 1) {
+	    $habilitar_entrega = true;
 	}
 	
 	if ($eventoAtual != $rs['ID_EVENTO'] . $rs['ID_APRESENTACAO']) {
@@ -99,7 +103,9 @@ function finalizar() {
 										<h2>Escolha a forma de entrega</h2>
 										<select id="cmb_entrega">
 											<option value="retirada">retirar no local</option>
+											<?php if ($habilitar_entrega) { ?>
 											<option value="entrega">para o endere&ccedil;o...</option>
+											<?php } ?>
 										</select>
 									</div>
 									<?php if (!isset($_SESSION['user'])) { ?>

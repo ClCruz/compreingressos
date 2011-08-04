@@ -5,6 +5,7 @@ require_once('../settings/settings.php');
 
 require('acessoLogado.php');
 require('verificarLimitePorCPF.php');
+require('verificarEntrega.php');
 
 if (isset($_COOKIE['entrega'])) {
     $action = "verificatempo";

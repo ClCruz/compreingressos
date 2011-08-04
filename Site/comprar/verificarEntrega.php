@@ -17,7 +17,7 @@ if (isset($_COOKIE['entrega'])) {
 	$params = array(session_id());
 	$result = executeSQL($mainConnection, $query, $params);
 	
-	$entregaTable = utf8_decode('Caro Sr(a)., o(s) seguinte(s) evento(s) não permite(m) entrega.<br><br><table class=\'ui-widget ui-widget-content\' style=\'width:100%; text-align:left\'><thead><th>Evento</th><th>Data</th><th>Hora</th></thead><tbody>');
+	$entregaTable = utf8_decode('Prezado cliente, o(s) seguinte(s) evento(s) não permite(m) entrega.<br><br><table class=\'ui-widget ui-widget-content\' style=\'width:100%; text-align:left\'><thead><th>Evento</th><th>Data</th><th>Hora</th></thead><tbody>');
 
 	$naoEntregar = false;
 
@@ -27,7 +27,7 @@ if (isset($_COOKIE['entrega'])) {
 		$entregaTable .= '<tr><td>' . $rs['DS_EVENTO'] . '</td><td>' . $rs['DT_APRESENTACAO'] . '</td><td>' . $rs['HR_APRESENTACAO'] . '</td></tr>';
 	    }
 	}
-	$entregaTable .= utf8_decode('</tbody></table><br>Por favor, remova o(s) ingresso(s) que esta(ão) em desacordo com a tabela acima.');
+	$entregaTable .= utf8_decode('</tbody></table><br>Por favor, clique em <strong>alterar pedido</strong> e selecione outra forma de entrega ou remova o(s) ingresso(s) que esta(ão) em desacordo com a tabela acima.');
 	
 	if ($naoEntregar) {
 	    if (basename($_SERVER['SCRIPT_FILENAME']) == 'etapa5.php') {

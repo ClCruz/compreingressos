@@ -68,7 +68,7 @@ $parametros['valor_total'] = 0; //soma total após listagem dos itens
 $parametros['chave'] = '';//chave após o total
 
 //Parâmetros opcionais
-$parametros['teste'] = '1'; //Indica que as transações deste pedido serão de teste. Atenção: não enviar este parâmetro se o pedido for de produção.
+//$parametros['teste'] = '1'; //Indica que as transações deste pedido serão de teste. Atenção: não enviar este parâmetro se o pedido for de produção.
 $parametros['codigo_pedido'] = '';//Código ou chave única do pedido no Site - após a chave
 $parametros['idioma'] = 'pt'; //Utilize 'pt' para português, 'es' para espanhol e 'en' para inglês. Caso não seja informado, português será o idioma padrão.
 

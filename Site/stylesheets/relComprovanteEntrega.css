@@ -1,0 +1,93 @@
+body {
+    margin:0px;
+    padding: 0px;
+    font-family: arial;
+    font-size: 9px;
+    color: #000000;
+}
+
+#main{
+    display: table;    
+}
+
+#main #box-geral{
+    display: table;
+    padding: 10px 10px;
+    border: 1px solid black;
+}
+
+#main #box-geral #box-left{
+    float: left;
+    width: 320px;
+}
+
+#main #box-geral #box-left .box-endereco{
+    padding-top: 30px;
+    padding-bottom: 30px;
+    font-weight: bold;
+    text-transform: uppercase;
+    float: left;
+    width: 200px;
+}
+
+#main #box-geral #box-left .codbarras{
+    padding-bottom: 30px;
+    width: 120px;
+    float: right;
+}
+
+#main #box-geral #box-left table{
+    margin-top: 10px;
+    font-size: 10px;
+    width: 320px;
+    font-size: 9px;
+}
+
+#main #box-geral #box-left table tr td:first-of-type{
+    font-weight: bold;
+    text-align: left;
+}
+
+#main #box-geral #box-left table tr td{
+    text-align: center;
+}
+
+#main #box-geral #box-left table tr:nth-child(even){
+    background-color: #999999;
+}
+
+#main #box-geral #box-left .rodape{
+    border-top: 2px solid black;
+    font-size: 10px;
+    padding-top: 4px;
+    float: left;
+    width:  100%;
+}
+
+#main #box-geral #box-left span{
+    font-size: 8px;
+    font-weight: bold;
+}
+
+#main #box-geral #box-right{
+    float: right;
+    width: 350px;
+    text-align: right;
+}
+
+#main #box-geral #box-right .box-cliente{padding-top: 40px;}
+#main #box-geral #box-right .box-local{padding-top: 25px;}
+#main #box-geral #box-right .box-pagamento{padding-top: 25px;}
+
+#main #box-geral #box-right span{
+    font-size: 8px;
+    font-weight: bold;
+}
+
+@media print {
+    
+}
+
+@media screen{
+
+}

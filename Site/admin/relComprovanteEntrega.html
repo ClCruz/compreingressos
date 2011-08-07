@@ -1,0 +1,103 @@
+<html>    
+    <head>
+        <title>Teste Relatório - Comprovante de Entrega de Ingressos</title>
+        <link rel="stylesheet" type="text/css" href="../stylesheets/relComprovanteEntrega.css">
+    </head>        
+    <body>        
+        <div id="main">
+            <!-- BEGIN BLOCK_COMPROVANTE -->
+            <div id="box-geral">
+                <div id="box-left">
+                    <span>RECIBO | COMPROVANTE DE VENDA DE INGRESSOS</span>
+                    <table cellspacing="0" cellpadding="0" border="0">
+                        <thead>
+                            <tr>
+                                <td>DETALHE DO PEDIDO</td>
+                                <td>Quantidade</td>
+                                <td>Preço Unitário</td>
+                                <td>Total(R$)</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- BEGIN BLOCK_TABLE -->
+                            <tr>
+                                <td>{tipoBilhete}</td>
+                                <td>{quantidade}</td>
+                                <td>{valorUnitario}</td>
+                                <td>{valorTotal}</td>
+                            </tr>
+                            <!-- END BLOCK_TABLE -->                            
+                            <tr>
+                                <td>Taxa de Serviço</td>
+                                <td>{quantidade}</td>
+                                <td>{valorTaxaDeServico}</td>
+                                <td>{valorTotalDeServico}</td>
+                            </tr>                            
+                            <tr>
+                                <td>Taxa de Entrega</td>
+                                <td>1</td>
+                                <td>{valorTaxaDeEntrega}</td>
+                                <td>{valorTaxaDeEntrega}</td>
+                            </tr>                            
+                            <tr>
+                                <td></td>
+                                <td colspan="2">TOTAL A PAGAR:</td>
+                                <td>{valorTotalDoPedido}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="box-endereco">
+                        {nome}<br/>
+                        {endereco}<br />
+                        {complemento}<br/>
+                        {cep} | {cidade} | {estado}
+                    </div>
+                    <div class="codbarras">
+                        {codigoBarras}
+                    </div>
+
+                    <div class="rodape">
+                        <span>Reconheço e Pagarei a dívida aqui representada</span><br/><br/>
+                        Data | Horário do Pedido | Venda: {dtVenda}<br/>
+                        Recibo | Comprovante Impresso em: {dtImpressao}<br/>
+                        Canal: Internet<br/>
+                        Usuário: {login}
+                    </div>
+                </div>
+                <div id="box-right">
+                    <span>COMPREINGRESSOS.COM AGÊNCIA DE VENDA DE INGRESSOS LTDA EPP</span><br/>
+                    <span>RUA ITAMBÉ, 341 C15 | HIGIENÓPOLIS | 01239-001 | SÃO PAULO | SP</span><br/>
+                    <span>CNPJ 07.421.862/00001-37 | CCM 3.416.959-8</span>
+
+                    <div class="box-cliente">
+                        Cliente: {nome}<br/>
+                        Telefone: {telefone}<br/>
+                        Email: {emailLogin}
+                    </div>
+
+                    <div class="box-local">
+                        Local: Teatro rena<br/>
+                        Espetáculo: {evento}<br/>
+                        Data da Apresentação: 29/11/2008<br/>
+                        Horário da Sessão: {horaApresentacao}<br/>
+                        Setor: {setor}<br/>
+                        Lugares: {lugares}
+                    </div>
+
+                    <div class="box-pagamento">
+                        Forma de Pagamento: MASTERCARD<br/>
+                        Autorização: {autorizacao}<br/>
+                        Comprovante de Venda: {transacao}<br/>
+                        Cartão de Crédito: {cartao}
+                    </div>
+                </div>
+            </div>
+            <!-- BEGIN BLOCK_PROXIMA -->
+            teste
+            <br clear="all" style="page-break-after:always;">
+            <!-- END BLOCK_PROXIMA -->
+            <!-- END BLOCK_COMPROVANTE -->
+        </div>
+    </body>
+</html>

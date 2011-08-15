@@ -15,7 +15,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 218, true)) {
                 $html .= "<td>". utf8_encode($dados['ds_evento']) ."</td>";
                 $html .= "<td>". $dados['apresentacao'] ."</td>";
                 $html .= "<td>". $dados['CodVenda'] ."</td>";
-                $html .= "<td><a href=\"\">Imprimir</a>";
+                $html .= "<td><a class=\"comprovanteLink\" href=\"relComprovanteEntrega.php?codvenda=". $dados['CodVenda'] ."&dt_inicial=15/07/2011&dt_final=15/08/2011\">Imprimir</a>";
                 $html .= "</tr>";
             }
             echo $html;

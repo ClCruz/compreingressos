@@ -1,9 +1,9 @@
 <html>    
     <head>
-        <title>Teste Relatório - Comprovante de Entrega de Ingressos</title>
+        <title>Relatório - Comprovante de Entrega de Ingressos</title>
         <link rel="stylesheet" type="text/css" href="../stylesheets/relComprovanteEntrega.css">
     </head>        
-    <body>        
+    <body topmargin="0">
         <div id="main">
             <!-- BEGIN BLOCK_COMPROVANTE -->
             <div id="box-geral">
@@ -55,7 +55,7 @@
                     </div><br><br> 
                     <div class="codbarras">
                        <font size="1">Pedido Nº {codigoPedido}</font><br>
-                       <font face="IDAutomationI25M" size="2">{codigoPedido}</font><br>
+                       <div class="codbarra">{codigoPedido}</div><br>
                        {codigoPedido}
                     </div>
 
@@ -95,9 +95,9 @@
                     </div>
                 </div>
             </div>
-                <!-- BEGIN BLOCK_PROXIMA -->
-                <br style="page-break-before:always;">
-                <!-- END BLOCK_PROXIMA -->
+            <!-- BEGIN BLOCK_PROXIMA -->
+            <p style="page-break-after: always;" class="proxima"></p>
+            <!-- END BLOCK_PROXIMA -->
             <!-- END BLOCK_COMPROVANTE -->
         </div>
     </body>

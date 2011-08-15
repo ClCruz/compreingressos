@@ -39,14 +39,32 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 218, true)) {
                 }
             }).datepicker('option', $.datepicker.regional['pt-BR']);
 
+            $('.comprovanteLink').click(function(e){
+                e.preventDefault();
+                //var url = $(this).find('href');
+                alert('url');
+                return false;
+            });
+
             //Gera relatorio
             $("#btnRelatorio").click(function(){
-                var url = "relComprovanteEntrega.php?codvenda=" + $('input[name="codvenda"]').val() +
-                    "&dt_inicial=" + $('input[name="dt_inicial"]').val() +
-                    "&dt_final=" + $('input[name="dt_final"]').val() + "&nm_copia=" + $('input[name="copias"]').val(),
-                options = "width=870, scrollbars=yes, height=600";
+                if($('input[name="codvenda"]').val() == ""){
+                    var url = "relComprovanteEntrega.php?" +
+                        "dt_inicial=" + $('input[name="dt_inicial"]').val() +
+                        "&dt_final=" + $('input[name="dt_final"]').val() + "&nm_copia=" + $('input[name="copias"]').val(),
+                    options = "width=870, scrollbars=yes, height=600";
+                }else{
+                    var url = "relComprovanteEntrega.php?codvenda=" + $('input[name="codvenda"]').val() +
+                        "&dt_inicial=" + $('input[name="dt_inicial"]').val() +
+                        "&dt_final=" + $('input[name="dt_final"]').val() + "&nm_copia=" + $('input[name="copias"]').val(),
+                    options = "width=870, scrollbars=yes, height=600";
+                }
+                
+                if($('#codvenda').val() != ""){
+                    //busca comprovantes pelo codigo da venda
+                    window.open(url, "", options, "");
 
-                if($('#nome').val() != ""){
+                }else if($('#nome').val() != ""){
                     //busca comprovantes pelo nome do cliente
                     $.ajax({
                         url: 'carregaClientes.php',
@@ -56,8 +74,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 218, true)) {
                             $('#tableComprovantes tbody').html(data);
                         }
                     });
-                } else if($('#codvenda').val() != ""){
-                    //busca comprovantes pelo codigo da venda
                 } else if($('#dt_inicial').val() != "" && $('#dt_final').val() != ""){
                     //busca comprovantes pela data inicial e final
                     var data1 = $('#dt_inicial').val().split('/'),
@@ -114,7 +130,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 218, true)) {
             </tr>
             <tr>
                 <td>Cópias</td>
-                <td colspan="3"><input type="text" title="Quantidade de cópias para imprimir" name="copias" /></td>
+                <td colspan="3"><input type="text" maxlength="1" title="Quantidade de cópias para imprimir" name="copias" /></td>
             </tr>
             <tr>
                 <td></td>

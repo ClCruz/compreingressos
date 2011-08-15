@@ -1,3 +1,14 @@
+@page{
+    margin: 15px 30px;
+}
+
+@media print {
+}
+
+@media screen{
+
+}
+
 body {
     margin:0px;
     padding: 0px;
@@ -12,13 +23,13 @@ body {
 
 #main #box-geral{
     float: left;
-    padding: 40px 30px;
+    padding: 33px 35px;
     border: 1px solid black;
 }
 
 #main #box-geral #box-left{
     float: left;
-    width: 330px;
+    width: 310px;
 }
 
 #main #box-geral #box-left .box-endereco{
@@ -27,12 +38,12 @@ body {
     font-weight: bold; 
     text-transform: uppercase;
     float: left;
-    width: 200px;
+    width: 220px;
 }
 
 #main #box-geral #box-left .codbarras{
     padding-bottom: 30px;
-    width: 120px;
+    width: 80px;
     float: right;
     font-size: 8px;
 }
@@ -40,7 +51,7 @@ body {
 #main #box-geral #box-left table{
     margin-top: 10px;
     font-size: 10px;
-    width: 330px;
+    width: 310px;
     font-size: 9px;
 }
 
@@ -72,7 +83,7 @@ body {
 
 #main #box-geral #box-right{
     float: right;
-    width: 320px;
+    width: 300px;
     text-align: right;
 }
 
@@ -85,10 +96,17 @@ body {
     font-weight: bold;
 }
 
-@media print {
-    
+.proxima{
+    float: left;
+    width: 100%;
 }
 
-@media screen{
+@font-face {
+  font-family: IDAutomationHI25M;
+  src: url(IDAutomationHI25M.ttf);
+}
 
+.codbarra{
+  font-family: IDAutomationHI25M;
+  font-size: 6pt;
 }

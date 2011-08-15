@@ -10,23 +10,24 @@ session_start();
 
 $dataInicial = $_GET["dt_inicial"];
 $dataFinal = $_GET["dt_final"];
-$codVenda = (isset($_GET["codvenda"]) ? $_GET["codvenda"] : 0);
-$copias = $_GET["nm_copia"];
+
+if (isset($_GET["codvenda"])) {
+    $codVenda = $_GET["codvenda"];
+} else {
+    $codVenda = null;
+}
+
+($_GET["nm_copia"] != "") ? $copias = $_GET["nm_copia"] : $copias = 1;
 
 function tratarData($data) {
     $data = explode("/", $data);
     return $data[2] . $data[1] . $data[0];
 }
 
-if ($codVenda != 0) {
-    //Buscar comprovantes por código da venda
-   $sql = "EXEC PRC_IMPRIMIR_COMPROVANTE ?";
-   $params = array($codVenda);
-} else {
-    //Buscar comprovantes pela data inicial e final
-    $sql = "EXEC PRC_IMPRIMIR_COMPROVANTE ?, ?";
-    $params = array(tratarData($dataInicial), tratarData($dataFinal));
-}
+//Buscar comprovantes pela data inicial e final
+$sql = "EXEC PRC_IMPRIMIR_COMPROVANTE ?, ?, ?";
+$params = array(tratarData($dataInicial), tratarData($dataFinal), $codVenda);
+
 
 //Consultar lugares marcados
 $strQuery = "SELECT DISTINCT DS_LOCALIZACAO, ds_setor, e.ds_evento, a.hr_apresentacao, convert(varchar, a.dt_apresentacao, 103) + ' ' + a.hr_apresentacao as apresentacao, le.ds_local_evento
@@ -70,27 +71,27 @@ GROUP BY
 
 $result = executeSQL($mainConnection, $sql, $params);
 //$resultInterno = executeSQL($mainConnection, $sql, $params);
-    if (!sqlErrors()) {
-        if (hasRows($result)) {
-            //Se existir comprovantes a imprimir
-            $nPag = 2;
-            while ($comprovante = fetchResult($result)) {
-                $tpl->parseBlock("BLOCK_COMPROVANTE", true);
+if (!sqlErrors()) {
+    if (hasRows($result)) {
+        //Se existir comprovantes a imprimir
+        $nPag = 1;
+        while ($comprovante = fetchResult($result)) {
+            for ($i = 1; $i <= $copias; $i++) {
                 $tpl->nome = utf8_encode($comprovante["nome"]);
                 $tpl->telefone = $comprovante["telefone"];
                 $tpl->endereco = utf8_encode($comprovante["endereco"]);
                 $tpl->complemento = utf8_encode($comprovante["complemento"]);
                 $tpl->cep = $comprovante["cd_cep_entrega"];
                 $tpl->cidade = utf8_encode($comprovante["ds_cidade_entrega"]);
-                $tpl->estado = utf8_encode($comprovante["ds_estado"]);                
+                $tpl->estado = utf8_encode($comprovante["ds_estado"]);
                 $tpl->dtVenda = date_format($comprovante["dt_pedido_venda"], 'd/m/Y H:i:s');
-                $tpl->dtImpressao = date('d/m/Y H:i:s');                               
+                $tpl->dtImpressao = date('d/m/Y H:i:s');
                 $tpl->login = (is_null($comprovante["cd_login"])) ? 'Internet' : $comprovante["cd_login"];
-                $tpl->emailLogin = $comprovante["cd_email_login"];                
+                $tpl->emailLogin = $comprovante["cd_email_login"];
                 $tpl->autorizacao = $comprovante["cd_numero_autorizacao"];
                 $tpl->transacao = $comprovante["cd_numero_transacao"];
-                $tpl->cartao = $comprovante["cd_bin_cartao"];                
-                $tpl->codigoPedido = $comprovante["id_pedido_venda"];                
+                $tpl->cartao = $comprovante["cd_bin_cartao"];
+                $tpl->codigoPedido = $comprovante["id_pedido_venda"];
 
                 $lugares = "";
                 $paramsInterno = array($comprovante["CodVenda"]);
@@ -121,9 +122,8 @@ $result = executeSQL($mainConnection, $sql, $params);
                 }
 
                 $paramsItens = array($comprovante["CodVenda"]);
-                $resultItens = executeSQL($mainConnection, $sqlItens, $paramsItens);                
+                $resultItens = executeSQL($mainConnection, $sqlItens, $paramsItens);
                 while ($itens = fetchResult($resultItens)) {
-                    $tpl->parseBlock("BLOCK_TABLE", true);                    
                     $tpl->tipoBilhete = (is_null($itens["DS_TIPO_BILHETE"])) ? '' : $itens["DS_TIPO_BILHETE"];
                     $tpl->quantidade = (is_null($itens["QT_INGRESSOS"])) ? '' : $itens["QT_INGRESSOS"];
                     $tpl->valorUnitario = (is_null($itens["VL_UNITARIO"])) ? '' : number_format($itens["VL_UNITARIO"], 2, ',', '.');
@@ -132,10 +132,8 @@ $result = executeSQL($mainConnection, $sql, $params);
                     $valorTaxaDeServico = (is_null($itens["VL_TAXA_CONVENIENCIA"])) ? '' : number_format($itens["VL_TAXA_CONVENIENCIA"], 2, ',', '.');
                     $valorTotalTaxaDeServico = (is_null($itens["VL_TOTAL_TAXA_CONVENIENCIA"])) ? '' : number_format($itens["VL_TOTAL_TAXA_CONVENIENCIA"], 2, ',', '.');
                     $valorTaxaDeEntrega = (is_null($itens["VL_FRETE"])) ? '' : number_format($itens["VL_FRETE"], 2, ',', '.');
-                    if($tpl->codigoPedido == 337){
-                        print_r($paramsItens);
-                    }                    
-                }               
+                    $tpl->parseBlock("BLOCK_TABLE", true);
+                }
 
                 $tpl->valorTotalDoPedido = $valorTotalDoPedido;
                 $tpl->valorTaxaDeServico = $valorTaxaDeServico;
@@ -143,18 +141,19 @@ $result = executeSQL($mainConnection, $sql, $params);
                 $tpl->valorTaxaDeEntrega = $valorTaxaDeEntrega;
 
                 if ($nPag > 2) {
-                    $tpl->parseBlock("BLOCK_PROXIMA", true);
+                    $tpl->parseBlock("BLOCK_PROXIMA");
                     $nPag = 1;
+                } else {
+                    $nPag++;
                 }
-                else                   
-                   $nPag++;                
-                
+                $tpl->parseBlock("BLOCK_COMPROVANTE", true);
             }
             //Finaliza impressão dos comprovantes
-
-            $tpl->show();
         }
-    } else {
-        print_r(sqlErrors());
+
+        $tpl->show();
     }
+} else {
+    print_r(sqlErrors());
+}
 ?>

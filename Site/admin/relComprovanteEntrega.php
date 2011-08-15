@@ -82,22 +82,15 @@ $result = executeSQL($mainConnection, $sql, $params);
                 $tpl->complemento = utf8_encode($comprovante["complemento"]);
                 $tpl->cep = $comprovante["cd_cep_entrega"];
                 $tpl->cidade = utf8_encode($comprovante["ds_cidade_entrega"]);
-                $tpl->estado = utf8_encode($comprovante["ds_estado"]);
-                //$tpl->evento = utf8_encode($comprovante["ds_evento"]);
+                $tpl->estado = utf8_encode($comprovante["ds_estado"]);                
                 $tpl->dtVenda = date_format($comprovante["dt_pedido_venda"], 'd/m/Y H:i:s');
-                $tpl->dtImpressao = date('d/m/Y H:i:s');
-                //$tpl->dataApresentacao = $comprovante["apresentacao"];
-                //$tpl->horaApresentacao = $comprovante["hr_apresentacao"];
+                $tpl->dtImpressao = date('d/m/Y H:i:s');                               
                 $tpl->login = (is_null($comprovante["cd_login"])) ? 'Internet' : $comprovante["cd_login"];
-                $tpl->emailLogin = $comprovante["cd_email_login"];
-                //$tpl->setor = $comprovante["ds_setor"];
+                $tpl->emailLogin = $comprovante["cd_email_login"];                
                 $tpl->autorizacao = $comprovante["cd_numero_autorizacao"];
                 $tpl->transacao = $comprovante["cd_numero_transacao"];
-                $tpl->cartao = $comprovante["cd_bin_cartao"];
-                //$tpl->codigoBarras = $comprovante["id_pedido_ipagare"];
-                $tpl->codigoPedido = $comprovante["id_pedido_venda"];
-                //$tpl->teatro =  utf8_encode($comprovante["ds_local_evento"]);
-                //$tpl->formaPagto =  $comprovante["ds_forpagto"];
+                $tpl->cartao = $comprovante["cd_bin_cartao"];                
+                $tpl->codigoPedido = $comprovante["id_pedido_venda"];                
 
                 $lugares = "";
                 $paramsInterno = array($comprovante["CodVenda"]);
@@ -128,9 +121,9 @@ $result = executeSQL($mainConnection, $sql, $params);
                 }
 
                 $paramsItens = array($comprovante["CodVenda"]);
-                $resultItens = executeSQL($mainConnection, $sqlItens, $paramsItens);
+                $resultItens = executeSQL($mainConnection, $sqlItens, $paramsItens);                
                 while ($itens = fetchResult($resultItens)) {
-                    $tpl->parseBlock("BLOCK_TABLE", true);
+                    $tpl->parseBlock("BLOCK_TABLE", true);                    
                     $tpl->tipoBilhete = (is_null($itens["DS_TIPO_BILHETE"])) ? '' : $itens["DS_TIPO_BILHETE"];
                     $tpl->quantidade = (is_null($itens["QT_INGRESSOS"])) ? '' : $itens["QT_INGRESSOS"];
                     $tpl->valorUnitario = (is_null($itens["VL_UNITARIO"])) ? '' : number_format($itens["VL_UNITARIO"], 2, ',', '.');
@@ -139,9 +132,10 @@ $result = executeSQL($mainConnection, $sql, $params);
                     $valorTaxaDeServico = (is_null($itens["VL_TAXA_CONVENIENCIA"])) ? '' : number_format($itens["VL_TAXA_CONVENIENCIA"], 2, ',', '.');
                     $valorTotalTaxaDeServico = (is_null($itens["VL_TOTAL_TAXA_CONVENIENCIA"])) ? '' : number_format($itens["VL_TOTAL_TAXA_CONVENIENCIA"], 2, ',', '.');
                     $valorTaxaDeEntrega = (is_null($itens["VL_FRETE"])) ? '' : number_format($itens["VL_FRETE"], 2, ',', '.');
-                    "<p>".var_dump($itens)."</p>";
-                }
-
+                    if($tpl->codigoPedido == 337){
+                        print_r($paramsItens);
+                    }                    
+                }               
 
                 $tpl->valorTotalDoPedido = $valorTotalDoPedido;
                 $tpl->valorTaxaDeServico = $valorTaxaDeServico;
@@ -152,10 +146,8 @@ $result = executeSQL($mainConnection, $sql, $params);
                     $tpl->parseBlock("BLOCK_PROXIMA", true);
                     $nPag = 1;
                 }
-                else{
-                   //$tpl->parseBlock("BLOCK_PROXIMA", false);
-                   $nPag++;
-                }
+                else                   
+                   $nPag++;                
                 
             }
             //Finaliza impressão dos comprovantes

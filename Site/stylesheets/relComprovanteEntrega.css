@@ -11,20 +11,20 @@ body {
 }
 
 #main #box-geral{
-    display: table;
-    padding: 10px 10px;
+    float: left;
+    padding: 40px 30px;
     border: 1px solid black;
 }
 
 #main #box-geral #box-left{
     float: left;
-    width: 320px;
+    width: 330px;
 }
 
 #main #box-geral #box-left .box-endereco{
     padding-top: 30px;
     padding-bottom: 30px;
-    font-weight: bold;
+    font-weight: bold; 
     text-transform: uppercase;
     float: left;
     width: 200px;
@@ -34,12 +34,13 @@ body {
     padding-bottom: 30px;
     width: 120px;
     float: right;
+    font-size: 8px;
 }
 
 #main #box-geral #box-left table{
     margin-top: 10px;
     font-size: 10px;
-    width: 320px;
+    width: 330px;
     font-size: 9px;
 }
 
@@ -52,7 +53,7 @@ body {
     text-align: center;
 }
 
-#main #box-geral #box-left table tr:nth-child(even){
+#main #box-geral #box-left table tr:nth-child(odd){
     background-color: #999999;
 }
 
@@ -71,7 +72,7 @@ body {
 
 #main #box-geral #box-right{
     float: right;
-    width: 350px;
+    width: 320px;
     text-align: right;
 }
 
@@ -80,7 +81,7 @@ body {
 #main #box-geral #box-right .box-pagamento{padding-top: 25px;}
 
 #main #box-geral #box-right span{
-    font-size: 8px;
+    font-size: 7px;
     font-weight: bold;
 }
 

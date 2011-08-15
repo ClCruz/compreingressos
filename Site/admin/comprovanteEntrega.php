@@ -7,6 +7,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 218, true)) {
 
     $pagina = basename(__FILE__);
     $mes = date("m") - 1;
+
 ?>
     <script type="text/javascript" src="../javascripts/jquery.ui.datepicker-pt-BR.js"></script>
     <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
@@ -42,8 +43,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 218, true)) {
             $("#btnRelatorio").click(function(){
                 var url = "relComprovanteEntrega.php?codvenda=" + $('input[name="codvenda"]').val() +
                     "&dt_inicial=" + $('input[name="dt_inicial"]').val() +
-                    "&dt_final=" + $('input[name="dt_final"]').val(),
-                options = "width=720, scrollbars=yes, height=600";
+                    "&dt_final=" + $('input[name="dt_final"]').val() + "&nm_copia=" + $('input[name="copias"]').val(),
+                options = "width=870, scrollbars=yes, height=600";
 
                 if($('#nome').val() != ""){
                     //busca comprovantes pelo nome do cliente

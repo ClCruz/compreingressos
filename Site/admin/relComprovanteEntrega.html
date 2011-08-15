@@ -10,15 +10,15 @@
                 <div id="box-left">
                     <span>RECIBO | COMPROVANTE DE VENDA DE INGRESSOS</span>
                     <table cellspacing="0" cellpadding="0" border="0">
-                        <thead>
+                        <!--<thead>-->
+                        <tbody>
                             <tr>
                                 <td>DETALHE DO PEDIDO</td>
                                 <td>Quantidade</td>
                                 <td>Preço Unitário</td>
                                 <td>Total(R$)</td>
                             </tr>
-                        </thead>
-                        <tbody>
+                            <!--</thead>-->
                             <!-- BEGIN BLOCK_TABLE -->
                             <tr>
                                 <td>{tipoBilhete}</td>
@@ -52,16 +52,18 @@
                         {endereco}<br />
                         {complemento}<br/>
                         {cep} | {cidade} | {estado}
-                    </div>
+                    </div><br><br> 
                     <div class="codbarras">
-                        {codigoBarras}
+                       <font size="1">Pedido Nº {codigoPedido}</font><br>
+                       <font face="IDAutomationI25M" size="2">{codigoPedido}</font><br>
+                       {codigoPedido}
                     </div>
 
                     <div class="rodape">
                         <span>Reconheço e Pagarei a dívida aqui representada</span><br/><br/>
                         Data | Horário do Pedido | Venda: {dtVenda}<br/>
                         Recibo | Comprovante Impresso em: {dtImpressao}<br/>
-                        Canal: Internet<br/>
+                        Canal: {canalVenda}<br/>
                         Usuário: {login}
                     </div>
                 </div>
@@ -77,9 +79,9 @@
                     </div>
 
                     <div class="box-local">
-                        Local: Teatro rena<br/>
+                        Local: {teatro}<br/>
                         Espetáculo: {evento}<br/>
-                        Data da Apresentação: 29/11/2008<br/>
+                        Data da Apresentação: {dataApresentacao}<br/>
                         Horário da Sessão: {horaApresentacao}<br/>
                         Setor: {setor}<br/>
                         Lugares: {lugares}
@@ -94,8 +96,8 @@
                 </div>
             </div>
             <!-- BEGIN BLOCK_PROXIMA -->
-            teste
-            <br clear="all" style="page-break-after:always;">
+            .
+            <br style="page-break-before:always;">
             <!-- END BLOCK_PROXIMA -->
             <!-- END BLOCK_COMPROVANTE -->
         </div>

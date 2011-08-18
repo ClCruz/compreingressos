@@ -1,5 +1,4 @@
 <?php
-
 require_once('../settings/functions.php');
 require_once('../settings/Template.class.php');
 
@@ -79,10 +78,10 @@ if (!sqlErrors()) {
             for ($i = 1; $i <= $copias; $i++) {
                 $tpl->nome = utf8_encode($comprovante["nome"]);
                 $tpl->telefone = $comprovante["telefone"];
-                $tpl->endereco = utf8_encode($comprovante["endereco"]);
-                $tpl->complemento = utf8_encode($comprovante["complemento"]);
+                $tpl->endereco = $comprovante["endereco"];
+                $tpl->complemento = $comprovante["complemento"];
                 $tpl->cep = $comprovante["cd_cep_entrega"];
-                $tpl->cidade = utf8_encode($comprovante["ds_cidade_entrega"]);
+                $tpl->cidade = $comprovante["ds_cidade_entrega"];
                 $tpl->estado = utf8_encode($comprovante["ds_estado"]);
                 $tpl->dtVenda = date_format($comprovante["dt_pedido_venda"], 'd/m/Y H:i:s');
                 $tpl->dtImpressao = date('d/m/Y H:i:s');
@@ -92,6 +91,7 @@ if (!sqlErrors()) {
                 $tpl->transacao = $comprovante["cd_numero_transacao"];
                 $tpl->cartao = $comprovante["cd_bin_cartao"];
                 $tpl->codigoPedido = $comprovante["id_pedido_venda"];
+                $tpl->codigoPedidoImp = date_format($comprovante["dt_pedido_venda"], 'Ymd').$comprovante["id_pedido_venda"];
 
                 $lugares = "";
                 $paramsInterno = array($comprovante["CodVenda"]);

@@ -55,8 +55,7 @@
                     </div><br><br> 
                     <div class="codbarras">
                        <font size="1">Pedido Nº {codigoPedido}</font><br>
-                       <div class="codbarra">{codigoPedido}</div><br>
-                       {codigoPedido}
+                       <p><iframe name="frmCodBarras" src="codigoBarras.php?id_pedido={codigoPedidoImp}" width="220%" height="20%" frameborder="0" scrolling="no"></iframe></p>
                     </div>
 
                     <div class="rodape">
@@ -88,7 +87,7 @@
                     </div>
 
                     <div class="box-pagamento">
-                        Forma de Pagamento: MASTERCARD<br/>
+                        Forma de Pagamento: CARTÃO<br/>
                         Autorização: {autorizacao}<br/>
                         Comprovante de Venda: {transacao}<br/>
                         Cartão de Crédito: {cartao}
@@ -99,6 +98,9 @@
             <p style="page-break-after: always;" class="proxima"></p>
             <!-- END BLOCK_PROXIMA -->
             <!-- END BLOCK_COMPROVANTE -->
+            <div>
+                <p align="center"><a href="javascript:window.print()" class="link">Imprimir</a><br><br></p>
+            </div>
         </div>
     </body>
 </html>

@@ -39,25 +39,18 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 218, true)) {
                 }
             }).datepicker('option', $.datepicker.regional['pt-BR']);
 
-            $('.comprovanteLink').click(function(e){
-                e.preventDefault();
-                //var url = $(this).find('href');
-                alert('url');
-                return false;
-            });
-
             //Gera relatorio
             $("#btnRelatorio").click(function(){
                 if($('input[name="codvenda"]').val() == ""){
                     var url = "relComprovanteEntrega.php?" +
                         "dt_inicial=" + $('input[name="dt_inicial"]').val() +
                         "&dt_final=" + $('input[name="dt_final"]').val() + "&nm_copia=" + $('input[name="copias"]').val(),
-                    options = "width=870, scrollbars=yes, height=600";
+                    options = "width=710, scrollbars=yes, height=620";
                 }else{
                     var url = "relComprovanteEntrega.php?codvenda=" + $('input[name="codvenda"]').val() +
                         "&dt_inicial=" + $('input[name="dt_inicial"]').val() +
                         "&dt_final=" + $('input[name="dt_final"]').val() + "&nm_copia=" + $('input[name="copias"]').val(),
-                    options = "width=870, scrollbars=yes, height=600";
+                    options = "width=710, scrollbars=yes, height=620";
                 }
                 
                 if($('#codvenda').val() != ""){

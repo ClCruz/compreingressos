@@ -23,24 +23,23 @@ body {
 
 #main #box-geral{
     float: left;
-    padding: 32px 35px;
+    padding: 28px 35px;
     border: 1px solid black;
 }
 
 #main #box-geral #box-left{
     float: left;
     width: 310px;
-    margin-top: -5px;
-    /*margin-bottom: -3px;*/
+    margin-top: -7px;
 }
 
 #main #box-geral #box-left .box-endereco{
     padding-top: 30px;
-    padding-bottom: 27px;
+    padding-bottom: 29px;
     font-weight: bold; 
     text-transform: uppercase;
     float: left;
-    width: 220px;
+    width: 200px;
 }
 
 #main #box-geral #box-left .codbarras{
@@ -48,13 +47,13 @@ body {
     width: 80px;
     float: right;
     font-size: 8px;
+    height: 90px;
 }
 
 #main #box-geral #box-left table{
-    margin-top: 8px;
+    margin-top: 10px;
     font-size: 10px;
     width: 310px;
-    height: 63px;
     font-size: 9px;
 }
 
@@ -77,6 +76,7 @@ body {
     padding-top: 4px;
     float: left;
     width:  100%;
+    margin-top: -20px;
 }
 
 #main #box-geral #box-left span{
@@ -88,11 +88,10 @@ body {
     float: right;
     width: 300px;
     text-align: right;
-    margin-top: -5px;
-    /*margin-bottom: -3px;*/
+    margin-top: -7px;
 }
 
-#main #box-geral #box-right .box-cliente{padding-top: 32px;}
+#main #box-geral #box-right .box-cliente{padding-top: 40px;}
 #main #box-geral #box-right .box-local{padding-top: 25px;}
 #main #box-geral #box-right .box-pagamento{padding-top: 25px;}
 
@@ -104,7 +103,7 @@ body {
 .proxima{
     float: left;
     width: 100%;
-    margin: 0.2cm 0.2cm;
+    margin-top: 1px;
 }
 
 @font-face {
@@ -114,7 +113,10 @@ body {
 
 .codbarra{
   /*font-family: IDAutomationHI25M;*/
-  font-size: 3pt;
+  text-align: right;
+  font-size: 6pt;
+  padding: 0px 0px;
+  margin-top: 10px;
 }
 
 .link{

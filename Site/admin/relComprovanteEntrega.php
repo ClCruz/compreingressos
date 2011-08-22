@@ -91,7 +91,7 @@ if (!sqlErrors()) {
                 $tpl->transacao = $comprovante["cd_numero_transacao"];
                 $tpl->cartao = $comprovante["cd_bin_cartao"];
                 $tpl->codigoPedido = $comprovante["id_pedido_venda"];
-                $tpl->codigoPedidoImp = date_format($comprovante["dt_pedido_venda"], 'Ymd').$comprovante["id_pedido_venda"];
+                //$tpl->codigoPedidoImp = date_format($comprovante["dt_pedido_venda"], 'Ymd').$comprovante["id_pedido_venda"];
 
                 $lugares = "";
                 $paramsInterno = array($comprovante["CodVenda"]);

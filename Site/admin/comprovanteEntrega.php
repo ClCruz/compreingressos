@@ -45,12 +45,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 218, true)) {
                     var url = "relComprovanteEntrega.php?" +
                         "dt_inicial=" + $('input[name="dt_inicial"]').val() +
                         "&dt_final=" + $('input[name="dt_final"]').val() + "&nm_copia=" + $('input[name="copias"]').val(),
-                    options = "width=710, scrollbars=yes, height=620";
+                    options = "width=720, scrollbars=yes, height=620";
                 }else{
                     var url = "relComprovanteEntrega.php?codvenda=" + $('input[name="codvenda"]').val() +
                         "&dt_inicial=" + $('input[name="dt_inicial"]').val() +
                         "&dt_final=" + $('input[name="dt_final"]').val() + "&nm_copia=" + $('input[name="copias"]').val(),
-                    options = "width=710, scrollbars=yes, height=620";
+                    options = "width=720, scrollbars=yes, height=620";
                 }
                 
                 if($('#codvenda').val() != ""){

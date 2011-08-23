@@ -1,6 +1,8 @@
 <?php
+
 require_once('../settings/functions.php');
 require_once('../settings/Template.class.php');
+require_once('../settings/barcode/CodigoBarras.class.php');
 
 $tpl = new Template('relComprovanteEntrega.html');
 
@@ -26,7 +28,6 @@ function tratarData($data) {
 //Buscar comprovantes pela data inicial e final
 $sql = "EXEC PRC_IMPRIMIR_COMPROVANTE ?, ?, ?";
 $params = array(tratarData($dataInicial), tratarData($dataFinal), $codVenda);
-
 
 //Consultar lugares marcados
 $strQuery = "SELECT DISTINCT DS_LOCALIZACAO, ds_setor, e.ds_evento, a.hr_apresentacao, convert(varchar, a.dt_apresentacao, 103) + ' ' + a.hr_apresentacao as apresentacao, le.ds_local_evento
@@ -93,6 +94,10 @@ if (!sqlErrors()) {
                 $tpl->codigoPedido = $comprovante["id_pedido_venda"];
                 //$tpl->codigoPedidoImp = date_format($comprovante["dt_pedido_venda"], 'Ymd').$comprovante["id_pedido_venda"];
 
+                // Gera o codigo de barras
+                $bar = new WBarCode($tpl->codigoPedido, "../settings/barcode/");
+                $tpl->codigoDeBarras = $bar->matrizimg;
+
                 $lugares = "";
                 $paramsInterno = array($comprovante["CodVenda"]);
                 $resultInterno = executeSQL($mainConnection, $strQuery, $paramsInterno);
@@ -121,8 +126,9 @@ if (!sqlErrors()) {
                     $tpl->canalVenda = $canal["ds_canal_venda"];
                 }
 
+                // Itens do pedido
                 $paramsItens = array($comprovante["CodVenda"]);
-                $resultItens = executeSQL($mainConnection, $sqlItens, $paramsItens);
+                $resultItens = executeSQL($mainConnection, $sqlItens, $paramsItens);                
                 while ($itens = fetchResult($resultItens)) {
                     $tpl->tipoBilhete = (is_null($itens["DS_TIPO_BILHETE"])) ? '' : $itens["DS_TIPO_BILHETE"];
                     $tpl->quantidade = (is_null($itens["QT_INGRESSOS"])) ? '' : $itens["QT_INGRESSOS"];
@@ -131,7 +137,7 @@ if (!sqlErrors()) {
                     $valorTotalDoPedido = (is_null($itens["VL_TOTAL_PEDIDO_VENDA"])) ? '' : number_format($itens["VL_TOTAL_PEDIDO_VENDA"], 2, ',', '.');
                     $valorTaxaDeServico = (is_null($itens["VL_TAXA_CONVENIENCIA"])) ? '' : number_format($itens["VL_TAXA_CONVENIENCIA"], 2, ',', '.');
                     $valorTotalTaxaDeServico = (is_null($itens["VL_TOTAL_TAXA_CONVENIENCIA"])) ? '' : number_format($itens["VL_TOTAL_TAXA_CONVENIENCIA"], 2, ',', '.');
-                    $valorTaxaDeEntrega = (is_null($itens["VL_FRETE"])) ? '' : number_format($itens["VL_FRETE"], 2, ',', '.');
+                    $valorTaxaDeEntrega = (is_null($itens["VL_FRETE"])) ? '' : number_format($itens["VL_FRETE"], 2, ',', '.');                    
                     $tpl->parseBlock("BLOCK_TABLE", true);
                 }
 

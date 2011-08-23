@@ -3,6 +3,9 @@
 }
 
 @media print {
+    .esconder{
+        display: none;
+    }
 }
 
 @media screen{
@@ -42,12 +45,13 @@ body {
     width: 200px;
 }
 
-#main #box-geral #box-left .codbarras{
-    padding-bottom: 30px;
+#main #box-geral #box-left .codbarras{    
     width: 80px;
     float: right;
-    font-size: 8px;
+    font-size: 10px;
     height: 90px;
+    text-align: right;
+    font-weight: normal;
 }
 
 #main #box-geral #box-left table{
@@ -106,17 +110,10 @@ body {
     margin-top: 1px;
 }
 
-@font-face {
-  font-family: IDAutomationHI25M;
-  src: url(IDAutomationHI25M.ttf);
-}
-
 .codbarra{
-  /*font-family: IDAutomationHI25M;*/
-  text-align: right;
-  font-size: 6pt;
-  padding: 0px 0px;
-  margin-top: 10px;
+    text-align: right;
+    padding: 0px 0px;
+    margin-top: 10px;
 }
 
 .link{

@@ -3,6 +3,7 @@
 require_once('../settings/functions.php');
 require_once('../settings/Template.class.php');
 require_once('../settings/barcode/CodigoBarras.class.php');
+require_once('../settings/Utils.php');
 
 $tpl = new Template('relComprovanteEntrega.html');
 
@@ -19,11 +20,6 @@ if (isset($_GET["codvenda"])) {
 }
 
 ($_GET["nm_copia"] != "") ? $copias = $_GET["nm_copia"] : $copias = 1;
-
-function tratarData($data) {
-    $data = explode("/", $data);
-    return $data[2] . $data[1] . $data[0];
-}
 
 //Buscar comprovantes pela data inicial e final
 $sql = "EXEC PRC_IMPRIMIR_COMPROVANTE ?, ?, ?";
@@ -130,14 +126,14 @@ if (!sqlErrors()) {
                 $paramsItens = array($comprovante["CodVenda"]);
                 $resultItens = executeSQL($mainConnection, $sqlItens, $paramsItens);                
                 while ($itens = fetchResult($resultItens)) {
-                    $tpl->tipoBilhete = (is_null($itens["DS_TIPO_BILHETE"])) ? '' : $itens["DS_TIPO_BILHETE"];
-                    $tpl->quantidade = (is_null($itens["QT_INGRESSOS"])) ? '' : $itens["QT_INGRESSOS"];
-                    $tpl->valorUnitario = (is_null($itens["VL_UNITARIO"])) ? '' : number_format($itens["VL_UNITARIO"], 2, ',', '.');
-                    $tpl->valorTotal = (is_null($itens["QT_INGRESSOS"])) ? '' : number_format($itens["QT_INGRESSOS"] * $itens["VL_UNITARIO"], 2, ',', '.');
-                    $valorTotalDoPedido = (is_null($itens["VL_TOTAL_PEDIDO_VENDA"])) ? '' : number_format($itens["VL_TOTAL_PEDIDO_VENDA"], 2, ',', '.');
-                    $valorTaxaDeServico = (is_null($itens["VL_TAXA_CONVENIENCIA"])) ? '' : number_format($itens["VL_TAXA_CONVENIENCIA"], 2, ',', '.');
-                    $valorTotalTaxaDeServico = (is_null($itens["VL_TOTAL_TAXA_CONVENIENCIA"])) ? '' : number_format($itens["VL_TOTAL_TAXA_CONVENIENCIA"], 2, ',', '.');
-                    $valorTaxaDeEntrega = (is_null($itens["VL_FRETE"])) ? '' : number_format($itens["VL_FRETE"], 2, ',', '.');                    
+                    $tpl->tipoBilhete = formatarValor($itens["DS_TIPO_BILHETE"]);
+                    $tpl->quantidade = formatarValor($itens["QT_INGRESSOS"]);
+                    $tpl->valorUnitario = formatarValorNumerico($itens["VL_UNITARIO"]);
+                    $tpl->valorTotal = formatarValorNumerico($itens["QT_INGRESSOS"] * $itens["VL_UNITARIO"]);
+                    $valorTotalDoPedido = formatarValorNumerico($itens["VL_TOTAL_PEDIDO_VENDA"]);
+                    $valorTaxaDeServico = formatarValorNumerico($itens["VL_TAXA_CONVENIENCIA"]);
+                    $valorTotalTaxaDeServico = formatarValorNumerico($itens["VL_TOTAL_TAXA_CONVENIENCIA"]);
+                    $valorTaxaDeEntrega = formatarValorNumerico($itens["VL_FRETE"]);
                     $tpl->parseBlock("BLOCK_TABLE", true);
                 }
 

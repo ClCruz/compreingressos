@@ -95,7 +95,9 @@ if (!sqlErrors()) {
                 $tpl->cartao = $comprovante["cd_bin_cartao"];
                 $tpl->codigoPedido = $comprovante["id_pedido_venda"];
                 //$tpl->codigoPedidoImp = date_format($comprovante["dt_pedido_venda"], 'Ymd').$comprovante["id_pedido_venda"];
-               
+
+                ($nPag == 3) ? $tpl->semmargem = "semmargem" : $tpl->semmargem = '';
+                ($nPag == 3) ? $tpl->margemcodbarra = "margemcodbarra" : $tpl->margemcodbarra = '';
 
                 // Gera o codigo de barras
                 $bar = new WBarCode($tpl->codigoPedido, "../settings/barcode/");

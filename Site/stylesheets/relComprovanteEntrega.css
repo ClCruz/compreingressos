@@ -1,5 +1,5 @@
 @page{
-    margin: 0.5cm 0.5cm;
+    
 }
 
 @media print {
@@ -21,24 +21,26 @@ body {
 }
 
 #main{
-    display: table;    
+    float: left;
 }
 
 #main #box-geral{
     float: left;
-    padding: 50px 35px;
+    padding-top: 55px;
+    padding-bottom: 27px;
+    padding-left:  40px;
+    padding-right:  40px;
     border: 1px solid black;
-    height: 250px;
 }
 
 #main #box-geral #box-left{
     float: left;
     width: 310px;
-    margin-top: -7px;
+    margin-top: -20px;
 }
 
 #main #box-geral #box-left .box-endereco{
-    padding-top: 30px;
+    padding-top: 90px;
     padding-bottom: 29px;
     font-weight: bold; 
     text-transform: uppercase;
@@ -47,12 +49,13 @@ body {
 }
 
 #main #box-geral #box-left .codbarras{    
-    width: 80px;
+    width: 90px;
     float: right;
     font-size: 10px;
-    height: 90px;
+    height: 85px;
     text-align: right;
     font-weight: normal;
+    margin-top: 45px;
 }
 
 #main #box-geral #box-left table{
@@ -81,7 +84,15 @@ body {
     padding-top: 4px;
     float: left;
     width:  100%;
-    margin-top: -20px;
+    margin-top: 9px;
+}
+
+.semmargem{
+    padding-top: 40px !important;
+}
+
+.margemcodbarra{
+    margin-top: 10px !important;
 }
 
 #main #box-geral #box-left span{
@@ -93,12 +104,12 @@ body {
     float: right;
     width: 300px;
     text-align: right;
-    margin-top: -7px;
+    margin-top: -20px;
 }
 
 #main #box-geral #box-right .box-cliente{padding-top: 40px;}
 #main #box-geral #box-right .box-local{padding-top: 25px;}
-#main #box-geral #box-right .box-pagamento{padding-top: 25px;}
+#main #box-geral #box-right .box-pagamento{padding-top: 35px;}
 
 #main #box-geral #box-right span{
     font-size: 7px;
@@ -121,3 +132,4 @@ body {
     font-size: 10px;
     color: black;
 }
+

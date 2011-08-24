@@ -19,11 +19,17 @@ if (isset($_GET["codvenda"])) {
     $codVenda = null;
 }
 
+if (isset($_GET["numpedido"])) {
+    $numPedido = $_GET["numpedido"];
+} else {
+    $numPedido = null;
+}
+
 ($_GET["nm_copia"] != "") ? $copias = $_GET["nm_copia"] : $copias = 1;
 
 //Buscar comprovantes pela data inicial e final
-$sql = "EXEC PRC_IMPRIMIR_COMPROVANTE ?, ?, ?";
-$params = array(tratarData($dataInicial), tratarData($dataFinal), $codVenda);
+$sql = "EXEC PRC_IMPRIMIR_COMPROVANTE ?, ?, ?, ?";
+$params = array(tratarData($dataInicial), tratarData($dataFinal), $codVenda, $numPedido);
 
 //Consultar lugares marcados
 $strQuery = "SELECT DISTINCT DS_LOCALIZACAO, ds_setor, e.ds_evento, a.hr_apresentacao, convert(varchar, a.dt_apresentacao, 103) + ' ' + a.hr_apresentacao as apresentacao, le.ds_local_evento
@@ -89,6 +95,9 @@ if (!sqlErrors()) {
                 $tpl->cartao = $comprovante["cd_bin_cartao"];
                 $tpl->codigoPedido = $comprovante["id_pedido_venda"];
                 //$tpl->codigoPedidoImp = date_format($comprovante["dt_pedido_venda"], 'Ymd').$comprovante["id_pedido_venda"];
+
+                ($nPag == 3) ? $tpl->semmargem = "semmargem" : $tpl->semmargem = '';
+                ($nPag == 3) ? $tpl->margemcodbarra = "margemcodbarra" : $tpl->margemcodbarra = '';
 
                 // Gera o codigo de barras
                 $bar = new WBarCode($tpl->codigoPedido, "../settings/barcode/");

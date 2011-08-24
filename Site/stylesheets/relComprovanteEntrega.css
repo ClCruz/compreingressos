@@ -26,8 +26,9 @@ body {
 
 #main #box-geral{
     float: left;
-    padding: 28px 35px;
+    padding: 50px 35px;
     border: 1px solid black;
+    height: 250px;
 }
 
 #main #box-geral #box-left{

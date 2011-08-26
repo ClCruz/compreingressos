@@ -56,7 +56,8 @@ $sql = "SELECT
                 pv.ds_compl_endereco_entrega as complemento,
                 pv.ds_cidade_entrega,
                 pv.cd_cep_entrega,
-                pv.dt_pedido_venda
+                pv.dt_pedido_venda,
+                es.sg_estado
             FROM
                  mw_pedido_venda pv
 	    inner join mw_cliente c
@@ -69,6 +70,8 @@ $sql = "SELECT
 		 on e.id_evento = a.id_evento
 	    inner join mw_local_evento le
 		 on le.id_local_evento = e.id_local_evento
+            inner join mw_estado es
+                on c.id_estado = es.id_estado
 	    where " . $where ."
             GROUP BY
                 pv.id_pedido_venda,
@@ -77,7 +80,8 @@ $sql = "SELECT
                 pv.ds_compl_endereco_entrega,
                 pv.ds_cidade_entrega,
                 pv.cd_cep_entrega,
-                pv.dt_pedido_venda
+                pv.dt_pedido_venda,
+                es.sg_estado
             ORDER BY
                 pv.dt_pedido_venda";
 $result = executeSQL($mainConnection, $sql, $params);
@@ -91,10 +95,11 @@ while ($comprovante = fetchResult($result)) {
      $complemento = $comprovante["complemento"];
      $cidade = $comprovante["ds_cidade_entrega"];
      $cep = $comprovante["cd_cep_entrega"];
+     $sigla_estado = $comprovante["sg_estado"];
      if($complemento != ""){
-        $gravar = $id_pedido .";". $nome .";". $endereco .";". $complemento .";". $cidade .";". $cep . "."."\r\n";
+        $gravar = $id_pedido .";". $nome .";". $endereco .";". $complemento .";". $cidade .";". $sigla_estado .";". $cep . "." ."\r\n";
      }else{
-         $gravar = $id_pedido .";". $nome .";". $endereco .";". $cidade .";". $cep . "."."\r\n";
+         $gravar = $id_pedido .";". $nome .";". $endereco .";". $cidade .";". $sigla_estado .";". $cep . "." ."\r\n"; 
      }
     fputs($arquivo,$gravar,strlen($gravar));
 }

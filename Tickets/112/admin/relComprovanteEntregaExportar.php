@@ -71,7 +71,7 @@ $sql = "SELECT
 	    inner join mw_local_evento le
 		 on le.id_local_evento = e.id_local_evento
             inner join mw_estado es
-                on c.id_estado = es.id_estado
+                on es.id_estado = pv.id_estado
 	    where " . $where ."
             GROUP BY
                 pv.id_pedido_venda,

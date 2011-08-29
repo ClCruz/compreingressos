@@ -4,6 +4,21 @@
 <head>
     <title>Relatório - Comprovante de Entrega de Ingressos</title>
     <link rel="stylesheet" type="text/css" href="../stylesheets/relComprovanteEntrega.css" />
+    <link rel="stylesheet" type="text/css" href="../stylesheets/customred/jquery-ui-1.8.12.custom.css"/>
+    
+    <script type='text/javascript' src='../javascripts/jquery.js'></script>
+    <script type='text/javascript' src='../javascripts/jquery-ui-1.8.12.custom.min.js'></script>
+    <script type='text/javascript' src='../javascripts/jquery.utils.js'></script>
+    <script language="javascript" type="text/javascript">
+        $('document').ready(function(){
+            $.dialog({
+                title: 'Alerta...',
+                text: 'Para melhor visualização deste relatório utilize o navegador Internet Explorer!'
+            });
+
+            $('.button').button();
+        });
+    </script>
 </head>        
 <body>
     <div id="main">
@@ -11,50 +26,52 @@
         <div id="box-geral">
             <div id="box-left">
                 <span>RECIBO | COMPROVANTE DE VENDA DE INGRESSOS</span>
-                <table cellspacing="0" cellpadding="0" border="0">
-                    <tbody>
-                        <tr>
-                            <td>DETALHE DO PEDIDO</td>
-                            <td>Quantidade</td>
-                            <td>Preço Unitário</td>
-                            <td>Total(R$)</td>
-                        </tr>
+                <div class="box-ingressos">
+                    <table cellspacing="0" cellpadding="0" border="0">
+                        <tbody>
+                            <tr>
+                                <td class="detalhe">DETALHE DO PEDIDO</td>
+                                <td>Quantidade</td>
+                                <td>Preço Unitário</td>
+                                <td>Total(R$)</td>
+                            </tr>
 
-                        <!-- BEGIN BLOCK_TABLE -->
-                        <tr>
-                            <td>{tipoBilhete}</td>
-                            <td>{quantidade}</td>
-                            <td>{valorUnitario}</td>
-                            <td>{valorTotal}</td>
-                        </tr>
-                        <!-- END BLOCK_TABLE -->
-                        <tr>
-                            <td>Taxa de Serviço</td>
-                            <td>{quantidade}</td>
-                            <td>{valorTaxaDeServico}</td>
-                            <td>{valorTotalDeServico}</td>
-                        </tr>
-                        <tr>
-                            <td>Taxa de Entrega</td>
-                            <td>1</td>
-                            <td>{valorTaxaDeEntrega}</td>
-                            <td>{valorTaxaDeEntrega}</td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td colspan="2">TOTAL A PAGAR:</td>
-                            <td>{valorTotalDoPedido}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                            <!-- BEGIN BLOCK_TABLE -->
+                            <tr>
+                                <td class="detalhe">{tipoBilhete}</td>
+                                <td>{quantidade}</td>
+                                <td>{valorUnitario}</td>
+                                <td>{valorTotal}</td>
+                            </tr>
+                            <!-- END BLOCK_TABLE -->
+                            <tr>
+                                <td class="detalhe">Taxa de Serviço</td>
+                                <td>{quantidade}</td>
+                                <td>{valorTaxaDeServico}</td>
+                                <td>{valorTotalDeServico}</td>
+                            </tr>
+                            <tr>
+                                <td class="detalhe">Taxa de Entrega</td>
+                                <td>1</td>
+                                <td>{valorTaxaDeEntrega}</td>
+                                <td>{valorTaxaDeEntrega}</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td colspan="2">TOTAL A PAGAR:</td>
+                                <td>{valorTotalDoPedido}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-                <div class="box-endereco {semmargem}">
+                <div class="box-endereco">
                     {nome}<br/>
                     {endereco}<br />
                     {complemento}<br/>
                     {cep} | {cidade} | {estado}
                 </div><br /><br/>
-                <div class="codbarras {margemcodbarra}">
+                <div class="codbarras">
                     <span>Pedido Nº {codigoPedido}</span><br />
                     <div class="codbarra">{codigoDeBarras}</div>
                    {codigoPedido}
@@ -101,7 +118,7 @@
         <!-- END BLOCK_PROXIMA -->
         <!-- END BLOCK_COMPROVANTE -->
         <div class="esconder">
-            <p align="center"><a href="javascript:window.print()" class="link">Imprimir</a><br /><br/></p>
+            <p align="center"><a href="javascript:window.print()" class="link button">Imprimir</a><br /><br/></p>
         </div>
     </div>
 </body>

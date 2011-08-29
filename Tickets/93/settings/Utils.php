@@ -8,7 +8,10 @@
  */
 
 function tratarData($data) {
-    $data = explode("/", $data);
+    if($data != "")
+        $data = explode("/", $data);
+    else
+        $data = explode(date('d/m/Y'));
     return $data[2] . $data[1] . $data[0];
 }
 

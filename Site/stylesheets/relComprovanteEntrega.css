@@ -1,18 +1,10 @@
-@page{
-    
-}
-
 @media print {
     .esconder{
         display: none;
     }
 }
 
-@media screen{
-
-}
-
-body {
+body, * {
     margin:0px;
     padding: 0px;
     font-family: arial;
@@ -22,26 +14,23 @@ body {
 
 #main{
     float: left;
+    width: 800px;
 }
 
 #main #box-geral{
     float: left;
-    padding-top: 55px;
-    padding-bottom: 27px;
-    padding-left:  40px;
-    padding-right:  40px;
-    border: 1px solid black;
+    padding: 35px 40px;
+    border: 1px solid black;    
+    width: 710px;
 }
 
 #main #box-geral #box-left{
     float: left;
-    width: 310px;
-    margin-top: -20px;
+    width: 310px;    
 }
 
-#main #box-geral #box-left .box-endereco{
-    padding-top: 90px;
-    padding-bottom: 29px;
+#main #box-geral #box-left .box-endereco{    
+    padding-bottom: 10px;
     font-weight: bold; 
     text-transform: uppercase;
     float: left;
@@ -52,29 +41,35 @@ body {
     width: 90px;
     float: right;
     font-size: 10px;
-    height: 85px;
+    height: 75px;
     text-align: right;
-    font-weight: normal;
-    margin-top: 45px;
+    font-weight: normal;    
 }
 
-#main #box-geral #box-left table{
+#main #box-geral #box-left .box-ingressos{
+    width: 310px;
     margin-top: 10px;
+    float: left;
+    height: 114px;
+}
+
+#main #box-geral #box-left .box-ingressos table{
     font-size: 10px;
     width: 310px;
     font-size: 9px;
 }
 
-#main #box-geral #box-left table tr td:first-of-type{
+#main #box-geral #box-left .box-ingressos table tr .detalhe{
     font-weight: bold;
     text-align: left;
 }
 
-#main #box-geral #box-left table tr td{
+#main #box-geral #box-left .box-ingressos table tr td{
     text-align: center;
+    padding: 1px 0;
 }
 
-#main #box-geral #box-left table tr:nth-child(odd){
+#main #box-geral #box-left .box-ingressos table tr:nth-child(odd){
     background-color: #999999;
 }
 
@@ -87,32 +82,23 @@ body {
     margin-top: 9px;
 }
 
-.semmargem{
-    padding-top: 40px !important;
-}
-
-.margemcodbarra{
-    margin-top: 10px !important;
-}
-
 #main #box-geral #box-left span{
     font-size: 8px;
     font-weight: bold;
 }
 
 #main #box-geral #box-right{
-    float: right;
-    width: 300px;
-    text-align: right;
-    margin-top: -20px;
+    float: left;
+    width: 400px;
+    text-align: right;    
 }
 
-#main #box-geral #box-right .box-cliente{padding-top: 40px;}
-#main #box-geral #box-right .box-local{padding-top: 25px;}
-#main #box-geral #box-right .box-pagamento{padding-top: 35px;}
+#main #box-geral #box-right .box-cliente{padding-top: 30px;font-size: 10px !important;}
+#main #box-geral #box-right .box-local{padding-top: 25px;font-size: 10px !important;}
+#main #box-geral #box-right .box-pagamento{padding-top: 35px;font-size: 10px !important;}
 
 #main #box-geral #box-right span{
-    font-size: 7px;
+    font-size: 8px;
     font-weight: bold;
 }
 
@@ -132,4 +118,3 @@ body {
     font-size: 10px;
     color: black;
 }
-

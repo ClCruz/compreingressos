@@ -72,13 +72,14 @@ GROUP BY
 	VL_FRETE";
 
 $result = executeSQL($mainConnection, $sql, $params);
-//$resultInterno = executeSQL($mainConnection, $sql, $params);
 if (!sqlErrors()) {
     if (hasRows($result)) {
-        //Se existir comprovantes a imprimir
+        //Se existir comprovantes a imprimir        
+        $numRegistroAtual = 1;
         $nPag = 1;
         while ($comprovante = fetchResult($result)) {
             for ($i = 1; $i <= $copias; $i++) {
+                
                 $tpl->nome = utf8_encode($comprovante["nome"]);
                 $tpl->telefone = $comprovante["telefone"];
                 $tpl->endereco = $comprovante["endereco"];
@@ -95,7 +96,8 @@ if (!sqlErrors()) {
                 $tpl->cartao = $comprovante["cd_bin_cartao"];
                 $tpl->codigoPedido = $comprovante["id_pedido_venda"];
                 //$tpl->codigoPedidoImp = date_format($comprovante["dt_pedido_venda"], 'Ymd').$comprovante["id_pedido_venda"];
-               
+
+                //($numRegistros + 1 == $numRegistroAtual) ? $tpl->boxGeralUltimo = "'box-geral-ultimo'" : $tpl->boxGeralUltimo = "''";
 
                 // Gera o codigo de barras
                 $bar = new WBarCode($tpl->codigoPedido, "../settings/barcode/");
@@ -155,14 +157,21 @@ if (!sqlErrors()) {
                 } else {
                     $nPag++;
                 }
+                $numRegistroAtual++;
                 $tpl->parseBlock("BLOCK_COMPROVANTE", true);
             }
             //Finaliza impressão dos comprovantes
         }
 
         $tpl->show();
+    }else{
+        $tpl->parseBlock("BLOCK_VAZIO");
+        $tpl->vazio = "style=\"display: none;\"";
+        $tpl->show();
     }
 } else {
     print_r(sqlErrors());
+    print('<br/>Params: ');
+    print_r($params);
 }
 ?>

@@ -6,8 +6,9 @@ session_start();
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 218, true)) {
 
     $pagina = basename(__FILE__);
-    $mes = date("m") - 1;
-
+    $mes = date("m") + 0;
+    if($mes < 10)
+        $mes = "0".$mes;  
 ?>
     <script type="text/javascript" src="../javascripts/jquery.ui.datepicker-pt-BR.js"></script>
     <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
@@ -28,7 +29,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 218, true)) {
         $(function() {
             var pagina = '<?php echo $pagina; ?>'
             $('.button').button();
-            //$('#periodo').buttonset();
             $('input.datepicker').datepicker({
                 changeMonth: true,
                 changeYear: true,
@@ -45,29 +45,25 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 218, true)) {
                     var url = "relComprovanteEntrega.php?" +
                         "dt_inicial=" + $('input[name="dt_inicial"]').val() +
                         "&dt_final=" + $('input[name="dt_final"]').val() + "&nm_copia=" + $('input[name="copias"]').val(),
-                    options = "width=720, scrollbars=yes, height=620";
+                    options = "width=820 scrollbars=yes, height=620";
                 }else{
                     if($('input[name="numpedido"]').val() != ""){
-                            var url = "relComprovanteEntrega.php?numpedido=" + $('input[name="numpedido"]').val() +
+                        var url = "relComprovanteEntrega.php?numpedido=" + $('input[name="numpedido"]').val() +
                             "&codvenda=" + $('input[name="codvenda"]').val() +
                             "&dt_inicial=" + $('input[name="dt_inicial"]').val() +
                             "&dt_final=" + $('input[name="dt_final"]').val() + "&nm_copia=" + $('input[name="copias"]').val(),
-                            options = "width=720, scrollbars=yes, height=620";
+                        options = "width=820 scrollbars=yes, height=620";
                     }else{
-                        if($('input[name="codvenda"]').val() != ""){
+                        if($('input[name="codvenda"]').val() != ""){                            
                             var url = "relComprovanteEntrega.php?codvenda=" + $('input[name="codvenda"]').val() +
                                 "&dt_inicial=" + $('input[name="dt_inicial"]').val() +
                                 "&dt_final=" + $('input[name="dt_final"]').val() + "&nm_copia=" + $('input[name="copias"]').val(),
-                            options = "width=720, scrollbars=yes, height=620";
+                            options = "width=820 scrollbars=yes, height=620";
                         }
                     }
                 }
-                
-                if($('#codvenda').val() != ""){
-                    //busca comprovantes pelo codigo da venda
-                    window.open(url, "", options, "");
 
-                }else if($('#nome').val() != ""){
+                if($('#nome').val() != ""){
                     //busca comprovantes pelo nome do cliente
                     $.ajax({
                         url: 'carregaClientes.php',
@@ -110,12 +106,54 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 218, true)) {
             });
 
             $("#btnExportar").click(function(){
-                    window.location ="relComprovanteEntregaExportar.php?numpedido=" + $('input[name="numpedido"]').val() +
-                            "&codvenda=" + $('input[name="codvenda"]').val() +
-                            "&dt_inicial=" + $('input[name="dt_inicial"]').val() +
-                            "&dt_final=" + $('input[name="dt_final"]').val();
-                });
+                window.location ="relComprovanteEntregaExportar.php?numpedido=" + $('input[name="numpedido"]').val() +
+                    "&codvenda=" + $('input[name="codvenda"]').val() +
+                    "&dt_inicial=" + $('input[name="dt_inicial"]').val() +
+                    "&dt_final=" + $('input[name="dt_final"]').val();
+            });
+
+            $('#tableComprovantes').delegate('a','click',function(e){
+                e.preventDefault();
+                var url = $(this).attr('href'),
+                options = "width=820 scrollbars=yes, height=620";
+                window.open(url, "", options, "");
+            });
         });
+
+        function limparCampos(){
+            document.getElementById('numpedido').readOnly  = false;
+            document.getElementById('codvenda').readOnly  = false;
+            document.getElementById('nome').readOnly  = false;
+            document.getElementById('numpedido').disabled  = 0;
+            document.getElementById('codvenda').disabled  = 0;
+            document.getElementById('nome').disabled  = 0;
+            $('input[name=nome]').val('');
+            $('input[name=codvenda]').val('');
+            $('input[name=numpedido]').val('');
+        }
+
+        function esconderCampos(campo){
+            switch(campo){
+                case 1:
+                    document.getElementById('numpedido').readOnly  = true;
+                    document.getElementById('codvenda').readOnly  = true;
+                    document.getElementById('numpedido').disabled   = 1;
+                    document.getElementById('codvenda').disabled   = 1;
+                    break;
+                case 2:
+                    document.getElementById('nome').readOnly  = true;
+                    document.getElementById('numpedido').readOnly  = true;
+                    document.getElementById('nome').disabled  = 1;
+                    document.getElementById('numpedido').disabled  = 1;
+                    break;
+                case 3:
+                    document.getElementById('nome').readOnly  = true;
+                    document.getElementById('codvenda').readOnly  = true;
+                    document.getElementById('nome').disabled  = 1;
+                    document.getElementById('codvenda').disabled  = 1;
+                    break;
+            }
+        }
     </script>
     <h2>Comprovante de Entrega de Ingressos</h2>
     <form action="" name="frmComprovanteEntrega">
@@ -130,17 +168,17 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 218, true)) {
                     <input type="text" title="Data final da venda" class="datepicker" value="<?php echo (isset($_GET["dt_final"])) ? $_GET["dt_final"] : date("d/m/Y") ?>" id="dt_final" name="dt_final" />
                 </td>
             </tr>
-            <tr>
+            <tr id="esconde-1">
                 <td>Nome do Cliente</td>
-                <td colspan="3"><input type="text" size="69" id="nome" name="nome" /></td>
+                <td colspan="3"><input type="text" size="69" onkeypress="esconderCampos(1);" id="nome" name="nome" /></td>
             </tr>
-            <tr>
+            <tr id="esconde-2">
                 <td>Código da Venda</td>
-                <td colspan="3"><input type="text" id="codvenda" name="codvenda" /></td>
+                <td colspan="3"><input type="text" id="codvenda" onclick="esconderCampos(2);" name="codvenda" /></td>
             </tr>
-            <tr>
+            <tr id="esconde-3">
                 <td>Número do Pedido</td>
-                <td colspan="3"><input type="text" id="numpedido" name="numpedido" /></td>
+                <td colspan="3"><input type="text" id="numpedido" onkeypress="esconderCampos(3);" name="numpedido" /></td>
             </tr>
             <tr>
                 <td>Cópias</td>
@@ -148,8 +186,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 218, true)) {
             </tr>
             <tr>
                 <td></td>
-                <td>
+                <td colspan="3">
                     <input type="button" class="button" id="btnRelatorio" value="Buscar" />&nbsp;
+                    <input type="button" class="button" onclick="limparCampos();" id="btnReset" value="Cancelar" />&nbsp;
                     <input type="button" class="button" id="btnExportar" value="Exportar" />
                 </td>
             </tr>
@@ -162,11 +201,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 218, true)) {
                 <th>Nome</th>
                 <th>Evento</th>
                 <th>Apresentação</th>
+                <th>N&ordm; Pedido</th>
                 <th>Código da Venda</th>
                 <th>A&ccedil;&otilde;es</th>
             </tr>
         </thead>
         <tbody>
+
         </tbody>
     </table><br />
 <?php

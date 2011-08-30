@@ -6,7 +6,7 @@ session_start();
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 218, true)) {
 
     $pagina = basename(__FILE__);
-    $mes = date("m") - 1;
+    $mes = date("m") + 0;
     if($mes < 10)
         $mes = "0".$mes;  
 ?>

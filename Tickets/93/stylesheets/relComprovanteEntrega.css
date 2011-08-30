@@ -4,7 +4,7 @@
     }
 
     #main{
-        margin-left: 20px;
+        margin-left: 10px;
     }
 }
 
@@ -69,7 +69,7 @@ body, * {
 }
 
 #main #box-geral #box-left .box-ingressos table tr td{
-    text-align: center;
+    text-align: right;
     padding: 1px 0;
 }
 

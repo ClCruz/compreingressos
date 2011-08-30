@@ -164,6 +164,10 @@ if (!sqlErrors()) {
         }
 
         $tpl->show();
+    }else{
+        $tpl->parseBlock("BLOCK_VAZIO");
+        $tpl->vazio = "style=\"display: none;\"";
+        $tpl->show();
     }
 } else {
     print_r(sqlErrors());

@@ -2,6 +2,10 @@
     .esconder{
         display: none;
     }
+
+    #main{
+        margin-left: 10px;
+    }
 }
 
 body, * {
@@ -14,7 +18,7 @@ body, * {
 
 #main{
     float: left;
-    width: 800px;
+    width: 800px;    
 }
 
 #main #box-geral{
@@ -65,7 +69,7 @@ body, * {
 }
 
 #main #box-geral #box-left .box-ingressos table tr td{
-    text-align: center;
+    text-align: right;
     padding: 1px 0;
 }
 

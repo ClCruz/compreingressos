@@ -1,5 +1,7 @@
 <?php
 require_once('../settings/functions.php');
+require_once('../settings/settings.php');
+require_once('../settings/Log.class.php');
 require('Util.php');
 require('XMLUtil.php');
 session_start();
@@ -67,7 +69,9 @@ $parametros['valor_total'] = 0; //soma total após listagem dos itens
 $parametros['chave'] = '';//chave após o total
 
 //Parâmetros opcionais
-//$parametros['teste'] = '1'; //Indica que as transações deste pedido serão de teste. Atenção: não enviar este parâmetro se o pedido for de produção.
+if ($is_teste == '1') {
+	$parametros['teste'] = $is_teste; //Indica que as transações deste pedido serão de teste. Atenção: não enviar este parâmetro se o pedido for de produção.
+}
 $parametros['codigo_pedido'] = '';//Código ou chave única do pedido no Site - após a chave
 $parametros['idioma'] = 'pt'; //Utilize 'pt' para português, 'es' para espanhol e 'en' para inglês. Caso não seja informado, português será o idioma padrão.
 
@@ -406,28 +410,42 @@ $parametros['forma_pagamento'] = "A01";
 //$parametros['codigo_forma_1_4'] = 'B05'; //Forma de pagamento 5 vezes com juros.
 //$parametros['codigo_forma_1_5'] = 'B12'; //Forma de pagamento 12 vezes com juros.
 
-$xml = Util::postHttp($urlIpagare, $parametros);
+if ($parametros['valor_total'] > 0) {
 
-$retorno = XMLUtil::parseXmlPedidoWebservices($xml);
+	$xml = Util::postHttp($urlIpagare, $parametros);
 
-if (isset($retorno['codigo_erro'])) {
-    require_once('../settings/settings.php');
+	$retorno = XMLUtil::parseXmlPedidoWebservices($xml);
 
-    foreach ($retorno as $key => $val) {
-            setcookie('ipagareError['.$key.']', $val, $cookieExpireTime);
-    }
+	if (isset($retorno['codigo_erro'])) {
+		require_once('../settings/settings.php');
 
-    if ($retorno['codigo_erro'] == '201') {
-        executeSQL($mainConnection, 'DELETE FROM MW_RESERVA WHERE ID_SESSION = ?', array(session_id()));
-    }
+		foreach ($retorno as $key => $val) {
+				setcookie('ipagareError['.$key.']', $val, $cookieExpireTime);
+		}
 
-    ob_end_clean();
-    header("Location: pagamento_cancelado.php");
-    exit();
+		if ($retorno['codigo_erro'] == '201') {
+			executeSQL($mainConnection, 'DELETE FROM MW_RESERVA WHERE ID_SESSION = ?', array(session_id()));
+		}
+
+		ob_end_clean();
+		header("Location: pagamento_cancelado.php");
+		exit();
+	} else {
+		ob_end_clean();
+		header("Location: pagamento_ok.php?pedido=".$retorno['codigo_pedido']);
+		exit();
+	}
+	
 } else {
-    ob_end_clean();
-    header("Location: pagamento_ok.php?pedido=".$retorno['codigo_pedido']);
-    exit();
+	
+	$log = new Log($_SESSION['user']);
+	$log->__set('funcionalidade', 'compra middleway');
+	$log->__set('log', json_encode($parametros));
+	$log->save($mainConnection);
+	
+	ob_end_clean();
+	header("Location: pagamento_cancelado.php");
+	die();
+	
 }
-
 ?>

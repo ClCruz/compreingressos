@@ -68,6 +68,30 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
 			$ingressosSelecionados = executeSQL($mainConnection, $query, $params, true);
 			$ingressosSelecionados = $ingressosSelecionados[0];
 		}
+
+                //Carregar xml para evento
+                $xml = simplexml_load_file("campanha.xml");
+                foreach($xml->item as $item){
+                    if($rs["ID_EVENTO"] == $item->id){
+                        $idcampanha = $item->idcampanha;
+                    }
+                }
+
+                echo basename(__FILE__);
+                switch(basename(__FILE__)){
+                    case "etapa1.php":
+                        $tag_avancar = "&tag=1._Escolha_de_assentos_-_Avançar-TAG";
+                        break;
+                    case "etapa2.php":
+                        $tag_avancar = "&tag=2._Conferir_Itens_-_Avançar-TAG";
+                        $tag_voltar = "&tag=2._Conferir_Itens_-_Voltar-TAG";
+                        break;
+                    case "etapa3_2.php":
+                        $tag_avancar = "&tag=3._Identificaçao_-_Autentique-se-TAG";
+                        $tag_voltar = "&tag=3._Identificaçao_-_Cadastre-se-TAG";
+                        break;
+                }
+                
 	}
 } else header("Location: http://www.compreingressos.com");
 //echo session_id();
@@ -90,7 +114,17 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
 		<script type="text/javascript" src="../javascripts/jquery.utils.js"></script>
 		<script type="text/javascript" src="../javascripts/jquery.annotate.js"></script>
 		<script type="text/javascript" src="../javascripts/jquery.tooltip.min.js"></script>
-		<script type="text/javascript" src="../javascripts/plateia.js?<?php echo $vars; ?>"></script>
+		<script type="text/javascript" src="../javascripts/plateia.js?<?php echo $vars; ?>"></script>                
+                <!-- SCRIPT TAG -->
+                <script type="text/JavaScript">
+                    var idcampanha = <?php echo ($idcampanha != "") ? $idcampanha : 0; ?>;
+                    if(idcampanha != 0){
+                        var ADM_rnd_<?php echo $idcampanha; ?> = Math.round(Math.random() * 9999);
+                        var ADM_post_<?php echo $idcampanha; ?> = new Image();
+                        ADM_post_<?php echo $idcampanha; ?>.src = 'http://ia.nspmotion.com/ptag/?pt=<?php echo $idcampanha; ?>&r='+ADM_rnd_<?php echo $idcampanha; ?>;
+                    }
+                </script>
+                <!-- END SCRIPT TAG -->
 	</head>
 	<body>
 		<div id="background_holder">
@@ -124,7 +158,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
 								</ul>
 							</div>
 							<div id="header_ticket">
-								<a href="etapa2.php?eventoDS=<?php echo $_GET['eventoDS']; ?>" id="botao_avancar" class="botao_avancar">
+								<a href="etapa2.php?eventoDS=<?php echo $_GET['eventoDS']; ?><?php echo $tag_avancar; ?>" id="botao_avancar" class="botao_avancar">
 									<div class="botoes_ticket">avan&ccedil;ar</div>
 								</a>
 								<?php if (isset($_SESSION['operador'])) { ?>
@@ -184,7 +218,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
 							?>
 							<?php } ?>
 							<div id="footer_ticket">
-								<a href="etapa2.php?eventoDS=<?php echo $_GET['eventoDS']; ?>" id="botao_avancar" class="botao_avancar">
+								<a href="etapa2.php?eventoDS=<?php echo $_GET['eventoDS']; ?><?php echo $tag_avancar; ?>" id="botao_avancar" class="botao_avancar">
 									<div class="botoes_ticket">avan&ccedil;ar</div>
 								</a>
 								<?php if (isset($_SESSION['operador'])) { ?>

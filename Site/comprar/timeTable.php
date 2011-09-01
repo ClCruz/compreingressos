@@ -87,6 +87,14 @@ if (isset($_GET['evento']) and is_numeric($_GET['evento'])) {
 					$pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
 				}
 				$url = str_replace(basename($pageURL), '', $pageURL);
+
+                                //Carregar xml para evento
+                                $xml = simplexml_load_file("campanha.xml");
+                                foreach($xml->item as $item){
+                                    if($_GET["evento"] == $item->id){
+                                        $tag = "&tag=".$item->tag;
+                                    }
+                                }
 ?>
 				<table>
 <?php
@@ -106,7 +114,7 @@ if (isset($_GET['evento']) and is_numeric($_GET['evento'])) {
 								<?php if ($rs['TELEFONE'] >= 0) { ?>
 									SOMENTE BILHETERIA
 								<?php } else { ?>
-								<a href="<?php echo $url; ?>etapa1.php?apresentacao=<?php echo $rs['ID_APRESENTACAO']; ?>&eventoDS=<?php echo utf8_encode($rs['DS_EVENTO']); ?>" target="_top">
+								<a href="<?php echo $url; ?>etapa1.php?apresentacao=<?php echo $rs['ID_APRESENTACAO']; ?>&eventoDS=<?php echo utf8_encode($rs['DS_EVENTO']); ?><?php echo $tag ;?>" target="_top">
 									<div class="botao_compre"></div>
 								<?php } ?>
 								</a>

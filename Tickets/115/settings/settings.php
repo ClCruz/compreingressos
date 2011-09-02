@@ -10,7 +10,7 @@ $maxIngressos = 10;//maximo por compra
 
 $uploadPath = '../images/uploads/';
 
-$is_teste = '1';
+$is_teste = '0';
 
 $isContagemAcessos = true;
 

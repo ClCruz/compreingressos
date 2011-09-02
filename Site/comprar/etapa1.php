@@ -69,15 +69,19 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
 	    $ingressosSelecionados = $ingressosSelecionados[0];
 	}
 
-	//Carregar xml para evento
-	$xml = simplexml_load_file("campanha.xml");
-	foreach ($xml->item as $item) {
-	    if ($rs["ID_EVENTO"] == $item->id) {
-		$idcampanha = $item->idcampanha;
-	    }
-	}
+        if($isContagemAcessos){
+            //Carregar xml para evento
+            $xml = simplexml_load_file("campanha.xml");
+            foreach ($xml->item as $item) {
+                if ($rs["ID_EVENTO"] == $item->id) {
+                    $idcampanha = $item->idcampanha;
+                }
+            }
 
-	$campanha = get_campanha_etapa(basename(__FILE__, '.php'));
+            $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
+        }else{
+            $idcampanha = 0;
+        }
     }
 } else
     header("Location: http://www.compreingressos.com");

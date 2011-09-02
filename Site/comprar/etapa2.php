@@ -91,7 +91,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 									<div class="botoes_ticket">cancelar</div>
 								</a>
 								<?php } ?>
-								<a href="etapa3.php?redirect=<?php echo urlencode('etapa4.php?eventoDS=' . $_GET['eventoDS']) . $campanha['tag_avancar']; ?>" id="botao_avancar" class="botao_avancar">
+								<a href="etapa3.php?redirect=<?php echo urlencode('etapa4.php?eventoDS=' . $_GET['eventoDS'] . $campanha['tag_avancar']); ?><?php echo $campanha['tag_avancar']; ?>" id="botao_avancar" class="botao_avancar">
 									<div class="botoes_ticket">avan&ccedil;ar</div>
 								</a>
 							</div>

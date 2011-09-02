@@ -3,6 +3,15 @@ require_once('../settings/settings.php');
 require_once('../settings/functions.php');
 session_start();
 
+function str_replace_once($search, $replace, $subject) {
+    if (($pos = strpos($subject, $search)) !== false) {
+        $ret = substr($subject, 0, $pos) . $replace . substr($subject, $pos + strlen($search));
+    } else {
+        $ret = $subject;
+    }
+    return($ret);
+}
+
 if (isset($_POST['email']) and isset($_POST['senha'])) {
 	$mainConnection = mainConnection();
 	
@@ -14,8 +23,14 @@ if (isset($_POST['email']) and isset($_POST['senha'])) {
 	if ($rs['ID_CLIENTE']) {
 		//setcookie('user', $rs['ID_CLIENTE'], $cookieExpireTime);
 		$_SESSION['user'] = $rs['ID_CLIENTE'];
-		
-		echo 'redirect.php?redirect=' . $_GET['redirect'] . ((isset($_GET['tag']) || isset($_POST['tag'])) ? urlencode($_POST['from'] == 'cadastro' ? '&tag=3._Identificaçao_-_Cadastre-se-TAG' : '&tag=3._Identificaçao_-_Autentique-se-TAG') : '');
+
+                if(isset($_GET['tag']) || isset($_POST['tag'])){
+                    $url = (($_POST['from'] == 'cadastro') ? '&tag=3._Identificaçao_-_Cadastre-se-TAG' : '&tag=3._Identificaçao_-_Autentique-se-TAG');
+                }else{
+                    $url = '';
+                }
+
+		echo 'redirect.php?redirect=' . str_replace_once("&tag=2._Conferir_Itens_-_Avançar-TAG", "", $_GET['redirect']) . urlencode($url);
 	} else {
 		echo 'false';
 	}

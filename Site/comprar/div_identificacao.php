@@ -1,6 +1,7 @@
 						<form id="identificacaoForm" name="identificacao" method="post" action="autenticacao.php">
 							<?php if (isset($_GET['tag'])) { ?>
 							<input type="hidden" name="tag" value="<?php echo $_GET['tag']; ?>" />
+                                                        <input type="hidden" name="from" value="cadastro" />
 							<?php } ?>
 							<div id="identificacao">
 								<img class="icone_id" src="../images/icon_sou.jpg" alt="Sou cliente COMPREINGRESSOS.COM" title="Sou cliente COMPREINGRESSOS.COM"/>

@@ -112,7 +112,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
 	    if(idcampanha != 0){
 		var ADM_rnd_<?php echo $idcampanha; ?> = Math.round(Math.random() * 9999);
 		var ADM_post_<?php echo $idcampanha; ?> = new Image();
-		ADM_post_<?php echo $idcampanha; ?>.src = 'http://ia.nspmotion.com/ptag/?pt=<?php echo $idcampanha; ?>&r='+ADM_rnd_<?php echo $idcampanha; ?>;
+		ADM_post_<?php echo $idcampanha; ?>.src = 'https://ia.nspmotion.com/ptag/?pt=<?php echo $idcampanha; ?>&r='+ADM_rnd_<?php echo $idcampanha; ?>;
 	    }
 	</script>
 	<!-- END SCRIPT TAG -->

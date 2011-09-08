@@ -932,7 +932,7 @@ function get_campanha_etapa($etapa) {
 
     switch ($_GET['tag']) {
 	case "1._Escolha_de_assentos_-_Avançar-TAG":
-	    $id = '8740';
+	    $id = '8741';
 	    break;
 	case "2._Conferir_Itens_-_Avançar-TAG":
 	    $id = '8741';

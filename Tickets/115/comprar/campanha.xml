@@ -56,7 +56,17 @@
 		<tag>Casal_TPM_-_Comprar</tag>
 	</item>
 	<item>
-		<id>884</id>
+		<id>1042</id>
+		<idcampanha>8706</idcampanha>
+		<tag>Chapeuzinho_Vermelho_-_Comprar</tag>
+	</item>
+	<item>
+		<id>1091</id>
+		<idcampanha>8706</idcampanha>
+		<tag>Chapeuzinho_Vermelho_-_Comprar</tag>
+	</item>
+	<item>
+		<id>1280</id>
 		<idcampanha>8706</idcampanha>
 		<tag>Chapeuzinho_Vermelho_-_Comprar</tag>
 	</item>

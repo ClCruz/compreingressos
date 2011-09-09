@@ -93,7 +93,7 @@ if (isset($_GET['evento']) and is_numeric($_GET['evento'])) {
                                     $xml = simplexml_load_file("campanha.xml");
                                     foreach($xml->item as $item){
                                         if($_GET["evento"] == $item->id){
-                                            $tag = "&tag=".$item->tag;
+                                            $tag = "&tag=". $item->tag ."&tag2=1._Escolha_de_assentos_-_Avançar-TAG";
                                         }
                                     }
                                 }

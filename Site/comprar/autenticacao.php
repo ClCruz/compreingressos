@@ -30,7 +30,7 @@ if (isset($_POST['email']) and isset($_POST['senha'])) {
                     $url = '';
                 }
 
-		echo 'redirect.php?redirect=' . str_replace_once("&tag=2._Conferir_Itens_-_Avançar-TAG", "", $_GET['redirect']) . urlencode($url);
+		echo 'redirect.php?redirect=' . str_replace_once("&tag=3._Identificaçao_-_Autentique-se", "", $_GET['redirect']) . urlencode($url);
 	} else {
 		echo 'false';
 	}

@@ -900,47 +900,53 @@ function acessoPermitidoEvento($idBase, $idUser, $codPeca, $die = false) {
 
 function get_campanha_etapa($etapa) {
     switch ($etapa) {
-	case 'etapa1':
+	/**
+        case 'etapa1':
 	    $tag_avancar = "1._Escolha_de_assentos_-_Avançar-TAG";
 	    $tag_voltar = "";
 	    break;
-	case 'etapa2':
-	    $tag_avancar = "2._Conferir_Itens_-_Avançar-TAG";
+        */
+	case 'etapa1':
+	    $tag_avancar = "2._Conferir_Itens_-_Avançar";
+	    $tag_voltar = "2._Conferir_Itens_-_Voltar";
+	    break;
+        case 'etapa2':
+            $tag_avancar = "3._Identificaçao_-_Autentique-se";
 	    $tag_voltar = "2._Conferir_Itens_-_Voltar-TAG";
 	    break;
 	case 'etapa3_2':
-	    $tag_avancar = "3._Identificaçao_-_Autentique-se-TAG";
-	    $tag_voltar = "3._Identificaçao_-_Cadastre-se-TAG";
+	    $tag_avancar = "3._Identificaçao_-_Autentique-se";
+	    $tag_voltar = "3._Identificaçao_-_Cadastre-se";
 	    break;
 	case 'etapa4':
-	    $tag_avancar = "4._Confirmaçao_-_Avançar-TAG";
-	    $tag_voltar = "4._Confirmaçao_-_Alterar_pedido-TAG";
+	    $tag_avancar = "4._Confirmaçao_-_Avançar";
+	    $tag_voltar = "4._Confirmaçao_-_Alterar_pedido";
 	    break;
 	case 'etapa5':
 	    $tag_avancar = "";
-	    $tag_voltar = "5._Pagamento_-_Voltar-TAG";
+	    $tag_voltar = "5._Pagamento_-_Voltar";
 	    break;
 	case 'cadatro???':
-	    $tag_avancar = "Cadastro_com_sucesso-TAG";
-	    $tag_voltar = "Cadastro_-_Voltar-TAG";
+	    $tag_avancar = "Cadastro_com_sucesso";
+	    $tag_voltar = "Cadastro_-_Voltar";
 	    break;
 	case 'pagamento_ok':
-	    $tag_avancar = "Pagamento_efetuado_com_sucesso-TAG";
+	    $tag_avancar = "Pagamento_efetuado_com_sucesso";
 	    $tag_voltar = "";
 	    break;
     }
 
     switch ($_GET['tag']) {
-	case "1._Escolha_de_assentos_-_Avançar-TAG":
+	case "1._Escolha_de_assentos_-_Avançar":
 	    $id = '8741';
 	    break;
-	case "2._Conferir_Itens_-_Avançar-TAG":
+	case "2._Conferir_Itens_-_Avançar":
 	    $id = '8741';
 	    break;
-	case "2._Conferir_Itens_-_Voltar-TAG":
+	case "2._Conferir_Itens_-_Voltar":
 	    $id = '8742';
 	    break;
-	case "3._Identificaçao_-_Autentique-se-TAG":
+	case "3._Identificaçao_-_Autentique-se":
 	    $id = '8744';
 	    break;
 	case "3._Identificaçao_-_Cadastre-se-TAG":

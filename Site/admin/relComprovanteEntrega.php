@@ -100,8 +100,8 @@ if (!sqlErrors()) {
                 //($numRegistros + 1 == $numRegistroAtual) ? $tpl->boxGeralUltimo = "'box-geral-ultimo'" : $tpl->boxGeralUltimo = "''";
 
                 // Gera o codigo de barras
-               // $bar = new WBarCode($tpl->codigoPedido, "../settings/barcode/");
-               // $tpl->codigoDeBarras = $bar->matrizimg;
+                $bar = new WBarCode($tpl->codigoPedido, "../settings/barcode/");
+                $tpl->codigoDeBarras = $bar->matrizimg;
 
                 $lugares = "";
                 $paramsInterno = array($comprovante["CodVenda"]);

@@ -1,4 +1,4 @@
-<?
+<?php
 
 /**
  * Rotina para gerar codigos de barra padrao 2of5 ou 25.

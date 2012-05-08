@@ -276,11 +276,11 @@ if (isset($err) && $err != "") {
 <?php ob_start(); ?>
 					<table width="656" class="tabela" border="0" bgcolor="LightGrey">
 					    <tr>
-						<td align="center" colspan="5"><font size=2 face="tahoma,verdana,arial"><B>3 - DETALHAMENTO POR FORMA DE PAGAMENTO</B></font></td>
+						<td align="center" colspan="5"><font size=2 face="tahoma,verdana,arial"><B>3 - DETALHAMENTO POR FORMA DE PAGAMENTO<BR>(apenas para conferência de valores e quantidades)</B></font></td>
 					    </tr>
 					    <tr>
 						<td	align="left" width="140" class="titulogrid">Tipo de Forma de Pagamento</td>
-						<td	align="right" width="104" class="titulogrid">Qtde Ingressos</td>
+						<td	align="right" width="104" class="titulogrid">Qtde Transações</td>
 						<td	align="right" width="104" class="titulogrid">Valores Brutos</td>
 						<td	align="right" width="104" class="titulogrid">Repasses</td>
                                                 <?php if($_GET['Small'] == 1){ ?>

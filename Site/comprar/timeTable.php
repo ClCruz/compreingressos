@@ -105,6 +105,7 @@ if (isset($_GET['evento']) and is_numeric($_GET['evento'])) {
 						$data = explode('/', $rs['DT_APRESENTACAO']);
 						$tempo = mktime($hora[0], $hora[1], 0, $data[1], $data[0], $data[2]);
 ?>
+					<?php if ($rs['TELEFONE'] < 0) { ?>
 						<tr class="apresentacao_ticket">
 							<td><?php echo utf8_encode(strtoupper(strftime("%a", $tempo))); ?></td>
 							<td>|</td>
@@ -122,6 +123,7 @@ if (isset($_GET['evento']) and is_numeric($_GET['evento'])) {
 								</a>
 							</td>
 						</tr>
+					<?php } ?>
 <?php
 					}
 ?>

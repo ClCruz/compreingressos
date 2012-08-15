@@ -6,18 +6,26 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
 
     if (isset($_POST['valor'])) {
         $_POST['valor'] = str_replace(',', '.', $_POST['valor']);
+        $_POST['valor2'] = str_replace(',', '.', $_POST['valor2']);
         if (!is_numeric($_POST['valor'])) {
-            echo 'Favor informar um valor válido para a taxa.';
+            echo 'Favor informar um valor válido para a taxa normal.';
             exit();
         }
+        if (!is_numeric($_POST['valor2'])) {
+            echo 'Favor informar um valor válido para a taxa promocional.';
+            exit();
+        }
+        $_POST['valor'] = $_POST['tipo'] == 'P' ? $_POST['valor'] / 100 : $_POST['valor'];
+        $_POST['valor2'] = $_POST['tipo'] == 'P' ? $_POST['valor2'] / 100 : $_POST['valor2'];
+
     }
 
     if ($_GET['action'] == 'add') { /* ------------ INSERT ------------ */
 
         $query = "INSERT INTO MW_TAXA_CONVENIENCIA
-					(ID_EVENTO, DT_INICIO_VIGENCIA, VL_TAXA_CONVENIENCIA)
-					VALUES (?, CONVERT(DATETIME, ?, 103), ?)";
-        $params = array($_POST['idEvento'], $_POST['data'], $_POST['valor']);
+					(ID_EVENTO, DT_INICIO_VIGENCIA, VL_TAXA_CONVENIENCIA, IN_TAXA_CONVENIENCIA, VL_TAXA_PROMOCIONAL)
+					VALUES (?, CONVERT(DATETIME, ?, 103), ?, ?, ?)";
+        $params = array($_POST['idEvento'], $_POST['data'], $_POST['valor'], $_POST['tipo'], $_POST['valor2']);
 	$queryToLog = $query;
 	$paramsToLog = $params;
 
@@ -52,14 +60,16 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
             $query = "UPDATE T SET
 						T.ID_EVENTO = ?,
 						T.DT_INICIO_VIGENCIA = CONVERT(DATETIME, ?, 103),
-						T.VL_TAXA_CONVENIENCIA = ?
+                        T.VL_TAXA_CONVENIENCIA = ?,
+                        T.IN_TAXA_CONVENIENCIA = ?,
+                        T.VL_TAXA_PROMOCIONAL = ?
 					FROM
 						MW_TAXA_CONVENIENCIA T
 						INNER JOIN MW_EVENTO R ON R.ID_EVENTO = T.ID_EVENTO
 					WHERE
 						R.DS_EVENTO = ?
 						AND T.DT_INICIO_VIGENCIA = CONVERT(DATETIME, ?, 103)";
-            $params = array($_POST['idEvento'], $_POST['data'], $_POST['valor'], $_GET['idEvento'], $_GET['data']);
+            $params = array($_POST['idEvento'], $_POST['data'], $_POST['valor'], $_POST['tipo'], $_POST['valor2'], $_GET['idEvento'], $_GET['data']);
 	    $queryToLog = $query;
 	    $paramsToLog = $params;
 
@@ -92,11 +102,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
         $hoje = strtotime(date('d-m-Y'));
 
         if ($data >= $hoje) {
-            $query = 'DELETE T FROM MW_TAXA_CONVENIENCIA T INNER JOIN MW_EVENTO R ON R.ID_EVENTO = T.ID_EVENTO WHERE
-						R.DS_EVENTO = ? AND T.DT_INICIO_VIGENCIA = CONVERT(DATETIME, ?, 103)';
+            $query = 'DELETE T FROM MW_TAXA_CONVENIENCIA T, MW_EVENTO R
+                        WHERE R.ID_EVENTO = T.ID_EVENTO AND R.DS_EVENTO = ? AND T.DT_INICIO_VIGENCIA = CONVERT(DATETIME, ?, 103)';
             $params = array($_GET['idEvento'], $_GET['data']);
+            executeSQL($mainConnection, $query, $params);
 
-            if (executeSQL($mainConnection, $query, $params)) {
+            $sqlErrors = sqlErrors();
+            if (empty($sqlErrors)) {
                 // Registra log da operação, caso não houve erro
                 try {
                     $log = new Log($_SESSION["admin"]);
@@ -109,7 +121,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                 }
                 $retorno = 'true';
             } else {
-                $retorno = sqlErrors();
+                $retorno = $sqlErrors;
             }
         } else {
             $retorno = 'Este registro ainda está em uso!';

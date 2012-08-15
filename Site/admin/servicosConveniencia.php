@@ -3,6 +3,25 @@ require_once('../settings/functions.php');
 $mainConnection = mainConnection();
 session_start();
 
+function formatNumber ($number) {
+    return number_format($number, 2, ',', '');
+}
+
+function combo_tipo_valor ($name, $valor) {
+    $tipos = array(
+        'V' => 'R$',
+        'P' => '%'
+    );
+
+    $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um tipo...</option>';
+    foreach ($tipos as $key => $val) {
+        $combo .= '<option value="' . $key . '"' . (($valor == $key) ? ' selected' : '') . '>' . (($number) ? $key : $val) . '</option>';
+    }
+    $combo .= '</select>';
+
+    return $combo;
+}
+
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
 
     $pagina = basename(__FILE__);
@@ -12,7 +31,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
         require('actions/' . $pagina);
     } else {
 
-        $result = executeSQL($mainConnection, 'SELECT E.DS_EVENTO, CONVERT(VARCHAR(10), T.DT_INICIO_VIGENCIA, 103) DT_INICIO_VIGENCIA, T.VL_TAXA_CONVENIENCIA, CASE WHEN CONVERT(CHAR(8), T.DT_INICIO_VIGENCIA, 112) >= CONVERT(CHAR(8), GETDATE(), 112) THEN 1 ELSE 0 END EDICAO FROM MW_TAXA_CONVENIENCIA T INNER JOIN MW_EVENTO E ON E.ID_EVENTO = T.ID_EVENTO WHERE E.ID_BASE = ?', array($_GET['teatro']));
+        $result = executeSQL($mainConnection, 'SELECT E.DS_EVENTO, CONVERT(VARCHAR(10), T.DT_INICIO_VIGENCIA, 103) DT_INICIO_VIGENCIA, T.IN_TAXA_CONVENIENCIA, T.VL_TAXA_CONVENIENCIA, T.VL_TAXA_PROMOCIONAL, CASE WHEN CONVERT(CHAR(8), T.DT_INICIO_VIGENCIA, 112) >= CONVERT(CHAR(8), GETDATE(), 112) THEN 1 ELSE 0 END EDICAO FROM MW_TAXA_CONVENIENCIA T INNER JOIN MW_EVENTO E ON E.ID_EVENTO = T.ID_EVENTO WHERE E.ID_BASE = ?', array($_GET['teatro']));
 
         $resultTeatros = executeSQL($mainConnection, 'SELECT ID_BASE, DS_NOME_TEATRO FROM MW_BASE WHERE IN_ATIVO = \'1\'');
 ?>
@@ -43,7 +62,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
 
                                     tr.find('td:not(.button):eq(0)').html($('#idEvento option:selected').text());
                                     tr.find('td:not(.button):eq(1)').html($('#data').val());
-                                    tr.find('td:not(.button):eq(2)').html('R$ ' + $('#valor').val());
+                                    tr.find('td:not(.button):eq(2)').html($('#tipo option:selected').text());
+                                    tr.find('td:not(.button):eq(3)').html($('#valor').val());
+                                    tr.find('td:not(.button):eq(4)').html($('#valor2').val());
 
                                     $this.text('Editar').attr('href', pagina + '?action=edit&' + id);
                                     tr.find('td.button a:last').attr('href', pagina + '?action=delete&' + id);
@@ -65,9 +86,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                         });
 
                         tr.find('td:not(.button):eq(0)').html('<?php echo comboEvento('idEvento', $_GET['teatro']); ?>');
-			$('#idEvento option').filter(function(){return $(this).text() == values[0]}).attr('selected', 'selected');
+			             $('#idEvento option').filter(function(){return $(this).text() == values[0]}).attr('selected', 'selected');
                         tr.find('td:not(.button):eq(1)').html('<input name="data" type="text" class="datePicker inputStyle" id="data" maxlength="10" value="' + values[1] + '" readonly>');
-                        tr.find('td:not(.button):eq(2)').html('R$ <input name="valor" type="text" class="number inputStyle" id="valor" maxlength="6" value="' + values[2].substr(3, values[2].length) + '" >');
+                        tr.find('td:not(.button):eq(2)').html('<?php echo combo_tipo_valor('tipo'); ?>');
+                         $('#tipo option').filter(function(){return $(this).text() == values[2]}).attr('selected', 'selected');
+                        tr.find('td:not(.button):eq(3)').html('<input name="valor" type="text" class="inputStyle" id="valor" maxlength="6" value="' + values[3] + '" >');
+                        tr.find('td:not(.button):eq(4)').html('<input name="valor2" type="text" class="inputStyle" id="valor2" maxlength="6" value="' + values[4] + '" >');
 
                         $this.text('Salvar').attr('href', pagina + '?action=update&' + id);
 
@@ -105,7 +129,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                         '<?php echo comboEvento('idEvento', $_GET['teatro']); ?>' +
                         '</td>' +
                         '<td><input name="data" type="text" class="datePicker inputStyle" id="data" maxlength="10" readonly></td>' +
-                        '<td>R$ <input name="valor" type="text" class="number inputStyle" id="valor" maxlength="6" ></td>' +
+                        '<td><?php echo combo_tipo_valor('tipo'); ?></td>' +
+                        '<td><input name="valor" type="text" class="number inputStyle" id="valor" maxlength="6" ></td>' +
+                        '<td><input name="valor2" type="text" class="number inputStyle" id="valor2" maxlength="6" ></td>' +
                         '<td class="button"><a href="' + pagina + '?action=add">Salvar</a></td>' +
                         '<td class="button"><a href="#delete">Apagar</a></td>' +
                         '</tr>';
@@ -154,7 +180,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                     <tr class="ui-widget-header ">
                         <th>Evento</th>
                         <th>Data de In&iacute;cio de Vig&ecirc;ncia</th>
-                        <th>Valor</th>
+                        <th>Tipo</th>
+                        <th>Normal</th>
+                        <th>Promocional</th>
                         <th colspan="2">A&ccedil;&otilde;es</th>
                     </tr>
                 </thead>
@@ -163,12 +191,17 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
         while ($rs = fetchResult($result)) {
             $idEvento = utf8_encode($rs['DS_EVENTO']);
             $data = $rs['DT_INICIO_VIGENCIA'];
+            $tipo = $rs['IN_TAXA_CONVENIENCIA'];
             $valor = $rs['VL_TAXA_CONVENIENCIA'];
+            $valor2 = $rs['VL_TAXA_PROMOCIONAL'];
 ?>
             <tr>
                 <td><?php echo $idEvento; ?></td>
                 <td><?php echo $data; ?></td>
-                <td>R$ <?php echo str_replace('.', ',', $valor); ?></td>
+                <td><?php echo $tipo == 'V' ? 'R$' : '%' ; ?></td>
+                <td><?php echo $tipo == 'V' ? formatNumber($valor) : $valor * 100 ; ?></td>
+                <td><?php echo $tipo == 'V' ? formatNumber($valor2) : $valor2 * 100 ; ?></td>
+
 <?php if ($rs['EDICAO']) { ?>
                     <td class="button"><a href="<?php echo $pagina; ?>?action=edit&idEvento=<?php echo $idEvento; ?>&data=<?php echo $data; ?>">Editar</a></td>
                     <td class="button"><a href="<?php echo $pagina; ?>?action=delete&idEvento=<?php echo $idEvento; ?>&data=<?php echo $data; ?>">Apagar</a></td>

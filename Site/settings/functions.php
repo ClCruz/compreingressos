@@ -86,6 +86,45 @@ function verificarLimitePorCPF($conn, $codApresentacao, $user) {
     return NULL;
 }
 
+function obterValorServico($id_bilhete) {
+
+	$mainConnection = mainConnection();
+
+	$query = 'SELECT E.ID_BASE, E.ID_EVENTO FROM MW_EVENTO E
+				INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
+				INNER JOIN MW_APRESENTACAO_BILHETE B ON B.ID_APRESENTACAO = A.ID_APRESENTACAO
+				WHERE B.ID_APRESENTACAO_BILHETE = ?';
+	$params = array($id_bilhete);
+	$rs = executeSQL($mainConnection, $query, $params, true);
+
+	$id_base = $rs['ID_BASE'];
+	$id_evento = $rs['ID_EVENTO'];
+
+	$conn = getConnection($id_base);
+
+	$query = 'SELECT TOP 1 VL_TAXA_CONVENIENCIA, IN_TAXA_CONVENIENCIA, VL_TAXA_PROMOCIONAL FROM MW_TAXA_CONVENIENCIA WHERE ID_EVENTO = ? AND DT_INICIO_VIGENCIA <= GETDATE() ORDER BY DT_INICIO_VIGENCIA DESC';
+	$params = array($id_evento);
+	$rs = executeSQL($mainConnection, $query, $params, true);
+
+	$tipo = $rs[1];
+	$normal = $rs[0];
+	$promo = $rs[2];
+
+	$query = 'SELECT AB.VL_LIQUIDO_INGRESSO, P.CODPECA
+			FROM CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB
+			INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = ?
+			LEFT JOIN TABPECA P ON P.CODPECA = E.CODPECA AND P.CODTIPBILHETEBIN = AB.CODTIPBILHETE AND P.IN_BIN_ITAU = 1 
+			WHERE AB.IN_ATIVO = 1
+			AND AB.ID_APRESENTACAO_BILHETE = ?';
+	$params = array($id_evento, $id_bilhete);
+	$rs = executeSQL($conn, $query, $params, true);
+
+	return $tipo == 'V'
+			? (is_null($rs['CODPECA']) ? $normal : $promo)
+			: (is_null($rs['CODPECA']) ? $normal * $rs['VL_LIQUIDO_INGRESSO']: $promo * $rs['VL_LIQUIDO_INGRESSO']) ;
+
+}
+
 /*  BANCO  */
 
 

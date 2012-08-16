@@ -245,16 +245,16 @@ $parametros['codigo_pedido'] = $newMaxId;
 while ($itens = fetchResult($result)) {
         $i++;
 
-        $valorConveniencia = executeSQL($mainConnection, "SELECT VL_TAXA_CONVENIENCIA FROM MW_TAXA_CONVENIENCIA WHERE ID_EVENTO = ? AND DT_INICIO_VIGENCIA <= GETDATE() ORDER BY DT_INICIO_VIGENCIA DESC", array($itens['ID_EVENTO']), true);
+        $valorConveniencia = obterValorServico($itens['ID_APRESENTACAO_BILHETE']);
 
         $parametros['codigo_item_'.$i] = $itens['ID_CADEIRA']; //Código ou chave única do item do pedido no Site.
         $parametros['descricao_item_'.$i] = utf8_encode($itens['DS_EVENTO'] . ' (' . $itens['DT_APRESENTACAO']) . ' às ' . utf8_encode($itens['HR_APRESENTACAO'] . ') - ' . $itens['DS_NOME_TEATRO'] . ' - ' . $itens['DS_SETOR'] . ' - ' . $itens['DS_CADEIRA'] . ' - ' . $itens['DS_TIPO_BILHETE']);
         $parametros['quantidade_item_'.$i] = "100"; //Quantidade com duas casas decimais e sem pontos nem vírgulas. Ex: 1,00 -> 100; 100,00 -> 10000
-        $parametros['valor_item_'.$i] = ($itens['VL_LIQUIDO_INGRESSO'] + $valorConveniencia[0]) * 100; //Valor unitário em centavos, somente números, sem pontos nem vírgulas. Ex: 50,00 -> 5000;
+        $parametros['valor_item_'.$i] = ($itens['VL_LIQUIDO_INGRESSO'] + $valorConveniencia) * 100; //Valor unitário em centavos, somente números, sem pontos nem vírgulas. Ex: 50,00 -> 5000;
         $totalIngressos += $itens['VL_LIQUIDO_INGRESSO'];
-        $totalConveniencia += $valorConveniencia[0];
+        $totalConveniencia += $valorConveniencia;
 
-        $params2[$i] = array($newMaxId, $itens['ID_RESERVA'], $itens['ID_APRESENTACAO'], $itens['ID_APRESENTACAO_BILHETE'], $itens['DS_CADEIRA'], $itens['DS_SETOR'], 1, $itens['VL_LIQUIDO_INGRESSO'], $valorConveniencia[0], 'XXXXXXXXXX');
+        $params2[$i] = array($newMaxId, $itens['ID_RESERVA'], $itens['ID_APRESENTACAO'], $itens['ID_APRESENTACAO_BILHETE'], $itens['DS_CADEIRA'], $itens['DS_SETOR'], 1, $itens['VL_LIQUIDO_INGRESSO'], $valorConveniencia, 'XXXXXXXXXX');
 }
 
 $parametros['numero_itens'] = $i;

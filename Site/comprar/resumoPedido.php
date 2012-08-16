@@ -35,8 +35,7 @@ while ($rs = fetchResult($result)) {
 	
 	if ($eventoAtual != $rs['ID_EVENTO'] . $rs['ID_APRESENTACAO']) {
 		
-		$valorConveniencia = executeSQL($mainConnection, 'SELECT VL_TAXA_CONVENIENCIA FROM MW_TAXA_CONVENIENCIA WHERE ID_EVENTO = ? AND DT_INICIO_VIGENCIA <= GETDATE() ORDER BY DT_INICIO_VIGENCIA DESC', array($rs['ID_EVENTO']), true);
-		$valorConveniencia = (count($valorConveniencia) == 0) ? '0,00' : number_format($valorConveniencia[0], 2, ',', '');
+		$valorConveniencia = '0,00';
 		
 		if ($eventoAtual != NULL) finalizar();
 ?>

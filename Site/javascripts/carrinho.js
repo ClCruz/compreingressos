@@ -65,11 +65,12 @@ $(function() {
 		$('#calculaFrete').click();
 	});
 	
-	$('.valorIngresso\\[\\]').change(function() {
-		var $this = $(this);
-		
-		updateAllValues();
-	});
+	$('[name="valorIngresso\\[\\]"]').change(function() {
+		var $this = $(this),
+			$target = $this.parent('td').next('td').find('.valorConveniencia');
+
+		updateValorServico($this.val(), $target);
+	}).change();
 	
 	$('.removerIngresso').click(function(event) {
 		event.preventDefault();
@@ -276,6 +277,18 @@ $(function() {
 	if ($.cookie('entrega') != null) {
 		$('#cmb_entrega').val('entrega');
 		$('#cmb_entrega').change();
+	}
+
+	function updateValorServico(bilhete, target) {
+		$.ajax({
+			url: 'valorServico.php',
+			type: 'POST',
+			data: 'id_bilhete=' + bilhete,
+			success: function(data) {
+				target.val(data.valor);
+				updateAllValues();
+			}
+		});
 	}
 	
 	updateAllValues();

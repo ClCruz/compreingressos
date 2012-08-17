@@ -17,21 +17,28 @@ if (isset($_GET['action'])) {
 	$idBase = $arrayBase[0];
 	$nomeBase = $arrayBase[1];
 
-	// Alterar programas 
 	if (isset($_GET["action"]) && $_GET["action"] == "cad") {
+
 		if(isset($_GET["tipo"]) && $_GET["tipo"] == "todos")
 			echo cadastrarAcessoEvento($_POST["usuario"], $idBase, $nomeBase, $_POST["eventos"], $mainConnection);
 		else if(isset($_GET["tipo"]) && $_GET["tipo"] == "geral")
 			echo cadastrarAcessoEvento($_POST["usuario"], $idBase, $nomeBase, "geral", $mainConnection);
 		else
 			echo cadastrarAcessoEvento($_POST["usuario"], $idBase, $nomeBase, $_GET["idevento"], $mainConnection);
+
 	} else if (isset($_GET["action"]) && $_GET["action"] == "del") {
+
 		if(isset($_GET["tipo"]) && $_GET["tipo"] == "todos")
 			echo deletarAcessoEvento($_POST["usuario"], $idBase, $_POST["eventos"], $mainConnection);		
 		else if(isset($_GET["tipo"]) && $_GET["tipo"] == "geral")
 			echo deletarAcessoEvento($_POST["usuario"], $idBase, "geral", $mainConnection);
 		else
 			echo deletarAcessoEvento($_POST["usuario"], $idBase, $_GET["idevento"], $mainConnection);	
+
+	} else if (isset($_GET["action"]) && $_GET["action"] == "notificar") {
+
+		echo notificarUsuarioEventos($_POST["usuario"], $idBase, $nomeBase, $mainConnection);
+
 	}
 	die();
 	
@@ -150,8 +157,18 @@ $(function() {
 	});
 	
 	// Alterar permissão dos eventos
-	$('#btnAlterar').click(function(){
-		$.dialog({title: 'Sucesso...', text: 'Dados alterados com sucesso'});
+	$('#btnAlterar').button({icons:{primary: "ui-icon-mail-closed"}}).click(function(){
+		$.ajax({
+			url: pagina + '?action=notificar',
+			type: 'post',
+			data: $('#dados').serialize(),
+			success: function(data) {
+				if (data != "OK")	$.dialog({text: data});
+			},
+			complete: function() {
+				$('loadingIcon').fadeOut('slow');
+			}
+		});
 	});
 	
 	$("#controle").change(function(){
@@ -285,8 +302,12 @@ function validar(){
         	Paginator::paginate($offset, $total, $total_reg, $link, true);
 		}
     ?>
-    <div style="text-align: right;"><input type="button" id="btnAlterar" value="Alterar" class="button" /></div>
 	</div>
+	<br />
+    <center>
+    	<strong>Enviar e-mail para usuário informando liberação para acesso ao relatório do borderô de vendas?</strong><br /><br />
+    	<span id="btnAlterar">Sim</span>
+    </center>
 </form>
 <?php
 	}	

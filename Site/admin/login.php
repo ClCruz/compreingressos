@@ -7,6 +7,8 @@ if ($_GET['action'] == 'logout') {
 	session_start();
 	session_unset();
 	session_destroy();
+} else if ($_GET['action'] == 'trocarSenha') {
+	require_once('acessoLogado.php');
 }
 
 require_once('../settings/settings.php');

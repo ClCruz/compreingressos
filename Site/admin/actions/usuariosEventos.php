@@ -145,4 +145,54 @@
 			echo "<br>";
 		}
 	}
+	
+	/**
+	 * Enviar email a usuário com notificação de permissões
+	 * @param int $idUsuario Identificador do usuario na base de dados
+	 * @param int $idBase Identificador da base de dados selecionada
+	 * @param int $conn Identificador da conexao do banco de dados
+	 * @return string "" || String de erro
+	**/
+	function notificarUsuarioEventos($idUsuario, $idBase, $nomeBase, $conn){
+		$query = "SELECT CD_LOGIN, DS_NOME, DS_EMAIL FROM MW_USUARIO WHERE ID_USUARIO = ?";
+		$params = array($idUsuario);
+		$user = executeSQL($conn, $query, $params, true);
+
+		$query = "SELECT E.DS_EVENTO FROM MW_ACESSO_CONCEDIDO A
+					INNER JOIN MW_EVENTO E ON E.CODPECA = A.CODPECA AND E.ID_BASE = A.ID_BASE
+					WHERE A.ID_USUARIO = ? AND A.ID_BASE = ?";
+		$params = array($idUsuario, $idBase);
+		$result = executeSQL($conn, $query, $params);
+
+		
+		ob_start();
+		?>
+		<p>Prezado <?php echo $user['DS_NOME']; ?>,</p><br/>
+		<p> Informamos que o acesso ao Teatro <?php echo $nomeBase; ?>, do(s) evento(s) abaixo,
+ 			está(ão) liberado(s) para visualização no sistema.</p><br/>
+ 		<ul>
+		<?php
+		while ($rs = fetchResult($result)) {
+			echo '<li>' . utf8_encode($rs['DS_EVENTO']) . '</li>';
+		}
+		?>
+		</ul><br/>
+		<p>Seguem informações para acesso:</p><br/>
+		<p>URL: <a href="https://compra.compreingressos.com/admin/?p=relatorioBordero">https://compra.compreingressos.com/admin/?p=relatorioBordero</a></p>
+		<p>Usuário: <?php echo $user['CD_LOGIN']; ?></p><br/>
+		<p>Senha: caso não lembre a senha clique <a href="https://compra.compreingressos.com/admin/gerarNovaSenha.php?email=<?php echo $user['DS_EMAIL']; ?>">aqui</a> para receber uma nova senha, que será enviada para o email <?php echo $user['DS_EMAIL']; ?>.</p>
+		<?php
+		$body = ob_get_contents();
+		ob_end_clean();
+
+
+		$nameto = $rs['DS_NOME'];
+		$to = $user['DS_EMAIL'];
+		$subject = 'Notificação de Permissão'; 
+		
+		$namefrom = 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS';
+		$from = 'contato@compreingressos.com';
+
+		echo authSendEmail($from, $namefrom, $to, $nameto, $subject, $body) ? 'true' : '<br><br>Se o erro persistir, favor entrar em contato com o suporte.';
+	}
 ?>

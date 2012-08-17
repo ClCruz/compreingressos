@@ -163,7 +163,8 @@ $(function() {
 			type: 'post',
 			data: $('#dados').serialize(),
 			success: function(data) {
-				if (data != "OK")	$.dialog({text: data});
+				if (data != "true")	$.dialog({text: data});
+				else $.dialog({title: 'Aviso...', text: 'E-mail enviado com sucesso'});
 			},
 			complete: function() {
 				$('loadingIcon').fadeOut('slow');

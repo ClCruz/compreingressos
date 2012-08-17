@@ -158,29 +158,39 @@
 		$params = array($idUsuario);
 		$user = executeSQL($conn, $query, $params, true);
 
-		$query = "SELECT E.DS_EVENTO FROM MW_ACESSO_CONCEDIDO A
-					INNER JOIN MW_EVENTO E ON E.CODPECA = A.CODPECA AND E.ID_BASE = A.ID_BASE
-					WHERE A.ID_USUARIO = ? AND A.ID_BASE = ?";
-		$params = array($idUsuario, $idBase);
+		$query = "SELECT DS_NOME_TEATRO FROM MW_BASE WHERE ID_BASE = ?";
+		$params = array($idBase);
+		$base = executeSQL($conn, $query, $params, true);
+
+		$query = "SELECT P.NOMPECA
+					FROM ".$nomeBase."..TABPECA P
+					INNER JOIN CI_MIDDLEWAY..MW_ACESSO_CONCEDIDO A ON A.CODPECA = P.CODPECA
+					WHERE A.ID_BASE = ? AND A.ID_USUARIO = ? AND STAPECA = 'A'
+					ORDER BY 1";
+		$params = array($idBase, $idUsuario);
 		$result = executeSQL($conn, $query, $params);
 
 		
 		ob_start();
 		?>
-		<p>Prezado <?php echo $user['DS_NOME']; ?>,</p><br/>
-		<p> Informamos que o acesso ao Teatro <?php echo $nomeBase; ?>, do(s) evento(s) abaixo,
- 			está(ão) liberado(s) para visualização no sistema.</p><br/>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<p>Prezado <?php echo $user['DS_NOME']; ?>,</p>
+		<p> Informamos que o acesso ao Local <?php echo $base['DS_NOME_TEATRO']; ?>, do(s) evento(s) abaixo,
+ 			est&aacute;(&atilde;o) liberado(s) para visualiza&ccedil;&atilde;o no sistema.</p>
  		<ul>
 		<?php
 		while ($rs = fetchResult($result)) {
-			echo '<li>' . utf8_encode($rs['DS_EVENTO']) . '</li>';
+			echo '<li>' . $rs['NOMPECA'] . '</li>';
 		}
 		?>
-		</ul><br/>
-		<p>Seguem informações para acesso:</p><br/>
+		</ul>
+		<p>Seguem informa&ccedil;&otilde;es para acesso:</p>
 		<p>URL: <a href="https://compra.compreingressos.com/admin/?p=relatorioBordero">https://compra.compreingressos.com/admin/?p=relatorioBordero</a></p>
-		<p>Usuário: <?php echo $user['CD_LOGIN']; ?></p><br/>
-		<p>Senha: caso não lembre a senha clique <a href="https://compra.compreingressos.com/admin/gerarNovaSenha.php?email=<?php echo $user['DS_EMAIL']; ?>">aqui</a> para receber uma nova senha, que será enviada para o email <?php echo $user['DS_EMAIL']; ?>.</p>
+		<p>Usu&aacute;rio: <?php echo $user['CD_LOGIN']; ?></p>
+		<p>Senha: caso n&atilde;o lembre a senha clique <a href="https://compra.compreingressos.com/admin/gerarNovaSenha.php?email=<?php echo $user['DS_EMAIL']; ?>">aqui</a> para receber uma nova senha, que ser&aacute; enviada para o email <?php echo $user['DS_EMAIL']; ?>.</p>
+		<p>Att.<br/>
+		Compreingressos.com</p>
 		<?php
 		$body = ob_get_contents();
 		ob_end_clean();
@@ -188,10 +198,10 @@
 
 		$nameto = $rs['DS_NOME'];
 		$to = $user['DS_EMAIL'];
-		$subject = 'Notificação de Permissão'; 
+		$subject = utf8_decode('Notificação de Permissão');
 		
-		$namefrom = 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS';
-		$from = 'contato@compreingressos.com';
+		$namefrom = utf8_decode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS');
+		$from = 'contato@cc.com.br';
 
 		echo authSendEmail($from, $namefrom, $to, $nameto, $subject, $body) ? 'true' : '<br><br>Se o erro persistir, favor entrar em contato com o suporte.';
 	}

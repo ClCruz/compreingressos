@@ -148,6 +148,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                     var idEvento = $('#idEvento'),
                     data = $('#data'),
                     valor = $('#valor'),
+                    tipo = $('#tipo'),
                     valido = true;
                     if (idEvento.val() == '') {
                         idEvento.parent().addClass('ui-state-error');
@@ -160,6 +161,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                         valido = false;
                     } else {
                         data.parent().removeClass('ui-state-error');
+                    }
+                    if (tipo.val() == '') {
+                        tipo.parent().addClass('ui-state-error');
+                        valido = false;
+                    } else {
+                        tipo.parent().removeClass('ui-state-error');
                     }
                     if (valor.val() <= 0) {
                         valor.parent().addClass('ui-state-error');

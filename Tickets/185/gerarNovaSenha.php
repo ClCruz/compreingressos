@@ -22,6 +22,7 @@ if (isset($_GET['email'])) {
 			$to = $_GET['email'];
 			$subject = 'Solicitação de Nova Senha'; 
 			
+			$from = 'lembrete@compreingressos.com';
 			$namefrom = 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS';
 
 			//define the body of the message.

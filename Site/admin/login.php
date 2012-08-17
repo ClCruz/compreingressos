@@ -1,13 +1,14 @@
 <?php
+session_start();
+
 if ($_GET['action'] == 'logout') {
 	foreach ($_COOKIE as $key => $val) {
 		setcookie($key, "", time() - 3600);
 	}
 	
-	session_start();
 	session_unset();
 	session_destroy();
-} else if ($_GET['action'] == 'trocarSenha') {
+} else if ($_GET['action'] == 'trocarSenha' && $_SESSION['senha'] != true) {
 	require_once('acessoLogado.php');
 }
 

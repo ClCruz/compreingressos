@@ -203,7 +203,7 @@ function comboRegiaoGeografica($name) {
 
 function comboEvento($name, $teatro, $selected) {
     $mainConnection = mainConnection();
-    $result = executeSQL($mainConnection, 'SELECT ID_EVENTO, DS_EVENTO FROM MW_EVENTO WHERE ID_BASE = ? AND IN_ATIVO = \'1\'', array($teatro));
+    $result = executeSQL($mainConnection, 'SELECT ID_EVENTO, DS_EVENTO FROM MW_EVENTO WHERE ID_BASE = ? AND IN_ATIVO = \'1\' ORDER BY DS_EVENTO', array($teatro));
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um evento...</option>';
     while ($rs = fetchResult($result)) {

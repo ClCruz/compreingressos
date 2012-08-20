@@ -15,8 +15,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
             echo 'Favor informar um valor válido para a taxa promocional.';
             exit();
         }
-        $_POST['valor'] = $_POST['tipo'] == 'P' ? $_POST['valor'] / 100 : $_POST['valor'];
-        $_POST['valor2'] = $_POST['tipo'] == 'P' ? $_POST['valor2'] / 100 : $_POST['valor2'];
 
     }
 
@@ -45,7 +43,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
             } catch (Exception $e) {
                 echo $e->getMessage();               
             }
-            $retorno = 'true?idEvento=' . $rs['DS_EVENTO'] . '&data=' . $_POST['data'];
+            $retorno = 'true?idEvento=' . urlencode($rs['DS_EVENTO']) . '&data=' . $_POST['data'];
         } else {
             $retorno = sqlErrors();
         }
@@ -89,7 +87,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                     echo $e->getMessage();                    
                 }
 
-                $retorno = 'true?idEvento=' . utf8_encode($rs['DS_EVENTO']) . '&data=' . $_POST['data'];
+                $retorno = 'true?idEvento=' . urlencode(utf8_encode($rs['DS_EVENTO'])) . '&data=' . $_POST['data'];
             } else {
                 $retorno = sqlErrors();
             }

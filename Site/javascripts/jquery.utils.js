@@ -6,7 +6,9 @@ function trim(text) {
 	return text.replace(/^\s+|\s+$/g,"");
 }
 
-(function($){	
+(function($){
+	$.ajaxSetup({cache: false});
+
 	$.fn.onlyNumbers = function() {
 		$(this).keydown(function(event) {
 			if ((event.keyCode >= 48 && event.keyCode <= 57) ||

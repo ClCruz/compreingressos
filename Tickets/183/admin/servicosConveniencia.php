@@ -57,6 +57,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                             type: 'post',
                             data: $('#dados').serialize(),
                             success: function(data) {
+                                console.log(data);
                                 if (data.substr(0, 4) == 'true') {
                                     var id = $.serializeUrlVars(data);
 
@@ -72,6 +73,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                                 } else {
                                     $.dialog({text: data});
                                 }
+                            },
+                            complete: function(a,b,c,d,e,f) {
+                                console.log(a,b,c,d,e,f);
                             }
                         });
                     } else if (href.indexOf('?action=edit') != -1) {
@@ -148,6 +152,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                     var idEvento = $('#idEvento'),
                     data = $('#data'),
                     valor = $('#valor'),
+                    valor = $('#valor2'),
                     tipo = $('#tipo'),
                     valido = true;
                     if (idEvento.val() == '') {
@@ -173,6 +178,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                         valido = false;
                     } else {
                         valor.parent().removeClass('ui-state-error');
+                    }
+                    if (valor2.val() <= 0) {
+                        valor2.parent().addClass('ui-state-error');
+                        valido = false;
+                    } else {
+                        valor2.parent().removeClass('ui-state-error');
                     }
 
                     return valido;
@@ -206,12 +217,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                 <td><?php echo $idEvento; ?></td>
                 <td><?php echo $data; ?></td>
                 <td><?php echo $tipo == 'V' ? 'R$' : '%' ; ?></td>
-                <td><?php echo $tipo == 'V' ? formatNumber($valor) : $valor * 100 ; ?></td>
-                <td><?php echo $tipo == 'V' ? formatNumber($valor2) : $valor2 * 100 ; ?></td>
+                <td><?php echo formatNumber($valor); ?></td>
+                <td><?php echo formatNumber($valor2); ?></td>
 
 <?php if ($rs['EDICAO']) { ?>
-                    <td class="button"><a href="<?php echo $pagina; ?>?action=edit&idEvento=<?php echo $idEvento; ?>&data=<?php echo $data; ?>">Editar</a></td>
-                    <td class="button"><a href="<?php echo $pagina; ?>?action=delete&idEvento=<?php echo $idEvento; ?>&data=<?php echo $data; ?>">Apagar</a></td>
+                    <td class="button"><a href="<?php echo $pagina; ?>?action=edit&idEvento=<?php echo urlencode($idEvento); ?>&data=<?php echo $data; ?>">Editar</a></td>
+                    <td class="button"><a href="<?php echo $pagina; ?>?action=delete&idEvento=<?php echo urlencode($idEvento); ?>&data=<?php echo $data; ?>">Apagar</a></td>
 <?php } else { ?>
                 <td colspan="2">&nbsp;</td>
                 <?php } ?>

@@ -119,9 +119,11 @@ function obterValorServico($id_bilhete) {
 	$params = array($id_evento, $id_bilhete);
 	$rs = executeSQL($conn, $query, $params, true);
 
-	return $tipo == 'V'
+	$valor = $tipo == 'V'
 			? (is_null($rs['CODPECA']) ? $normal : $promo)
-			: (is_null($rs['CODPECA']) ? $normal * $rs['VL_LIQUIDO_INGRESSO']: $promo * $rs['VL_LIQUIDO_INGRESSO']) ;
+			: (is_null($rs['CODPECA']) ? ($normal / 100) * $rs['VL_LIQUIDO_INGRESSO'] : ($promo / 100) * $rs['VL_LIQUIDO_INGRESSO']);
+
+	return number_format($valor, 2);
 
 }
 

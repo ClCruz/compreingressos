@@ -79,7 +79,7 @@ session_start();
 			$rs = executeSQL($mainConnection, $query, $params, true);
 		?>
         <p>Bem vindo, <?php echo $rs['DS_NOME']; ?>!<br />
-		[<a href='./login.php?action=logout'>Sair</a>]</p>
+		[<a href='./login.php?action=trocarSenha'>Trocar Senha</a>] [<a href='./login.php?action=logout'>Sair</a>]</p>
 		
     	<?php
 		}

@@ -57,7 +57,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                             type: 'post',
                             data: $('#dados').serialize(),
                             success: function(data) {
-                                console.log(data);
                                 if (data.substr(0, 4) == 'true') {
                                     var id = $.serializeUrlVars(data);
 
@@ -73,9 +72,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                                 } else {
                                     $.dialog({text: data});
                                 }
-                            },
-                            complete: function(a,b,c,d,e,f) {
-                                console.log(a,b,c,d,e,f);
                             }
                         });
                     } else if (href.indexOf('?action=edit') != -1) {

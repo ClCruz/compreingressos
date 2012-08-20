@@ -152,7 +152,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                     var idEvento = $('#idEvento'),
                     data = $('#data'),
                     valor = $('#valor'),
-                    valor = $('#valor2'),
+                    valor2 = $('#valor2'),
                     tipo = $('#tipo'),
                     valido = true;
                     if (idEvento.val() == '') {

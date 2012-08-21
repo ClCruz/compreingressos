@@ -39,7 +39,8 @@ $(function() {
 				data: $('#dados').serialize(),
 				success: function(data) {
 					if (data.substr(0, 4) == 'true') {
-						var id = $.serializeUrlVars(data);
+						var id = $.serializeUrlVars(data),
+							email = $.getUrlVar('email', data);
 						
 						tr.find('td:not(.button):eq(0)').html($('#nome').val());
 						tr.find('td:not(.button):eq(1)').html($('#email').val());
@@ -52,6 +53,9 @@ $(function() {
 						tr.find('td.button a:eq(1)').attr('href', pagina + '?action=reset&' + id);
 						tr.find('td.button a:last').attr('href', pagina + '?action=delete&' + id);
 						tr.removeAttr('id');
+
+						if (email != '') $.dialog({text: email});
+						else $.dialog({title: 'Aviso...', text: 'E-mail de notificação enviado com sucesso.'});
 					} else {
 						$.dialog({text: data});
 					}
@@ -106,8 +110,11 @@ $(function() {
 						'Sim': function() {
 							$(this).dialog('close');
 							$.get(href, function(data) {
-								if (data.replace(/^\s*/, "").replace(/\s*$/, "") == 'true') {
-									$.dialog({title: 'Aviso...', text: 'A senha foi restaurada para o padrão.'});
+								if (data.substr(0, 4) == 'true') {
+									var email = $.getUrlVar('email', data);
+
+									if (email != '') $.dialog({text: 'A senha foi restaurada para o padrão.<br/><br/>' + email});
+									else $.dialog({title: 'Aviso...', text: 'A senha foi restaurada para o padrão e o e-mail de notificação foi enviado com sucesso.'});
 								} else {
 									$.dialog({text: data});
 								}

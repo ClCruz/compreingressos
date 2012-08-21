@@ -33,8 +33,12 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 		$params = array($_POST['login']);
 		
 		$rs = executeSQL($mainConnection, $query, $params, true);
-		
+
 		$retorno = 'true?codusuario='.$rs['ID_USUARIO'];
+		$sendMail = true;
+		$login = $_POST['login'];
+		$nome = $_POST['nome'];
+		$email = $_POST['email'];
 	} else {
 		$retorno = sqlErrors();
 	}
@@ -95,7 +99,16 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
         $log->save($mainConnection);
 	
 	if (executeSQL($mainConnection, $query, $params)) {
-		$retorno = 'true';
+		$retorno = 'true?action=reset';
+		$sendMail = true;
+
+		$query = 'SELECT DS_NOME, DS_EMAIL, CD_LOGIN FROM MW_USUARIO WHERE ID_USUARIO = ?';
+		$params = array($_GET['codusuario']);
+		$rs = executeSQL($mainConnection, $query, $params, true);
+
+		$login = $rs['CD_LOGIN'];
+		$nome = $rs['DS_NOME'];
+		$email = $rs['DS_EMAIL'];
 	} else {
 		$retorno = sqlErrors();
 	}
@@ -106,6 +119,10 @@ if (is_array($retorno)) {
 	echo $retorno[0]['message'];
 } else {
 	echo $retorno;
+	if ($sendMail) {
+		echo '&email=';
+		enviarEmailNovaConta($login, $nome, $email);
+	}
 }
 
 }

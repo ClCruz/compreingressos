@@ -226,18 +226,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                         } else {
                             $cobrarPorPedido.attr('disabled', false)
                         }
-                        $cobrarPorPedido.change();
-                    }).change();
-
-                    $cobrarPorPedido.change(function(){
-                        if ($cobrarPorPedido.is(':checked')) {
-                            $tipo.val('V');
-                            $valor.attr('readonly', 'readonly');
-                            $valor2.attr('readonly', 'readonly');
-                        } else {
-                            $valor.attr('readonly', false);
-                            $valor2.attr('readonly', false);
-                        }
                     }).change();
                 }
             });

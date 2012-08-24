@@ -16,9 +16,11 @@ if (isset($_POST['codigo_pedido'])) {
 	require('processarRetornoiPagare.php');
 	
 	if ($validado) {
-		$query = 'SELECT 1 FROM MW_PEDIDO WHERE ID_PEDIDO = ? AND IN_SITUACAO = \'F\'';
+		$query = 'SELECT VL_TOTAL_PEDIDO_VENDA FROM MW_PEDIDO WHERE ID_PEDIDO = ? AND IN_SITUACAO = \'F\'';
 		$params = array($_POST['codigo_pedido']);
 		$result = executeSQL($mainConnection, $query, $params);
+		$rs = fetchResult($result);
+		$valorPagamento = $rs['VL_TOTAL_PEDIDO_VENDA'];
 		
 		if (!hasRows($result)) {
 			$query = 'SELECT DS_NOME, DS_SOBRENOME, DS_DDD_TELEFONE, DS_TELEFONE,
@@ -109,6 +111,11 @@ if (isset($_POST['codigo_pedido'])) {
 	setcookie('pedido', '', -1);
 	setcookie('entrega', '', -1);
 	setcookie('binItau', '', -1);
+
+	$query = 'SELECT VL_TOTAL_PEDIDO_VENDA FROM MW_PEDIDO_VENDA WHERE ID_PEDIDO_VENDA = ?';
+	$params = array($_GET['pedido']);
+	$rs = executeSQL($mainConnection, $query, $params, true);
+	$valorPagamento = $rs['VL_TOTAL_PEDIDO_VENDA'];
 }
 
 $json = json_encode(array('descricao' => '3. fim da chamada do pagamento_ok - codigo_pedido=' . $_POST['codigo_pedido'],'Post='=>$_POST ));
@@ -183,5 +190,24 @@ include('logiPagareChamada.php');
 		</div>
 		<!-- fim background -->
 		<?php include "footer.php"; ?>
+
+		<!-- Google Code for Compra de Ingresso Conversion Page -->
+		<script type="text/javascript">
+		/* <![CDATA[ */
+		var google_conversion_id = 1038667940;
+		var google_conversion_language = "en";
+		var google_conversion_format = "3";
+		var google_conversion_color = "ffffff";
+		var google_conversion_label = "IwGiCLKwrQMQpKGj7wM";
+		var google_conversion_value = <?php echo $valorPagamento; ?>;
+		/* ]]> */
+		</script>
+		<script type="text/javascript" src="https://www.googleadservices.com/pagead/conversion.js">
+		</script>
+		<noscript>
+		<div style="display:inline;">
+		<img height="1" width="1" style="border-style:none;" alt="" src="https://www.googleadservices.com/pagead/conversion/1038667940/?value=<?php echo $valorPagamento; ?>&amp;label=IwGiCLKwrQMQpKGj7wM&amp;guid=ON&amp;script=0"/>
+		</div>
+		</noscript>
 	</body>
 </html>

@@ -114,6 +114,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                     INNER JOIN MW_EVENTO R ON R.ID_EVENTO = T.ID_EVENTO
                 WHERE
                     R.ID_BASE = ?
+                    AND T.IN_TAXA_POR_PEDIDO = 'S'
                     AND CONVERT(CHAR(8), T.DT_INICIO_VIGENCIA, 112) >= CONVERT(CHAR(8), GETDATE(), 112)";
         $params = array($_POST['valorPorPedido'], $_POST['valorPorPedido'], $_POST['teatro']);
         $queryToLog = $query;

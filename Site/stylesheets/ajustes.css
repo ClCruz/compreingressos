@@ -216,3 +216,8 @@
 	font-weight:bold;
 	padding:5px 0;
 }
+
+#forma_entrega_totais .colunaServico {
+	width: 100px;
+	display: none;
+}

@@ -258,6 +258,8 @@ $(function() {
 			(
 			parseFloat($('#totalIngressos').val().replace(',', '.'))
 			+
+			parseFloat($('#servico_pedido').val().replace(',', '.'))
+			+
 			parseFloat((($('#cmb_entrega').val() == 'entrega') ? $('#frete').val().replace(',', '.') : 0))
 			).toFixed(2).replace('.', ','));
 	};
@@ -286,6 +288,28 @@ $(function() {
 			data: 'id_bilhete=' + bilhete,
 			success: function(data) {
 				target.val(data.valor);
+				if (data.valor == '0,00') updateValorServicoPorPedido(bilhete, target);
+				else {
+					target.parentsUntil('table').find('.colunaServico').slideDown('fast');
+					$('#servico_pedido').val(0);
+					$('#forma_entrega_totais .colunaServico').slideUp('fast');
+				}
+				updateAllValues();
+			}
+		});
+	}
+
+	function updateValorServicoPorPedido(bilhete, target) {
+		$.ajax({
+			url: 'valorServico.php',
+			type: 'POST',
+			data: 'id_bilhete=' + bilhete + '&servicoPorPedido=1',
+			success: function(data) {
+				if (data.valor != '0,00') {
+					target.parentsUntil('table').find('.colunaServico').slideUp('fast');
+					$('#servico_pedido').val(data.valor);
+					$('#forma_entrega_totais .colunaServico').slideDown('fast');
+				}
 				updateAllValues();
 			}
 		});

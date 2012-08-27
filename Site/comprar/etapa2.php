@@ -4,6 +4,8 @@ session_start();
 $edicao = true;
 
 $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
+
+require('verificarServicosPedido.php');
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
@@ -27,6 +29,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 		<script type="text/javascript" src="../javascripts/contagemRegressiva.js?until=<?php echo tempoRestante(); ?>"></script>
 		<script type="text/javascript" src="../javascripts/carrinho.js"></script>
 		<script type="text/javascript" src="../javascripts/dadosEntrega.js"></script>
+		<?php echo $scriptServicosPorPedido; ?>
 		
 		<?php echo $campanha['script']; ?>
 	</head>

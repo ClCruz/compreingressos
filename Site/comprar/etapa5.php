@@ -4,6 +4,7 @@ require_once('../settings/functions.php');
 require_once('../settings/settings.php');
 
 require('acessoLogado.php');
+require('verificarServicosPedido.php');
 require('verificarLimitePorCPF.php');
 require('verificarEntrega.php');
 

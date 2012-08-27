@@ -5,6 +5,7 @@ session_start();
 require_once('../settings/functions.php');
 
 require('acessoLogado.php');
+require('verificarServicosPedido.php');
 require('verificarLimitePorCPF.php');
 require('verificarEntrega.php');
 
@@ -39,7 +40,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 		<script type="text/javascript" src="../javascripts/contagemRegressiva.js?until=<?php echo tempoRestante(); ?>"></script>
 		<script type="text/javascript" src="../javascripts/carrinho.js"></script>
 		<script type="text/javascript" src="../javascripts/dadosEntrega.js"></script>
-		<?php echo $scriptTempoLimiteFrete.$scriptLlimitePorCPF.$scriptValidarBin.$scriptEntrega; ?>
+		<?php echo $scriptTempoLimiteFrete.$scriptLlimitePorCPF.$scriptValidarBin.$scriptEntrega.$scriptServicosPorPedido; ?>
 
 		<?php echo $campanha['script']; ?>
 	</head>

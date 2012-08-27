@@ -49,7 +49,7 @@ while ($rs = fetchResult($result)) {
 										<tr>
 											<th>Assento / nº de ordem</th>
 											<th>Pre&ccedil;o</th>
-											<th>Servi&ccedil;o</th>
+											<th class="colunaServico">Servi&ccedil;o</th>
 											<th>Pre&ccedil;o total</th>
 											<?php if ($edicao) { ?>
 											<th class="remover">Remover</th>
@@ -74,7 +74,7 @@ while ($rs = fetchResult($result)) {
 													echo comboPrecosIngresso('valorIngresso[]', $rs['ID_APRESENTACAO'], $rs['ID_CADEIRA'], $rs['ID_APRESENTACAO_BILHETE'], false);
 												}
 											?></td>
-											<td>R$ <input class="valorConveniencia readonly" type="text" value="<?php echo $valorConveniencia; ?>" readonly /></td>
+											<td class="colunaServico">R$ <input class="valorConveniencia readonly" type="text" value="<?php echo $valorConveniencia; ?>" readonly /></td>
 											<td class="total">R$ <input class="valorTotalLinha readonly" type="text" value="0,00" readonly /></td>
 											<?php if ($edicao) { ?>
 											<td class="remover"><a class="removerIngresso" href="atualizarPedido.php?action=delete&<?php echo $removeUrl; ?>"><img src="../images/bt_remover.jpg" alt="Remover" title="Remover"/></a></td>
@@ -123,12 +123,14 @@ function finalizar() {
 											<th>Total de ingressos</th>
 											<th>Valor dos ingressos</th>
 											<th>Servi&ccedil;o de entrega</th>
+											<th class="colunaServico">Servi&ccedil;o</th>
 											<th>Valor final</th>
 										</tr>
 										<tr>
-											<td><input class="readonly ie7_1" type="text" id="quantidadeIngressos" value="0" size="1" readonly /> ingresso(s)</td>
+											<td><input class="readonly ie7_1" type="text" id="quantidadeIngressos" value="0" style="width:25px;" readonly /> ingresso(s)</td>
 											<td>R$ <input class="readonly ie7_1" type="text" id="totalIngressos" value="0,00" size="7" readonly /></td>
 											<td>R$ <input class="readonly ie7_1" type="text" id="frete" value="0,00" size="5" readonly /></td>
+											<td class="colunaServico">R$ <input class="readonly ie7_1" type="text" id="servico_pedido" value="0,00" size="3" readonly /></td>
 											<td class="valor_total">R$ <input class="readonly ie7_1 ie7_2" type="text" id="total" size="7" readonly /></td>
 										</tr>
 									</table>

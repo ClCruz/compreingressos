@@ -242,19 +242,42 @@ if (hasRows($resultIdPedidoVenda)) {
 
 $parametros['codigo_pedido'] = $newMaxId;
 
+$queryServicos = "SELECT DISTINCT isnull(T.IN_TAXA_POR_PEDIDO, 'N') IN_TAXA_POR_PEDIDO FROM MW_RESERVA R
+            INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+            LEFT JOIN MW_TAXA_CONVENIENCIA T ON T.ID_EVENTO = A.ID_EVENTO AND T.DT_INICIO_VIGENCIA <= GETDATE() AND T.IN_TAXA_POR_PEDIDO = 'S'
+            WHERE R.ID_SESSION = ?";
+$rsServicos = executeSQL($mainConnection, $queryServicos, array(session_id()), true);
+
 while ($itens = fetchResult($result)) {
         $i++;
 
-        $valorConveniencia = obterValorServico($itens['ID_APRESENTACAO_BILHETE']);
+        if ($i == 1) {
+            if ($rsServicos['IN_TAXA_POR_PEDIDO'] == 'S') {
+                $valorConveniencia = $valorConvenienciaAUX = obterValorServico($itens['ID_APRESENTACAO_BILHETE'], true);
+
+                $parametros['codigo_item_'.$i] = 'servico'; //Código ou chave única do item do pedido no Site.
+                $parametros['descricao_item_'.$i] = 'Serviço';
+                $parametros['quantidade_item_'.$i] = "100"; //Quantidade com duas casas decimais e sem pontos nem vírgulas. Ex: 1,00 -> 100; 100,00 -> 10000
+                $parametros['valor_item_'.$i] = $valorConveniencia * 100; //Valor unitário em centavos, somente números, sem pontos nem vírgulas. Ex: 50,00 -> 5000;
+
+                $valorConveniencia = 0;
+                $i++;
+            } else {
+                $valorConveniencia = obterValorServico($itens['ID_APRESENTACAO_BILHETE']);
+            }
+        } else {
+            $valorConveniencia = obterValorServico($itens['ID_APRESENTACAO_BILHETE']);
+            $valorConvenienciaAUX = 0;
+        }
 
         $parametros['codigo_item_'.$i] = $itens['ID_CADEIRA']; //Código ou chave única do item do pedido no Site.
         $parametros['descricao_item_'.$i] = utf8_encode($itens['DS_EVENTO'] . ' (' . $itens['DT_APRESENTACAO']) . ' às ' . utf8_encode($itens['HR_APRESENTACAO'] . ') - ' . $itens['DS_NOME_TEATRO'] . ' - ' . $itens['DS_SETOR'] . ' - ' . $itens['DS_CADEIRA'] . ' - ' . $itens['DS_TIPO_BILHETE']);
         $parametros['quantidade_item_'.$i] = "100"; //Quantidade com duas casas decimais e sem pontos nem vírgulas. Ex: 1,00 -> 100; 100,00 -> 10000
         $parametros['valor_item_'.$i] = ($itens['VL_LIQUIDO_INGRESSO'] + $valorConveniencia) * 100; //Valor unitário em centavos, somente números, sem pontos nem vírgulas. Ex: 50,00 -> 5000;
         $totalIngressos += $itens['VL_LIQUIDO_INGRESSO'];
-        $totalConveniencia += $valorConveniencia;
+        $totalConveniencia += $valorConveniencia + $valorConvenienciaAUX;
 
-        $params2[$i] = array($newMaxId, $itens['ID_RESERVA'], $itens['ID_APRESENTACAO'], $itens['ID_APRESENTACAO_BILHETE'], $itens['DS_CADEIRA'], $itens['DS_SETOR'], 1, $itens['VL_LIQUIDO_INGRESSO'], $valorConveniencia, 'XXXXXXXXXX');
+        $params2[$i] = array($newMaxId, $itens['ID_RESERVA'], $itens['ID_APRESENTACAO'], $itens['ID_APRESENTACAO_BILHETE'], $itens['DS_CADEIRA'], $itens['DS_SETOR'], 1, $itens['VL_LIQUIDO_INGRESSO'], $valorConveniencia + $valorConvenienciaAUX, 'XXXXXXXXXX');
 }
 
 $parametros['numero_itens'] = $i;

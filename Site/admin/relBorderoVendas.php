@@ -373,6 +373,8 @@ if (isset($err) && $err != "") {
 						$despesas[$pRSDebito["CodTipDebBordero"]]['nome'] = $pRSDebito["DebBordero"];
 						$despesas[$pRSDebito["CodTipDebBordero"]]['tipoValor'] = $simbolo . " " . number_format($pRSDebito["PerDesconto"], 2, ",", ".");
 						$despesas[$pRSDebito["CodTipDebBordero"]]['valor'] += $pRSDebito["Valor"];
+						$despesas[$pRSDebito["CodTipDebBordero"]]['valor_real'] += $pRSDebito["ValorReal"];
+						$despesas[$pRSDebito["CodTipDebBordero"]]['limite'] += $pRSDebito["VlMinimoDebBordero"];
 					    }
 					} while ($rsApresentacoes = fetchResult($resultApresentacoes));
 
@@ -380,6 +382,43 @@ if (isset($err) && $err != "") {
 					$nTotalDesp += $taxaDosCartoes;
 					
 					foreach ($despesas as $desp) {
+						/*
+						https://portal.cc.com.br:8084/projetos/ticket/191
+
+						colunas VlMinimoDebBordero e Valor as ValorReal adicionadas 
+						as colunas de retorno devido a um problema com os calculos de
+						limite com multiplas apresentacoes representando uma mesma apresentacao, por exemplo:
+
+						0- O TOTAL DE VENDAS BRUTO foi de R$ 10.800,00.
+						 1- Foi criado uma apresentação em duas salas (do mesmo dia e hora), ou
+						 seja, foi gerado duas apresentações.
+						 2- Criou o valor mínimo do débito do borderô de R$ 750,00 no módulo
+						 Administrativo (só que na descrição do débito informada que o mínimo é de
+						 R$ 1.500,00).
+						 3- Em uma sala (apresentação) o valor da venda apurado foi de R$ 700,00,
+						 sendo assim o sistema assumiu o valor mínimo cadastrado de R$ 750,00.
+						 4- Na outra sala (apresentação) o valor apurado foi de R$ 1.460,00,
+						 superando o mínimo de R$ 750,00, portanto assumindo o R$ 1.460,00.
+						 5- Desta forma o sistema somou R$ 1.460,00 + R$ 750,00 = R$ 2.210,00.
+
+						 O sistema deverá calcular o valor do mínimo a ser cobrado do teatro depois
+						 que somar os valores das vendas de cada sala, ou seja, se o valor total
+						 das salas superar o mínimo deverá ser calculado o percentual cadastrado no
+						 sistema.
+						 No exemplo acima, o valor que deveria ser cobrado seria de R$ 2.160,00
+						 (1460,00+700,00) e não R$ 2.210,00 (1460,00+750,00).
+						*/
+						if ($desp["limite"] > 0) {
+							$nTotalDesp -= $desp["valor"];
+
+							if ($desp["limite"] > $desp["valor_real"]) {
+								$nTotalDesp += $desp["limite"];
+								$desp["valor"] = $desp["limite"];
+							} else {
+								$nTotalDesp += $desp["valor_real"];
+								$desp["valor"] = $desp["valor_real"];
+							}
+						}
 					    if ($Resumido == "0") {
     ?>
 						<tr>

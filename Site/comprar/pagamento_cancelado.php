@@ -85,6 +85,7 @@ if (isset($_COOKIE['ipagareError'])) {
 	$sqlErrors = sqlErrors();
 	if ($noErrors and empty($sqlErrors)) {
 		setcookie('pedido', '', -1);
+		setcookie('id_braspag', '', -1);
 		commitTransaction($mainConnection);
 		foreach ($conn as $connection) {
 			commitTransaction($connection);
@@ -101,6 +102,7 @@ if (isset($_COOKIE['ipagareError'])) {
 	if (isset($_SESSION['operador'])) {
 		unset($_SESSION['user']);
 		setcookie('pedido', '', -1);
+		setcookie('id_braspag', '', -1);
 		header("Location: etapa0.php");
 	}
 }
@@ -139,23 +141,10 @@ $campanha = get_campanha_etapa('etapa5');
 							<div class="titulo">
 								<?php
 								if (isset($_COOKIE['ipagareError'])) {
-								    // verifica se o erro é devido ao envio de um pedido já processado
-								    if ($_COOKIE['ipagareError']['codigo_erro'] == '201') {
-									?>
-									<h3>Solicitação ignorada!</h3>
-									<p>Você clicou mais de uma vez no botão "Finalizar Pedido" e o processo já foi concluído na primeira solicitação.</p>
-									<p>Dentro de instantes você deve receber um e-mail com os dados da compra.</p>
-									<p>Você também pode acompanhar seus pedidos na página <a href="minha_conta.php">Minha Conta</a>.</p>
-									<?php
-								    } else {
-									?>
+								?>
 									<h3>Seu pedido foi cancelado!</h3>
 									<p class="msg_ipagarert"><?php echo $_COOKIE['ipagareError']['descricao_erro']; ?></p>
-									<p class="msg_financeira"><?php echo $_COOKIE['ipagareError']['mensagem-financeira']; ?></p>
 									<p>Por favor clique no botão abaixo para tentar novamente ou cancele esse pedido.</p>
-									<?php
-								    }
-								?>
 							</div>
 							<div id="footer_ticket">
 								<?php if ($_COOKIE['ipagareError']['codigo_erro'] != '201') { ?>

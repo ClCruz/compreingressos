@@ -14,6 +14,9 @@ $is_teste = '1';
 
 $isContagemAcessos = true;
 
+$url_braspag_homologacao = 'https://homologacao.pagador.com.br/webservice/pagadorTransaction.asmx?WSDL';
+$url_braspag_producao = '';
+
 if (isset($_REQUEST['var'])) {
 	echo $$_REQUEST['var'];
 }

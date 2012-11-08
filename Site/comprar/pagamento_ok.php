@@ -109,6 +109,7 @@ if (isset($_POST['codigo_pedido'])) {
 	$nome = $rs['DS_NOME'];
 	
 	setcookie('pedido', '', -1);
+	setcookie('id_braspag', '', -1);
 	setcookie('entrega', '', -1);
 	setcookie('binItau', '', -1);
 

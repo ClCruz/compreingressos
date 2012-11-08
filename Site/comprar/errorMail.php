@@ -16,7 +16,7 @@ ob_start(); //Turn on output buffering
 //copy current buffer contents into $message variable and delete current output buffer
 $message = ob_get_clean();
 
-$cc = array('Emerson => emerson@cc.com.br', 'Jefferson => jefferson.ferreira@cc.com.br', 'Edicarlos => edicarlos.barbosa@cc.com.br');
+$cc = array('Jefferson => jefferson.ferreira@cc.com.br', 'Edicarlos => edicarlos.barbosa@cc.com.br');
 
 authSendEmail($from, $namefrom, 'gabriel.monteiro@cc.com.br', 'Gabriel', $subject, $message, $cc);
 ?>

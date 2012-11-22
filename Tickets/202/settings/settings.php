@@ -15,8 +15,8 @@ $is_teste = '0';
 $isContagemAcessos = true;
 
 $recaptcha = array(
-	'private_key' => '6LeWX9kSAAAAAMMPzga35fIM8MjChV29_VSxYtIC',
-	'public_key' => '6LeWX9kSAAAAACmAZZ4Gv368Vk7ARc7xLV4mNuW7'
+	'public_key' => '6LehdNkSAAAAAAk9orcTupYUPYngqXfn1Kdf6fDs',
+	'private_key' => '6LehdNkSAAAAAPgQZU83DKb0L7Wu8RI4Bvy7oYZq'
 );
 
 if (isset($_REQUEST['var'])) {

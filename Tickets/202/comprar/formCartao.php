@@ -128,7 +128,7 @@ if ($_POST) {
     <p>
     	<?php
 		require_once('../settings/recaptchalib.php');
-		echo recaptcha_get_html($recaptcha['public_key']);
+		echo recaptcha_get_html($recaptcha['public_key'], null, true);
         ?>
     </p>
 </form>

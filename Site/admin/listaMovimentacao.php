@@ -29,7 +29,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                     PV.IN_RETIRA_ENTREGA,
                     C.DS_DDD_TELEFONE,
                     C.DS_TELEFONE,
-                    U.DS_NOME ";
+                    U.DS_NOME,
+                    PV.ID_IP ";
 
         $from = " FROM MW_PEDIDO_VENDA PV INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE
                           LEFT JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
@@ -52,6 +53,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                       C.DS_DDD_TELEFONE,
                       C.DS_TELEFONE,
                       U.DS_NOME,
+                      PV.ID_IP,
                       PV.VL_TOTAL_TAXA_CONVENIENCIA";
 
         if (!empty($_GET["num_pedido"])) {
@@ -85,7 +87,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                             COUNT(1) AS QUANTIDADE,
                             PV.IN_RETIRA_ENTREGA,
                             C.DS_DDD_TELEFONE,
-                            C.DS_TELEFONE ";
+                            C.DS_TELEFONE,
+                            PV.ID_IP ";
 
                 $group = " GROUP BY
                               (CONVERT(VARCHAR(10), PV.DT_PEDIDO_VENDA, 103) + ' - ' + CONVERT(VARCHAR(8), PV.DT_PEDIDO_VENDA, 114)),
@@ -96,7 +99,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                               DT_PEDIDO_VENDA,
                               PV.IN_RETIRA_ENTREGA,
                               C.DS_DDD_TELEFONE,
-                              C.DS_TELEFONE ";
+                              C.DS_TELEFONE,
+                              PV.ID_IP ";
 
                 $from = "FROM MW_PEDIDO_VENDA PV INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE AND PV.ID_USUARIO_CALLCENTER IS NULL
                           LEFT JOIN MW_ITEM_PEDIDO_VENDA_HIST IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA ";
@@ -366,6 +370,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
             <th>Pedido nº</th>
             <th>Operador</th>
             <th>Data do Pedido</th>
+            <th>IP</th>
             <th>Cliente e Telefone</th>
             <th>Valor total</th>
             <th>Qtde Ingressos</th>
@@ -391,6 +396,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                 ?>
                    </td>
                    <td><?php echo $rs['DT_PEDIDO_VENDA'] ?></td>
+                   <td><?php echo $rs['ID_IP'] ?></td>
                    <td><?php echo utf8_encode($rs['CLIENTE'] . " " . $rs['DS_SOBRENOME']) . "<br/>" . $rs['DS_DDD_TELEFONE'] . " " . $rs['DS_TELEFONE']; ?></td>
                    <td><?php echo number_format($rs['TOTAL_UNIT'], 2, ",", "."); ?></td>
                    <td><?php echo $rs['QUANTIDADE']; ?></td>
@@ -401,7 +407,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                    }
         ?>
                    <tr class="total">
-                       <td align="right" colspan="5"><strong>Totais</strong></td>
+                       <td align="right" colspan="6"><strong>Totais</strong></td>
                        <td><?php echo number_format($total['TOTAL_PEDIDO'], 2, ",", "."); ?></td>
                        <td><?php echo $total['QUANTIDADE']; ?></td>
                        <td colspan="2"><strong>Total de Serviços</strong> <?php echo number_format($total['SERVICO'], 2, ",", "."); ?></td>

@@ -34,6 +34,20 @@ if (isset($_GET['action'])) {
 	}
 	
 	if ($_GET['action'] == 'add') {
+		if (!(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) {
+			require_once('../settings/settings.php');
+			require_once('../settings/recaptchalib.php');
+			$resp = recaptcha_check_answer ($recaptcha['private_key'],
+			                                $_SERVER["REMOTE_ADDR"],
+			                                $_POST["recaptcha_challenge_field"],
+			                                $_POST["recaptcha_response_field"]);
+
+			if (!$resp->is_valid) {
+				echo 'O código informado não corresponde à imagem/áudio.';
+			    exit();
+			}
+		}
+
 		if (!$_POST['concordo']) {
 			echo utf8_encode('Você deve concordar com os termos de uso e com a política de privacidade para se cadastrar!');
 			exit();

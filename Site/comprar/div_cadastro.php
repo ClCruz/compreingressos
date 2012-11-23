@@ -1,5 +1,10 @@
 <?php session_start(); ?>
 						<div id="cadastro">
+							<script>
+								var RecaptchaOptions = {
+								   theme: 'white'
+								};
+							</script>
 							<form id="form_cadastro" name="form_cadastro" method="POST" action="cadastro.php">
 								<?php if (isset($_GET['tag'])) { ?>
 								<input type="hidden" name="tag" value="<?php echo $_GET['tag']; ?>" />
@@ -76,11 +81,24 @@
 									<input type="password" name="senha2" id="senha2" size="30" maxlength="15"/>
 									<p class="err_msg">Confirme a senha</p>
 								<?php } ?>	
+									<br />
 									<p class="help_text"><input name="extra_info" type="checkbox" id="extra_info" value="S" <?php echo ($rs['IN_RECEBE_INFO'] == 'S') ? 'checked' : ''; ?>> quero receber informativos sobre promo&ccedil;&otilde;es e participar de sorteios de ingressos</p>
 									<p class="help_text"><input name="extra_sms" type="checkbox" id="extra_sms" value="S" <?php echo ($rs['IN_RECEBE_SMS'] == 'S') ? 'checked' : ''; ?>> concordo em receber mensagens SMS promocionais e sobre minhas compras</p>
 								<?php if (!(isset($_SESSION['user']) and is_numeric($_SESSION['user']))) { ?>
 									<p class="help_text"><input name="concordo" type="checkbox" id="concordo" value="S"> concordo com os <a href="termosUso.php" title="Termos de Uso" target="_blank" class="contrato">termos de uso</a> e com a <a href="declaracaoPrivacidade.php" title="Pol&iacute;tica de Privacidade" target="_blank" class="contrato">pol&iacute;tica de privacidade</a></p>
 									<p class="err_msg">Voc&ecirc; deve concordar com nossos termos de uso e nossa pol&iacute;tica de privacidade</p>
+									<br />
+
+									<?php
+										if (!(isset($_SESSION['user']) and is_numeric($_SESSION['user']))) {
+											require_once('../settings/settings.php');
+											require_once('../settings/recaptchalib.php');
+											echo recaptcha_get_html($recaptcha['public_key'], null, true);
+										}
+									?>
+									<p class="err_msg">Insira o código</p>
+
+									<br />
 									<a href="cadastro.php" id="cadastreme">
 										<div class="botoes_ticket">cadastre-me</div>
 									</a>

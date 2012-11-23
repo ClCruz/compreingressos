@@ -193,7 +193,7 @@ $(function() {
 		
 		var $this = $(this),
 			 naoRequeridos = '#email,[id^=nascimento],#ddd2,#celular,#complemento,#extra_info,#extra_sms',
-			 especiais = ',#ddd1,#telefone,#email1,#email2,#senha1,#senha2,[name="tag"]'
+			 especiais = ',#ddd1,#telefone,#email1,#email2,#senha1,#senha2,[name="tag"],#recaptcha_challenge_field,#recaptcha_response_field'
 			 formulario = $('#form_cadastro'),
 			 campos = formulario.find(':input:not(' + naoRequeridos + especiais +')'),
 			 valido = true;
@@ -272,6 +272,7 @@ $(function() {
 				success: function(data) {
 					$('#loadingIcon').fadeIn('fast');
 					if (data != 'true') {
+						Recaptcha.reload();
 						if ($.cookie('user') == null) {
 							$.dialog({text: data});
 						} else {

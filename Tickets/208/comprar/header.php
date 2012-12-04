@@ -1,13 +1,13 @@
 <?php session_start(); ?>
 				<div id="menu_menor">
-			  		<a href="/institucional">Institucional</a> |
-  					<a href="/politica">Política de Venda</a> |
-  					<a href="/privacidade">Privacidade</a> |
-  					<a href="/eventos_realizados">Eventos Realizados</a> |
+			  		<a href="http://www.compreingressos.com/institucional">Institucional</a> |
+  					<a href="http://www.compreingressos.com/politica">Política de Venda</a> |
+  					<a href="http://www.compreingressos.com/privacidade">Privacidade</a> |
+  					<a href="http://www.compreingressos.com/eventos_realizados">Eventos Realizados</a> |
   					<a href="https://compra.compreingressos.com/comprar/loginBordero.php?redirect=..%2Fadmin%2F%3Fp%3DrelatorioBordero">Borderô Web</a> |
-  					<a href="/faqs">FAQs</a> |
-  					<a href="/pontosdevenda">Pontos de Venda</a> |
-  					<a href="/especiais/3-Lei_6103-11_|_Lei_n_6103">Lei 6103/11</a>
+  					<a href="http://www.compreingressos.com/faqs">FAQs</a> |
+  					<a href="http://www.compreingressos.com/pontosdevenda">Pontos de Venda</a> |
+  					<a href="http://www.compreingressos.com/especiais/3-Lei_6103-11_|_Lei_n_6103">Lei 6103/11</a>
 			  	</div>
 				<div id="menu_principal">
 					<img src="../images/menu_left.jpg" alt=""/>

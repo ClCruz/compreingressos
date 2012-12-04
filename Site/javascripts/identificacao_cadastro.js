@@ -272,7 +272,8 @@ $(function() {
 				success: function(data) {
 					$('#loadingIcon').fadeIn('fast');
 					if (data != 'true') {
-						Recaptcha.reload();
+						if (typeof(Recaptcha) !== 'undefined') Recaptcha.reload();
+						
 						if ($.cookie('user') == null) {
 							$.dialog({text: data});
 						} else {

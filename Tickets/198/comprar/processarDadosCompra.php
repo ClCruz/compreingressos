@@ -25,7 +25,7 @@ $enderecoDif = $_COOKIE['entrega'] != -1;
 $queryReserva="SELECT ID_RESERVA FROM MW_RESERVA WHERE ID_SESSION = ?";
 $resultReserva = executeSQL($mainConnection, $queryReserva, array(session_id()));
 
-if(!hasRows($resultReserva)){
+if(!hasRows($resultReserva) or ($is_teste != '1' and $_POST['codCartao'] == 997)){
     ob_end_clean();
     header("Location: pagamento_cancelado.php");
     exit();

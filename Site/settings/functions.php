@@ -554,32 +554,27 @@ function comboBilhetes2($name, $teatroID, $selected = '-1', $isCombo = true) {
 }
 
 // Cria combo de situações
-function comboSituacao($situacao = null, $is_combo = true) {
+function comboSituacao($name, $situacao = null, $isCombo = true) {
     $dados = array("V" => "Escolha a opção...",
-	"F" => "Finalizado",
-	"P" => "Em Processamento",
-	"C" => "Cancelado pelo Usuário",
-	"E" => "Expirado");
-    if ($is_combo) {
-	$return = "<select name=\"situacao\" id=\"cboSituacao\">";
+					"F" => "Finalizado",
+					"P" => "Em Processamento",
+					"C" => "Cancelado pelo Usuário",
+					"E" => "Expirado",
+					"S" => "Estornado");
+    
+	$combo = "<select name=\"" . $name . "\" id=\"" . $name . "\">";
 	foreach ($dados as $key => $valor) {
-	    if ($situacao == $key)
-		$selected = "selected=\"selecteded\"";
-	    else
-		$selected = "";
+	    if ($situacao == $key) {
+			$selected = "selected=\"selecteded\"";
+			$text = $valor;
+	    } else {
+			$selected = "";
+		}
+	    $combo .= "<option value=\"" . $key . "\"" . $selected . ">" . $valor . "</option>";
+	}
+	$combo .= "</select>";
 
-	    $return .= "<option value=\"" . $key . "\"" . $selected . ">" . $valor . "</option>";
-	}
-	$return .= "</select>";
-    }
-    else {
-	foreach ($dados as $key => $valor) {
-	    if ($key == $situacao) {
-		$return = $valor;
-	    }
-	}
-    }
-    return $return;
+    return $isCombo ? $combo : $text;
 }
 
 function comboFormaEntrega($forma = null) {
@@ -861,6 +856,25 @@ function comboTipoResolucao($name, $selected) {
     return $combo;
 }
 
+function comboAdmins($name, $selected = '-1', $isCombo = true) {
+    $mainConnection = mainConnection();
+	$result = executeSQL($mainConnection, 'SELECT ID_USUARIO, DS_NOME FROM  MW_USUARIO WHERE IN_ATIVO = 1 AND IN_ADMIN = 1 ORDER BY DS_NOME ASC');
+
+    $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um administrador...</option>';
+    while ($rs = fetchResult($result)) {
+	if ($selected == $rs['ID_USUARIO']) {
+	    $isSelected = 'selected';
+	    $text = utf8_encode($rs['DS_NOME']);
+	} else {
+	    $isSelected = '';
+	}
+	$combo .= '<option value="' . $rs['ID_USUARIO'] . '"' . $isSelected . '>' . utf8_encode($rs['DS_NOME']) . '</option>';
+    }
+    $combo .= '</select>';
+
+    return $isCombo ? $combo : $text;
+}
+
 /*  OUTROS  */
 
 
@@ -868,18 +882,20 @@ function comboTipoResolucao($name, $selected) {
 require_once('../settings/mail.php');
 
 function getCurrentUrl() {
+	include('../settings/settings.php');
+
     $pageURL = 'http';
 
     if ($_SERVER["HTTPS"] == "on") {
-	$pageURL .= "s";
+		$pageURL .= "s";
     }
 
     $pageURL .= "://";
 
     if ($_SERVER["SERVER_PORT"] != "80") {
-	$pageURL .= $_SERVER["SERVER_NAME"] . ":" . $_SERVER["SERVER_PORT"] . $_SERVER["REQUEST_URI"];
+		$pageURL .= ($is_teste == '1' ? $_SERVER["HTTP_HOST"] : $_SERVER["SERVER_NAME"] . ":" . $_SERVER["SERVER_PORT"]) . $_SERVER["REQUEST_URI"];
     } else {
-	$pageURL .= $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
+		$pageURL .= ($is_teste == '1' ? $_SERVER["HTTP_HOST"] : $_SERVER["SERVER_NAME"]) . $_SERVER["REQUEST_URI"];
     }
 
     return $pageURL;

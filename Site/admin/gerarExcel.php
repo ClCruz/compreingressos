@@ -255,7 +255,7 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
    <?php
         }
     ?>
-    <br/> <b>Data Inicial</b> <?php echo $_GET["dt_inicial"]?>&nbsp;&nbsp;<b>Data Final</b> <?php echo $_GET["dt_final"]?>&nbsp;&nbsp;<b>Situação</b> <?php echo comboSituacao($_GET["situacao"], false)?>
+    <br/> <b>Data Inicial</b> <?php echo $_GET["dt_inicial"]?>&nbsp;&nbsp;<b>Data Final</b> <?php echo $_GET["dt_final"]?>&nbsp;&nbsp;<b>Situação</b> <?php echo comboSituacao('situacao', $_GET["situacao"], false)?>
 </p>
 
 <table class="ui-widget ui-widget-content">
@@ -292,7 +292,7 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
                     <td><?php echo utf8_encode($rs['CLIENTE'] . " " . $rs['DS_SOBRENOME']) . " / " . $rs['DS_DDD_TELEFONE'] . " " . $rs['DS_TELEFONE']; ?></td>
                     <td class="moeda"><?php echo str_replace(".", ",", $rs['TOTAL_UNIT']); ?></td>
                     <td><?php echo $rs["QUANTIDADE"];?></td>
-                    <td><?php echo comboSituacao($rs['IN_SITUACAO'], false)?></td>
+                    <td><?php echo comboSituacao('situacao', $rs['IN_SITUACAO'], false)?></td>
                     <td><?php echo comboFormaEntrega($rs['IN_RETIRA_ENTREGA']); ?></td>
                 </tr>
         <?php

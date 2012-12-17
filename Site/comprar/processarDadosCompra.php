@@ -2,6 +2,19 @@
 require_once('../settings/functions.php');
 require_once('../settings/settings.php');
 require_once('../settings/Log.class.php');
+
+require_once('../settings/recaptchalib.php');
+$resp = recaptcha_check_answer ($recaptcha['private_key'],
+                                $_SERVER["REMOTE_ADDR"],
+                                $_POST["recaptcha_challenge_field"],
+                                $_POST["recaptcha_response_field"]);
+
+if (!$resp->is_valid) {
+    ob_end_clean();
+    header("Location: pagamento_cancelado.php?captcha".(isset($_GET['tag']) ? $falha['tag_voltar'] : ''));
+    exit();
+}
+
 session_start();
 
 $mainConnection = mainConnection();
@@ -64,7 +77,9 @@ $dadosExtrasEmail['numero_telefone3'] = '';
 
 $parametros['RequestId'] = $ri;
 $parametros['Version'] = '1.0';
-$parametros['OrderData']['MerchantId'] = 'AEDAFDE0-83A5-869F-214B-C8501B9C8697';
+
+$parametros['OrderData']['MerchantId'] = $is_teste == '1' ? $merchant_id_homologacao : $merchant_id_producao;
+
 $parametros['OrderData']['OrderId'] = '';
 
 if (isset($_COOKIE['id_braspag'])) {
@@ -263,10 +278,11 @@ $query = 'UPDATE MW_PEDIDO_VENDA SET
                         VL_TOTAL_PEDIDO_VENDA = ?
                         ,VL_TOTAL_INGRESSOS = ?
                         ,VL_TOTAL_TAXA_CONVENIENCIA = ?
+                        ,ID_IP = ?
 			WHERE ID_PEDIDO_VENDA = ?
 				AND ID_CLIENTE = ?';
 
-$params = array(($totalIngressos + $frete + $totalConveniencia), $totalIngressos, $totalConveniencia, $newMaxId, $_SESSION['user']);
+$params = array(($totalIngressos + $frete + $totalConveniencia), $totalIngressos, $totalConveniencia, $_SERVER["REMOTE_ADDR"], $newMaxId, $_SESSION['user']);
 
 if (count($itensPedido) > 0) {
     $gravacao = executeSQL($mainConnection, $query, $params);
@@ -313,7 +329,7 @@ if ($PaymentDataCollection['Amount'] > 0 and ($errors and empty($sqlErrors))) {
     $parametros['PaymentDataCollection'] = array(new SoapVar($PaymentDataCollection, SOAP_ENC_ARRAY, 'CreditCardDataRequest', 'https://www.pagador.com.br/webservice/pagador', 'PaymentDataRequest'));
 
     $options = array(
-        'local_cert' => file_get_contents('../settings/cert.pem'),
+        //'local_cert' => file_get_contents('../settings/cert.pem'),
         //'passphrase' => file_get_contents('cert.key'),
         //'authentication' => SOAP_AUTHENTICATION_BASIC || SOAP_AUTHENTICATION_DIGEST
         
@@ -325,19 +341,22 @@ if ($PaymentDataCollection['Amount'] > 0 and ($errors and empty($sqlErrors))) {
     $descricao_erro = '';
 
     $url_braspag = $is_teste == '1' ? $url_braspag_homologacao : $url_braspag_producao;
-
+    
 	try {
         $client = @new SoapClient($url_braspag, $options);
         $result = $client->AuthorizeTransaction(array('request' => $parametros));
     } catch (SoapFault $e) {
         $descricao_erro = $e->getMessage();
+    } catch (Exception $e) {
+        var_dump($e);
     }
 
-    /*echo "<pre>";
-    var_dump($result);
-    var_dump($descricao_erro);
-    echo "</pre>";
-    die(''.time());*/
+    // echo "<pre>";
+    // var_dump($client);
+    // var_dump($result);
+    // var_dump($descricao_erro);
+    // echo "</pre>";
+    // die(''.time());
 
     if ($descricao_erro == '') {
         setcookie('id_braspag', $result->AuthorizeTransactionResult->OrderData->BraspagOrderId);

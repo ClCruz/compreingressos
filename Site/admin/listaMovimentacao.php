@@ -30,7 +30,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                     C.DS_DDD_TELEFONE,
                     C.DS_TELEFONE,
                     U.DS_NOME,
-                    PV.ID_IP ";
+                    PV.ID_IP,
+                    PV.ID_USUARIO_ESTORNO,
+                    PV.DS_MOTIVO_CANCELAMENTO ";
 
         $from = " FROM MW_PEDIDO_VENDA PV INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE
                           LEFT JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
@@ -54,6 +56,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                       C.DS_TELEFONE,
                       U.DS_NOME,
                       PV.ID_IP,
+                      PV.ID_USUARIO_ESTORNO,
+                      PV.DS_MOTIVO_CANCELAMENTO,
                       PV.VL_TOTAL_TAXA_CONVENIENCIA";
 
         if (!empty($_GET["num_pedido"])) {
@@ -75,7 +79,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
         }
 
         if (!empty($_GET["nm_operador"])) {
-            if ($_GET["nm_operador"] == 'Web' || $_GET["nm_operador"] == 'WEB' || $_GET["nm_operador"] == 'web') {
+            if (strtolower($_GET["nm_operador"]) == 'web') {
                 $select = "SELECT
                             (CONVERT(VARCHAR(10), PV.DT_PEDIDO_VENDA, 103) + ' - ' + CONVERT(VARCHAR(8), PV.DT_PEDIDO_VENDA, 114)) AS DT_PEDIDO_VENDA,
                             PV.ID_PEDIDO_VENDA,
@@ -88,7 +92,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                             PV.IN_RETIRA_ENTREGA,
                             C.DS_DDD_TELEFONE,
                             C.DS_TELEFONE,
-                            PV.ID_IP ";
+                            PV.ID_IP,
+                            PV.ID_USUARIO_ESTORNO,
+                            PV.DS_MOTIVO_CANCELAMENTO ";
 
                 $group = " GROUP BY
                               (CONVERT(VARCHAR(10), PV.DT_PEDIDO_VENDA, 103) + ' - ' + CONVERT(VARCHAR(8), PV.DT_PEDIDO_VENDA, 114)),
@@ -100,7 +106,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                               PV.IN_RETIRA_ENTREGA,
                               C.DS_DDD_TELEFONE,
                               C.DS_TELEFONE,
-                              PV.ID_IP ";
+                              PV.ID_IP,
+                              PV.ID_USUARIO_ESTORNO,
+                              PV.DS_MOTIVO_CANCELAMENTO ";
 
                 $from = "FROM MW_PEDIDO_VENDA PV INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE AND PV.ID_USUARIO_CALLCENTER IS NULL
                           LEFT JOIN MW_ITEM_PEDIDO_VENDA_HIST IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA ";
@@ -109,7 +117,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                 $where .= " AND U.DS_NOME LIKE '%" . utf8_decode(trim($_GET["nm_operador"])) . "%'";
                 $from = "FROM MW_PEDIDO_VENDA PV INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE
                           LEFT JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
-                          LEFT JOIN MW_USUARIO U ON U.ID_USUARIO=PV.ID_USUARIO_CALLCENTER ";
+                          LEFT JOIN MW_USUARIO U ON U.ID_USUARIO=PV.ID_USUARIO_CALLCENTER 
+                          LEFT JOIN MW_APRESENTACAO A ON IPV.ID_APRESENTACAO = A.ID_APRESENTACAO
+                        INNER JOIN MW_EVENTO E ON E.ID_EVENTO=A.ID_EVENTO ";
                 $join3 = true;
             }
         }
@@ -164,14 +174,14 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                 $from .
                 $where .
                 $group . "
-				  
-				  UNION ALL
+                  
+                  UNION ALL
                                   " .
                 $select .
                 $from2 .
                 $where .
                 $group . ")
-				  SELECT * FROM RESULTADO WHERE LINHA BETWEEN " . $offset . " AND " . $final . " ORDER BY ID_PEDIDO_VENDA DESC";
+                  SELECT * FROM RESULTADO WHERE LINHA BETWEEN " . $offset . " AND " . $final . " ORDER BY ID_PEDIDO_VENDA DESC";
 
         // EXECUTA QUERY PRINCIPAL PARA CONSULTAR PEDIDOS VENDIDOS
         $result = executeSQL($mainConnection, $strSql, $params);
@@ -203,10 +213,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
         $paramsTotal = array_merge($paramsTotal, $paramsTotal);
 
         $query = "SELECT
-					  COUNT(1) AS QUANTIDADE,
+                      COUNT(1) AS QUANTIDADE,
                                           SUM(IPV.VL_TAXA_CONVENIENCIA) AS TOTALSERVICO
-				  FROM 
-					  MW_PEDIDO_VENDA PV
+                  FROM 
+                      MW_PEDIDO_VENDA PV
                                           LEFT JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA ";
 
         if (isset($join)) {
@@ -278,20 +288,20 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                 if(!verificaCPF($('#cd_cpf').val()))
                 {
                     $.dialog({title: 'Alerta...', text: 'CPF inválido.'});
-                }else{ if($('#cboSituacao').val() == "V"){
+                }else{ if($('#situacao').val() == "V"){
                         $.dialog({title: 'Alerta...', text: 'Selecione a situação'});
                     }else{
-                        document.location = '?p=' + pagina.replace('.php', '') + '&dt_inicial=' + $("#dt_inicial").val() + '&dt_final='+ $("#dt_final").val() + '&situacao=' + $("#cboSituacao").val() + '&nm_cliente=' + $("#nm_cliente").val() + '&cd_cpf=' + $("#cd_cpf").val() + '&num_pedido=' + $("#num_pedido").val() + '&nm_operador='+ $("#nm_operador").val() +'&nm_evento=' + $("#evento").val();
+                        document.location = '?p=' + pagina.replace('.php', '') + '&dt_inicial=' + $("#dt_inicial").val() + '&dt_final='+ $("#dt_final").val() + '&situacao=' + $("#situacao").val() + '&nm_cliente=' + $("#nm_cliente").val() + '&cd_cpf=' + $("#cd_cpf").val() + '&num_pedido=' + $("#num_pedido").val() + '&nm_operador='+ $("#nm_operador").val() +'&nm_evento=' + $("#evento").val();
                     }}
             });
 
-            $('tr:not(.ui-widget-header)').hover(function() {
-                $(this).addClass('ui-state-hover');
+            $('tr:not(.ui-widget-header, .estorno)').hover(function() {
+                $(this).addClass('ui-state-hover').next('.estorno').addClass('ui-state-hover');
             }, function() {
-                $(this).removeClass('ui-state-hover');
+                $(this).removeClass('ui-state-hover').next('.estorno').removeClass('ui-state-hover');
             });
 
-            $('tr:not(.ui-widget-header, .total)').click(function() {
+            $('tr:not(.ui-widget-header, .total, .estorno)').click(function() {
                 $('loadingIcon').fadeIn('fast');
                 var $this = $(this),
                 url = $this.find('a').attr('destino');
@@ -299,7 +309,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                     url: url,
                     success: function(data) {
                         $('#tabPedidos').find('.itensDoPedido').hide();
-                        $this.after('<tr class="itensDoPedido"><td colspan="10">' + data + '</td></tr>');
+
+                        if ($this.next('.estorno').length > 0) {
+                            $this.next('.estorno').after('<tr class="itensDoPedido"><td colspan="10">' + data + '</td></tr>');
+                        } else {
+                            $this.after('<tr class="itensDoPedido"><td colspan="10">' + data + '</td></tr>');
+                        }
                     },
                     complete: function() {
                         $('loadingIcon').fadeOut('slow');
@@ -308,7 +323,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
             });
 
             $("#controle").change(function(){
-                document.location = '?p=' + pagina.replace('.php', '') + '&controle=' + $("#controle").val() + '&dt_inicial=' + $("#dt_inicial").val() + '&dt_final=' + $("#dt_final").val() + '&situacao=' + $("#cboSituacao").val() + '&nm_cliente=' + $("#nm_cliente").val() + '&cd_cpf=' + $("#cd_cpf").val() + '&num_pedido=' + $("#num_pedido").val() + '&nm_operador=' + $("#nm_operador").val() + '&nm_evento=' + $("#evento").val() + '';
+                document.location = '?p=' + pagina.replace('.php', '') + '&controle=' + $("#controle").val() + '&dt_inicial=' + $("#dt_inicial").val() + '&dt_final=' + $("#dt_final").val() + '&situacao=' + $("#situacao").val() + '&nm_cliente=' + $("#nm_cliente").val() + '&cd_cpf=' + $("#cd_cpf").val() + '&num_pedido=' + $("#num_pedido").val() + '&nm_operador=' + $("#nm_operador").val() + '&nm_evento=' + $("#evento").val() + '';
             });
         });    
     </script>
@@ -335,7 +350,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
         Nome do Operador <input size="40" type="text" value="<?php echo (isset($_GET["nm_operador"])) ? $_GET["nm_operador"] : "" ?>" id="nm_operador" name="nm_operador" />
     </p><br/>
     <p>
-        Situação &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo (isset($_GET["situacao"])) ? combosituacao($_GET["situacao"]) : comboSituacao() ?>&nbsp;&nbsp;
+        Situação &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo combosituacao('situacao', $_GET["situacao"]); ?>&nbsp;&nbsp;
     <?php
     $name = "evento";
     $queryEvento = 'SELECT E.ID_EVENTO, E.DS_EVENTO FROM MW_EVENTO E WHERE IN_ATIVO = 1 ORDER BY DS_EVENTO ASC';
@@ -400,10 +415,18 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                    <td><?php echo utf8_encode($rs['CLIENTE'] . " " . $rs['DS_SOBRENOME']) . "<br/>" . $rs['DS_DDD_TELEFONE'] . " " . $rs['DS_TELEFONE']; ?></td>
                    <td><?php echo number_format($rs['TOTAL_UNIT'], 2, ",", "."); ?></td>
                    <td><?php echo $rs['QUANTIDADE']; ?></td>
-                   <td><?php echo combosituacao($rs['IN_SITUACAO'], false); ?></td>
+                   <td><?php echo comboSituacao('situacao', $rs['IN_SITUACAO'], false); ?></td>
                    <td><?php echo comboFormaEntrega($rs['IN_RETIRA_ENTREGA']); ?></td>
                </tr>
         <?php
+                        if ($rs['IN_SITUACAO'] == 'S') {
+        ?>
+                    <tr class="estorno">
+                        <td colspan="4">Estornado pelo usuário: <?php echo comboAdmins('admin', $rs['ID_USUARIO_ESTORNO'], false); ?></td>
+                        <td colspan="6">Motivo: <?php echo $rs['DS_MOTIVO_CANCELAMENTO']; ?></td>
+                    </tr>
+        <?php
+                        }
                    }
         ?>
                    <tr class="total">

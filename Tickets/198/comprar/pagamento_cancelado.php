@@ -3,28 +3,11 @@ session_start();
 
 require_once('../settings/functions.php');
 require_once('../settings/settings.php');
-$json = json_encode(array('cancelado' => 'entrada no pagamento_cancelado','SESSION='=>$_SESSION,'POST='=>$_POST));
-include('logiPagareChamada.php');
 
 if (isset($_COOKIE['ipagareError'])) {
 	foreach ($_COOKIE['ipagareError'] as $key => $val) {
 		setcookie('ipagareError['.$key.']', '', -1);
 	}
-} else if (isset($_POST['codigo_pedido'])) {
-	$json = json_encode(array('cancelado' => 'entrada no pagamento_cancelado - retorno do ipagare','SESSION='=>$_SESSION,'POST='=>$_POST));
-	include('logiPagareChamada.php');
-
-	foreach ($_POST as $key => $val) {
-		setcookie('ipagareError['.$key.']', $val, $cookieExpireTime);
-	}
-	?>
-		<script>
-		top.window.location = 'pagamento_cancelado.php';
-		</script>
-	<?php
-	$mainConnection = mainConnection();
-	include('logiPagare.php');
-	exit();
 } else if (isset($_GET['manualmente']) or isset($_GET['tempoExpirado'])) {
 	$mainConnection = mainConnection();
 	$query = 'SELECT DISTINCT E.ID_BASE
@@ -55,15 +38,6 @@ if (isset($_COOKIE['ipagareError'])) {
 	beginTransaction($mainConnection);
 	
 	if (isset($_COOKIE['pedido']) and is_numeric($_COOKIE['pedido'])) {
-/*		$query = 'DELETE I FROM MW_ITEM_PEDIDO_VENDA I
-					 INNER JOIN MW_PEDIDO_VENDA P ON P.ID_PEDIDO_VENDA = I.ID_PEDIDO_VENDA
-					 WHERE I.ID_PEDIDO_VENDA = ? AND P.ID_CLIENTE = ?';
-		$params = array($_COOKIE['pedido'], $_SESSION['user']);
-		executeSQL($mainConnection, $query, $params);
-		
-		$sqlErrors = sqlErrors();
-		$noErrors = (empty($sqlErrors) and $noErrors); */
-		
 		$query = 'UPDATE MW_PEDIDO_VENDA SET
 					 IN_SITUACAO = ?
 					 WHERE ID_PEDIDO_VENDA = ? AND ID_CLIENTE = ?';
@@ -142,9 +116,9 @@ $campanha = get_campanha_etapa('etapa5');
 								<?php
 								if (isset($_COOKIE['ipagareError'])) {
 								?>
-									<h3>Seu pedido foi cancelado!</h3>
-									<p class="msg_ipagarert"><?php echo $_COOKIE['ipagareError']['descricao_erro']; ?></p>
-									<p>Por favor clique no botão abaixo para tentar novamente ou cancele esse pedido.</p>
+									<h3>Seu pedido foi negado!</h3>
+									<p class="msg_ipagarert">Transação não autorizada. Verifique os dados do cartão.</p>
+									<p>Por favor, clique no botão abaixo para tentar novamente ou cancele esse pedido.</p>
 							</div>
 							<div id="footer_ticket">
 								<?php if ($_COOKIE['ipagareError']['codigo_erro'] != '201') { ?>
@@ -167,6 +141,33 @@ $campanha = get_campanha_etapa('etapa5');
 								<?php }?>
 							</div>
 								<?php
+								} else if (isset($_GET['captcha'])) {
+									?>
+									<h3>Seu pedido foi negado!</h3>
+									<p>O código informado não corresponde à imagem/áudio.</p>
+									<p>Por favor clique no botão abaixo para tentar novamente ou cancele esse pedido.</p>
+							</div>
+							<div id="footer_ticket">
+								<?php if ($_COOKIE['ipagareError']['codigo_erro'] != '201') { ?>
+							    <a href="etapa5.php?falha<?php echo $campanha['tag_voltar']; ?>">
+									<div class="botoes_ticket" id="botao_voltar">tentar novamente</div>
+								</a>
+								<a href="pagamento_cancelado.php?manualmente">
+									<div class="botoes_ticket" id="botao_avancar">cancelar</div>
+								</a>
+								<?php } else { ?>
+								    <?php if (!(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) { ?>
+									    <a href="http://www.compreingressos.com/">
+										    <div class="botoes_ticket" id="botao_avancar">home</div>
+									    </a>
+								    <?php } else { ?>
+									    <a href="etapa0.php">
+										    <div class="botoes_ticket" id="botao_avancar">nova venda</div>
+									    </a>
+								    <?php } ?>
+								<?php }?>
+							</div>
+									<?php
 								} else {
 								    ?><h3>Seu pedido foi cancelado!</h3><?php
 									if (isset($_GET['manualmente'])) {

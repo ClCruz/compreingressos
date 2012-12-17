@@ -1,6 +1,7 @@
 <?php
 $pedido_id = $parametros['OrderData']['OrderId'];
 $braspag_id = $result->AuthorizeTransactionResult->OrderData->BraspagOrderId;
+$braspag_transaction_id = $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId;
 $transaction_id = $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId;
 $transaction_auth = $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AuthorizationCode;
 $meio_pagamento = $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->PaymentMethod;
@@ -56,9 +57,14 @@ if ($dados["ID_USUARIO_CALLCENTER"]) {
 		$caixa = 253;
 	//buscar ingresso
 	else
-		$caixa = 255;				
+		$caixa = 255;
 }
 
+$query = 'UPDATE MW_PEDIDO_VENDA SET
+            ID_TRANSACTION_BRASPAG = ?
+			WHERE ID_PEDIDO_VENDA = ?
+			AND ID_CLIENTE = ?';
+executeSQL($mainConnection, $query, array($braspag_transaction_id, $pedido_id, $dados['ID_CLIENTE']));
 
 //beginTransaction($mainConnection);
 

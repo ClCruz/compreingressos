@@ -19,12 +19,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
 					ELSE \' - \'
 				 END IN_RETIRA_ENTREGA,
 				 CONVERT(VARCHAR(10), DT_PEDIDO_VENDA, 103) DT_PEDIDO_VENDA, VL_TOTAL_PEDIDO_VENDA,
-				 CASE IN_SITUACAO
-				 	WHEN \'F\' THEN \'Concluído\'
-					WHEN \'C\' THEN \'Cancelado\'
-					WHEN \'E\' THEN \'Expirado\'
-					ELSE \' - \'
-				 END IN_SITUACAO
+				 IN_SITUACAO
 				 FROM MW_PEDIDO_VENDA
 				 WHERE ID_CLIENTE = ? AND IN_SITUACAO <> \'P\'';
 	$params = array($_SESSION['user']);
@@ -128,7 +123,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
 										<td><?php echo $rs['IN_RETIRA_ENTREGA']; ?></td>
 										<td><?php echo $rs['DT_PEDIDO_VENDA']; ?></td>
 										<td>R$ <?php echo $rs['VL_TOTAL_PEDIDO_VENDA']; ?></td>
-										<td><?php echo $rs['IN_SITUACAO']; ?></td>
+										<td><?php echo comboSituacao('situacao', $rs['IN_SITUACAO'], false); ?></td>
 									</tr>
 									<?php
 									}

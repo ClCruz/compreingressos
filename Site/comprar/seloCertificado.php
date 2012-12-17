@@ -10,5 +10,8 @@
 										<script src='https://seal.verisign.com/getseal?host_name=compra.compreingressos.com&size=S&use_flash=NO&use_transparent=getsealjs_b.js&lang=pt'></script>
 									</td>
 								</tr>
-								</table>
+								</table><br/>
+								<div id="armored_website">
+								    <param id="aw_preload" value="true" />
+								</div><script type="text/javascript" src="https://selo.siteblindado.com/aw.js"></script>
 							</div>

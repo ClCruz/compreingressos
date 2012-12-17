@@ -13,12 +13,7 @@ $query = 'SELECT
 			 END IN_RETIRA_ENTREGA,
 			 CONVERT(VARCHAR(10), DT_PEDIDO_VENDA, 103) DT_PEDIDO_VENDA,
 			 VL_TOTAL_PEDIDO_VENDA,
-			 CASE IN_SITUACAO
-				WHEN \'F\' THEN \'Concluído\'
-				WHEN \'C\' THEN \'Cancelado\'
-				WHEN \'E\' THEN \'Expirado\'
-				ELSE \' - \'
-			 END IN_SITUACAO,
+			 IN_SITUACAO,
 			 VL_FRETE,
 			 VL_TOTAL_INGRESSOS,
 			 DS_ENDERECO_ENTREGA,
@@ -34,7 +29,7 @@ $rsPedido = executeSQL($mainConnection, $query, $params, true);
 ?>
 						<div class="titulo with_border_bottom uppercase">
 							Pedido <?php echo $_GET['pedido']; ?>
-							<p>Criado em <b><?php echo $rsPedido['DT_PEDIDO_VENDA']; ?></b> - Status <b><?php echo $rsPedido['IN_SITUACAO']; ?></b></p>
+							<p>Criado em <b><?php echo $rsPedido['DT_PEDIDO_VENDA']; ?></b> - Status <b><?php echo comboSituacao('situacao', $rsPedido['IN_SITUACAO'], false); ?></b></p>
 						</div>
 <?php
 $query = 'SELECT

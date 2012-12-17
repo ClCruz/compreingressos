@@ -10,6 +10,10 @@ if ($_POST) {
 } else {
 ?>
     <script>
+		var RecaptchaOptions = {
+		   theme: 'white'
+		};
+
         $(function(){
         	var titular = $('input[name="nomeCartao"]');
 
@@ -114,6 +118,13 @@ if ($_POST) {
 			    }
 			    ?>
 			</select>
+	    </p>
+
+	    <p>
+	    	<?php
+			require_once('../settings/recaptchalib.php');
+			echo recaptcha_get_html($recaptcha['public_key'], null, true);
+	        ?>
 	    </p>
 	</form>
 <?php } ?>

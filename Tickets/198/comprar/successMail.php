@@ -2,7 +2,7 @@
 require_once('../settings/functions.php');
 $subject = 'Pedido ' . $parametros['OrderData']['OrderId'] . ' - Pago';
 
-$namefrom = 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS';
+$namefrom = utf8_decode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS');
 $from = 'lembrete@compreingressos.com';
 
 $query = 'SELECT ds_meio_pagamento FROM mw_meio_pagamento WHERE cd_meio_pagamento = ?';
@@ -47,7 +47,7 @@ $valores['pais_endereco_entrega'] = $parametros['CustomerData']['DeliveryAddress
 $valores['cep_endereco_entrega'] = $parametros['CustomerData']['DeliveryAddressData']['ZipCode'];
 
 foreach ($itensPedido as $item) {
-	$valores['itens_pedido'] .= $item['descricao_item'] . ' - R$ ' . number_format($item['valor_item'], 2, ',', '') . '<br />';
+	$valores['itens_pedido'] .= utf8_decode($item['descricao_item']) . ' - R$ ' . number_format($item['valor_item'], 2, ',', '') . '<br />';
 }
 
 //define the body of the message.

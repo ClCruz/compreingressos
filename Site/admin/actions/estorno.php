@@ -179,9 +179,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
 
 		        } else {
 		        	$retorno = 'O pedido não foi cancelado/estornado.<br/><br/>' . $response->ErrorReportDataCollection->ErrorReportDataResponse->ErrorMessage;
+		        	$envia_error_mail = true;
 		        }
 
-		        if (count(get_object_vars($response->ErrorReportDataCollection)) > 0) {
+		        if (count(get_object_vars($response->ErrorReportDataCollection)) > 0 or $envia_error_mail) {
 		            include('../comprar/errorMail.php');
 		        }
 	    	} else {

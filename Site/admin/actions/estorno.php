@@ -23,7 +23,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
 
 		$parametros['RequestId'] = $ri;
 		$parametros['Version'] = '1.0';
-		$parametros['MerchantId'] = 'AEDAFDE0-83A5-869F-214B-C8501B9C8697';
+		$parametros['MerchantId'] = $is_teste == '1' ? $merchant_id_homologacao : $merchant_id_producao;
 		$parametros['TransactionDataCollection']['TransactionDataRequest']['BraspagTransactionId'] = $pedido['BRASPAG_ID'];
 		$parametros['TransactionDataCollection']['TransactionDataRequest']['Amount'] = $pedido['VALOR'];
 

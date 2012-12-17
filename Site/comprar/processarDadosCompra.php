@@ -31,6 +31,8 @@ if(!hasRows($resultReserva) or ($is_teste != '1' and $_POST['codCartao'] == 997)
     exit();
 }
 
+require('antiFraude.php');
+
 $query = 'SELECT
             C.ID_CLIENTE,C.DS_NOME,C.DS_SOBRENOME,C.DS_DDD_TELEFONE,C.DS_TELEFONE,C.DS_DDD_CELULAR,C.DS_CELULAR,C.CD_CPF,C.DS_ENDERECO,C.DS_COMPL_ENDERECO,C.DS_BAIRRO,C.DS_CIDADE,C.CD_CEP,C.CD_EMAIL_LOGIN,C.ID_ESTADO,E.SG_ESTADO ';
 

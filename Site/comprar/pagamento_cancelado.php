@@ -168,6 +168,34 @@ $campanha = get_campanha_etapa('etapa5');
 								<?php }?>
 							</div>
 									<?php
+								} else if (isset($_GET['erro'])) {
+									?>
+									<h3>Seu pedido foi negado!</h3>
+									<p>Prezado Cliente, por favor entre em contato com a nossa central de atendimento, através do número 11 2122 4070 
+										de segunda a domingo das 09h00 às 21h00, informando a seguinte mensagem: (erro 539)</p>
+									<p>Por favor clique no botão abaixo para tentar novamente ou cancele esse pedido.</p>
+							</div>
+							<div id="footer_ticket">
+								<?php if ($_COOKIE['ipagareError']['codigo_erro'] != '201') { ?>
+							    <a href="etapa5.php?falha<?php echo $campanha['tag_voltar']; ?>">
+									<div class="botoes_ticket" id="botao_voltar">tentar novamente</div>
+								</a>
+								<a href="pagamento_cancelado.php?manualmente">
+									<div class="botoes_ticket" id="botao_avancar">cancelar</div>
+								</a>
+								<?php } else { ?>
+								    <?php if (!(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) { ?>
+									    <a href="http://www.compreingressos.com/">
+										    <div class="botoes_ticket" id="botao_avancar">home</div>
+									    </a>
+								    <?php } else { ?>
+									    <a href="etapa0.php">
+										    <div class="botoes_ticket" id="botao_avancar">nova venda</div>
+									    </a>
+								    <?php } ?>
+								<?php }?>
+							</div>
+									<?php
 								} else {
 								    ?><h3>Seu pedido foi cancelado!</h3><?php
 									if (isset($_GET['manualmente'])) {

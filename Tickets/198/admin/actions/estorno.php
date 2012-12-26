@@ -62,7 +62,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
 
 	        if ($response->CorrelationId == $ri) {
 	        	
-	        	if ($response->TransactionDataCollection->TransactionDataResponse->ReturnCode == '0') {
+	        	if ($response->TransactionDataCollection->TransactionDataResponse->Status == '0') {
 
 	        		//lista de eventos e codvenda
 					$query1 = "SELECT DISTINCT E.DS_EVENTO, A.CODAPRESENTACAO, B.ID_BASE, B.DS_NOME_BASE_SQL, I.CODVENDA
@@ -174,7 +174,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
 						$retorno = $sqlErrors;
 					}
 
-				} else if ($response->TransactionDataCollection->TransactionDataResponse->ReturnCode == '2') {
+				} else if ($response->TransactionDataCollection->TransactionDataResponse->Status == '2') {
 		            $retorno = "Pedido inexistente ou já cancelado/estornado.";
 
 		        } else {

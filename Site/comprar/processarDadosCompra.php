@@ -365,7 +365,7 @@ if ($PaymentDataCollection['Amount'] > 0 and ($errors and empty($sqlErrors))) {
 
         if ($result->AuthorizeTransactionResult->CorrelationId == $ri
             &&
-            $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->ReturnCode == '6') {
+            $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->Status == '0') {
 
             require('concretizarCompra.php');
 

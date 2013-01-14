@@ -23,9 +23,15 @@ if ($_POST) {
 	    		var $this = $(this);
 
 	    		if (maxlength = $this.find('option:selected').attr('cardFormat')) {
-	    			$('input[name="numCartao\\[\\]"]').first().attr('maxlength', maxlength);
+	    			$('input[name="numCartao\\[\\]"]').first().attr('maxlength', maxlength).val('').val('');
 	    		} else {
-	    			$('input[name="numCartao\\[\\]"]').first().attr('maxlength', $('input[name="numCartao\\[\\]"]').last().attr('maxlength'));
+	    			$('input[name="numCartao\\[\\]"]').first().attr('maxlength', $('input[name="numCartao\\[\\]"]').last().attr('maxlength')).val('');
+	    		}
+
+	    		if (maxlength = $this.find('option:selected').attr('securityFormat')) {
+	    			$('input[name="codSeguranca"]').attr('maxlength', maxlength).val('');
+	    		} else {
+	    			$('input[name="codSeguranca"]').attr('maxlength', 3).val('');
 	    		}
 	    	});
 
@@ -77,7 +83,7 @@ if ($_POST) {
 	    	    	<option />
 				    <option value="500">VISA</option>
 				    <option value="501">Mastercard</option>
-				    <option value="502" cardFormat="3">Amex</option>
+				    <option value="502" cardFormat="3" securityFormat="4">Amex</option>
 				    <option value="503">Diners</option>
 				    <option value="504">Elo</option>
 			    <?php

@@ -4,7 +4,7 @@
 //This will send an email using auth smtp and output a log array
 //logArray - connection, 
 
-function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copiesTo = array()) {
+function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copiesTo = array(), $charset) {
 	require("PHPMailer/class.phpmailer.php");
 	
 	$mail = new PHPMailer();
@@ -15,10 +15,14 @@ function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copi
 	
 	$mail->IsSMTP();
 	$mail->Host = "smtp.compreingressos.com";
+	$mail->Host = "smtp.bra.terra.com.br";
 	$mail->Port = 587;
+	$mail->Port = 25;
 	$mail->SMTPAuth = true;
 	$mail->Username = "lembrete@compreingressos.com";
+	$mail->Username = "gabriel.monteiro@cc.com.br";
 	$mail->Password = "lembrete0015";
+	$mail->Password = "te14cx";
 	
 	$mail->From = $from;
 	$mail->FromName = $namefrom;
@@ -40,7 +44,7 @@ function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copi
 	}
 	
 	$mail->IsHTML(true);
-	$mail->CharSet = 'utf8';
+	$mail->CharSet = $charset;
 	
 	$mail->Subject  = $subject;
 	$mail->Body = $message;

@@ -4,7 +4,6 @@ $subject = 'Pedido ' . $parametros['OrderData']['OrderId'] . ' - Pago';
 
 $namefrom = utf8_decode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS');
 $from = 'lembrete@compreingressos.com';
-$from = 'contato@cc.com.br';
 
 $query = 'SELECT ds_meio_pagamento FROM mw_meio_pagamento WHERE cd_meio_pagamento = ?';
 $rs = executeSQL($mainConnection, $query, array($PaymentDataCollection['PaymentMethod']), true);

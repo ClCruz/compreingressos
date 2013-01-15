@@ -250,9 +250,9 @@ while ($itens = fetchResult($result)) {
         if ($rsServicos['IN_TAXA_POR_PEDIDO'] == 'S') {
             $valorConveniencia = $valorConvenienciaAUX = obterValorServico($itens['ID_APRESENTACAO_BILHETE'], true);
 
-            $itensPedido[$i]['codigo_item'] = 'servico'; //Código ou chave única do item do pedido no Site.
+            $itensPedido[$i]['codigo_item'] = 'servico';
             $itensPedido[$i]['descricao_item'] = 'Serviço';
-            $itensPedido[$i]['valor_item'] = $valorConveniencia * 100; //Valor unitário em centavos, somente números, sem pontos nem vírgulas. Ex: 50,00 -> 5000;
+            $itensPedido[$i]['valor_item'] = $valorConveniencia;
 
             $valorConveniencia = 0;
             $i++;

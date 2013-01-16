@@ -4,7 +4,7 @@
 //This will send an email using auth smtp and output a log array
 //logArray - connection, 
 
-function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copiesTo = array(), $charset) {
+function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copiesTo = array(), $charset = 'utf8') {
 	require("PHPMailer/class.phpmailer.php");
 	
 	$mail = new PHPMailer();

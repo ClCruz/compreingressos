@@ -4,7 +4,7 @@ session_start();
 
 $mainConnection = mainConnection();
 
-$numeroDoCartao = substr($_POST['numCartao'][0].$_POST['numCartao'][1], 0, -2);
+$numeroDoCartao = substr($_POST['numCartao'], 0, 6);
 
 $rs = executeSQL($mainConnection, 'SELECT CD_CPF FROM MW_CLIENTE WHERE ID_CLIENTE = ?', array($_SESSION['user']), true);
 $cpf = $rs[0];

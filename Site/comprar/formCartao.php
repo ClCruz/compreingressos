@@ -19,28 +19,12 @@ if ($_POST) {
 
 	    	$('.number').onlyNumbers();
 
-	    	$('select[name="codCartao"]').change(function(){
-	    		var $this = $(this);
-
-	    		if (maxlength = $this.find('option:selected').attr('cardFormat')) {
-	    			$('input[name="numCartao\\[\\]"]').first().attr('maxlength', maxlength).val('').val('');
-	    		} else {
-	    			$('input[name="numCartao\\[\\]"]').first().attr('maxlength', $('input[name="numCartao\\[\\]"]').last().attr('maxlength')).val('');
-	    		}
-
-	    		if (maxlength = $this.find('option:selected').attr('securityFormat')) {
-	    			$('input[name="codSeguranca"]').attr('maxlength', maxlength).val('');
-	    		} else {
-	    			$('input[name="codSeguranca"]').attr('maxlength', 3).val('');
-	    		}
-	    	});
-
 	    	$('#dadosPagamento').submit(function(e) {
 	    	    var valido = true;
 
 	    	    $('.number, select').each(function(i,e) {
 		    		var e = $(e);
-		    		if (e.val().length < e.attr('maxlength') || e.val() == '') {
+		    		if (e.val().length < e.attr('maxlength')/2 || e.val() == '') {
 		    		    e.css({'border-color':'#F55'});
 		    		    valido = false;
 		    		} else e.css({'border-color':'#DDD'});
@@ -83,7 +67,7 @@ if ($_POST) {
 	    	    	<option />
 				    <option value="500">VISA</option>
 				    <option value="501">Mastercard</option>
-				    <option value="502" cardFormat="3" securityFormat="4">Amex</option>
+				    <option value="502">Amex</option>
 				    <option value="503">Diners</option>
 				    <option value="504">Elo</option>
 			    <?php
@@ -97,14 +81,11 @@ if ($_POST) {
 	    </p>
 
 	    <p>N&uacute;mero do cart&atilde;o:<br/>
-			<input name="numCartao[]" maxlength="4" size="4" class="number"/>&nbsp;
-			<input name="numCartao[]" maxlength="4" size="4" class="number"/>&nbsp;
-			<input name="numCartao[]" maxlength="4" size="4" class="number"/>&nbsp;
-			<input name="numCartao[]" maxlength="4" size="4" class="number"/>
+			<input name="numCartao" maxlength="20" size="25" class="number"/>
 	    </p>
 
 	    <p>C&oacute;digo de seguran&ccedil;a:<br/>
-			<input name="codSeguranca" maxlength="3" size="3" class="number"/>
+			<input name="codSeguranca" maxlength="4" size="4" class="number"/>
 	    </p>
 
 	    <p>Data de validade do cart&atilde;o:<br/>

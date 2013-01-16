@@ -96,7 +96,7 @@ $parametros['CustomerData']['CustomerEmail'] = $rs['CD_EMAIL_LOGIN'];
 //Dados do cartão
 $PaymentDataCollection['CardHolder'] = $_POST['nomeCartao'];
 $PaymentDataCollection['PaymentMethod'] = $_POST['codCartao'];
-$PaymentDataCollection['CardNumber'] = $_POST['numCartao'][0].$_POST['numCartao'][1].$_POST['numCartao'][2].$_POST['numCartao'][3];
+$PaymentDataCollection['CardNumber'] = $_POST['numCartao'];
 $PaymentDataCollection['CardExpirationDate'] = $_POST['validadeMes'] . '/' . $_POST['validadeAno'];
 $PaymentDataCollection['CardSecurityCode'] = $_POST['codSeguranca'];
 $PaymentDataCollection['Currency'] = 'BRL';

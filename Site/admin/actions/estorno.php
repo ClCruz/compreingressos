@@ -25,7 +25,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
 		$parametros['Version'] = '1.0';
 		$parametros['MerchantId'] = $is_teste == '1' ? $merchant_id_homologacao : $merchant_id_producao;
 		$parametros['TransactionDataCollection']['TransactionDataRequest']['BraspagTransactionId'] = $pedido['BRASPAG_ID'];
-		$parametros['TransactionDataCollection']['TransactionDataRequest']['Amount'] = $pedido['VALOR'];
+		$parametros['TransactionDataCollection']['TransactionDataRequest']['Amount'] = 0;//$pedido['VALOR'];
 
 		$is_cancelamento = date('d', strtotime($pedido['DATA'])) == date('d');
 

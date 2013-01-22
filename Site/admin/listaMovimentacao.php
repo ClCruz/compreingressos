@@ -9,6 +9,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
 
     $pagina = basename(__FILE__);
 
+    if ($_GET['action'] == 'reemail') {
+      require('actions/' . $pagina);
+      exit();
+    }
+
     if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situacao"]) && isset($_GET["nm_cliente"]) && isset($_GET["nm_operador"]) && isset($_GET["cd_cpf"]) && isset($_GET["num_pedido"])) {
 
         $where = "WHERE CONVERT(DATETIME,CONVERT(CHAR(8), PV.DT_PEDIDO_VENDA, 112)) BETWEEN CONVERT(DATETIME, ?, 103) AND CONVERT(DATETIME, ?, 103) AND PV.IN_SITUACAO = ?";
@@ -22,6 +27,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                     PV.ID_PEDIDO_VENDA,
                     C.DS_NOME AS CLIENTE,
                     C.DS_SOBRENOME,
+                    C.CD_EMAIL_LOGIN,
                     SUM(IPV.VL_UNITARIO) AS TOTAL_UNIT,
                     PV.IN_SITUACAO,
                     ROW_NUMBER() OVER(ORDER BY PV.ID_PEDIDO_VENDA DESC) AS 'LINHA',
@@ -49,6 +55,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                       PV.ID_PEDIDO_VENDA,
                       C.DS_NOME,
                       C.DS_SOBRENOME,
+                      C.CD_EMAIL_LOGIN,
                       PV.IN_SITUACAO,
                       DT_PEDIDO_VENDA,
                       PV.IN_RETIRA_ENTREGA,
@@ -85,6 +92,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                             PV.ID_PEDIDO_VENDA,
                             C.DS_NOME AS CLIENTE,
                             C.DS_SOBRENOME,
+                            C.CD_EMAIL_LOGIN,
                             SUM(IPV.VL_UNITARIO) AS TOTAL_UNIT,
                             PV.IN_SITUACAO,
                             ROW_NUMBER() OVER(ORDER BY PV.ID_PEDIDO_VENDA DESC) AS 'LINHA',
@@ -101,6 +109,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                               PV.ID_PEDIDO_VENDA,
                               C.DS_NOME,
                               C.DS_SOBRENOME,
+                              C.CD_EMAIL_LOGIN,
                               PV.IN_SITUACAO,
                               DT_PEDIDO_VENDA,
                               PV.IN_RETIRA_ENTREGA,
@@ -325,6 +334,54 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
             $("#controle").change(function(){
                 document.location = '?p=' + pagina.replace('.php', '') + '&controle=' + $("#controle").val() + '&dt_inicial=' + $("#dt_inicial").val() + '&dt_final=' + $("#dt_final").val() + '&situacao=' + $("#situacao").val() + '&nm_cliente=' + $("#nm_cliente").val() + '&cd_cpf=' + $("#cd_cpf").val() + '&num_pedido=' + $("#num_pedido").val() + '&nm_operador=' + $("#nm_operador").val() + '&nm_evento=' + $("#evento").val() + '';
             });
+
+            $("a.reemail").click(function(e){
+                e.preventDefault();
+
+                $('#reenvio input').val($.getUrlVar('emailAtual', $(this).attr('href')));
+                $('#reenvio').attr('action', $(this).attr('href'));
+
+                $('#reenvio').dialog('open');
+            });
+
+            $('#reenvio').dialog({
+                autoOpen: false,
+                modal: true,
+                width: 400,
+                height: 200,
+                buttons: {
+                    'Reenviar': function() {
+                      var $this = $(this),
+                          email = $this.find('input[name="emailInformado"]'),
+                          email_txt = email.val(),
+                          email_pattern = /\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/i,
+                          valido = true;
+
+                      if (!email_pattern.test(email_txt)) {
+                        email.css({'border-color':'#F55'});
+                        valido = false;
+                      } else email.css({'border-color':'initial'});
+
+                      if (valido) {
+                        $("#loadingIcon").fadeIn('fast');
+
+                        $.ajax({
+                          url: $this.attr('action'),
+                          type: 'post',
+                          data: $this.serialize(),
+                          success: function(data) {
+                            if (data == 'ok') {
+                              $('#reenvio').dialog('close');
+                              $.dialog({title: 'Sucesso...', text: 'E-mail reenviado.'});
+                            } else {
+                              $.dialog({title: 'Alerta...', text: data});
+                            }
+                          }
+                        });
+                      }
+                    }
+                }
+            });
         });    
     </script>
     <style type="text/css">
@@ -391,6 +448,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
             <th>Qtde Ingressos</th>
             <th>Situação</th>
             <th>Forma de Entrega</th>
+            <th>Ações</th>
         </tr>
     </thead>
     <tbody>
@@ -417,6 +475,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                    <td><?php echo $rs['QUANTIDADE']; ?></td>
                    <td><?php echo comboSituacao('situacao', $rs['IN_SITUACAO'], false); ?></td>
                    <td><?php echo comboFormaEntrega($rs['IN_RETIRA_ENTREGA']); ?></td>
+                   <td>
+                        <?php if ($rs['IN_SITUACAO'] == 'F') { ?>
+                            <a href="<?php echo $pagina; ?>?action=reemail&emailAtual=<?php echo $rs['CD_EMAIL_LOGIN']; ?>&pedido=<?php echo $rs['ID_PEDIDO_VENDA']; ?>" class="reemail">Reenvio de e-mail</a>
+                        <?php } ?>
+                   </td>
                </tr>
         <?php
                         if ($rs['IN_SITUACAO'] == 'S') {
@@ -442,14 +505,20 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
        </table>
        <div id="paginacao">
     <?php
-               if ($tr) {
-                   //paginacao($pc, $intervalo, $tp, true);
-                   $link = "?p=" . basename($pagina, '.php') . "&dt_inicial=" . $_GET["dt_inicial"] . "&dt_final=" . $_GET["dt_final"] . "&situacao=" . $_GET["situacao"] . "&num_pedido=" . $_GET["num_pedido"] . "&nm_cliente=" . $_GET["nm_cliente"] . "&nm_operador=" . $_GET["nm_operador"] . "&cd_cpf=" . $_GET["cd_cpf"] . "&nm_evento=" . $_GET["nm_evento"] . "&controle=" . $total_reg . "&bar=2&baz=3&offset=";
-                   //$link = "?p=listaMovimentacao&dt_inicial=" . $_GET["dt_inicial"] . "&dt_final=" . $_GET["dt_final"] . "&situacao=" . $_GET["situacao"] . "&controle=" . $total_reg . "&bar=2&baz=3&offset=";
-                   Paginator::paginate($offset, $tr, $total_reg, $link, true);
-               }
-    ?>
-           </div>
+           if ($tr) {
+               //paginacao($pc, $intervalo, $tp, true);
+               $link = "?p=" . basename($pagina, '.php') . "&dt_inicial=" . $_GET["dt_inicial"] . "&dt_final=" . $_GET["dt_final"] . "&situacao=" . $_GET["situacao"] . "&num_pedido=" . $_GET["num_pedido"] . "&nm_cliente=" . $_GET["nm_cliente"] . "&nm_operador=" . $_GET["nm_operador"] . "&cd_cpf=" . $_GET["cd_cpf"] . "&nm_evento=" . $_GET["nm_evento"] . "&controle=" . $total_reg . "&bar=2&baz=3&offset=";
+               //$link = "?p=listaMovimentacao&dt_inicial=" . $_GET["dt_inicial"] . "&dt_final=" . $_GET["dt_final"] . "&situacao=" . $_GET["situacao"] . "&controle=" . $total_reg . "&bar=2&baz=3&offset=";
+               Paginator::paginate($offset, $tr, $total_reg, $link, true);
+           }
+?>
+       </div>
+        <form action="<?php echo $pagina; ?>?action=reemail" id="reenvio" title="Reenvio de e-mail">
+            <p>O email de Confirmação do Pedido será reenviado para o email abaixo.</p>
+            <p>Clique no botão "Reenviar" para confirmar o reenvio.</p>
+            <br/>
+            <p><input type="text" name="emailInformado" maxlenght="100" style="width:100%" /></p>
+        </form>
 
 <?php
            }

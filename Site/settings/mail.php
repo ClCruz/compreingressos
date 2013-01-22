@@ -4,7 +4,9 @@
 //This will send an email using auth smtp and output a log array
 //logArray - connection, 
 
-function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copiesTo = array(), $charset = 'utf8') {
+function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copiesTo = array(), $hiddenCopiesTo = array(), $charset = 'utf8') {
+	ob_start();
+	
 	require("PHPMailer/class.phpmailer.php");
 	
 	$mail = new PHPMailer();
@@ -42,6 +44,17 @@ function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copi
 			$mail->AddCC($email, $name);
 		}
 	}
+
+	if (!empty($hiddenCopiesTo)) {
+		foreach($hiddenCopiesTo as $address) {
+			$address = explode('=>', $address);
+			
+			$name = trim($address[0]);
+			$email = trim($address[1]);
+			
+			$mail->AddBCC($email, $name);
+		}
+	}
 	
 	$mail->IsHTML(true);
 	$mail->CharSet = $charset;
@@ -53,10 +66,12 @@ function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copi
 	//$mail->AddAttachment("e:\home\login\web\documento.pdf", "novo_nome.pdf");  
 	
 	$enviado = $mail->Send();
-	
+
 	$mail->ClearAllRecipients();
 	$mail->ClearAttachments();
 
-	return $enviado;
+	echo $error = ob_get_clean();
+
+	return empty($error) ? $enviado : false;
 }
 ?>

@@ -82,29 +82,29 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
 
 						//lista todos os indices de um codvenda/codapresentacao
 						$query2 = "SELECT S.INDICE, L1.CODCAIXA, L1.DATMOVIMENTO, L1.CODMOVIMENTO
-									FROM CI_COLISEU..tabLugSala S
-										INNER JOIN CI_COLISEU..tabTipBilhete B
+									FROM ".strtoupper($rs['DS_NOME_BASE_SQL'])."..tabLugSala S
+										INNER JOIN ".strtoupper($rs['DS_NOME_BASE_SQL'])."..tabTipBilhete B
 											ON S.CodTipBilhete = B.CodTipBilhete 
-										INNER JOIN CI_COLISEU..tabSalDetalhe D
+										INNER JOIN ".strtoupper($rs['DS_NOME_BASE_SQL'])."..tabSalDetalhe D
 											ON S.Indice = D.Indice 
-										INNER JOIN CI_COLISEU..tabSetor E
+										INNER JOIN ".strtoupper($rs['DS_NOME_BASE_SQL'])."..tabSetor E
 											ON D.CodSala = E.CodSala
 											AND D.CodSetor = E.CodSetor 
-										INNER JOIN CI_COLISEU..tabApresentacao A
+										INNER JOIN ".strtoupper($rs['DS_NOME_BASE_SQL'])."..tabApresentacao A
 											ON S.CodApresentacao = A.CodApresentacao 
 											AND D.codsala = A.codsala
-										INNER JOIN CI_COLISEU..tabPeca P
+										INNER JOIN ".strtoupper($rs['DS_NOME_BASE_SQL'])."..tabPeca P
 											ON A.CodPeca = P.CodPeca 
-										INNER JOIN CI_COLISEU..tabLancamento L1
+										INNER JOIN ".strtoupper($rs['DS_NOME_BASE_SQL'])."..tabLancamento L1
 											ON S.Indice = L1.Indice 
-										INNER JOIN CI_COLISEU..tabForPagamento G
+										INNER JOIN ".strtoupper($rs['DS_NOME_BASE_SQL'])."..tabForPagamento G
 											ON G.CodForPagto = L1.CodForPagto
 											AND S.CodApresentacao = L1.CodApresentacao
 									WHERE	(L1.CodTipLancamento = 1) 
 									AND		(S.CodVenda = ?)
 									AND		(A.CodApresentacao = ?)
 									AND		(S.codvenda is not null)
-									AND		NOT EXISTS (SELECT 1 FROM CI_COLISEU..TABLANCAMENTO L2 WHERE L2.NUMLANCAMENTO = L1.NUMLANCAMENTO AND L2.CODTIPLANCAMENTO = 2)	
+									AND		NOT EXISTS (SELECT 1 FROM ".strtoupper($rs['DS_NOME_BASE_SQL'])."..TABLANCAMENTO L2 WHERE L2.NUMLANCAMENTO = L1.NUMLANCAMENTO AND L2.CODTIPLANCAMENTO = 2)	
 									ORDER BY D.NomObjeto";
 						$params2 = array($rs['CODVENDA'], $rs['CODAPRESENTACAO']);
 						$indices = executeSQL($mainConnection, $query2, $params2);

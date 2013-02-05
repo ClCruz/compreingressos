@@ -174,8 +174,9 @@ exec (@query)
 
 
 
-GO
 
+GO
+/****** Object:  NumberedStoredProcedure [dbo].[SP_REL_BORDERO_VENDAS_2];2    Script Date: 02/05/2013 11:16:48 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -437,8 +438,9 @@ exec (@query)
 
 
 
-GO
 
+GO
+/****** Object:  NumberedStoredProcedure [dbo].[SP_REL_BORDERO_VENDAS_2];3    Script Date: 02/05/2013 11:16:49 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -683,13 +685,14 @@ exec (@query)
 
 
 
-GO
 
+GO
+/****** Object:  NumberedStoredProcedure [dbo].[SP_REL_BORDERO_VENDAS_2];4    Script Date: 02/05/2013 11:16:49 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-alter  procedure [dbo].[SP_REL_BORDERO_VENDAS_2];4
+ALTER  procedure [dbo].[SP_REL_BORDERO_VENDAS_2];4
  	@CodApresentacao int,
 	@DataBase varchar(30)
 AS
@@ -719,56 +722,56 @@ IF EXISTS
 	BEGIN
 
 		SELECT  
-			' + @DataBase + '..tabLugSala.CodTipBilhete,
-			' + @DataBase + '..tabTipBilhete.TipBilhete, 
-			' + @DataBase + '..tabLancamento.DatMovimento,
-			' + @DataBase + '..tabSetor.NomSetor,
-			' + @DataBase + '..tabLugSala.Indice,
-			' + @DataBase + '..tabLancamento.ValPagto as Preco,
-			sum(isnull(' + @DataBase + '..tabIngressoAgregados.valor,0))  as VlrAgregados,
+			tls.CodTipBilhete,
+			ttb.TipBilhete, 
+			tl.DatMovimento,
+			ts.NomSetor,
+			tls.Indice,
+			tl.ValPagto as Preco,
+			sum(isnull(tia.valor,0))  as VlrAgregados,
 			0 AS OUTROSVALORES
 		INTO #TMP_RESUMO
 		FROM       
-			' + @DataBase + '..tabLugSala 
+			' + @DataBase + '..tabLugSala tls
 			INNER JOIN 
-			' + @DataBase + '..tabTipBilhete 	
-				ON  ' + @DataBase + '..tabLugSala.CodTipBilhete 	    = ' + @DataBase + '..tabTipBilhete.CodTipBilhete 
+			' + @DataBase + '..tabTipBilhete ttb 	
+				ON  tls.CodTipBilhete 	    = ttb.CodTipBilhete 
 		        INNER JOIN 
-			' + @DataBase + '..tabSalDetalhe 	
-				ON  ' + @DataBase + '..tabLugSala.Indice 		    = ' + @DataBase + '..tabSalDetalhe.Indice 
+			' + @DataBase + '..tabSalDetalhe tsd	
+				ON  tls.Indice 		    = tsd.Indice 
 			INNER JOIN
-		        ' + @DataBase + '..tabSetor 	
-				ON  ' + @DataBase + '..tabSalDetalhe.CodSala           = ' + @DataBase + '..tabSetor.CodSala 
-				AND ' + @DataBase + '..tabSalDetalhe.CodSetor 	    = ' + @DataBase + '..tabSetor.CodSetor 
+		        ' + @DataBase + '..tabSetor ts
+				ON  tsd.CodSala           = ts.CodSala 
+				AND tsd.CodSetor 	    = ts.CodSetor 
 			INNER JOIN
-		        ' + @DataBase + '..tabApresentacao 
-				ON  ' + @DataBase + '..tabLugSala.CodApresentacao      = ' + @DataBase + '..tabApresentacao.CodApresentacao 
+		        ' + @DataBase + '..tabApresentacao ta
+				ON  tls.CodApresentacao      = ta.CodApresentacao 
 			INNER JOIN
-			' + @DataBase + '..tabLancamento 
-				ON  ' + @DataBase + '..tabTipBilhete.CodTipBilhete     = ' + @DataBase + '..tabLancamento.CodTipBilhete 
-				AND ' + @DataBase + '..tabSalDetalhe.Indice            = ' + @DataBase + '..tabLancamento.Indice 
-				AND ' + @DataBase + '..tabApresentacao.CodApresentacao = ' + @DataBase + '..tabLancamento.CodApresentacao
-				AND ' + @DataBase + '..tabLancamento.CodTipLancamento  = 1
+			' + @DataBase + '..tabLancamento tl
+				ON  ttb.CodTipBilhete     = tl.CodTipBilhete 
+				AND tsd.Indice            = tl.Indice 
+				AND ta.CodApresentacao = tl.CodApresentacao
+				AND tl.CodTipLancamento  = 1
 			LEFT JOIN
-			' + @DataBase + '..tabIngressoAgregados
-				ON  ' + @DataBase + '..tabIngressoAgregados.codvenda   = ' + @DataBase + '..tabLugSala.codvenda
-				and ' + @DataBase + '..tabIngressoAgregados.indice     = ' + @DataBase + '..tabLugSala.indice
+			' + @DataBase + '..tabIngressoAgregados tia
+				ON  tia.codvenda   = tls.codvenda
+				and tia.indice     = tls.indice
 		WHERE
-			(' + @DataBase + '..tabLugSala.CodVenda IS NOT NULL) 
-		AND 	(' + @DataBase + '..tabApresentacao.CodApresentacao = ' + convert(varchar(10), @CodApresentacao) + ')
+			(tls.CodVenda IS NOT NULL) 
+		AND 	(ta.CodApresentacao = ' + convert(varchar(10), @CodApresentacao) + ')
 		AND	not exists (Select 1 from ' + @DataBase + '..tabLancamento bb
-					where ' + @DataBase + '..tabLancamento.numlancamento = bb.numlancamento
-					  and ' + @DataBase + '..tabLancamento.codtipbilhete = bb.codtipbilhete
+					where tl.numlancamento = bb.numlancamento
+					  and tl.codtipbilhete = bb.codtipbilhete
 					  and bb.codtiplancamento = 2
-					  and ' + @DataBase + '..tabLancamento.codapresentacao = bb.codapresentacao
-					  and ' + @DataBase + '..tabLancamento.indice          = bb.indice)
+					  and tl.codapresentacao = bb.codapresentacao
+					  and tl.indice          = bb.indice)
 		GROUP BY 
-			' + @DataBase + '..tabLugSala.CodTipBilhete,
-			' + @DataBase + '..tabTipBilhete.TipBilhete, 
-			' + @DataBase + '..tabLancamento.DatMovimento,
-			' + @DataBase + '..tabSetor.NomSetor,
-			' + @DataBase + '..tabLugSala.Indice,
-			' + @DataBase + '..tabLancamento.ValPagto
+			tls.CodTipBilhete,
+			ttb.TipBilhete, 
+			tl.DatMovimento,
+			ts.NomSetor,
+			tls.Indice,
+			tl.ValPagto
 			
 			
 			
@@ -975,14 +978,15 @@ exec (@query)
 
 
 
-GO
 
+GO
+/****** Object:  NumberedStoredProcedure [dbo].[SP_REL_BORDERO_VENDAS_2];5    Script Date: 02/05/2013 11:16:50 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 /* EQUIVALENTE AO ;3 (SOMENTE PARA TODOS OS SETORES E RESUMIDO) */
-alter  procedure [dbo].[SP_REL_BORDERO_VENDAS_2];5
+ALTER  procedure [dbo].[SP_REL_BORDERO_VENDAS_2];5
 	@DtIniApr varchar(8),
 	@DtFimApr varchar(8), 
 	@CodPeca varchar(5) = null,	

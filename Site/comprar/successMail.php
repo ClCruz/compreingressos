@@ -48,6 +48,7 @@ $valores['pais_endereco_entrega'] = $parametros['CustomerData']['DeliveryAddress
 $valores['cep_endereco_entrega'] = $parametros['CustomerData']['DeliveryAddressData']['ZipCode'];
 
 $barcodes = array();
+$lineCount = 0;
 $CodApresentacao = '';
 $queryCodigos = 'SELECT codbar
                 FROM tabControleSeqVenda c
@@ -55,6 +56,7 @@ $queryCodigos = 'SELECT codbar
                 WHERE l.CodApresentacao = ? AND l.CodVenda = ?
                 ORDER BY c.Indice';
 foreach ($itensPedido as $item) {
+    $lineCount++;
     if ($CodApresentacao != $item['CodApresentacao']) {
         $conn = getConnection($item['id_base']);
         $codigos = executeSQL($conn, $queryCodigos, array($item['CodApresentacao'], $item['CodVenda']));
@@ -74,11 +76,19 @@ foreach ($itensPedido as $item) {
     $barcodes[] = array('path' => $path1, 'cid' => $code . '_1');
     $barcodes[] = array('path' => $path2, 'cid' => $code . '_2');
 
-	$valores['itens_pedido'] .= '<tr><td align="center"><img src="cid:'.$code.'_2"/></td><td width="10"></td>
-                                    <td>' . $item['descricao_item'] . ' - R$ ' . number_format($item['valor_item'], 2, ',', '') . '</td>
-                                    <td align="center"><img src="cid:'.$code.'_1" /></td></tr><tr height="10"><td colspan="3"></td></tr>';
+    $valores['itens_pedido'] .= '<table style="FONT-VARIANT: small-caps; COLOR: rgb(181,9,56); FONT-SIZE: 14px; FONT-WEIGHT: bold"><tr>';
+    if ($lineCount % 2) {
+        $valores['itens_pedido'] .= '<td align="center"><img src="cid:'.$code.'_2"/></td><td width="5"></td>
+                                     <td>' . $item['descricao_item'] . ' - R$ ' . number_format($item['valor_item'], 2, ',', '') . '</td>
+                                     <td width="5"></td><td align="center"><img src="cid:'.$code.'_1" /></td>';
+    } else {
+        $valores['itens_pedido'] .= '<td align="center"><img src="cid:'.$code.'_1"/></td><td width="5"></td>
+                                     <td>' . $item['descricao_item'] . ' - R$ ' . number_format($item['valor_item'], 2, ',', '') . '</td>
+                                     <td width="5"></td><td align="center"><img src="cid:'.$code.'_2" /></td>';
+    }
+    $valores['itens_pedido'] .= '</tr><tr height="10"><td colspan="5"></td></tr></table>';
 }
-$valores['itens_pedido'] = '<table style="FONT-VARIANT: small-caps; COLOR: rgb(181,9,56); FONT-SIZE: 14px; FONT-WEIGHT: bold">' . substr($valores['itens_pedido'], 0, -42) . '</table>';
+$valores['itens_pedido'] = substr($valores['itens_pedido'], 0, -50) . '</table>';
 
 //define the body of the message.
 ob_start(); //Turn on output buffering

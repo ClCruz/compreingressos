@@ -1091,6 +1091,133 @@ function get_campanha_etapa($etapa) {
     ) : array());
 }
 
+
+
+
+function cropImageResource($img, $hex=null){
+    if($hex == null) $hex = imagecolorat($img, 0,0);
+    $width = imagesx($img);
+    $height = imagesy($img);
+    $b_top = 0;
+    $b_lft = 0;
+    $b_btm = $height - 1;
+    $b_rt = $width - 1;
+
+    //top
+    for(; $b_top < $height; ++$b_top) {
+        for($x = 0; $x < $width; ++$x) {
+            if(imagecolorat($img, $x, $b_top) != $hex) {
+                break 2;
+            }
+        }
+    }
+
+    // return false when all pixels are trimmed
+    if ($b_top == $height) return false;
+
+    // bottom
+    for(; $b_btm >= 0; --$b_btm) {
+        for($x = 0; $x < $width; ++$x) {
+            if(imagecolorat($img, $x, $b_btm) != $hex) {
+                break 2;
+            }
+        }
+    }
+
+    // left
+    for(; $b_lft < $width; ++$b_lft) {
+        for($y = $b_top; $y <= $b_btm; ++$y) {
+            if(imagecolorat($img, $b_lft, $y) != $hex) {
+                break 2;
+            }
+        }
+    }
+
+    // right
+    for(; $b_rt >= 0; --$b_rt) {
+        for($y = $b_top; $y <= $b_btm; ++$y) {
+            if(imagecolorat($img, $b_rt, $y) != $hex) {
+                break 2;
+            }
+        }
+    }
+
+    $b_btm++;
+    $b_rt++;
+    $box = array(
+        'l' => $b_lft,
+        't' => $b_top,
+        'r' => $b_rt,
+        'b' => $b_btm,
+        'w' => $b_rt - $b_lft,
+        'h' => $b_btm - $b_top
+    );
+
+    $img2 = imagecreate($box['w'], $box['h']);
+    imagecopy($img2, $img, 0, 0, $box['l'], $box['t'], $box['w'], $box['h']);
+
+    return $img2;
+}
+
+function requestImage($url) {
+	$ch = curl_init();
+
+	curl_setopt ($ch, CURLOPT_URL, $url);
+	curl_setopt ($ch, CURLOPT_BINARYTRANSFER, true);
+	curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt ($ch, CURLOPT_HEADER, false);
+	curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, 0);
+	curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+	curl_setopt ($ch, CURLOPT_SSL_VERIFYHOST, 0);
+
+	$rawdata = curl_exec($ch);
+	$image = imagecreatefromstring($rawdata);
+
+	curl_close($ch);
+
+	//===== REMOVER MARCA DAGUA =====
+	$offset_x = 0;
+	$offset_y = 0;
+
+	$new_width = imagesx($image);
+	$new_height = imagesy($image) - 20;
+
+	$new_image = imagecreate($new_width, $new_height);
+	imagecopy($new_image, $image, 0, 0, $offset_x, $offset_y, $new_width, $new_height);
+
+	$image = $new_image;
+	//===== REMOVER MARCA DAGUA =====
+
+	return $image;
+}
+
+function encodeToBarcode($text, $type = 'Interleaved2of5', $properties = array()) {
+	// http://www.idautomation.com/barcode-components/asp-iis/user-manual.html#Properties
+	$propertiesString = '';
+	if (empty($text)) return false;
+	if (!empty($properties)) foreach ($properties as $key => $value) $propertiesString .= '&' . $key . '=' . $value;
+
+	if ($type == 'Interleaved2of5') {
+		$url = 'http'.($_SERVER["HTTPS"] == 'on' ? 's' : '').'://localhost/comprar/idautomation/IDAutomationStreamingLinear.aspx?D='.urlencode($text).'&S=2&CC=F'.$propertiesString;
+	} else if ($type == 'Aztec') {
+		$url = 'http'.($_SERVER["HTTPS"] == 'on' ? 's' : '').'://localhost/comprar/idautomation/IDAutomationStreamingAztec.aspx?D='.urlencode($text).$propertiesString;
+	}
+
+	$image = cropImageResource(requestImage($url));
+
+	return $image;
+}
+
+function saveAndGetPath($image, $name) {
+	$path = '../images/temp/' . $name . '.gif';
+
+	$gif = imagegif($image, $path);
+
+	return $path;
+}
+
+
+
 function pre() {
     echo '<pre>';
     print_r(func_get_args());

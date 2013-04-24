@@ -4,7 +4,7 @@
 //This will send an email using auth smtp and output a log array
 //logArray - connection, 
 
-function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copiesTo = array(), $hiddenCopiesTo = array(), $charset = 'utf8') {
+function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copiesTo = array(), $hiddenCopiesTo = array(), $charset = 'utf8', $attachment = array()) {
 	ob_start();
 	
 	require("PHPMailer/class.phpmailer.php");
@@ -55,6 +55,17 @@ function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copi
 			$mail->AddBCC($email, $name);
 		}
 	}
+
+	if (!empty($attachment)) {
+		foreach($attachment as $file) {
+			if ($file['cid']) {
+				$mail->AddEmbeddedImage($file['path'], $file['cid']);
+				//and on the <img> tag put src='cid:file_cid'
+			} else {
+				$mail->AddAttachment($file['path'], $file['new_name']);  
+			}
+		}
+	}
 	
 	$mail->IsHTML(true);
 	$mail->CharSet = $charset;
@@ -63,12 +74,15 @@ function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copi
 	$mail->Body = $message;
 	//$mail->AltBody = 'plain text';
 	
-	//$mail->AddAttachment("e:\home\login\web\documento.pdf", "novo_nome.pdf");  
-	
 	$enviado = $mail->Send();
 
 	$mail->ClearAllRecipients();
 	$mail->ClearAttachments();
+	if (!empty($attachment)) {
+		foreach($attachment as $file) {
+			unlink($file['path']);
+		}
+	}
 
 	echo $error = ob_get_clean();
 

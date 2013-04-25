@@ -87,7 +87,7 @@ function verificarLimitePorCPF($conn, $codApresentacao, $user) {
 }
 
 function obterValorServico($id_bilhete, $valor_pedido = false) {
-
+	session_start();
 	$mainConnection = mainConnection();
 
 	$query = 'SELECT E.ID_BASE, E.ID_EVENTO FROM MW_EVENTO E
@@ -102,13 +102,19 @@ function obterValorServico($id_bilhete, $valor_pedido = false) {
 
 	$conn = getConnection($id_base);
 
-	$query = 'SELECT TOP 1 VL_TAXA_CONVENIENCIA, IN_TAXA_CONVENIENCIA, VL_TAXA_PROMOCIONAL, IN_TAXA_POR_PEDIDO FROM MW_TAXA_CONVENIENCIA WHERE ID_EVENTO = ? AND DT_INICIO_VIGENCIA <= GETDATE() ORDER BY DT_INICIO_VIGENCIA DESC';
+	$query = 'SELECT TOP 1 VL_TAXA_CONVENIENCIA, IN_TAXA_CONVENIENCIA, VL_TAXA_PROMOCIONAL, IN_TAXA_POR_PEDIDO, VL_TAXA_UM_INGRESSO FROM MW_TAXA_CONVENIENCIA WHERE ID_EVENTO = ? AND DT_INICIO_VIGENCIA <= GETDATE() ORDER BY DT_INICIO_VIGENCIA DESC';
 	$params = array($id_evento);
 	$rs = executeSQL($mainConnection, $query, $params, true);
 
 	if ($rs['IN_TAXA_POR_PEDIDO'] == 'S') {
-		if ($valor_pedido) return number_format($rs['VL_TAXA_CONVENIENCIA'], 2);
-		else return 0;
+		$rs2 = executeSQL($mainConnection, 'SELECT COUNT(1) AS INGRESSOS FROM MW_RESERVA WHERE ID_SESSION = ?', array(session_id()), true);
+
+		if ($valor_pedido) {
+			if ($rs2['INGRESSOS'] == 1) return number_format($rs['VL_TAXA_UM_INGRESSO'], 2);
+			else return number_format($rs['VL_TAXA_CONVENIENCIA'], 2);
+		} else {
+			return 0;
+		}
 	}
 
 	$tipo = $rs[1];

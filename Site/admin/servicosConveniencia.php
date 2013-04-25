@@ -31,7 +31,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
         require('actions/' . $pagina);
     } else {
 
-        $result = executeSQL($mainConnection, 'SELECT E.DS_EVENTO, CONVERT(VARCHAR(10), T.DT_INICIO_VIGENCIA, 103) DT_INICIO_VIGENCIA, T.IN_TAXA_POR_PEDIDO, T.IN_TAXA_CONVENIENCIA, T.VL_TAXA_CONVENIENCIA, T.VL_TAXA_PROMOCIONAL, CASE WHEN CONVERT(CHAR(8), T.DT_INICIO_VIGENCIA, 112) >= CONVERT(CHAR(8), GETDATE(), 112) THEN 1 ELSE 0 END EDICAO FROM MW_TAXA_CONVENIENCIA T INNER JOIN MW_EVENTO E ON E.ID_EVENTO = T.ID_EVENTO WHERE E.ID_BASE = ?', array($_GET['teatro']));
+        $result = executeSQL($mainConnection, 'SELECT E.DS_EVENTO, CONVERT(VARCHAR(10), T.DT_INICIO_VIGENCIA, 103) DT_INICIO_VIGENCIA, T.IN_TAXA_POR_PEDIDO, T.IN_TAXA_CONVENIENCIA, T.VL_TAXA_CONVENIENCIA, T.VL_TAXA_PROMOCIONAL, T.VL_TAXA_UM_INGRESSO, CASE WHEN CONVERT(CHAR(8), T.DT_INICIO_VIGENCIA, 112) >= CONVERT(CHAR(8), GETDATE(), 112) THEN 1 ELSE 0 END EDICAO FROM MW_TAXA_CONVENIENCIA T INNER JOIN MW_EVENTO E ON E.ID_EVENTO = T.ID_EVENTO WHERE E.ID_BASE = ?', array($_GET['teatro']));
 
         $resultTeatros = executeSQL($mainConnection, 'SELECT ID_BASE, DS_NOME_TEATRO FROM MW_BASE WHERE IN_ATIVO = \'1\'');
 ?>
@@ -65,7 +65,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                                     tr.find('td:not(.button):eq(2)').html($('#tipo option:selected').text());
                                     tr.find('td:not(.button):eq(3)').html($('#valor').val());
                                     tr.find('td:not(.button):eq(4)').html($('#valor2').val());
-                                    tr.find('td:not(.button):eq(5)').html($('#cobrarPorPedido').is(':checked') ? 'sim' : 'n&atilde;o');
+                                    tr.find('td:not(.button):eq(5)').html($('#valor3').val());
+                                    tr.find('td:not(.button):eq(6)').html($('#cobrarPorPedido').is(':checked') ? 'sim' : 'n&atilde;o');
 
                                     $this.text('Editar').attr('href', pagina + '?action=edit&' + id);
                                     tr.find('td.button a:last').attr('href', pagina + '?action=delete&' + id);
@@ -93,7 +94,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                          $('#tipo option').filter(function(){return $(this).text() == values[2]}).attr('selected', 'selected');
                         tr.find('td:not(.button):eq(3)').html('<input name="valor" type="text" class="inputStyle" id="valor" maxlength="6" value="' + values[3] + '" >');
                         tr.find('td:not(.button):eq(4)').html('<input name="valor2" type="text" class="inputStyle" id="valor2" maxlength="6" value="' + values[4] + '" >');
-                        tr.find('td:not(.button):eq(5)').html('<input name="cobrarPorPedido" type="checkbox" class="inputStyle" id="cobrarPorPedido" ' + (values[5] == 'sim' ? 'checked' : ''  )+ ' />');
+                        tr.find('td:not(.button):eq(5)').html('<input name="valor3" type="text" class="inputStyle" id="valor3" maxlength="6" value="' + values[5] + '" >');
+                        tr.find('td:not(.button):eq(6)').html('<input name="cobrarPorPedido" type="checkbox" class="inputStyle" id="cobrarPorPedido" ' + (values[6] == 'sim' ? 'checked' : ''  )+ ' />');
 
                         $this.text('Salvar').attr('href', pagina + '?action=update&' + id);
 
@@ -135,6 +137,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                         '<td><?php echo combo_tipo_valor('tipo'); ?></td>' +
                         '<td><input name="valor" type="text" class="number inputStyle" id="valor" maxlength="6" ></td>' +
                         '<td><input name="valor2" type="text" class="number inputStyle" id="valor2" maxlength="6" ></td>' +
+                        '<td><input name="valor3" type="text" class="number inputStyle" id="valor3" maxlength="6" ></td>' +
                         '<td><input name="cobrarPorPedido" type="checkbox" class="inputStyle" id="cobrarPorPedido" /></td>' +
                         '<td class="button"><a href="' + pagina + '?action=add">Salvar</a></td>' +
                         '<td class="button"><a href="#delete">Apagar</a></td>' +
@@ -178,6 +181,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                     data = $('#data'),
                     valor = $('#valor'),
                     valor2 = $('#valor2'),
+                    valor3 = $('#valor3'),
                     tipo = $('#tipo'),
                     valido = true;
                     if (idEvento.val() == '') {
@@ -210,6 +214,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                     } else {
                         valor2.parent().removeClass('ui-state-error');
                     }
+                    if (valor3.val() <= 0) {
+                        valor3.parent().addClass('ui-state-error');
+                        valido = false;
+                    } else {
+                        valor3.parent().removeClass('ui-state-error');
+                    }
 
                     return valido;
                 }
@@ -240,7 +250,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                     <?php if ($_GET['teatro']) { ?>
                     <tr class="ui-widget-header ">
                         <th colspan="3" align="right">Valor por compra:</th>
-                        <th colspan="5">
+                        <th colspan="6">
                             R$ <input type="text" name="valorPorPedido" value="<?php echo $_GET['valorPorPedido']; ?>" />
                             <input type="button" id="enviarvalorPorPedido" value="Alterar" />
                         </th>
@@ -253,6 +263,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                         <th>Tipo</th>
                         <th>Normal</th>
                         <th>Promocional</th>
+                        <th>Um Ingresso</th>
                         <th>Cobrar por Pedido</th>
                         <th colspan="2">A&ccedil;&otilde;es</th>
                     </tr>
@@ -265,6 +276,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
             $tipo = $rs['IN_TAXA_CONVENIENCIA'];
             $valor = $rs['VL_TAXA_CONVENIENCIA'];
             $valor2 = $rs['VL_TAXA_PROMOCIONAL'];
+            $valor3 = $rs['VL_TAXA_UM_INGRESSO'];
             $cobrarPorPedido = $rs['IN_TAXA_POR_PEDIDO'];
 ?>
             <tr>
@@ -273,6 +285,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                 <td><?php echo $tipo == 'V' ? 'R$' : '%' ; ?></td>
                 <td><?php echo formatNumber($valor); ?></td>
                 <td><?php echo formatNumber($valor2); ?></td>
+                <td><?php echo formatNumber($valor3); ?></td>
                 <td><?php echo $cobrarPorPedido == 'S' ? 'sim' : 'n&atilde;o'; ?></td>
 
 <?php if ($rs['EDICAO']) { ?>

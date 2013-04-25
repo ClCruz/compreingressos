@@ -77,14 +77,18 @@ foreach ($itensPedido as $item) {
     $barcodes[] = array('path' => $path2, 'cid' => $code . '_2');
 
     $valores['itens_pedido'] .= '<table style="FONT-VARIANT: small-caps; COLOR: rgb(181,9,56); FONT-SIZE: 14px; FONT-WEIGHT: bold"><tr>';
-    if ($lineCount % 2) {
-        $valores['itens_pedido'] .= '<td align="center"><img src="cid:'.$code.'_2"/></td><td width="5"></td>
-                                     <td>' . $item['descricao_item'] . ' - R$ ' . number_format($item['valor_item'], 2, ',', '') . '</td>
-                                     <td width="5"></td><td align="center"><img src="cid:'.$code.'_1" /></td>';
+    if ($item['descricao_item'] == 'Serviço') {
+        $valores['itens_pedido'] .= '<td colspan="5">' . $item['descricao_item'] . ' - R$ ' . number_format($item['valor_item'], 2, ',', '') . '</td>';
     } else {
-        $valores['itens_pedido'] .= '<td align="center"><img src="cid:'.$code.'_1"/></td><td width="5"></td>
-                                     <td>' . $item['descricao_item'] . ' - R$ ' . number_format($item['valor_item'], 2, ',', '') . '</td>
-                                     <td width="5"></td><td align="center"><img src="cid:'.$code.'_2" /></td>';
+        if ($lineCount % 2) {
+            $valores['itens_pedido'] .= '<td align="center"><img src="cid:'.$code.'_2"/></td><td width="5"></td>
+                                         <td>' . $item['descricao_item'] . ' - R$ ' . number_format($item['valor_item'], 2, ',', '') . '</td>
+                                         <td width="5"></td><td align="center"><img src="cid:'.$code.'_1" /></td>';
+        } else {
+            $valores['itens_pedido'] .= '<td align="center"><img src="cid:'.$code.'_1"/></td><td width="5"></td>
+                                         <td>' . $item['descricao_item'] . ' - R$ ' . number_format($item['valor_item'], 2, ',', '') . '</td>
+                                         <td width="5"></td><td align="center"><img src="cid:'.$code.'_2" /></td>';
+        }
     }
     $valores['itens_pedido'] .= '</tr><tr height="10"><td colspan="5"></td></tr></table>';
 }

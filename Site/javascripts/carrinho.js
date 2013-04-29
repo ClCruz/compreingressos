@@ -69,7 +69,7 @@ $(function() {
 		var $this = $(this),
 			$target = $this.parent('td').next('td').find('.valorConveniencia');
 
-		updateValorServico($this.val(), $target);
+		carregarDadosGerais(function(){updateValorServico($this.val(), $target)}, $('#pedido'));
 	}).change();
 	
 	$('.removerIngresso').click(function(event) {
@@ -198,7 +198,8 @@ $(function() {
 			type: form.attr('method'),
 			success: function(data) {
 				if (data == 'true') {
-					document.location = $this.attr('href');
+					if (typeof($this) == 'function') $this();
+					else document.location = $this.attr('href');
 				} else {
 					$.dialog({text: data});
 				}

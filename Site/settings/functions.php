@@ -86,56 +86,121 @@ function verificarLimitePorCPF($conn, $codApresentacao, $user) {
     return NULL;
 }
 
-function obterValorServico($id_bilhete, $valor_pedido = false) {
-	session_start();
+function obterValorServico($id_bilhete, $valor_pedido = false, $id_pedido = null) {
+
 	$mainConnection = mainConnection();
 
-	$query = 'SELECT E.ID_BASE, E.ID_EVENTO FROM MW_EVENTO E
-				INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
-				INNER JOIN MW_APRESENTACAO_BILHETE B ON B.ID_APRESENTACAO = A.ID_APRESENTACAO
-				WHERE B.ID_APRESENTACAO_BILHETE = ?';
-	$params = array($id_bilhete);
-	$rs = executeSQL($mainConnection, $query, $params, true);
+	if ($id_pedido != null) {
+		$query = 'SELECT TOP 1 TC.IN_TAXA_POR_PEDIDO, PV.VL_TOTAL_TAXA_CONVENIENCIA
+					FROM MW_TAXA_CONVENIENCIA TC
+					INNER JOIN MW_PEDIDO_VENDA PV ON PV.DT_PEDIDO_VENDA >= TC.DT_INICIO_VIGENCIA
+					INNER JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
+					INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO AND A.ID_EVENTO = TC.ID_EVENTO
+					WHERE PV.ID_PEDIDO_VENDA = ?
+					ORDER BY TC.DT_INICIO_VIGENCIA DESC';
+		$params = array($id_pedido);
+		$rs = executeSQL($mainConnection, $query, $params, true);
 
-	$id_base = $rs['ID_BASE'];
-	$id_evento = $rs['ID_EVENTO'];
+		if ($rs['IN_TAXA_POR_PEDIDO'] == 'S') {
+			return $valor_pedido ? number_format($rs['VL_TOTAL_TAXA_CONVENIENCIA'], 2) : 0;
+		}
 
-	$conn = getConnection($id_base);
+		$query = 'SELECT TOP 1 VL_TAXA_CONVENIENCIA FROM MW_ITEM_PEDIDO_VENDA WHERE ID_PEDIDO_VENDA = ? AND ID_APRESENTACAO_BILHETE = ?';
+		$params = array($id_pedido, $id_bilhete);
+		$rs = executeSQL($mainConnection, $query, $params, true);
 
-	$query = 'SELECT TOP 1 VL_TAXA_CONVENIENCIA, IN_TAXA_CONVENIENCIA, VL_TAXA_PROMOCIONAL, IN_TAXA_POR_PEDIDO, VL_TAXA_UM_INGRESSO FROM MW_TAXA_CONVENIENCIA WHERE ID_EVENTO = ? AND DT_INICIO_VIGENCIA <= GETDATE() ORDER BY DT_INICIO_VIGENCIA DESC';
-	$params = array($id_evento);
-	$rs = executeSQL($mainConnection, $query, $params, true);
+		$valor = $rs['VL_TAXA_CONVENIENCIA'];
+	} else {
 
-	if ($rs['IN_TAXA_POR_PEDIDO'] == 'S') {
-		$rs2 = executeSQL($mainConnection, 'SELECT COUNT(1) AS INGRESSOS FROM MW_RESERVA WHERE ID_SESSION = ?', array(session_id()), true);
+		session_start();
 
-		if ($valor_pedido) {
-			if ($rs2['INGRESSOS'] == 1) return number_format($rs['VL_TAXA_UM_INGRESSO'], 2);
-			else return number_format($rs['VL_TAXA_CONVENIENCIA'], 2);
+		$query = 'SELECT E.ID_BASE, E.ID_EVENTO FROM MW_EVENTO E
+					INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
+					INNER JOIN MW_APRESENTACAO_BILHETE B ON B.ID_APRESENTACAO = A.ID_APRESENTACAO
+					WHERE B.ID_APRESENTACAO_BILHETE = ?';
+		$params = array($id_bilhete);
+		$rs = executeSQL($mainConnection, $query, $params, true);
+
+		$id_base = $rs['ID_BASE'];
+		$id_evento = $rs['ID_EVENTO'];
+
+		$query = 'SELECT TOP 1 VL_TAXA_CONVENIENCIA, IN_TAXA_CONVENIENCIA, VL_TAXA_PROMOCIONAL, IN_TAXA_POR_PEDIDO, VL_TAXA_UM_INGRESSO
+					FROM MW_TAXA_CONVENIENCIA WHERE ID_EVENTO = ? AND DT_INICIO_VIGENCIA <= GETDATE() ORDER BY DT_INICIO_VIGENCIA DESC';
+		$params = array($id_evento);
+		$rs = executeSQL($mainConnection, $query, $params, true);
+
+		$tipo = $rs['IN_TAXA_CONVENIENCIA'];
+		$normal = $rs['VL_TAXA_CONVENIENCIA'];
+		$promo = $rs['VL_TAXA_PROMOCIONAL'];
+		$vl_um_ingresso = $rs['VL_TAXA_UM_INGRESSO'];
+		$taxa_por_pedido = $rs['IN_TAXA_POR_PEDIDO'];
+
+		$conn = getConnection($id_base);
+
+		$query = 'SELECT AB.VL_LIQUIDO_INGRESSO, P.CODPECA
+					FROM CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB
+					INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = ?
+					LEFT JOIN TABPECA P ON P.CODPECA = E.CODPECA AND P.CODTIPBILHETEBIN = AB.CODTIPBILHETE AND P.IN_BIN_ITAU = 1 
+					WHERE AB.IN_ATIVO = 1
+					AND AB.ID_APRESENTACAO_BILHETE = ?';
+		$params = array($id_evento, $id_bilhete);
+		$rs = executeSQL($conn, $query, $params, true);
+
+		$quantidade = executeSQL($mainConnection, 'SELECT COUNT(1) AS INGRESSOS FROM MW_RESERVA WHERE ID_SESSION = ?', array(session_id()), true);
+
+		if ($taxa_por_pedido == 'S') {
+			if ($tipo == 'V') {
+				$valor = $valor_pedido ? ($quantidade['INGRESSOS'] == 1 ? $vl_um_ingresso : $normal) : 0;
+			} else {
+				$valor = $valor_pedido ? number_format(($quantidade['INGRESSOS'] == 1 ? ($vl_um_ingresso / 100) * $rs['VL_LIQUIDO_INGRESSO'] : obterValorPercentualServicoPorPedido()), 2) : 0;
+			}
 		} else {
-			return 0;
+			$valor = $tipo == 'V'
+					? (is_null($rs['CODPECA']) ? $normal : $promo)
+					: (is_null($rs['CODPECA']) ? ($normal / 100) * $rs['VL_LIQUIDO_INGRESSO'] : ($promo / 100) * $rs['VL_LIQUIDO_INGRESSO']);
 		}
 	}
 
-	$tipo = $rs[1];
-	$normal = $rs[0];
-	$promo = $rs[2];
-
-	$query = 'SELECT AB.VL_LIQUIDO_INGRESSO, P.CODPECA
-			FROM CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB
-			INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = ?
-			LEFT JOIN TABPECA P ON P.CODPECA = E.CODPECA AND P.CODTIPBILHETEBIN = AB.CODTIPBILHETE AND P.IN_BIN_ITAU = 1 
-			WHERE AB.IN_ATIVO = 1
-			AND AB.ID_APRESENTACAO_BILHETE = ?';
-	$params = array($id_evento, $id_bilhete);
-	$rs = executeSQL($conn, $query, $params, true);
-
-	$valor = $tipo == 'V'
-			? (is_null($rs['CODPECA']) ? $normal : $promo)
-			: (is_null($rs['CODPECA']) ? ($normal / 100) * $rs['VL_LIQUIDO_INGRESSO'] : ($promo / 100) * $rs['VL_LIQUIDO_INGRESSO']);
-
 	return number_format($valor, 2);
 
+}
+
+function obterValorPercentualServicoPorPedido() {
+
+	$mainConnection = mainConnection();
+	session_start();
+	$soma = 0;
+
+	$query = 'SELECT R.ID_APRESENTACAO_BILHETE, E.ID_BASE, E.ID_EVENTO, TC.VL_TAXA_CONVENIENCIA, TC.VL_TAXA_PROMOCIONAL
+				FROM MW_RESERVA R
+				INNER JOIN MW_APRESENTACAO A ON R.ID_APRESENTACAO = A.ID_APRESENTACAO
+				INNER JOIN MW_EVENTO E ON A.ID_EVENTO = E.ID_EVENTO
+				INNER JOIN MW_TAXA_CONVENIENCIA TC ON TC.ID_EVENTO = E.ID_EVENTO
+					AND TC.DT_INICIO_VIGENCIA = (SELECT MAX(DT_INICIO_VIGENCIA) FROM MW_TAXA_CONVENIENCIA TC2 WHERE TC2.ID_EVENTO = TC.ID_EVENTO AND TC2.DT_INICIO_VIGENCIA <= GETDATE())
+				WHERE R.ID_SESSION = ? AND R.DT_VALIDADE >= GETDATE()';
+	$params = array(session_id());
+	$result = executeSQL($mainConnection, $query, $params);
+
+	while ($rs = fetchResult($result)) {
+		$id_bilhete = $rs['ID_APRESENTACAO_BILHETE'];
+		$id_evento = $rs['ID_EVENTO'];
+		$normal = $rs['VL_TAXA_CONVENIENCIA'];
+		$promo = $rs['VL_TAXA_PROMOCIONAL'];
+		$conn = getConnection($rs['ID_BASE']);
+
+		$query = 'SELECT AB.VL_LIQUIDO_INGRESSO, P.CODPECA
+					FROM CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB
+					INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = ?
+					LEFT JOIN TABPECA P ON P.CODPECA = E.CODPECA AND P.CODTIPBILHETEBIN = AB.CODTIPBILHETE AND P.IN_BIN_ITAU = 1 
+					WHERE AB.IN_ATIVO = 1
+					AND AB.ID_APRESENTACAO_BILHETE = ?';
+		$params = array($id_evento, $id_bilhete);
+		$rs = executeSQL($conn, $query, $params, true);
+
+		$soma += (is_null($rs['CODPECA']) ? ($normal / 100) * $rs['VL_LIQUIDO_INGRESSO'] : ($promo / 100) * $rs['VL_LIQUIDO_INGRESSO']);
+	}
+
+	return $soma;
 }
 
 function enviarEmailNovaConta ($login, $nome, $email) {

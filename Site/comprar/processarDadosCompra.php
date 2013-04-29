@@ -167,7 +167,6 @@ $query = "SELECT R.ID_RESERVA, R.ID_APRESENTACAO, R.ID_APRESENTACAO_BILHETE, R.I
 $params = array(session_id());
 $result = executeSQL($mainConnection, $query, $params);
 
-$i = 0;
 $params2 = array();
 $totalIngressos = 0;
 $totalConveniencia = 0;
@@ -236,26 +235,24 @@ if (hasRows($resultIdPedidoVenda)) {
 
 $parametros['OrderData']['OrderId'] = $newMaxId;
 
-$queryServicos = "SELECT DISTINCT isnull(T.IN_TAXA_POR_PEDIDO, 'N') IN_TAXA_POR_PEDIDO FROM MW_RESERVA R
+$queryServicos = "SELECT TOP 1 IN_TAXA_POR_PEDIDO
+                    FROM MW_RESERVA R
                     INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
-                    LEFT JOIN MW_TAXA_CONVENIENCIA T ON T.ID_EVENTO = A.ID_EVENTO AND T.DT_INICIO_VIGENCIA <= GETDATE() AND T.IN_TAXA_POR_PEDIDO = 'S'
-                    WHERE R.ID_SESSION = ?";
+                    LEFT JOIN MW_TAXA_CONVENIENCIA T ON T.ID_EVENTO = A.ID_EVENTO AND T.DT_INICIO_VIGENCIA <= GETDATE()
+                    WHERE R.ID_SESSION = ?
+                    ORDER BY DT_INICIO_VIGENCIA DESC";
 $rsServicos = executeSQL($mainConnection, $queryServicos, array(session_id()), true);
 
-$itensPedido = array();
+$itensPedido = 0;
 while ($itens = fetchResult($result)) {
-    $i++;
+    $itensPedido++;
 
-    if ($i == 1) {
+    if ($itensPedido == 1) {
         if ($rsServicos['IN_TAXA_POR_PEDIDO'] == 'S') {
             $valorConveniencia = $valorConvenienciaAUX = obterValorServico($itens['ID_APRESENTACAO_BILHETE'], true);
 
-            $itensPedido[$i]['codigo_item'] = 'servico';
-            $itensPedido[$i]['descricao_item'] = 'Serviço';
-            $itensPedido[$i]['valor_item'] = $valorConveniencia;
-
             $valorConveniencia = 0;
-            $i++;
+            $itensPedido++;
         } else {
             $valorConveniencia = obterValorServico($itens['ID_APRESENTACAO_BILHETE']);
         }
@@ -264,13 +261,10 @@ while ($itens = fetchResult($result)) {
         $valorConvenienciaAUX = 0;
     }
 
-    $itensPedido[$i]['codigo_item'] = $itens['ID_CADEIRA'];
-    $itensPedido[$i]['descricao_item'] = utf8_encode($itens['DS_EVENTO'] . ' (' . $itens['DT_APRESENTACAO']) . ' às ' . utf8_encode($itens['HR_APRESENTACAO'] . ') - ' . $itens['DS_NOME_TEATRO'] . ' - ' . $itens['DS_SETOR'] . ' - ' . $itens['DS_CADEIRA'] . ' - ' . $itens['DS_TIPO_BILHETE']);
-    $itensPedido[$i]['valor_item'] = ($itens['VL_LIQUIDO_INGRESSO'] + $valorConveniencia);
     $totalIngressos += $itens['VL_LIQUIDO_INGRESSO'];
     $totalConveniencia += $valorConveniencia + $valorConvenienciaAUX;
 
-    $params2[$i] = array($newMaxId, $itens['ID_RESERVA'], $itens['ID_APRESENTACAO'], $itens['ID_APRESENTACAO_BILHETE'], $itens['DS_CADEIRA'], $itens['DS_SETOR'], 1, $itens['VL_LIQUIDO_INGRESSO'], $valorConveniencia + $valorConvenienciaAUX, 'XXXXXXXXXX');
+    $params2[$itensPedido] = array($newMaxId, $itens['ID_RESERVA'], $itens['ID_APRESENTACAO'], $itens['ID_APRESENTACAO_BILHETE'], $itens['DS_CADEIRA'], $itens['DS_SETOR'], 1, $itens['VL_LIQUIDO_INGRESSO'], $valorConveniencia + $valorConvenienciaAUX, 'XXXXXXXXXX');
 }
 
 $PaymentDataCollection['Amount'] = ($totalIngressos + $frete + $totalConveniencia) * 100;
@@ -286,7 +280,7 @@ $query = 'UPDATE MW_PEDIDO_VENDA SET
 
 $params = array(($totalIngressos + $frete + $totalConveniencia), $totalIngressos, $totalConveniencia, $_SERVER["REMOTE_ADDR"], $newMaxId, $_SESSION['user']);
 
-if (count($itensPedido) > 0) {
+if ($itensPedido > 0) {
     $gravacao = executeSQL($mainConnection, $query, $params);
 } else {
 	executeSQL($mainConnection, 'DELETE FROM MW_PEDIDO_VENDA
@@ -308,7 +302,7 @@ $query = 'INSERT INTO MW_ITEM_PEDIDO_VENDA (
                          )
                          VALUES
                          (?, ?, ?, ?, ?, ?, ?, ?, ISNULL(?, 0), ?)';
-if (count($itensPedido) > 0) {
+if ($itensPedido > 0) {
     foreach($params2 as $params) {
         $result2 = executeSQL($mainConnection, $query, $params);
         $errors = $result2 and $errors;

@@ -100,7 +100,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                         $this.text('Salvar').attr('href', pagina + '?action=update&' + id);
 
                         setDatePickers();
-                        setLimitations();
                     } else if (href == '#delete') {
                         tr.remove();
                     } else if (href.indexOf('?action=delete') != -1) {
@@ -144,7 +143,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                         '</tr>';
                     $(newLine).appendTo('#app table tbody');
                     setDatePickers();
-                    setLimitations();
                     $('.datePicker').datepicker('option', 'minDate', 0);
                 });
 
@@ -222,21 +220,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                     }
 
                     return valido;
-                }
-
-                function setLimitations() {
-                    var $tipo = $('#tipo'),
-                        $cobrarPorPedido = $('#cobrarPorPedido')
-                        $valor = $('#valor'),
-                        $valor2 = $('#valor2');
-
-                    $tipo.change(function(){
-                        if ($tipo.val() == 'P') {
-                            $cobrarPorPedido.attr('disabled', true).attr('checked', false);
-                        } else {
-                            $cobrarPorPedido.attr('disabled', false)
-                        }
-                    }).change();
                 }
             });
         </script>

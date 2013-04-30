@@ -156,8 +156,8 @@ function obterValorServico($id_bilhete, $valor_pedido = false, $id_pedido = null
 			}
 		} else {
 			$valor = $tipo == 'V'
-					? (is_null($rs['CODPECA']) ? $normal : $promo)
-					: (is_null($rs['CODPECA']) ? ($normal / 100) * $rs['VL_LIQUIDO_INGRESSO'] : ($promo / 100) * $rs['VL_LIQUIDO_INGRESSO']);
+					? ($quantidade['INGRESSOS'] == 1 ? $vl_um_ingresso : (is_null($rs['CODPECA']) ? $normal : $promo))
+					: (($quantidade['INGRESSOS'] == 1 ? $vl_um_ingresso : (is_null($rs['CODPECA']) ? $normal : $promo)) / 100) * $rs['VL_LIQUIDO_INGRESSO'];
 		}
 	}
 

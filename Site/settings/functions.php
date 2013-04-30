@@ -1246,7 +1246,7 @@ function requestImage($url) {
 
 	curl_close($ch);
 
-	//===== REMOVER MARCA DAGUA =====
+	/*/===== REMOVER MARCA DAGUA =====
 	$offset_x = 0;
 	$offset_y = 0;
 
@@ -1257,7 +1257,7 @@ function requestImage($url) {
 	imagecopy($new_image, $image, 0, 0, $offset_x, $offset_y, $new_width, $new_height);
 
 	$image = $new_image;
-	//===== REMOVER MARCA DAGUA =====
+	//===== REMOVER MARCA DAGUA =====*/
 
 	return $image;
 }

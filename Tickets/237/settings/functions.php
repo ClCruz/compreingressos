@@ -1274,7 +1274,7 @@ function encodeToBarcode($text, $type = 'Interleaved2of5', $properties = array()
 		$url = 'http'.($_SERVER["HTTPS"] == 'on' ? 's' : '').'://localhost/comprar/idautomation/IDAutomationStreamingAztec.aspx?D='.urlencode($text).$propertiesString;
 	}
 
-	$image = cropImageResource(requestImage($url));
+	$image = requestImage($url);
 
 	return $image;
 }

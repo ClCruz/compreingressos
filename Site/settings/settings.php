@@ -4,7 +4,7 @@ $title = $nomeSite;// . ' - Painel Administrativo';
 
 $cookieExpireTime = time() + 60 * 20; //20min
 
-$compraExpireTime = 15;//minutos
+$compraExpireTime = 150;//minutos
 
 $maxIngressos = 10;//maximo por compra
 
@@ -34,7 +34,8 @@ $recaptcha = array(
 );
 // ----------------------------------------------------------- */
 
-if (isset($_REQUEST['var'])) {
-	echo $$_REQUEST['var'];
-}
+$MailChimp = array(
+	'api_key' => '28569b2878d4bb57121e3be75c12dc02-us2',
+	'list_key' => 'e17c7d7d48'
+);
 ?>

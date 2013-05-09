@@ -1,6 +1,8 @@
 <?php
 require_once('../settings/functions.php');
 
+require_once('../settings/MCAPI.class.php');
+
 if (isset($_GET['action'])) {
 	$mainConnection = mainConnection();
 	session_start();
@@ -126,12 +128,8 @@ if (isset($_GET['action'])) {
 							);
 		
 		if (executeSQL($mainConnection, $query, $params)) {
-			/*$query = 'SELECT ID_CLIENTE FROM MW_CLIENTE WHERE CD_EMAIL_LOGIN = ?';
-			$params = array($_POST['email1']);
-			
-			$rs = sqlsrv_fetch_array(executeSQL($mainConnection, $query, $params));*/
-			
 			$retorno = 'true';
+			$email = $_POST['email1'];
 			
 			dispararTrocaSenha($_POST['email1']);
 		} else {
@@ -150,14 +148,10 @@ if (isset($_GET['action'])) {
 			}
 		}
 		
-		/*$query = 'SELECT 1 FROM MW_CLIENTE WHERE CD_CPF = ? AND ID_CLIENTE <> ?';
-		$params = array($_POST['cpf'], $_SESSION['user']);
-		$result = executeSQL($mainConnection, $query, $params);
-		
-		if (hasRows($result)) {
-			echo 'Já existe um usuário cadastrado com esse CPF.';
-			exit();
-		}*/
+		$query = 'SELECT CD_EMAIL_LOGIN FROM MW_CLIENTE WHERE ID_CLIENTE = ?';
+		$params = array($_SESSION['user']);
+		$rs = executeSQL($mainConnection, $query, $params, true);
+		$email = $rs['CD_EMAIL_LOGIN'];
 		
 		$query = 'UPDATE MW_CLIENTE SET
 							DS_NOME = ?,
@@ -276,6 +270,42 @@ if (isset($_GET['action'])) {
 			$retorno = sqlErrors();
 		}
 		
+	}
+
+	if (($_GET['action'] == 'update' or $_GET['action'] == 'add') and $retorno == 'true') {
+		$query = "SELECT DS_ESTADO FROM MW_ESTADO WHERE ID_ESTADO = ?";
+		$rs = executeSQL($mainConnection, $query, array($_POST['estado']), true);
+
+		$mcapi = new MCAPI();
+		$user_data = array(
+			'NOME' => $_POST['nome'],
+			'OBRENOME' => $_POST['sobrenome'],
+			'DDDTEL' => $_POST['ddd1'],
+			'TELEFONE' => $_POST['telefone'],
+			'DDDCEL' => $_POST['ddd2'],
+			'CELULAR' => $_POST['celular'],
+			'BAIRRO' => $_POST['bairro'],
+			'CIDADE' => $_POST['cidade'],
+			'CEP' => $_POST['cep1'].$_POST['cep2'],
+			'NASCIMENTO' => (($_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] != '//') ? $_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] : NULL),
+			'SEXO' => $_POST['sexo'],
+			'UF' => $rs['DS_ESTADO']
+		);
+
+		if ($_GET['action'] == 'update') {
+			$update = true;
+			$user_data['EMAIL'] = $_POST['email'];
+			$new_email = $user_data['EMAIL'];
+		} else {
+			$update = false;
+			$new_email = $_POST['email1'];
+		}
+
+		$mcapi->listSubscribe($MailChimp['api_key'], $MailChimp['list_key'], $email, $user_data, 'html', $update);
+
+		if ($_POST['extra_info'] != 'S') {
+			$mcapi->listUnsubscribe($MailChimp['api_key'], $MailChimp['list_key'], $new_email, false, false, false);
+		}
 	}
 	
 	if (is_array($retorno)) {

@@ -87,16 +87,21 @@ if (isset($_GET['evento']) and is_numeric($_GET['evento'])) {
 					$pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
 				}
 				$url = str_replace(basename($pageURL), '', $pageURL);
+				$tag = '';
 
-                                if($isContagemAcessos){
-                                    //Carregar xml para evento
-                                    $xml = simplexml_load_file("campanha.xml");
-                                    foreach($xml->item as $item){
-                                        if($_GET["evento"] == $item->id){
-                                            $tag = "&tag=". $item->tag ."&tag2=1._Escolha_de_assentos_-_Avançar-TAG";
-                                        }
-                                    }
-                                }
+                if($isContagemAcessos){
+                    //Carregar xml para evento
+                    $xml = simplexml_load_file("campanha.xml");
+                    foreach($xml->item as $item){
+                        if($_GET["evento"] == $item->id){
+                            $tag = "&tag=". $item->tag ."&tag2=1._Escolha_de_assentos_-_Avançar-TAG";
+                        }
+                    }
+                }
+
+			    if ($_GET['mc_eid'] and $_GET['mc_cid']) {
+					$tag .= '&mc_cid=' . $_GET['mc_cid'] . '&mc_eid=' . $_GET['mc_eid'];
+			    }
 ?>
 				<table>
 <?php

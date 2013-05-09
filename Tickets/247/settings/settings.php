@@ -4,7 +4,7 @@ $title = $nomeSite;// . ' - Painel Administrativo';
 
 $cookieExpireTime = time() + 60 * 20; //20min
 
-$compraExpireTime = 150;//minutos
+$compraExpireTime = 15;//minutos
 
 $maxIngressos = 10;//maximo por compra
 

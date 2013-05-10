@@ -23,15 +23,15 @@ $query = 'SELECT
 			INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE
 			LEFT JOIN MW_ESTADO E1 ON E1.ID_ESTADO = PV.ID_ESTADO
 			LEFT JOIN MW_ESTADO E2 ON E2.ID_ESTADO = C.ID_ESTADO
-			WHERE PV.MW_PEDIDO_VENDA = ? AND PV.ID_CLIENTE = ?';
+			WHERE PV.ID_PEDIDO_VENDA = ? AND PV.ID_CLIENTE = ?';
 $params = array($_GET['pedido'], $_SESSION['user']);
 $rs = executeSQL($mainConnection, $query, $params, true);
 
 $valorPagamento = $rs['VL_TOTAL_PEDIDO_VENDA'];
 $valorServico = $rs['VL_TOTAL_TAXA_CONVENIENCIA'];
 $valorFrete = $rs['VL_FRETE'];
-$cidade = $rs['DS_CIDADE'];
-$estado = $rs['DS_ESTADO'];
+$cidade = utf8_encode($rs['DS_CIDADE']);
+$estado = utf8_encode($rs['DS_ESTADO']);
 $nome = $rs['DS_NOME'];
 
 $json = json_encode(array('descricao' => '3. fim da chamada do pagamento_ok - codigo_pedido=' . $_GET['pedido'], 'Post='=>$_GET ));
@@ -64,12 +64,13 @@ $query = "SELECT COUNT(1) QUANTIDADE, R.ID_APRESENTACAO_BILHETE,
 				E.ID_EVENTO, E.DS_EVENTO, ISNULL(LE.DS_LOCAL_EVENTO, B.DS_NOME_TEATRO) DS_NOME_TEATRO,
 				AB.VL_LIQUIDO_INGRESSO, AB.DS_TIPO_BILHETE
 			FROM MW_ITEM_PEDIDO_VENDA R
+			INNER JOIN MW_PEDIDO_VENDA PV ON PV.ID_PEDIDO_VENDA = R.ID_PEDIDO_VENDA
 			INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO AND A.IN_ATIVO = '1'
 			INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO AND E.IN_ATIVO = '1'
 			INNER JOIN MW_BASE B ON B.ID_BASE = E.ID_BASE
 			INNER JOIN MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE AND AB.IN_ATIVO = '1'
 			LEFT JOIN MW_LOCAL_EVENTO LE ON E.ID_LOCAL_EVENTO = LE.ID_LOCAL_EVENTO
-			WHERE PV.MW_PEDIDO_VENDA = ? AND PV.ID_CLIENTE = ?
+			WHERE R.ID_PEDIDO_VENDA = ? AND PV.ID_CLIENTE = ?
 			GROUP BY R.ID_APRESENTACAO_BILHETE,
 				E.ID_EVENTO, E.DS_EVENTO, ISNULL(LE.DS_LOCAL_EVENTO, B.DS_NOME_TEATRO),
 				AB.VL_LIQUIDO_INGRESSO, AB.DS_TIPO_BILHETE";
@@ -77,9 +78,9 @@ $params = array($_GET['pedido'], $_SESSION['user']);
 $result = executeSQL($mainConnection, $query, $params);
 
 while ($rs = fetchResult($result)) {
-	$id_item = $rs['DS_EVENTO'] . '_' . $rs['ID_APRESENTACAO_BILHETE'];
-	$ds_item = utf8_encode($itens['DS_EVENTO'] . ' - ' . $itens['DS_NOME_TEATRO']);
-	$tipo = $rs['DS_TIPO_BILHETE'];
+	$id_item = $rs['ID_EVENTO'] . '_' . $rs['ID_APRESENTACAO_BILHETE'];
+	$ds_item = utf8_encode($rs['DS_EVENTO'] . ' - ' . $rs['DS_NOME_TEATRO']);
+	$tipo = utf8_encode($rs['DS_TIPO_BILHETE']);
 	$valor = $rs['VL_LIQUIDO_INGRESSO'];
 	$quantidade = $rs['QUANTIDADE'];
 
@@ -131,7 +132,11 @@ setcookie('mc_cid', '', -1);
 		<script type="text/javascript" src="../javascripts/jquery.utils.js"></script>
 
 		<?php echo $campanha['script']; ?>
-
+<!--
+<?php
+print_r($temp);
+?>
+-->
 		<script type="text/javascript">
 		  var _gaq = _gaq || [];
 		  _gaq.push(['_setAccount', 'UA-16656615-1']);
@@ -140,7 +145,7 @@ setcookie('mc_cid', '', -1);
 		  _gaq.push(['_trackPageview']);
 
 		  <?php echo $scriptTransactionAnalytics; ?>
-		  _gaq.push(['_trackTrans']); //submits transaction to the Analytics servers
+		  _gaq.push(['_trackTrans']);
 
 		  (function() {
 		    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;

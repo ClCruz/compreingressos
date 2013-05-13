@@ -1,5 +1,6 @@
 <?php
 require_once('../settings/functions.php');
+require_once('../settings/settings.php');
 
 require_once('../settings/MCAPI.class.php');
 
@@ -129,6 +130,7 @@ if (isset($_GET['action'])) {
 		
 		if (executeSQL($mainConnection, $query, $params)) {
 			$retorno = 'true';
+			$send_mailchimp = true;
 			$email = $_POST['email1'];
 			
 			dispararTrocaSenha($_POST['email1']);
@@ -204,6 +206,7 @@ if (isset($_GET['action'])) {
 				dispararTrocaSenha($_POST['email']);
 				
 				$retorno = 'Seus dados foram atualizados com sucesso!';
+				$send_mailchimp = true;
 			} else {
 				$retorno = sqlErrors();
 			}
@@ -272,24 +275,24 @@ if (isset($_GET['action'])) {
 		
 	}
 
-	if (($_GET['action'] == 'update' or $_GET['action'] == 'add') and $retorno == 'true') {
+	if ($send_mailchimp) {
 		$query = "SELECT DS_ESTADO FROM MW_ESTADO WHERE ID_ESTADO = ?";
 		$rs = executeSQL($mainConnection, $query, array($_POST['estado']), true);
 
-		$mcapi = new MCAPI();
+		$mcapi = new MCAPI($MailChimp['api_key']);
 		$user_data = array(
 			'NOME' => $_POST['nome'],
-			'OBRENOME' => $_POST['sobrenome'],
+			'SOBRENOME' => $_POST['sobrenome'],
 			'DDDTEL' => $_POST['ddd1'],
 			'TELEFONE' => $_POST['telefone'],
 			'DDDCEL' => $_POST['ddd2'],
 			'CELULAR' => $_POST['celular'],
 			'BAIRRO' => $_POST['bairro'],
-			'CIDADE' => $_POST['cidade'],
+			'CIDADE' => utf8_encode($_POST['cidade']),
 			'CEP' => $_POST['cep1'].$_POST['cep2'],
 			'NASCIMENTO' => (($_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] != '//') ? $_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] : NULL),
 			'SEXO' => $_POST['sexo'],
-			'UF' => $rs['DS_ESTADO']
+			'UF' => utf8_encode($rs['DS_ESTADO'])
 		);
 
 		if ($_GET['action'] == 'update') {
@@ -301,10 +304,10 @@ if (isset($_GET['action'])) {
 			$new_email = $_POST['email1'];
 		}
 
-		$mcapi->listSubscribe($MailChimp['api_key'], $MailChimp['list_key'], $email, $user_data, 'html', $update);
+		$mcapi->listSubscribe($MailChimp['list_key'], $email, $user_data, 'html', false, $update);
 
 		if ($_POST['extra_info'] != 'S') {
-			$mcapi->listUnsubscribe($MailChimp['api_key'], $MailChimp['list_key'], $new_email, false, false, false);
+			$mcapi->listUnsubscribe($MailChimp['list_key'], $new_email, false, false, false);
 		}
 	}
 	

@@ -35,7 +35,7 @@ $recaptcha = array(
 // ----------------------------------------------------------- */
 
 $MailChimp = array(
-	'api_key' => '28569b2878d4bb57121e3be75c12dc02-us2',
+	'api_key' => '60f379204b0c19ae5f88bf297ce73b4e-us4',
 	'list_key' => 'e17c7d7d48'
 );
 ?>

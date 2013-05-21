@@ -38,4 +38,9 @@ $MailChimp = array(
 	'api_key' => '60f379204b0c19ae5f88bf297ce73b4e-us4',
 	'list_key' => 'e17c7d7d48'
 );
+
+// para obter o caminho de upload do background na edicao de plateia
+if (isset($_REQUEST['var'])) {
+	echo $$_REQUEST['var'];
+}
 ?>

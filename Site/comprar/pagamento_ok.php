@@ -3,6 +3,7 @@ session_start();
 require_once('../settings/functions.php');
 
 require('acessoLogado.php');
+require_once('../settings/settings.php');
 require_once('../settings/MCAPI.class.php');
 
 $mainConnection = mainConnection();
@@ -105,8 +106,8 @@ while ($rs = fetchResult($result)) {
 }
 
 if ($_COOKIE['mc_eid'] and $_COOKIE['mc_cid']) {
-	$mcap = new MCAPI();
-	$mcap->campaignEcommOrderAdd($MailChimp['api_key'], $dados_pedido);
+	$mcap = new MCAPI($MailChimp['api_key']);
+	$mcap->campaignEcommOrderAdd($dados_pedido);
 }
 
 setcookie('pedido', '', -1);
@@ -132,11 +133,7 @@ setcookie('mc_cid', '', -1);
 		<script type="text/javascript" src="../javascripts/jquery.utils.js"></script>
 
 		<?php echo $campanha['script']; ?>
-<!--
-<?php
-print_r($temp);
-?>
--->
+
 		<script type="text/javascript">
 		  var _gaq = _gaq || [];
 		  _gaq.push(['_setAccount', 'UA-16656615-1']);

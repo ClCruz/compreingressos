@@ -174,8 +174,10 @@ $totalConveniencia = 0;
 beginTransaction($mainConnection);
 
 // verificar se o pedido já foi processado utitlizando o campo id_pedido_venda da mw_reserva
-$queryIdPedidoVenda = 'select id_pedido_venda from mw_reserva where id_session = ? and id_pedido_venda is not null';
-$resultIdPedidoVenda = executeSQL($mainConnection, $queryIdPedidoVenda, $params);
+$queryIdPedidoVenda = "select r.id_pedido_venda from mw_reserva r
+                        inner join mw_pedido_venda p on p.id_pedido_venda = r.id_pedido_venda
+                        where r.id_session = ? and r.id_pedido_venda is not null and p.id_cliente = ?";
+$resultIdPedidoVenda = executeSQL($mainConnection, $queryIdPedidoVenda, array(session_id(), $_SESSION['user']));
 
 if (hasRows($resultIdPedidoVenda)) {
     $newMaxId = fetchResult($resultIdPedidoVenda);

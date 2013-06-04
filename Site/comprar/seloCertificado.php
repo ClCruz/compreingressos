@@ -14,4 +14,8 @@
 								<div id="armored_website">
 								    <param id="aw_preload" value="true" />
 								</div><script type="text/javascript" src="https://selo.siteblindado.com/aw.js"></script>
+
+								<div id="aw_malware">
+								<param id="aw_malware_preload" value="true" />
+								</div><script type="text/javascript" src="//selo.siteblindado.com/aw_malware.js"></script>
 							</div>

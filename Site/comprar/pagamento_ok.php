@@ -150,6 +150,16 @@ setcookie('mc_cid', '', -1);
 		    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 		  })();
 		</script>
+
+		<script type="text/javascript">
+		var fb_param = {};
+		fb_param.pixel_id = '6007617188274';
+		fb_param.value = '<?php echo $valorPagamento; ?>';
+		(function()
+		{ var fpw = document.createElement('script'); fpw.async = true; fpw.src = '//connect.facebook.net/en_US/fp.js'; var ref = document.getElementsByTagName('script')[0]; ref.parentNode.insertBefore(fpw, ref); }
+		)();
+		</script>
+		<noscript><img height="1" width="1" alt="" style="display:none" src="https://www.facebook.com/offsite_event.php?id=6007617188274&value=<?php echo $valorPagamento; ?>" /></noscript>
 	</head>
 	<body>
 		<div id="background_holder">

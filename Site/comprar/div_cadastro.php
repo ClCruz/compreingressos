@@ -82,7 +82,7 @@
 									<p class="err_msg">Confirme a senha</p>
 								<?php } ?>	
 									<br />
-									<p class="help_text"><input name="extra_info" type="checkbox" id="extra_info" value="S" <?php echo ($rs['IN_RECEBE_INFO'] == 'S') ? 'checked' : ''; ?>> quero receber informativos sobre promo&ccedil;&otilde;es e participar de sorteios de ingressos</p>
+									<p class="help_text"><input name="extra_info" type="checkbox" id="extra_info" value="S" <?php echo ($rs['IN_RECEBE_INFO'] == 'S' or (!(isset($_SESSION['user']) and is_numeric($_SESSION['user'])))) ? 'checked' : ''; ?>> quero receber informativos sobre promo&ccedil;&otilde;es e participar de sorteios de ingressos</p>
 									<p class="help_text"><input name="extra_sms" type="checkbox" id="extra_sms" value="S" <?php echo ($rs['IN_RECEBE_SMS'] == 'S') ? 'checked' : ''; ?>> concordo em receber mensagens SMS promocionais e sobre minhas compras</p>
 								<?php if (!(isset($_SESSION['user']) and is_numeric($_SESSION['user']))) { ?>
 									<p class="help_text"><input name="concordo" type="checkbox" id="concordo" value="S"> concordo com os <a href="termosUso.php" title="Termos de Uso" target="_blank" class="contrato">termos de uso</a> e com a <a href="declaracaoPrivacidade.php" title="Pol&iacute;tica de Privacidade" target="_blank" class="contrato">pol&iacute;tica de privacidade</a></p>

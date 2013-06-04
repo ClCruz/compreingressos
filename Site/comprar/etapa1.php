@@ -157,12 +157,9 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
 			    <?php if ($rs['ID_BASE'] == 83) { ?>
 			    <br/>
 			    <p class="help_text aviso_teatro">
-			    	Legenda INDISPONÍVEL (Cota de Ingressos online administrado pelo Theatro
-					São Pedro).<br/>
-					Temporariamente o Theatro São Pedro, está disponibilizando apenas uma cota
-					de ingressos para a venda online. Para a verificação de disponibilidade de
-					outros lugares e maiores informações consulte a bilheteria do Theatro São
-					Pedro através do telefone 51 3227 5100.
+			    	Legenda INDISPONÍVEL (Cota de Ingressos online administrado pelo Theatro São Pedro).<br/><br/>
+					Temporariamente, o Theatro São Pedro está disponibilizando apenas uma cota de ingressos para a venda online.<br/>
+					Para a verificação de disponibilidade de outros lugares ou MAIS informações, consulte a bilheteria do teatro através do telefone 51 3227 5100.
 				</p>
 				<?php } ?>
 

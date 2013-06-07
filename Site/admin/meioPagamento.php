@@ -48,7 +48,6 @@ $(function() {
 						tr.find('td:not(.button):eq(1)').html($('#in_ativo').is(':checked') ? 'Sim' : 'Não');
 						
 						$this.text('Editar').attr('href', pagina + '?action=edit&' + id);
-						tr.find('td.button a:last').attr('href', pagina + '?action=delete&' + id);
 						tr.removeAttr('id');
 					} else {
 						$.dialog({text: data});

@@ -9,7 +9,7 @@ if ($_POST) {
     }
 } else {
 	$mainConnection = mainConnection();
-	$query = "select cd_meio_pagamento, ds_meio_pagamento from mw_meio_pagamento where in_ativo = 1";
+	$query = "select cd_meio_pagamento, ds_meio_pagamento from mw_meio_pagamento where in_ativo = 1 order by ds_meio_pagamento";
 	$result = executeSQL($mainConnection, $query);
 ?>
     <script>

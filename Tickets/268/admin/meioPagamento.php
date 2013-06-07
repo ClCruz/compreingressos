@@ -13,14 +13,20 @@ if (isset($_GET['action'])) {
 	
 } else {
 	
-	$result = executeSQL($mainConnection, 'SELECT ID_MEIO_PAGAMENTO, DS_MEIO_PAGAMENTO, IN_ATIVO FROM MW_MEIO_PAGAMENTO');
+	$result = executeSQL($mainConnection, 'SELECT ID_MEIO_PAGAMENTO, DS_MEIO_PAGAMENTO, IN_ATIVO FROM MW_MEIO_PAGAMENTO ORDER BY IN_ATIVO DESC, DS_MEIO_PAGAMENTO');
 	
 ?>
 
 <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
 <script>
 $(function() {
-	var pagina = '<?php echo $pagina; ?>'
+	var pagina = '<?php echo $pagina; ?>';
+
+	$('tr:not(.ui-widget-header)').hover(function() {
+        $(this).addClass('ui-state-hover');
+    }, function() {
+        $(this).removeClass('ui-state-hover');
+    });
 	
 	$('#app table').delegate('a', 'click', function(event) {
 		event.preventDefault();

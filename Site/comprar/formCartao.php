@@ -8,6 +8,9 @@ if ($_POST) {
 		require('processarDadosCompra.php');
     }
 } else {
+	$mainConnection = mainConnection();
+	$query = "select cd_meio_pagamento, ds_meio_pagamento from mw_meio_pagamento where in_ativo = 1";
+	$result = executeSQL($mainConnection, $query);
 ?>
     <script>
 		var RecaptchaOptions = {
@@ -57,19 +60,16 @@ if ($_POST) {
 
 	    <p>Cart&atilde;o:<br/>
 	    	<select name="codCartao">
+	    			<option />
 	    	    <?php
 	    	    if ($is_teste == '1') {
 			    ?>
 				    <option value="997">Teste</option>
 			    <?php
-				} else {
+				}
+				while ($rs = fetchResult($result)) {
 			    ?>
-	    	    	<option />
-				    <option value="500">VISA</option>
-				    <option value="501">Mastercard</option>
-				    <option value="502">Amex</option>
-				    <option value="503">Diners</option>
-				    <option value="504">Elo</option>
+				    <option value="<?php echo $rs['cd_meio_pagamento']; ?>"><?php echo utf8_encode($rs['ds_meio_pagamento']); ?></option>
 			    <?php
 				}
 			    ?>

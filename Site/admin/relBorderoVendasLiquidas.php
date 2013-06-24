@@ -290,6 +290,7 @@ if (isset($err) && $err != "") {
 					if (sqlErrors ()) {
 					    echo "Erro #003: ";
 					    print_r(sqlErrors());
+						print_r($strSqlBilhete);
 					}
 					while ($pRSBilhete = fetchResult($queryBilhete)) {
 					    if ($Resumido == "0") {

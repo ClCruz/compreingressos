@@ -82,6 +82,7 @@ if (isset($_GET["imagem"]) && $_GET["imagem"] == "logo") {
 
 // Monta e executa query principal do relatório
 $strGeral = "SP_REL_BORDERO_VENDAS;" . (($CodSala == 'TODOS') ? '10' : '1') . " 'Emerson', " . $CodPeca . "," . $CodSala . "," . $DataIni . "," . $DataFim . ",'" . (($_GET['Small'] == '1') ? '--' : $HorSessao) . "','" . $_SESSION["NomeBase"] . "'";
+$strGeral = "SP_REL_BORDERO_VENDAS;" . (($CodSala == 'TODOS') ? '10' : '1') . " 'Emerson', " . $CodPeca . "," . $CodSala . "," . $DataIni . "," . $DataFim . ",'" . (($_GET['Small'] == '1') ? '--' : $HorSessao) . "','" . $_SESSION["NomeBase"] . "'";
 //$strGeral = "SP_REL_BORDERO_VENDAS;1 ?, ?, ?, ?, ?, ?, ?";
 //$paramsGeral  = array('Emerson', $CodPeca, $CodSala, $DataIni, $DataFim, $HorSessao, 'CI_COLISEU');
 $pRSGeral = executeSQL($connGeral, $strGeral, array(), true);
@@ -211,6 +212,7 @@ if (isset($err) && $err != "") {
 				$totPagantes = 0;
 				$totNPagantes = 0;
 				$totPublico = 0;
+				$totIngressosVendidos = 0;
 				$query = executeSQL($connGeral, $strGeral, $paramsGeral);
 				while ($pRSBordero = fetchResult($query)) {
 				    $nPag = 1;
@@ -243,6 +245,7 @@ if (isset($err) && $err != "") {
 					    </tr>
 	    <?php
 					$strSqlBilhete = ($CodSala == 'TODOS') ? "SP_REL_BORDERO_VENDAS;13 '" . $DataIni . "','" . $DataFim . "'," . $CodPeca . ",'" . $HorSessao . "','" . $_SESSION["NomeBase"] . "'" : "SP_REL_BORDERO_VENDAS;3 " . $pRSBordero["CodApresentacao"] . ",'" . $_SESSION["NomeBase"] . "'";
+					
 					$queryBilhete = executeSQL($connGeral, $strSqlBilhete);
 					if (sqlErrors ()) {
 					    echo "Erro #003: ";
@@ -290,7 +293,8 @@ if (isset($err) && $err != "") {
 <?php
 					    //$strSqlDet = "SP_REL_BORDERO_VENDAS;5 '20090419','20090419',18,3,'19:00','CI_COLISEU'";
 					    $strSqlDet = "SP_REL_BORDERO_VENDAS;" . (($CodSala == 'TODOS') ? '11' : '5') . " '" . $DataIni . "','" . $DataFim . "'," . $CodPeca . "," . $CodSala . ",'" . $HorSessao . "','" . $_SESSION["NomeBase"] . "'";
-					    $queryDet = executeSQL($connGeral, $strSqlDet);
+					    
+						$queryDet = executeSQL($connGeral, $strSqlDet);
                                             
 					    //$strSqlDet = "SP_REL_BORDERO_VENDAS;5 ?, ?, ?, ?, ?, ?";
 					    $paramsDet = array($DataIni, $DataFim, $CodPeca, $CodSala, $HorSessao, "'" . $_SESSION["NomeBase"] . "'");
@@ -323,6 +327,7 @@ if (isset($err) && $err != "") {
 						    $nBrutoTot += $pRSDetalhamento["totfat"];
 						    $nTotDesc += $pRSDetalhamento["Descontos"];
 						    $nTotLiqu += $pRSDetalhamento["liquido"];
+							$totIngressosVendidos = $nQt;
 						}
 					    }
 ?>
@@ -480,9 +485,9 @@ if (isset($err) && $err != "") {
 			    	    </tr>
 			    	    <tr>
 			    		<td	align="left" width="162" class="titulogrid">Canais de Venda</td>
-			    		<td	align="right" width="162" class="titulogrid">Qtde Ingressos</td>
+			    		<td	align="right" width="162" class="titulogrid">Qtde de Transações</td>
 			    		<td	align="right" width="162" class="titulogrid">Total</td>
-			    		<td	align="right" width="163" class="titulogrid">% do Total de Ingressos</td>
+			    		<td	align="right" width="163" class="titulogrid">% do Total de Transações</td>
 			    	    </tr>
 <?php
 					$strSqlDet = "SP_REL_BORDERO_VENDAS;" . (($CodSala == 'TODOS') ? '12' : '9') . " '" . $DataIni . "','" . $DataFim . "'," . $CodPeca . "," . $CodSala . ",'" . $HorSessao . "','" . $_SESSION["NomeBase"] . "'";
@@ -499,12 +504,12 @@ if (isset($err) && $err != "") {
 						<td	align=left  class=texto><?php echo utf8_encode($pRSDet["Venda"]); ?></td>
 						<td	align=right  class=texto><?php echo $pRSDet["Quant"]; ?></td>
 						<td	align=right class=texto>R$&nbsp;<?php echo number_format($pRSDet["Total"], 2, ",", "."); ?></td>
-						<td	align=right class=texto><?php echo number_format(($pRSDet["Quant"] / $totPagantes) * 100, 2, ",", "."); ?>%</td>
+						<td	align=right class=texto><?php echo number_format(($pRSDet["Quant"] / $totIngressosVendidos) * 100, 2, ",", "."); ?>%</td>
 					    </tr>
-<?php
+<?php						
 					    $nQt = $nQt + $pRSDet["Quant"];
 					    $nBrutoTot = $nBrutoTot + $pRSDet["Total"];
-					    $cont = $cont + number_format(($pRSDet["Quant"] / $totPagantes ) * 100, 2);
+					    $cont = $cont + number_format(($pRSDet["Quant"] / $nQt ) * 100, 2);
 					}
 ?>
 			    	    <tr>

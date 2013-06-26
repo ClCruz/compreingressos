@@ -100,15 +100,14 @@ if (isset($err) && $err != "") {
             <tr>
               <td align="right"><font size=1 face="tahoma,verdana,arial"><b>CNPJ/CPF:</b></font></td>
               <td align="left"><?php echo $SPArray; ?></td>
-              <?php if ($_GET['Small'] != '1') {
+              <?php
+                $DataIni2 = substr($DataIni, -2, 2) . '/' . substr($DataIni, -4, 2) . '/' . substr($DataIni, 0, 4);
+                $DataFim2 = substr($DataFim, -2, 2) . '/' . substr($DataFim, -4, 2) . '/' . substr($DataFim, 0, 4);
+                if ($_GET['Small'] != '1') {
               ?>
                 <td align="right"><font size=1 face="tahoma,verdana,arial"><b>Data e Horário:</b></font></td>
                 <td align="left"><?php echo $pRSGeral["DatApresentacao"]->format("d/m/Y") . " | " . $pRSGeral["HorSessao"]; ?></td>
-              <?php
-              } else {
-                $DataIni2 = substr($DataIni, -2, 2) . '/' . substr($DataIni, -4, 2) . '/' . substr($DataIni, 0, 4);
-                $DataFim2 = substr($DataFim, -2, 2) . '/' . substr($DataFim, -4, 2) . '/' . substr($DataFim, 0, 4);
-              ?>
+              <?php } else { ?>
                 <td align="right"><font size=1 face="tahoma,verdana,arial"><b>Datas:</b></font></td>
                 <td align="left"><?php echo $DataIni2 . " à " . $DataFim2; ?></td>
               <?php } ?>
@@ -354,11 +353,8 @@ if (isset($err) && $err != "") {
                       <td	align="right" width="104" class="titulogrid">Valores Brutos</td>
                       <td	align="right" width="104" class="titulogrid">Taxa</td>
                       <td	align="right" width="104" class="titulogrid">Desconto Taxa</td>
-                      <td	align="right" width="104" class="titulogrid">Repasses</td>
-        <?php if ($_GET['Small'] == 1) {
-        ?>
-                      <td	align="right" width="100" class="titulogrid">Pagamento em</td>
-        <?php } ?>
+                      <td	align="right" width="104" class="titulogrid">Repasses</td>                
+                      <td	align="right" width="100" class="titulogrid">Data do Repasse</td>        
                   </tr>
       <?php
                     $strSqlDet = "SP_REL_BORDERO" . (($CodSala == 'TODOS') ? '11' : '07') . " '" . $DataIni . "','" . $DataFim . "'," . $CodPeca . "," . $CodSala . ",'" . $HorSessao . "','" . $_SESSION["NomeBase"] . "'";
@@ -379,13 +375,11 @@ if (isset($err) && $err != "") {
                           <td	align=right class=texto>%&nbsp;<?php echo number_format($pRSDetalhamento["taxa"], 2, ",", "."); ?></td>
                           <td	align=right class=texto><?php echo number_format($pRSDetalhamento["descontos"], 2, ",", "."); ?></td>
                           <td	align=right class=texto>R$&nbsp;<?php echo number_format($pRSDetalhamento["liquido"], 2, ",", "."); ?></td>
-        <?php
-                        if ($_GET['Small'] == 1) {
+                          <?php
                           $dataRepasseTemp = explode("/", $DataFim2);
                           $dataRepasse = mktime(24 * $pRSDetalhamento["PrzRepasseDias"], 0, 0, $dataRepasseTemp["1"], $dataRepasseTemp["0"], $dataRepasseTemp["2"]) . "  " . $pRSDetalhamento["PrzRepasseDias"];
-        ?>
+                          ?>
                           <td	align=right class=texto><?php echo date("d/m/Y", $dataRepasse); ?></td>
-        <?php } ?>
                       </tr>
       <?php
                         $nQt += $pRSDetalhamento["qtdBilh"];
@@ -408,9 +402,9 @@ if (isset($err) && $err != "") {
                         </tr>
                         <tr>
                           <td	align="left" width="162" class="titulogrid">Canais de Venda</td>
-                          <td	align="right" width="162" class="titulogrid">Qtde Ingressos</td>
+                          <td	align="right" width="162" class="titulogrid">Qtde Transações</td>
                           <td	align="right" width="162" class="titulogrid">Total</td>
-                          <td	align="right" width="163" class="titulogrid">% do Total de Ingressos</td>
+                          <td	align="right" width="163" class="titulogrid">% do Total de Transações</td>
                         </tr>
       <?php
                       $strSqlDet = "SP_REL_BORDERO" . (($CodSala == 'TODOS') ? '12' : '09') . " '" . $DataIni . "','" . $DataFim . "'," . $CodPeca . "," . $CodSala . ",'" . $HorSessao . "','" . $_SESSION["NomeBase"] . "'";

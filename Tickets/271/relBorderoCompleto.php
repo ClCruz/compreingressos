@@ -152,6 +152,7 @@ if (isset($err) && $err != "") {
                 while ($pRSBordero = fetchResult($query)) {
                   $nPag = 1;
                   $nLin = 0;
+                  $totTransacoes = 0;
                   $totNVendidos = $totNVendidos + ($pRSBordero["Lugares"] - $pRSBordero["PubTotal"]);
                   $totNPagantes = $totNPagantes + ($pRSBordero["PubTotal"] - $pRSBordero["Pagantes"]);
                   $totPagantes = $totPagantes + $pRSBordero["Pagantes"];
@@ -386,6 +387,7 @@ if (isset($err) && $err != "") {
                         $nBrutoTot += $pRSDetalhamento["totfat"];
                         $nTotDesc += $pRSDetalhamento["Descontos"];
                         $nTotLiqu += $pRSDetalhamento["liquido"];
+                        $totTransacoes = $nQt;
                       }
                     }
       ?>
@@ -421,12 +423,12 @@ if (isset($err) && $err != "") {
                           <td	align=left  class=texto><?php echo utf8_encode($pRSDet["Venda"]); ?></td>
                           <td	align=right  class=texto><?php echo $pRSDet["Quant"]; ?></td>
                           <td	align=right class=texto>R$&nbsp;<?php echo number_format($pRSDet["Total"], 2, ",", "."); ?></td>
-                          <td	align=right class=texto><?php echo number_format(($pRSDet["Quant"] / $totPagantes) * 100, 2, ",", "."); ?>%</td>
+                          <td	align=right class=texto><?php echo number_format(($pRSDet["Quant"] / $totTransacoes) * 100, 2, ",", "."); ?>%</td>
                         </tr>
       <?php
                         $nQt = $nQt + $pRSDet["Quant"];
                         $nBrutoTot = $nBrutoTot + $pRSDet["Total"];
-                        $cont = $cont + number_format(($pRSDet["Quant"] / $totPagantes ) * 100, 2);
+                        $cont = $cont + number_format(($pRSDet["Quant"] / $totTransacoes ) * 100, 2);
                       }
       ?>
                       <tr>

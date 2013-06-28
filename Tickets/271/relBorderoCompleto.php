@@ -349,13 +349,13 @@ if (isset($err) && $err != "") {
                       <td align="center" colspan="7"><font size=2 face="tahoma,verdana,arial"><B>3 - DETALHAMENTO POR FORMA DE PAGAMENTO<BR>(apenas para conferência de valores e quantidades)</B></font></td>
                     </tr>
                     <tr>
-                      <td	align="left" width="140" class="titulogrid">Tipo de Forma de Pagamento</td>
-                      <td	align="right" width="104" class="titulogrid">Qtde Transações</td>
-                      <td	align="right" width="104" class="titulogrid">Valores Brutos</td>
-                      <td	align="right" width="104" class="titulogrid">Taxa</td>
-                      <td	align="right" width="104" class="titulogrid">Desconto Taxa</td>
-                      <td	align="right" width="104" class="titulogrid">Repasses</td>                
-                      <td	align="right" width="100" class="titulogrid">Data do Repasse</td>        
+                      <td	align="left" width="200" class="titulogrid">Tipo de Forma de Pagamento</td>
+                      <td	align="right" width="96" class="titulogrid">Qtde Transações</td>
+                      <td	align="right" width="76" class="titulogrid">Valores Brutos</td>
+                      <td	align="right" width="46" class="titulogrid">Taxa</td>
+                      <td	align="right" width="76" class="titulogrid">Desconto Taxa</td>
+                      <td	align="right" width="66" class="titulogrid">Repasses</td>
+                      <td	align="right" width="96" class="titulogrid">Data do Repasse</td>
                   </tr>
       <?php
                     $strSqlDet = "SP_REL_BORDERO" . (($CodSala == 'TODOS') ? '11' : '07') . " '" . $DataIni . "','" . $DataFim . "'," . $CodPeca . "," . $CodSala . ",'" . $HorSessao . "','" . $_SESSION["NomeBase"] . "'";

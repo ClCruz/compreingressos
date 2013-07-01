@@ -366,7 +366,7 @@ if (isset($err) && $err != "") {
                       print_r($paramsDet);
                       echo "Erro #004: <br/>";
                       die(print_r(sqlErrors()));
-                    } else {
+                    } else {                      
                       while ($pRSDetalhamento = fetchResult($queryDet)) {
       ?>
                         <tr>
@@ -385,11 +385,20 @@ if (isset($err) && $err != "") {
       <?php
                         $nQt += $pRSDetalhamento["qtdBilh"];
                         $nBrutoTot += $pRSDetalhamento["totfat"];
-                        $nTotDesc += $pRSDetalhamento["Descontos"];
-                        $nTotLiqu += $pRSDetalhamento["liquido"];                        
+                        $nTotDesc += $pRSDetalhamento["descontos"];
+                        $nTotLiqu += $pRSDetalhamento["liquido"];                                               
                       }
                     }
       ?>
+                      <tr>
+                        <td bgcolor="LightGrey" align="left" class="label"><b>TOTAL</b></td>
+                        <td bgcolor="LightGrey" align="right" class="label"><b><?php echo $nQt; ?></b></td>
+                        <td bgcolor="LightGrey" align="right" class="label"><b>R$&nbsp;&nbsp;<?php echo number_format($nBrutoTot, 2, ",", "."); ?></b></td>
+                        <td bgcolor="LightGrey" align="right" class="label"><b></b></td>
+                        <td bgcolor="LightGrey" align="right" class="label"><b><?php echo number_format($nTotDesc, 2, ",", "."); ?></b></td>
+                        <td bgcolor="LightGrey" align="right" class="label"><b>R$&nbsp;<?php echo number_format($nTotLiqu, 2, ",", "."); ?></b></td>
+                        <td bgcolor="LightGrey" align="right" class="label"><b></b></td>
+                      </tr>
                   </table>
                   <br clear="all"/>
     <?php

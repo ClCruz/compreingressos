@@ -25,7 +25,7 @@ if (isset($_GET["imagem"]) && $_GET["imagem"] == "logo") {
 $strGeral = "SP_REL_BORDERO" . (($CodSala == 'TODOS') ? '10' : '01') . " 'Emerson', " . $CodPeca . "," . $CodSala . "," . $DataIni . "," . $DataFim . ",'" . (($_GET['Small'] == '1') ? '--' : $HorSessao) . "','" . $_SESSION["NomeBase"] . "'";
 $pRSGeral = executeSQL($connGeral, $strGeral, array(), true);
 if (sqlErrors ())
-  $err = "Erro #002 <br>" . var_dump($paramsGeral) . "<br>" . $strGeral . "<br>";
+  $err = "Erro #002 <br/>" . var_dump($paramsGeral) . "<br/>" . $strGeral . "<br/>";
 
 $array = explode(":", $pRSGeral["NomResPeca"]);
 $PPArray = ($array[0] != "") ? $array[0] : "Não Cadastrado";
@@ -33,7 +33,7 @@ $SPArray = ($array[1] != "") ? $array[1] : "Não Cadastrado";
 $TPArray = ($array[2] != "") ? $array[2] : "Não Cadastrado";
 
 if (isset($err) && $err != "") {
-  echo $err . "<br>";
+  echo $err . "<br/>";
   print_r(sqlErrors());
 }
 
@@ -51,22 +51,22 @@ if ($_GET['Small'] == '1') {
 }
 
 if (isset($err) && $err != "") {
-  echo $err . "<br>";
+  echo $err . "<br/>";
   print_r(sqlErrors());
 }
 ?>
-<html>    
-  <head>
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Window-target" content="_top" />
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="pt-BR" xmlns="http://www.w3.org/1999/xhtml">
+  <head>    
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="Content-Language" content="pt-Br" />
     <meta name="Copyright" content="Copyright &copy; 2013" />
 
     <title>Relatório Borderô</title>
-    <link rel="stylesheet" type="text/css" href="../stylesheets/estilos_ra.css">
-    <link rel="stylesheet" type="text/css" href="../stylesheets/padraoRelat.CSS">
-    <link rel="stylesheet" type="text/css" href="../stylesheets/relBorderoCompleto.css">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/estilos_ra.css" />
+    <link rel="stylesheet" type="text/css" href="../stylesheets/padraoRelat.CSS" />
+    <link rel="stylesheet" type="text/css" href="../stylesheets/relBorderoCompleto.css" />
   </head>
   <body>
     <script language="Javascript" type="text/javascript">
@@ -76,7 +76,7 @@ if (isset($err) && $err != "") {
     </script>
     <table width=650 class="tabela" border="0">
       <tr>
-        <td colspan="1" rowspan="2"><img alt="Compreingressos.com" align="left" border="0" src="../images/logo.jpg"></td>
+        <td colspan="1" rowspan="2"><img alt="Compreingressos.com" align="left" border="0" src="../images/logo.jpg" /></td>
         <td colspan="1" height="15"></td>
       </tr>
       <tr>
@@ -140,7 +140,7 @@ if (isset($err) && $err != "") {
         </td>
       </tr>
     </table>
-    <br>
+    <br/>
 
     <?php
                 $lotacao = $pRSGeral["Lugares"];
@@ -167,10 +167,10 @@ if (isset($err) && $err != "") {
                         <td align=center width="163" class="tabela"><b>Público Total:</b><?php echo $totPublico; ?></td>
                       </tr>
                     </table>
-                    <br>
+                    <br/>
                     <table width="656" class="tabela" border="0" bgcolor="LightGrey">
                       <tr>
-                        <td align="center" colspan="7"><font size="2" face="tahoma,verdana,arial"><B>1 - VENDAS BORDERÔ</B></font></td>
+                        <td align="center" colspan="7"><font size="2" face="tahoma,verdana,arial"><b>1 - VENDAS BORDERÔ</b></font></td>
                       </tr>
                       <tr>
                         <td	align="left" width="104" class="titulogrid">Setor</td>
@@ -187,7 +187,7 @@ if (isset($err) && $err != "") {
                     if (sqlErrors ()) {
                       echo "Erro #003: ";                      
                       print_r(sqlErrors());
-                      echo "<br>".$strSqlBilhete;
+                      echo "<br/>".$strSqlBilhete;
                     }
                     while ($pRSBilhete = fetchResult($queryBilhete)) {
                       if ($Resumido == "0") {
@@ -215,11 +215,11 @@ if (isset($err) && $err != "") {
                         <td bgcolor="LightGrey" colspan="2" align="right" class="label"><b>R$&nbsp;&nbsp;<?php echo number_format($nTotalVendas, 2, ",", "."); ?></b></td>
                       </tr>
                     </table>
-                    <br clear=all>
+                    <br clear="all"/>
 
                     <table width=656 class="tabela" border="0" bgcolor="LightGrey">
                       <tr>
-                        <td align="center" colspan="5"><font size=2 face="tahoma,verdana,arial"><B>2 - DESCONTOS BORDERÔ</B></font></td>
+                        <td align="center" colspan="5"><font size=2 face="tahoma,verdana,arial"><b>2 - DESCONTOS BORDERÔ</b></font></td>
                       </tr>
                       <tr>
                         <td	align="left" width="219" class="titulogrid">Tipo de Débito</td>
@@ -311,8 +311,8 @@ if (isset($err) && $err != "") {
                       <td bgcolor="LightGrey" colspan="2" align="center" class="label"><b>TOTAL DESCONTOS</b></td>
                     </tr>
                     <tr>
-                      <td align="right" bgcolor="LightGrey" class="label">R$&nbsp;&nbsp;&nbsp;<?php echo number_format($nTotalDesp, 2, ",", "."); ?><br>
-                        <br>
+                      <td align="right" bgcolor="LightGrey" class="label">R$&nbsp;&nbsp;&nbsp;<?php echo number_format($nTotalDesp, 2, ",", "."); ?><br/>
+                        <br/>
                       </td>
                     </tr>
                     <tr>
@@ -337,16 +337,16 @@ if (isset($err) && $err != "") {
                     </tr>
                     <tr>
                       <td colspan="4" bgcolor="#FFFFFF" width="650"><font size=1 face="tahoma,verdana,arial">
-                                                                                                  			    			O Borderô de vendas assinados pelas partes envolvidas, dará a plena  quitação dos valores pagos em dinheiro no momento do fechamento,  portanto, confira atentamente os valores recebidos em dinheiro, vales/recibos de saques e comprovantes de depósito.<br>
+                                                                                                  			    			O Borderô de vendas assinados pelas partes envolvidas, dará a plena  quitação dos valores pagos em dinheiro no momento do fechamento,  portanto, confira atentamente os valores recebidos em dinheiro, vales/recibos de saques e comprovantes de depósito.<br/>
                                                                                                   			    			Os valores vendidos através dos cartões de crédito e débito serão  repassados aos favorecidos de acordo com os prazos firmados  através do contrato prestação de serviços assinado pelas partes.</font>
                       </td>
                     </tr>
                   </table>
-                  <br clear=all>
+                  <br clear="all"/>
 
                   <table width="656" class="tabela" border="0" bgcolor="LightGrey">
                     <tr>
-                      <td align="center" colspan="7"><font size=2 face="tahoma,verdana,arial"><B>3 - DETALHAMENTO POR FORMA DE PAGAMENTO<BR>(apenas para conferência de valores e quantidades)</B></font></td>
+                      <td align="center" colspan="7"><font size=2 face="tahoma,verdana,arial"><b>3 - DETALHAMENTO POR FORMA DE PAGAMENTO<br/>(apenas para conferência de valores e quantidades)</b></font></td>
                     </tr>
                     <tr>
                       <td	align="left" width="200" class="titulogrid">Tipo de Forma de Pagamento</td>
@@ -362,9 +362,9 @@ if (isset($err) && $err != "") {
                     $queryDet = executeSQL($connGeral, $strSqlDet);
                     $paramsDet = array($DataIni, $DataFim, $CodPeca, $CodSala, $HorSessao, "'" . $_SESSION["NomeBase"] . "'");
                     if (sqlErrors ()) {
-                      echo $strSqlDet . "<br>";
+                      echo $strSqlDet . "<br/>";
                       print_r($paramsDet);
-                      echo "Erro #004: <br>";
+                      echo "Erro #004: <br/>";
                       die(print_r(sqlErrors()));
                     } else {
                       while ($pRSDetalhamento = fetchResult($queryDet)) {
@@ -392,7 +392,7 @@ if (isset($err) && $err != "") {
                     }
       ?>
                   </table>
-                  <br clear=all>
+                  <br clear="all"/>
     <?php
                     if ($_REQUEST['Small'] != '2') {
 
@@ -400,7 +400,7 @@ if (isset($err) && $err != "") {
     ?>
                       <table width=656 class="tabela" border="0" bgcolor="LightGrey">
                         <tr>
-                          <td align="center" colspan="4"><font size=2 face="tahoma,verdana,arial"><B>4 - DETALHAMENTO POR CANAL DE VENDA</B></font></td>
+                          <td align="center" colspan="4"><font size=2 face="tahoma,verdana,arial"><b>4 - DETALHAMENTO POR CANAL DE VENDA</b></font></td>
                         </tr>
                         <tr>
                           <td	align="left" width="162" class="titulogrid">Canais de Venda</td>
@@ -439,15 +439,15 @@ if (isset($err) && $err != "") {
                       </tr>
 
                     </table>
-                    <br clear=all>
+                    <br clear="all"/>
 
     <?php } ?>
                     <table width="656" border=0>
                       <tr>
                         <td align="middle">
-                          <br>
-                          <input class="botao" type="button" value="Imprimir Relatório" name="cmdImprimi" onClick="javascript:window.print();">
-                          <input class="botao" type="button" value="Fechar Janela" name="cmdFecha" onClick="javascript:window.close()">
+                          <br/>
+                          <input class="botao" type="button" value="Imprimir Relatório" name="cmdImprimi" onClick="javascript:window.print();"/>
+                          <input class="botao" type="button" value="Fechar Janela" name="cmdFecha" onClick="javascript:window.close()"/>
                         </td>
                       </tr>
                     </table>

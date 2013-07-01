@@ -1,0 +1,24 @@
+/* 
+    Document   : relBorderoCompleto
+    Created on : Jun 21, 2013, 9:45:58 AM
+    Author     : Edicarlos Barbosa
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+body {margin:0px 0px 0px 0px;}
+
+@media print {
+  body {margin: 0px 0px 0px 0px;}
+  .boxmenu {display: none;}
+
+  .linha_assinatura {
+    font-size: 12px;
+  }
+}
+
+@media screen {
+  .top {border-left-width: 0em;}
+  .tblResumo tr td{font-family: tahoma,verdana,arial; font-size: 7pt;}
+  .tblResumo tr td b{margin-right: 3px;}
+}

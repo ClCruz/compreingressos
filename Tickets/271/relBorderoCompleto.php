@@ -28,9 +28,9 @@ if (sqlErrors ())
   $err = "Erro #002 <br/>" . var_dump($paramsGeral) . "<br/>" . $strGeral . "<br/>";
 
 $array = explode(":", $pRSGeral["NomResPeca"]);
-$PPArray = ($array[0] != "") ? $array[0] : "Não Cadastrado";
-$SPArray = ($array[1] != "") ? $array[1] : "Não Cadastrado";
-$TPArray = ($array[2] != "") ? $array[2] : "Não Cadastrado";
+$PPArray = ($array[0] != "") ? $array[0] : "N&atilde;o Cadastrado";
+$SPArray = ($array[1] != "") ? $array[1] : "N&atilde;o Cadastrado";
+$TPArray = ($array[2] != "") ? $array[2] : "N&atilde;o Cadastrado";
 
 if (isset($err) && $err != "") {
   echo $err . "<br/>";

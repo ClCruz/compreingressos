@@ -181,8 +181,7 @@ if (isset($err) && $err != "") {
                         <td	align="right" width="104" class="titulogrid">Preço</td>
                         <td	align="right" width="104" class="titulogrid">Sub Total</td>
                       </tr>
-      <?php
-                    $totTransacoes = $totPagantes;
+      <?php                    
                     $strSqlBilhete = ($CodSala == 'TODOS') ? "SP_REL_BORDERO05 '" . $DataIni . "','" . $DataFim . "'," . $CodPeca . ",'" . $HorSessao . "','" . $_SESSION["NomeBase"] . "'" : "SP_REL_BORDERO04 " . $pRSBordero["CodApresentacao"] . ",'" . $_SESSION["NomeBase"] . "'";
                     $queryBilhete = executeSQL($connGeral, $strSqlBilhete);
                     if (sqlErrors ()) {
@@ -411,11 +410,17 @@ if (isset($err) && $err != "") {
       <?php
                       $strSqlDet = "SP_REL_BORDERO" . (($CodSala == 'TODOS') ? '12' : '09') . " '" . $DataIni . "','" . $DataFim . "'," . $CodPeca . "," . $CodSala . ",'" . $HorSessao . "','" . $_SESSION["NomeBase"] . "'";
                       $queryDet2 = executeSQL($connGeral, $strSqlDet);
+                      $queryDet3 = executeSQL($connGeral, $strSqlDet);
                       $nQt = 0;
                       $nBrutoTot = 0;
                       $cont = 0;
-                      if ($totPublico == 0)
+                      if ($totPublico == 0){
                         $totPublico = 1;
+                      }
+                      
+                      while ($pRSDet2 = fetchResult($queryDet3)) {
+                        $totTransacoes += $pRSDet2["Quant"];
+                      }
 
                       while ($pRSDet = fetchResult($queryDet2)) {
       ?>

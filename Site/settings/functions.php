@@ -946,6 +946,36 @@ function comboAdmins($name, $selected = '-1', $isCombo = true) {
     return $isCombo ? $combo : $text;
 }
 
+function comboTipoLancamento($name, $teatro, $selected) {
+    $conn = getConnection($teatro);
+    $result = executeSQL($conn, 'SELECT CODTIPLANCAMENTO, TIPLANCAMENTO FROM TABTIPLANCAMENTO ORDER BY TIPLANCAMENTO');
+
+    $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um tipo...</option>';
+    while ($rs = fetchResult($result)) {
+	$combo .= '<option value="' . $rs['CODTIPLANCAMENTO'] . '"' .
+		(($selected == $rs['CODTIPLANCAMENTO']) ? ' selected' : '') .
+		'>' . $rs['TIPLANCAMENTO'] . '</option>';
+    }
+    $combo .= '</select>';
+
+    return $combo;
+}
+
+function comboUsuariosPorBase($name, $teatro, $selected) {
+    $conn = getConnection($teatro);
+    $result = executeSQL($conn, 'SELECT CODUSUARIO, NOMUSUARIO FROM TABUSUARIO WHERE CODUSUARIO > 0 ORDER BY NOMUSUARIO');
+
+    $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um usuário...</option>';
+    while ($rs = fetchResult($result)) {
+	$combo .= '<option value="' . $rs['CODUSUARIO'] . '"' .
+		(($selected == $rs['CODUSUARIO']) ? ' selected' : '') .
+		'>' . utf8_encode($rs['NOMUSUARIO']) . '</option>';
+    }
+    $combo .= '</select>';
+
+    return $combo;
+}
+
 /*  OUTROS  */
 
 

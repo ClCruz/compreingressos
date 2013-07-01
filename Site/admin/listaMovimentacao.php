@@ -438,7 +438,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
 <table class="ui-widget ui-widget-content" id="tabPedidos">
     <thead>
         <tr class="ui-widget-header">
-            <th style="text-align: center; width: 10px;">Visualizar</th>
+            <th style="text-align: center; width: 90px;">Visualizar</th>
             <th>Pedido nº</th>
             <th>Operador</th>
             <th>Data do Pedido</th>
@@ -493,7 +493,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                    }
         ?>
                    <tr class="total">
-                       <td align="right" colspan="6"><strong>Totais</strong></td>
+                       <td><strong>Qtd. Pedidos</strong></td>
+                       <td><?php echo $tr; ?></td>
+                       <td align="right" colspan="4"><strong>Totais</strong></td>
                        <td><?php echo number_format($total['TOTAL_PEDIDO'], 2, ",", "."); ?></td>
                        <td><?php echo $total['QUANTIDADE']; ?></td>
                        <td colspan="2"><strong>Total de Serviços</strong> <?php echo number_format($total['SERVICO'], 2, ",", "."); ?></td>

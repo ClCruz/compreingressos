@@ -182,6 +182,7 @@ if (isset($err) && $err != "") {
                         <td	align="right" width="104" class="titulogrid">Sub Total</td>
                       </tr>
       <?php
+                    $totTransacoes = $totPagantes;
                     $strSqlBilhete = ($CodSala == 'TODOS') ? "SP_REL_BORDERO05 '" . $DataIni . "','" . $DataFim . "'," . $CodPeca . ",'" . $HorSessao . "','" . $_SESSION["NomeBase"] . "'" : "SP_REL_BORDERO04 " . $pRSBordero["CodApresentacao"] . ",'" . $_SESSION["NomeBase"] . "'";
                     $queryBilhete = executeSQL($connGeral, $strSqlBilhete);
                     if (sqlErrors ()) {
@@ -386,8 +387,7 @@ if (isset($err) && $err != "") {
                         $nQt += $pRSDetalhamento["qtdBilh"];
                         $nBrutoTot += $pRSDetalhamento["totfat"];
                         $nTotDesc += $pRSDetalhamento["Descontos"];
-                        $nTotLiqu += $pRSDetalhamento["liquido"];
-                        $totTransacoes = $nQt;
+                        $nTotLiqu += $pRSDetalhamento["liquido"];                        
                       }
                     }
       ?>

@@ -122,7 +122,7 @@ if (isset($err) && $err != "") {
 }
 ?>
 <html>
-    <title>Relatório - Borderô de Vendas Líquido</title>
+    <title>Borderô - Fechamento em Dinheiro</title>
     <HEAD>
 	    <link rel="stylesheet" type="text/css" href="../stylesheets/estilos_ra.css">
 	    <link rel="stylesheet" type="text/css" href="../stylesheets/padraoRelat.CSS">
@@ -184,7 +184,7 @@ if (isset($err) && $err != "") {
 		<td colspan="1" height="15"></td>
 	    </tr>
 	    <tr>
-		<td class="tabela" align="center" bgcolor="LightGrey"><b><font size=2 face="tahoma,verdana,arial">Borderô de Vendas Líquido</font><br/>Contabilização dos Ingressos</b></td>
+		<td class="tabela" align="center" bgcolor="LightGrey"><b><font size=2 face="tahoma,verdana,arial">Borderô - Fechamento em Dinheiro</font><br/>Contabilização dos Ingressos</b></td>
 	    </tr>
 	    <tr>
 		<td colspan="2">

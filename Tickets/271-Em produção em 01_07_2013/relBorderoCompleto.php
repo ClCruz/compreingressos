@@ -63,7 +63,7 @@ if (isset($err) && $err != "") {
     <meta name="Content-Language" content="pt-Br" />
     <meta name="Copyright" content="Copyright &copy; 2013" />
 
-    <title>Relatório Borderô</title>
+    <title>Borderô de Vendas</title>
     <link rel="stylesheet" type="text/css" href="../stylesheets/estilos_ra.css" />
     <link rel="stylesheet" type="text/css" href="../stylesheets/padraoRelat.CSS" />
     <link rel="stylesheet" type="text/css" href="../stylesheets/relBorderoCompleto.css" />
@@ -80,7 +80,7 @@ if (isset($err) && $err != "") {
         <td colspan="1" height="15"></td>
       </tr>
       <tr>
-        <td class="tabela" align="center" bgcolor="LightGrey"><b><font size=2 face="tahoma,verdana,arial">Borderô</font><br/>Contabilização dos Ingressos</b></td>
+        <td class="tabela" align="center" bgcolor="LightGrey"><b><font size=2 face="tahoma,verdana,arial">Borderô de Vendas</font><br/>Contabilização dos Ingressos</b></td>
       </tr>
       <tr>
         <td colspan="2">

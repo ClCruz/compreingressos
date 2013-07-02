@@ -176,7 +176,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 251, true)) {
                     data1 = data2 = document.fPeca.cboApresentacao.value;
                 }
 
-                var url = "relBorderoCompleto.php";
+                var url = "relBorderoVendasLiquidas.php";
                 url += "?CodPeca=" + document.fPeca.cboPeca.value;
                 url += "&logo=imagem";
 
@@ -196,7 +196,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 251, true)) {
                 $("#loading").ajaxStart(function(){
                 $(this).show();
             });
-
+            
                 Janela = window.open ('esperaProcesso.php?redirect=' + escape(url), "", "width=720, height=600, scrollbars=yes", "");
             };
 
@@ -215,7 +215,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 251, true)) {
                     margin-top: 10px;
                 }
             </style>
-        <h2>Borderô de Vendas</h2>
+        <h2>Borderô - Fechamento em Dinheiro</h2>
     </head>
     <body>
         <form action="javascript:validar();" name="fPeca" id="fPeca" method="POST">
@@ -233,7 +233,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 251, true)) {
                         $combo .= '<option value="' . $rs['ID_BASE'] . '"' . (($selected == $rs['ID_BASE']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_NOME_TEATRO']) . '</option>';
                     }
                     $combo .= '</select>';
-
+                    
                     echo $combo;
                     ?>
                 </td>

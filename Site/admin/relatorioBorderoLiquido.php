@@ -215,7 +215,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 251, true)) {
                     margin-top: 10px;
                 }
             </style>
-        <h2>Relatório Borderô de Vendas Líquido</h2>
+        <h2>Borderô - Fechamento em Dinheiro</h2>
     </head>
     <body>
         <form action="javascript:validar();" name="fPeca" id="fPeca" method="POST">

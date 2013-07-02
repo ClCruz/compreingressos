@@ -51,7 +51,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 		    tabCaixa.descrcaixa,
 		    tabUsuario.nomusuario,
 		    sum(isnull(tabIngressoAgregados.valor,0))  as VlrAgregados,
-		    0 AS OUTROSVALORES
+		    0 AS OUTROSVALORES,
+		    1 AS CONTABILIZAR
 
 	    INTO #TMP_RESUMO
 	    FROM
@@ -105,6 +106,86 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 	    and tabLancamento.ValPagto > 0
 	    GROUP BY
 		    tabLugSala.CodTipBilhete,
+		    tabTipBilhete.TipBilhete,
+		    tabLancamento.DatMovimento,
+		    tabSetor.NomSetor,
+		    tabLugSala.Indice,
+                    tabLugSala.CodApresentacao,
+		    tabLancamento.ValPagto,
+		    tabforpagamento.tipcaixa,
+		    ci_middleway..mw_canal_venda.ds_canal_venda,
+		    tabCaixa.descrcaixa,
+		    tabUsuario.nomusuario
+		    
+		INSERT INTO #TMP_RESUMO
+		SELECT
+		    tabLugSala.CodTipBilheteComplMeia as CodTipBilhete,
+		    tabTipBilhete.TipBilhete,
+		    tabLancamento.DatMovimento,
+		    tabSetor.NomSetor,
+		    tabforpagamento.tipcaixa,
+		    tabLugSala.Indice,
+                    tabLugSala.CodApresentacao,
+		    tabLancamento.ValPagto as Preco2,
+		    tabLancamento.ValPagto as Preco,
+		    ci_middleway..mw_canal_venda.ds_canal_venda,
+		    tabCaixa.descrcaixa,
+		    tabUsuario.nomusuario,
+		    sum(isnull(tabIngressoAgregados.valor,0))  as VlrAgregados,
+		    0 AS OUTROSVALORES,
+		    0 AS CONTABILIZAR
+
+	    FROM
+		    tabLugSala
+		    INNER JOIN
+		    tabTipBilhete
+			    ON  tabLugSala.CodTipBilheteComplMeia 	    = tabTipBilhete.CodTipBilhete
+		    INNER JOIN
+		    tabSalDetalhe
+			    ON  tabLugSala.Indice 		    = tabSalDetalhe.Indice
+		    INNER JOIN
+		    tabSetor
+			    ON  tabSalDetalhe.CodSala           = tabSetor.CodSala
+			    AND tabSalDetalhe.CodSetor 	    = tabSetor.CodSetor
+		    INNER JOIN
+		    tabApresentacao
+			    ON  tabLugSala.CodApresentacao      = tabApresentacao.CodApresentacao
+		    INNER JOIN
+			    tabSala
+			    ON tabApresentacao.CodSala		   = tabSala.CodSala
+		    INNER JOIN
+		    tabLancamento
+			    ON  tabTipBilhete.CodTipBilhete     = tabLancamento.CodTipBilhete
+			    AND tabSalDetalhe.Indice            = tabLancamento.Indice
+			    AND tabApresentacao.CodApresentacao = tabLancamento.CodApresentacao
+			    AND tabLancamento.CodTipLancamento  = 4
+		    INNER JOIN
+		    tabforpagamento
+			    ON tabforpagamento.CodForPagto = tabLancamento.CodForPagto
+		    LEFT JOIN
+		    tabIngressoAgregados
+			    ON  tabIngressoAgregados.codvenda   = tabLugSala.codvenda
+			    and tabIngressoAgregados.indice     = tabLugSala.indice
+		    INNER JOIN
+			    tabCaixa
+				    ON	tabLancamento.codCaixa	   = tabCaixa.codCaixa
+		    LEFT JOIN
+		    ci_middleway..mw_canal_venda
+			    ON ci_middleway..mw_canal_venda.id_canal_venda = tabCaixa.id_canal_venda
+		    INNER JOIN tabUsuario ON tabLancamento.codUsuario = tabUsuario.codUsuario
+	    WHERE
+		    (tabLugSala.CodVenda IS NOT NULL)
+	    AND 	(convert(varchar(8), tabLancamento.DatVenda,112) between @DtIniApr and @DtFimApr)
+	    and	(tabApresentacao.codpeca = convert(varchar(6),@codPeca) or convert(varchar(6),@codPeca) is null)
+	    AND	not exists (Select 1 from tabLancamento bb
+				    where tabLancamento.numlancamento = bb.numlancamento
+				      and tabLancamento.codtipbilhete = bb.codtipbilhete
+				      and bb.codtiplancamento = 2
+				      and tabLancamento.codapresentacao = bb.codapresentacao
+				      and tabLancamento.indice          = bb.indice)
+	    and tabLancamento.ValPagto > 0
+	    GROUP BY
+		    tabLugSala.CodTipBilheteComplMeia,
 		    tabTipBilhete.TipBilhete,
 		    tabLancamento.DatMovimento,
 		    tabSetor.NomSetor,
@@ -238,14 +319,16 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 		    nomusuario,
 		    tipbilhete,
 		    count(1) as qtd,
-		    sum(preco) as val
+		    sum(preco) as val,
+		    contabilizar
 	    from
 		    #TMP_RESUMO
 	    group by
 		    isnull(ds_canal_venda, 'Forma n&atilde;o cadastrada'),
 		    isnull(descrcaixa, 'N&atilde;o Informado'),
 		    nomusuario,
-		    tipbilhete
+		    tipbilhete,
+		    contabilizar
 	    order by ds_canal_venda, descrcaixa, nomusuario, tipbilhete, qtd, val
 
 	    DROP TABLE #TMP_RESUMO";
@@ -388,7 +471,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 	    $somaQuantPonto = 0;
 	    while ($rs = fetchResult($result)) {
 		$somaTotal += $rs['val'];
-		$somaQuant += $rs['qtd'];
+		$somaQuant += $rs['contabilizar'] ? $rs['qtd'] : 0;
 		if ($lastLocal != $rs['ds_canal_venda'] and $lastLocal != '') {
 	?>
 	    	<tr class="total">
@@ -404,7 +487,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 	<?php
 		    $lastLocal = $rs['ds_canal_venda'];
 		    $somaTotalCanal = $somaTotalPonto = $rs['val'];
-		    $somaQuantCanal = $somaQuantPonto = $rs['qtd'];
+		    $somaQuantCanal = $somaQuantPonto = $rs['contabilizar'] ? $rs['qtd'] : 0;
 		    $lastPonto = $rs['descrcaixa'];
 	?>
 	    	<tr>
@@ -429,7 +512,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 	<?php
 		    $lastLocal = $rs['ds_canal_venda'];
 		    $somaTotalCanal += $somaTotalPonto = $rs['val'];
-		    $somaQuantCanal += $somaQuantPonto = $rs['qtd'];
+		    $somaQuantCanal += $somaQuantPonto = $rs['contabilizar'] ? $rs['qtd'] : 0;
 		    $lastPonto = $rs['descrcaixa'];
 		} else {
 		    if ($lastPonto != $rs['descrcaixa']) {
@@ -441,12 +524,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 			</tr>
 	<?php
 			$somaTotalPonto = $rs['val'];
-			$somaQuantPonto = $rs['qtd'];
+			$somaQuantPonto = $rs['contabilizar'] ? $rs['qtd'] : 0;
 			$lastPonto = $rs['descrcaixa'];
 		    } else {
 			$rs['descrcaixa'] = '&nbsp;';
 			$somaTotalPonto += $rs['val'];
-			$somaQuantPonto += $rs['qtd'];
+			$somaQuantPonto += $rs['contabilizar'] ? $rs['qtd'] : 0;
 		    }
 	?>
 	    	<tr>
@@ -459,7 +542,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 	    	</tr>
 	<?php
 		    $somaTotalCanal += $rs['val'];
-		    $somaQuantCanal += $rs['qtd'];
+		    $somaQuantCanal += $rs['contabilizar'] ? $rs['qtd'] : 0;
 		}
 	    }
 	?>
@@ -483,7 +566,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 	?>
     </tbody>
 </table>
-
+<p style="text-align:right;">Importante: A qtde. de ingressos de "Complemento de Meia Entrada" não foram somados aos Totais de "Qtde. de Ingressos".</p>
 <?php
     }
 ?>

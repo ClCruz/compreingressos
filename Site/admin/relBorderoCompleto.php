@@ -285,6 +285,8 @@ if (isset($err) && $err != "") {
 
                     $taxaDosCartoes = $nBrutoTot - $nTotLiqu;
                     $nTotalDesp += $taxaDosCartoes;
+                    $nBrutoTot = 0;
+                    $nTotLiqu = 0;
 
                     foreach ($despesas as $desp) {
                       if ($desp["limite"] > 0) {

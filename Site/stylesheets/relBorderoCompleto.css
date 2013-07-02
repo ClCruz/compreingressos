@@ -12,6 +12,10 @@ body {margin:0px 0px 0px 0px;}
   body {margin: 0px 0px 0px 0px;}
   .boxmenu {display: none;}
 
+  *, TD, .normal, .botao, .result, .marrom, .texto, .label, .titulogrid, A:link, A:active, A:visited {
+    font-size: 6px;
+  }
+
   .linha_assinatura {
     font-size: 12px;
   }

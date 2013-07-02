@@ -495,10 +495,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                    <tr class="total">
                        <td><strong>Qtd. Pedidos</strong></td>
                        <td><?php echo $tr; ?></td>
-                       <td align="right" colspan="4"><strong>Totais</strong></td>
+                       <td></td>
+                       <td align="right"><strong>Total Geral</strong></td>
+                       <td><?php echo number_format($total['TOTAL_PEDIDO'] + $total['SERVICO'], 2, ",", "."); ?></td>
+                       <td align="right"><strong>Ingressos</strong></td>
                        <td><?php echo number_format($total['TOTAL_PEDIDO'], 2, ",", "."); ?></td>
                        <td><?php echo $total['QUANTIDADE']; ?></td>
-                       <td colspan="2"><strong>Total de Serviços</strong> <?php echo number_format($total['SERVICO'], 2, ",", "."); ?></td>
+                       <td colspan="2"><strong>Taxa de Serviço</strong> <?php echo number_format($total['SERVICO'], 2, ",", "."); ?></td>
                    </tr>
         <?php
                }

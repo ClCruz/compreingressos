@@ -205,6 +205,7 @@ if (isset($err) && $err != "") {
       <?php
                       }
                       $nTotalVendas = $nTotalVendas + $pRSBilhete["Total"];
+                      $totTransacoes += $pRSBilhete["QtdeVendidos"];
                     }
                     if ($Resumido == "0") {
       ?>
@@ -246,7 +247,7 @@ if (isset($err) && $err != "") {
                     do {
                       //Query utilizada para novo relatório
                       //$strSqlDebito = ($CodSala == 'TODOS') ? "SP_REL_BORDERO06 " . $CodPeca . "," . $rsApresentacoes["CodApresentacao"] . ",'" . $DataIni . "','" . $_SESSION["NomeBase"] . "'" : "SP_REL_BORDERO06 " . $pRSBordero["CodPeca"] . "," . $pRSBordero["CodApresentacao"] . ",'" . $pRSBordero["DatApresentacao"]->format("Ymd") . "','" . $_SESSION["NomeBase"] . "'";
-                      $strSqlDebito = ($CodSala == 'TODOS') ? "SP_REL_BORDERO_VENDAS_2 " . $CodPeca . "," . $rsApresentacoes["CodApresentacao"] . ",'" . $DataIni . "','" . $_SESSION["NomeBase"] . "'" : "SP_REL_BORDERO_VENDAS_2 " . $pRSBordero["CodPeca"] . "," . $pRSBordero["CodApresentacao"] . ",'" . $pRSBordero["DatApresentacao"]->format("Ymd") . "','" . $_SESSION["NomeBase"] . "'";
+                      $strSqlDebito = ($CodSala == 'TODOS') ? "SP_REL_BORDERO_VENDAS;4 " . $CodPeca . "," . $rsApresentacoes["CodApresentacao"] . ",'" . $DataIni . "','" . $_SESSION["NomeBase"] . "'" : "SP_REL_BORDERO_VENDAS;4 " . $pRSBordero["CodPeca"] . "," . $pRSBordero["CodApresentacao"] . ",'" . $pRSBordero["DatApresentacao"]->format("Ymd") . "','" . $_SESSION["NomeBase"] . "'";
                       $queryDebito = executeSQL($connGeral, $strSqlDebito);
 
                       while ($pRSDebito = fetchResult($queryDebito)) {
@@ -318,23 +319,23 @@ if (isset($err) && $err != "") {
                     </tr>
                     <tr>
                       <td bgcolor="#FFFFFF" align="left" valign="top" rowspan="3" colspan="2"><font size=1 face="tahoma,verdana,arial">assinaturas dos responsáveis, <?php echo date("d/m/Y G:i:s"); ?></font></td>
-                      <td bgcolor="LightGrey" colspan="2" align="center" class="label"><b>TOTAL DESCONTOS</b></td>
+                      <td bgcolor="LightGrey" style="font-size:10px;" align="center" class="label"><b>TOTAL DESCONTOS</b>&nbsp;&nbsp;R$&nbsp;<?php echo number_format($nTotalDesp, 2, ",", "."); ?></td>
                     </tr>
                     <tr>
-                      <td align="right" bgcolor="LightGrey" class="label">R$&nbsp;&nbsp;&nbsp;<?php echo number_format($nTotalDesp, 2, ",", "."); ?><br/>
+                      <td align="right" bgcolor="LightGrey" class="label"><br/>
                         <br/>
                       </td>
                     </tr>
                     <tr>
-                      <td bgcolor="LightGrey" align="center" class="label"><b>(VENDAS - DESCONTOS)</b></td>
+                      <td bgcolor="LightGrey" style="font-size:10px;" align="center" class="label"><b>(VENDAS - DESCONTOS)</b>&nbsp;&nbsp;<b>R$&nbsp;<?php echo number_format(($nTotalVendas - $nTotalDesp), 2, ",", "."); ?></b></td>
                     </tr>
                     <tr>
-                      <td width="440" bgcolor="#FFFFFF" colspan="2">
+                      <td  bgcolor="#FFFFFF" colspan="2">
                         <table border="0">
                           <tr>
-                            <td class="linha_assinatura" width="200">_______________________</td>
-                            <td class="linha_assinatura" width="200">_______________________</td>
-                            <td class="linha_assinatura" width="200">_______________________</td>
+                            <td class="linha_assinatura" width="150">_______________________</td>
+                            <td class="linha_assinatura" width="150">_______________________</td>
+                            <td class="linha_assinatura" width="150">_______________________</td>
                           </tr>
                           <tr>
                             <td align="center">BILHETERIA</td>
@@ -343,12 +344,12 @@ if (isset($err) && $err != "") {
                           </tr>
                         </table>
                       </td>
-                      <td bgcolor="LightGrey" align="right" class="label" valign="top"><b>R$&nbsp;&nbsp;&nbsp;<?php echo number_format(($nTotalVendas - $nTotalDesp), 2, ",", "."); ?></b></td>
+                      <td bgcolor="LightGrey" align="right" class="label" valign="top"></td>
                     </tr>
                     <tr>
                       <td colspan="4" bgcolor="#FFFFFF" width="650"><font size=1 face="tahoma,verdana,arial">
-                                                                                                                                            			    			O Borderô de vendas assinados pelas partes envolvidas, dará a plena  quitação dos valores pagos em dinheiro no momento do fechamento,  portanto, confira atentamente os valores recebidos em dinheiro, vales/recibos de saques e comprovantes de depósito.<br/>
-                                                                                                                                            			    			Os valores vendidos através dos cartões de crédito e débito serão  repassados aos favorecidos de acordo com os prazos firmados  através do contrato prestação de serviços assinado pelas partes.</font>
+                                                                                                                                                          			    			O Borderô de vendas assinados pelas partes envolvidas, dará a plena  quitação dos valores pagos em dinheiro no momento do fechamento,  portanto, confira atentamente os valores recebidos em dinheiro, vales/recibos de saques e comprovantes de depósito.<br/>
+                                                                                                                                                          			    			Os valores vendidos através dos cartões de crédito e débito serão  repassados aos favorecidos de acordo com os prazos firmados  através do contrato prestação de serviços assinado pelas partes.</font>
                       </td>
                     </tr>
                   </table>
@@ -359,13 +360,14 @@ if (isset($err) && $err != "") {
                       <td align="center" colspan="7"><font size=2 face="tahoma,verdana,arial"><b>3 - DETALHAMENTO POR FORMA DE PAGAMENTO<br/>(apenas para conferência de valores e quantidades)</b></font></td>
                     </tr>
                     <tr>
-                      <td	align="left" width="200" class="titulogrid">Tipo de Forma de Pagamento</td>
-                      <td	align="right" width="96" class="titulogrid">Qtde Transações</td>
+                      <td	align="left" width="190" class="titulogrid">Tipo de Forma de Pagamento</td>
+                      <td	align="right" width="40" class="titulogrid">%</td>
+                      <td	align="right" width="86" class="titulogrid">Qtde Transações</td>
                       <td	align="right" width="76" class="titulogrid">Valores Brutos</td>
-                      <td	align="right" width="46" class="titulogrid">Taxa</td>
-                      <td	align="right" width="76" class="titulogrid">Desconto Taxa</td>
-                      <td	align="right" width="66" class="titulogrid">Repasses</td>
-                      <td	align="right" width="96" class="titulogrid">Data do Repasse</td>
+                      <td	align="right" width="40" class="titulogrid">Taxa</td>
+                      <td	align="right" width="78" class="titulogrid">Desconto Taxa</td>
+                      <td	align="right" width="60" class="titulogrid">Repasses</td>
+                      <td	align="right" width="86" class="titulogrid">Data do Repasse</td>
                     </tr>
 <?php
                     $strSqlDet = "SP_REL_BORDERO" . (($CodSala == 'TODOS') ? '11' : '07') . " '" . $DataIni . "','" . $DataFim . "'," . $CodPeca . "," . $CodSala . ",'" . $HorSessao . "','" . $_SESSION["NomeBase"] . "'";
@@ -381,9 +383,10 @@ if (isset($err) && $err != "") {
 ?>
                         <tr>
                           <td	align=left  class=texto><?php echo utf8_encode($pRSDetalhamento["forpagto"]); ?></td>
+                          <td	align=right class=texto><?php echo number_format(($pRSDetalhamento["qtdBilh"] / $totTransacoes) * 100, 2, ",", "."); ?></td>
                           <td	align=right class=texto><?php echo $pRSDetalhamento["qtdBilh"]; ?></td>
                           <td	align=right class=texto>R$&nbsp;<?php echo number_format($pRSDetalhamento["totfat"], 2, ",", "."); ?></td>
-                          <td	align=right class=texto>%&nbsp;<?php echo number_format($pRSDetalhamento["taxa"], 2, ",", "."); ?></td>
+                          <td	align=right class=texto><?php echo number_format($pRSDetalhamento["taxa"], 2, ",", "."); ?></td>
                           <td	align=right class=texto><?php echo number_format($pRSDetalhamento["descontos"], 2, ",", "."); ?></td>
                           <td	align=right class=texto>R$&nbsp;<?php echo number_format($pRSDetalhamento["liquido"], 2, ",", "."); ?></td>
 <?php
@@ -393,15 +396,19 @@ if (isset($err) && $err != "") {
                         <td	align=right class=texto><?php echo date("d/m/Y", $dataRepasse); ?></td>
                       </tr>
 <?php
+                        
                         $nQt += $pRSDetalhamento["qtdBilh"];
                         $nBrutoTot += $pRSDetalhamento["totfat"];
                         $nTotDesc += $pRSDetalhamento["descontos"];
                         $nTotLiqu += $pRSDetalhamento["liquido"];
+                        $ntotPercentualTransacoes += ($pRSDetalhamento["qtdBilh"] / $totTransacoes) * 100;
                       }
+                      $totTransacoes = 0;
                     }
 ?>
                     <tr>
                       <td bgcolor="LightGrey" align="left" class="label"><b>TOTAL</b></td>
+                      <td bgcolor="LightGrey" align="right" class="label"><b><?php echo number_format($ntotPercentualTransacoes, 0); ?>%</b></td>
                       <td bgcolor="LightGrey" align="right" class="label"><b><?php echo $nQt; ?></b></td>
                       <td bgcolor="LightGrey" align="right" class="label"><b>R$&nbsp;&nbsp;<?php echo number_format($nBrutoTot, 2, ",", "."); ?></b></td>
                       <td bgcolor="LightGrey" align="right" class="label"><b></b></td>

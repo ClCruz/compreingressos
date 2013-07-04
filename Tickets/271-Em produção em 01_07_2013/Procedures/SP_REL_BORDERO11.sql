@@ -305,7 +305,8 @@ set @query2 = '
 			sum(preco) as totfat,
 			sum(preco) * (pctxadm/100) as descontos,
 			sum(preco) - (sum(preco) * (pctxadm/100)) as liquido,
-			PrzRepasseDias			
+			PrzRepasseDias,
+			(pctxadm) as taxa			
 		from
 			#TMP_RESUMO
 		Group by

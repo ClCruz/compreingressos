@@ -17,12 +17,15 @@ body {margin:0px 0px 0px 0px;}
   }
 
   .linha_assinatura {
-    font-size: 12px;
+    font-size: 10px;
   }
+  
+  .tabelaAuxiliar{border: none; width: 390px;}
 }
 
 @media screen {
   .top {border-left-width: 0em;}
   .tblResumo tr td{font-family: tahoma,verdana,arial; font-size: 7pt;}
   .tblResumo tr td b{margin-right: 3px;}
+  .tabelaAuxiliar{border: none; width: 390px;}
 }

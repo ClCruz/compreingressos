@@ -318,24 +318,24 @@ if (isset($err) && $err != "") {
                       <td	align=right class=texto><?php echo number_format($taxaDosCartoes, 2, ",", "."); ?></td>
                     </tr>
                     <tr>
-                      <td bgcolor="#FFFFFF" align="left" valign="top"  colspan="2"><font size="1" face="tahoma,verdana,arial">assinaturas dos responsáveis, <?php echo date("d/m/Y G:i:s"); ?></font></td>
-                      <td bgcolor="LightGrey" style="font-size:9px;"  align="center" class="label"><b>TOTAL DESCONTOS</b>&nbsp;&nbsp;R$&nbsp;<?php echo number_format($nTotalDesp, 2, ",", "."); ?></td>
+                      <td bgcolor="#FFFFFF" width="400" align="left" valign="top"  colspan="2"><font size="1" face="tahoma,verdana,arial">assinaturas dos responsáveis, <?php echo date("d/m/Y G:i:s"); ?></font></td>
+                      <td bgcolor="LightGrey" width="256" style="font-size:9px; width: 256px;"  align="right" class="label"><b>TOTAL DESCONTOS</b>&nbsp;&nbsp;<b>R$&nbsp;<?php echo number_format($nTotalDesp, 2, ",", "."); ?></b></td>
                     </tr>
                     <tr>
-                      <td bgcolor="#FFFFFF" colspan="2"><br/></td>
+                      <td bgcolor="#FFFFFF" width="400" colspan="2"><br/></td>
                       <td bgcolor="LightGrey"><br/></td>
                     </tr>
                     <tr>
-                      <td bgcolor="#FFFFFF" colspan="2"></td>
-                      <td bgcolor="LightGrey" style="font-size:9px;" align="center" class="label"><b>VENDAS-DESCONTOS</b>&nbsp;&nbsp;<b>R$&nbsp;<?php echo number_format(($nTotalVendas - $nTotalDesp), 2, ",", "."); ?></b></td>
+                      <td bgcolor="#FFFFFF" width="400" colspan="2"></td>
+                      <td bgcolor="LightGrey" width="256" style="font-size:9px; width: 256px;" align="right" class="label"><b>VENDAS - DESCONTOS</b>&nbsp;&nbsp;<b>R$&nbsp;<?php echo number_format(($nTotalVendas - $nTotalDesp), 2, ",", "."); ?></b></td>
                     </tr>
                     <tr>
-                      <td  bgcolor="#FFFFFF" colspan="2">
-                        <table border="0">
+                      <td  bgcolor="#FFFFFF" width="400" colspan="2">
+                        <table class="tabelaAuxiliar">
                           <tr>
-                            <td class="linha_assinatura" >_______________________</td>
-                            <td class="linha_assinatura" >_______________________</td>
-                            <td class="linha_assinatura" >_______________________</td>
+                            <td class="linha_assinatura" >____________________</td>
+                            <td class="linha_assinatura" >____________________</td>
+                            <td class="linha_assinatura" >____________________</td>
                           </tr>
                           <tr>
                             <td align="center">BILHETERIA</td>
@@ -349,7 +349,7 @@ if (isset($err) && $err != "") {
                     <tr>
                       <td colspan="3" bgcolor="#FFFFFF" width="650">
                         <font size=1 face="tahoma,verdana,arial">
-                          O Borderô de vendas assinados pelas partes envolvidas, dará a plena  quitação dos valores pagos em dinheiro no momento do fechamento,  portanto, confira atentamente os valores recebidos em dinheiro, vales/recibos de saques e comprovantes de depósito.<br/>
+                          O Borderô de vendas assinados pelas partes envolvidas, dará a plena  quitação dos valores pagos em dinheiro no momento do fechamento,  portanto, confira atentamente os valores recebidos em dinheiro, vales/recibos de saques e comprovantes de depósito.
                           Os valores vendidos através dos cartões de crédito e débito serão  repassados aos favorecidos de acordo com os prazos firmados  através do contrato prestação de serviços assinado pelas partes.
                         </font>
                       </td>

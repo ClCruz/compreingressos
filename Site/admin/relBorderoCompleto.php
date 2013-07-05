@@ -319,15 +319,23 @@ if (isset($err) && $err != "") {
                     </tr>
                     <tr>
                       <td bgcolor="#FFFFFF" width="400" align="left" valign="top"  colspan="2"><font size="1" face="tahoma,verdana,arial">assinaturas dos responsáveis, <?php echo date("d/m/Y G:i:s"); ?></font></td>
-                      <td bgcolor="LightGrey" width="256" style="font-size:9px; width: 256px;"  align="right" class="label"><b>TOTAL DESCONTOS</b>&nbsp;&nbsp;<b>R$&nbsp;<?php echo number_format($nTotalDesp, 2, ",", "."); ?></b></td>
+                      <td bgcolor="LightGrey" width="256" style="font-size:9px; width: 256px;"  align="right" class="label"><b>TOTAL DESCONTOS</b></td>
                     </tr>
                     <tr>
                       <td bgcolor="#FFFFFF" width="400" colspan="2"><br/></td>
-                      <td bgcolor="LightGrey"><br/></td>
+                      <td bgcolor="LightGrey" width="256" style="font-size:9px; width: 256px;" align="right" class="label"><b>R$&nbsp;<?php echo number_format($nTotalDesp, 2, ",", "."); ?></b></td>
+                    </tr>
+                    <tr>
+                      <td bgcolor="#FFFFFF" width="400" colspan="2"><br/></td>
+                      <td bgcolor="LightGrey" width="256" style="font-size:9px; width: 256px;" align="right" class="label"><br/></td>
                     </tr>
                     <tr>
                       <td bgcolor="#FFFFFF" width="400" colspan="2"></td>
-                      <td bgcolor="LightGrey" width="256" style="font-size:9px; width: 256px;" align="right" class="label"><b>VENDAS - DESCONTOS</b>&nbsp;&nbsp;<b>R$&nbsp;<?php echo number_format(($nTotalVendas - $nTotalDesp), 2, ",", "."); ?></b></td>
+                      <td bgcolor="LightGrey" width="256" style="font-size:9px; width: 256px;" align="right" class="label"><b>VENDAS - DESCONTOS</b></td>
+                    </tr>
+                    <tr>
+                      <td bgcolor="#FFFFFF" width="400" colspan="2"></td>
+                      <td bgcolor="LightGrey" width="256" style="font-size:9px; width: 256px;" align="right" class="label"><b>R$&nbsp;<?php echo number_format(($nTotalVendas - $nTotalDesp), 2, ",", "."); ?></b></td>
                     </tr>
                     <tr>
                       <td  bgcolor="#FFFFFF" width="400" colspan="2">
@@ -345,7 +353,7 @@ if (isset($err) && $err != "") {
                         </table>
                       </td>
                       <td bgcolor="LightGrey" align="right" class="label" valign="top"></td>
-                    </tr>              
+                    </tr>
                     <tr>
                       <td colspan="3" bgcolor="#FFFFFF" width="650">
                         <font size=1 face="tahoma,verdana,arial">

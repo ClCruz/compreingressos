@@ -97,7 +97,7 @@ set @query =
 					  and bb.codtiplancamento = 2
 					  and ' + @DataBase + '..tabLancamento.codapresentacao = bb.codapresentacao
 					  and ' + @DataBase + '..tabLancamento.indice          = bb.indice)
-		and ' + @DataBase + '..tabLancamento.ValPagto > 0
+		--and ' + @DataBase + '..tabLancamento.ValPagto > 0
 		GROUP BY 
 			' + @DataBase + '..tabLugSala.CodTipBilhete,
 			' + @DataBase + '..tabTipBilhete.TipBilhete, 
@@ -171,7 +171,7 @@ set @query2 = '
 					  and bb.codtiplancamento = 2
 					  and ' + @DataBase + '..tabLancamento.codapresentacao = bb.codapresentacao
 					  and ' + @DataBase + '..tabLancamento.indice          = bb.indice)
-		and ' + @DataBase + '..tabLancamento.ValPagto > 0
+		--and ' + @DataBase + '..tabLancamento.ValPagto > 0
 		GROUP BY 
 			' + @DataBase + '..tabLugSala.CodTipBilheteComplMeia,
 			' + @DataBase + '..tabTipBilhete.TipBilhete, 

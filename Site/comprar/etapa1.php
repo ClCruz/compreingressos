@@ -154,17 +154,8 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
 			    <h1>Escolha de assentos</h1>
 			    <p class="help_text">Escolha at&eacute; <?php echo $maxIngressos; ?> lugares desejados e clique em avan&ccedil;ar para continuar
 							o processo de compra de ingressos.</p>
-			    <?php if ($rs['ID_BASE'] == 83) { ?>
-			    <br/>
-			    <p class="help_text aviso_teatro">
-			    	Legenda INDISPONÍVEL (Cota de Ingressos online administrado pelo Theatro São Pedro).<br/><br/>
-					Temporariamente, o Theatro São Pedro está disponibilizando apenas uma cota de ingressos para a venda online.<br/>
-					Para a verificação de disponibilidade de outros lugares ou MAIS informações, consulte a bilheteria do teatro através do telefone 51 3227 5100.
-				</p>
-				<?php } ?>
-
 			    <h3>Outras apresenta&ccedil;&otilde;es</h3>
-			    <iframe src="timeTable.php?evento=<?php echo $rs['ID_EVENTO']; ?>" style="width:inherit; width:100%; height:<?php echo $rs['ID_BASE'] == 83 ? 100 : 400; ?>px;" frameborder="0"></iframe>
+			    <iframe src="timeTable.php?evento=<?php echo $rs['ID_EVENTO']; ?>" style="width:inherit; width:100%; height:400px;" frameborder="0"></iframe>
 				<?php include "seloCertificado.php"; ?>
 			</div>
 			<div id="center_right" class="scroll">

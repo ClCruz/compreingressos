@@ -41,7 +41,7 @@ $rs = executeSQL($conn, $query, $params, true);
 							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 							<span class="annotation standby legenda">&nbsp;&nbsp;&nbsp;</span>Selecionados
 							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-							<span class="annotation closed legenda">&nbsp;&nbsp;&nbsp;</span><?php echo $id_base_legenda == 83 ? "Venda na bilheteria" : "Indispon&iacute;vel"; ?></p>
+							<span class="annotation closed legenda">&nbsp;&nbsp;&nbsp;</span><?php echo $id_base_legenda == 83 ? "Venda na bilheteria do Teatro" : "Indispon&iacute;vel"; ?></p>
 							<div id="mapa_de_plateia" style="width:<?php echo $rs['LARGURASITE'] == '' ? '630' : $rs['LARGURASITE']; ?>px;">
 								<img src="<?php echo $rs['NOMEIMAGEMSITE'] == '' ? '../images/palco.png' : $uploadPath . $rs['NOMEIMAGEMSITE']; ?>" width="<?php echo $rs['LARGURASITE'] == '' ? '630' : $rs['LARGURASITE']; ?>" height="<?php echo $rs['ALTURASITE'] == '' ? '510' : $rs['ALTURASITE']; ?>" />
 							</div>

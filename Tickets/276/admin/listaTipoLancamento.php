@@ -17,8 +17,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 270, true)) {
         $usuario = $_POST['usuario'] == 'todos' ? NULL : $_POST['usuario'];
 
         $conn = getConnection($_GET['teatro']);
-        $query = "exec SP_LAN_CON002 ?, ?, ?, ?, ?";
-        $params = array($data_inicial, $data_final, $lancamento, $evento, $usuario);
+        $query = "exec SP_LAN_CON002 ?, ?, ?, ?, ?, ?, ?";
+        $params = array($data_inicial, $data_final, $lancamento, $evento, $usuario, $_SESSION['admin'], $_GET['teatro']);
         $result = executeSQL($conn, $query, $params);
     }
 

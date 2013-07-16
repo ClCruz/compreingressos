@@ -149,7 +149,7 @@ if (isset($result)) {
 
 <?php while ($rs = fetchResult($result)) { ?>
               <tr>
-                  <td><?php echo utf8_encode($rs['Data da Venda']) ?></td>
+                  <td><?php echo $rs['Data da Venda']->format("d/m/y G:i:s") ?></td>
                   <td><?php echo utf8_encode($rs['Lancamento']) ?></td>
                   <td><?php echo utf8_encode($rs['Nome Usuario']) ?></td>
                   <td><?php echo utf8_encode($rs['Nome da Peca']) ?></td>

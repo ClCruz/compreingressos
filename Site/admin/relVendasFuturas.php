@@ -68,8 +68,6 @@ if (hasRows($resultBordero)) {
     $numsArray[] = $rsBordero['NumBordero'];
   }
   $pRSGeral['NumBordero'] = gerarNotacaoIntervalo($numsArray);
-} else {
-  echo $strBordero;
 }
 
 

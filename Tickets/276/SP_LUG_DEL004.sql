@@ -7,8 +7,6 @@
 !		 !			   !			!				  !	venda "Complemento de Meia Entrada"					      !
 +========+=============+============+=================+===========================================================+'
 !   2    !     276     ! 16/07/2013	! Edicarlos       ! Adicionado parâmetro @CodUsuario na Procedure		      !
-+========+=============+============+=================+===========================================================+'
-!   3    !     276     ! 16/07/2013	! Edicarlos       ! Trocado o @DatMovimento p/ GETUPDATE no INS tabLancamento !	
 +=================================================================================================================+
 */
 
@@ -73,7 +71,7 @@ BEGIN
    INSERT INTO tabLancamento (NumLancamento, CodTipBilhete, CodTipLancamento, CodApresentacao, Indice,
       CodUsuario, CodForPagto, CodCaixa, DatMovimento, QtdBilhete, ValPagto, DatVenda, CodMovimento)
       SELECT NumLancamento, CodTipBilhete, 2, CodApresentacao, Indice, 
-       @CodUsuario, CodForPagto, @CodCaixa, GETDATE(), -1, COALESCE(ValPagto,0)*-1, GETDATE(), @CodMovimento
+       @CodUsuario, CodForPagto, @CodCaixa, @DatMovimento, -1, COALESCE(ValPagto,0)*-1, GETDATE(), @CodMovimento
        FROM tabLancamento 
        WHERE NumLancamento = @NumLancamento AND Indice = @Indice
   

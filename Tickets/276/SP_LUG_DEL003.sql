@@ -14,8 +14,6 @@
 !   4    !     233     ! 07/06/2013	! Edicarlos       ! Adicionado novo select para retornar o CodTipBilhete      !
 +========+=============+============+=================+===========================================================+'
 !   5    !     276     ! 16/07/2013	! Edicarlos       ! Adicionado parâmetro @CodUsuario na Procedure		      !
-+========+=============+============+=================+===========================================================+'
-!   6    !     276     ! 16/07/2013	! Edicarlos       ! Trocado o @DatMovimento p/ GETUPDATE no INS tabLancamento !	
 +=================================================================================================================+
 */
 
@@ -76,7 +74,7 @@ SET NOCOUNT ON
    INSERT INTO tabLancamento (NumLancamento, CodTipBilhete, CodTipLancamento, CodApresentacao, Indice,
       CodUsuario, CodForPagto, CodCaixa, DatMovimento, QtdBilhete, ValPagto, DatVenda, CodMovimento)
       SELECT NumLancamento, CodTipBilhete, 2, CodApresentacao, Indice, 
-       @CodUsuario, CodForPagto, @CodCaixa, GETDATE(), -1, COALESCE(ValPagto,0)*-1, GETDATE(), @CodMovimento
+       @CodUsuario, CodForPagto, @CodCaixa, @DatMovimento, -1, COALESCE(ValPagto,0)*-1, GETDATE(), @CodMovimento
        FROM tabLancamento 
        WHERE NumLancamento = @NumLancamento AND Indice = @Indice AND CodTipLancamento not in(4,2)
   

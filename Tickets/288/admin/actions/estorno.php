@@ -149,7 +149,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
 							// @CodLog             int, --> resultado da gle_ins
 							// @CodMovimento       int
 							$query5 = 'EXEC '.strtoupper($rs['DS_NOME_BASE_SQL']).'..SP_LUG_DEL003 ?,?,?,?,?,?,?';
-							$params5 = array($rs2['CODCAIXA'], $rs2['DATMOVIMENTO'], $rs['CODAPRESENTACAO'], $rs2['INDICE'], $IdLogOperacao, $rs2['CODMOVIMENTO'], $_SESSION['admin']);
+							$params5 = array($rs2['CODCAIXA'], $rs2['DATMOVIMENTO'], $rs['CODAPRESENTACAO'], $rs2['INDICE'], $IdLogOperacao, $rs2['CODMOVIMENTO'], 255);
 							$rsProc3 = executeSQL($mainConnection, $query5, $params5, true);
 
 							// echo "procedure 3: \n"; print_r(array($query5, $params5)); echo "\n"; print_r($rsProc3); echo "\n\n";

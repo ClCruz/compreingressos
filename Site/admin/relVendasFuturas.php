@@ -142,6 +142,7 @@ $query .= $codSala . "," . $codPeca . ",'" . tratarData($dataIni) . " 00:01:00',
 $resultTotalGeral = executeSQL($conn, $query, array());
 $total_qtde_geral = 0;
 $total_valor_geral = 0;
+
 while ($total = fetchResult($resultTotalGeral)) {
   $total_qtde_geral += $total["QTDE"];
   $total_valor_geral += $total["PAGTO"];

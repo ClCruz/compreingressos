@@ -96,7 +96,7 @@ function formatarConteudoVazio($valor) {
   return empty($valor) ? '-' : $valor;
 }
 
-function buscarDadosApresentacao($query, $conn, $date, $canal, $opcao) {
+function search_value_presentation($query, $conn, $date, $canal, $opcao) {
   $resultado = 0;
   $rs = executeSQL($conn, $query, array());
   while ($dados = fetchResult($rs)) {

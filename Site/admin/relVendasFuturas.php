@@ -3,14 +3,14 @@
 require_once("../settings/functions.php");
 require_once('../settings/Template.class.php');
 require_once('../settings/Utils.php');
-
-$tpl = new Template("relVendasFuturas.html");
-
 session_start();
 
-$connGeral = getConnectionTsp();
+// Cria objeto do tipo Template para manipular estrutura HTML
+$tpl = new Template("relVendasFuturas.html");
+// Variáveis de referência a conexão do banco de dados
+$conn_geral = getConnectionTsp();
 $conn = getConnection($_SESSION["IdBase"]);
-
+$conn_mw = mainConnection();
 // Variaveis passadas por parametro pela url
 $codApresentacao = $_GET["CodApresentacao"];
 $codPeca = (isset($_GET["CodPeca"]) && !empty($_GET["CodPeca"])) ? $_GET["CodPeca"] : "";
@@ -22,7 +22,7 @@ $resumido = $_GET["Resumido"];
 
 if (isset($_GET["imagem"]) && $_GET["imagem"] == "logo") {
   $strSql = "SP_REL_BORDERO_VENDAS;2 ?, ?, ?";
-  $pRSBordero = executeSQL($connGeral, $strSql, array($codPeca, $codApresentacao, "'" . $_SESSION["NomeBase"] . "'"));
+  $pRSBordero = executeSQL($conn_geral, $strSql, array($codPeca, $codApresentacao, "'" . $_SESSION["NomeBase"] . "'"));
   if (sqlErrors ())
     $err = "Erro #001 " . print_r(sqlErrors());
 }
@@ -33,17 +33,10 @@ $strGeral = "SP_REL_BORDERO_VENDAS;";
 if ($codSala == 'TODOS') {
   $strGeral .= "10 'Emerson'," . $codPeca . ",'" . $codSala . "','" . tratarData($dataIni) . "','" . tratarData($dataFim) . "','--','" . $_SESSION["NomeBase"] . "'";
 } else {
-  //$strGeral .= "1 ?, ?, ?, ?, ?, ?, ?";
   $strGeral .= "10 'Emerson'," . $codPeca . ",'" . $codSala . "','" . tratarData($dataIni) . "','" . tratarData($dataFim) . "','--','" . $_SESSION["NomeBase"] . "'";
 }
-//$strGeral = "SP_REL_BORDERO_VENDAS;" . (($codSala == 'TODOS') ? '10' : '1') . " 'Emerson', " . $codPeca . "," . $codSala . "," . $dataIni . "," . $dataFim . ",'" . (($_GET['Small'] == '1') ? '--' : $horSessao) . "','" . $_SESSION["NomeBase"] . "'";
 
-$pRSGeral = executeSQL($connGeral, $strGeral, array(), true);
-
-/**
-  if(!hasRows($pRSGeral)){
-  print($strGeral);
-  }* */
+$pRSGeral = executeSQL($conn_geral, $strGeral, array(), true);
 if (sqlErrors ()) {
   $err = "Erro #002 <br>" . var_dump($params) . "<br>" . $strGeral . "<br>";
 }
@@ -55,13 +48,10 @@ $TPArray = ($array[2] != "") ? $array[2] : "N&atilde;o Cadastrado";
 
 if (isset($err) && $err != "") {
   echo $err . "<br>";
-  //print_r(sqlErrors());
 }
 
-
 $strBordero = "SP_REL_BORDERO_VENDAS;14 'Emerson', " . $codPeca . "," . $codSala . ",'" . tratarData($dataIni) . "','" . tratarData($dataFim) . "','--','" . $_SESSION["NomeBase"] . "'";
-$resultBordero = executeSQL($connGeral, $strBordero, array());
-
+$resultBordero = executeSQL($conn_geral, $strBordero, array());
 if (hasRows($resultBordero)) {
   $numsArray = array();
   while ($rsBordero = fetchResult($resultBordero)) {
@@ -69,7 +59,6 @@ if (hasRows($resultBordero)) {
   }
   $pRSGeral['NumBordero'] = gerarNotacaoIntervalo($numsArray);
 }
-
 
 if (isset($err) && $err != "") {
   echo $err . "<br>";
@@ -80,18 +69,16 @@ $tpl->evento = utf8_encode($pRSGeral["NomPeca"]);
 $tpl->numBordero = $pRSGeral["NumBordero"];
 $tpl->responsavel = utf8_encode($PPArray);
 $tpl->cpfCnpj = $SPArray;
-
 $tpl->dtInicio = $dataIni;
 $tpl->dtFim = $dataFim;
-
 $tpl->endereco = utf8_encode($TPArray);
 
 // Obtem o nome da sala
-if($codSala != "TODOS"){
+if ($codSala != "TODOS") {
   $querySala = "SELECT NOMSALA FROM TABSALA WHERE CODSALA = ?";
   $rsSala = executeSQL($conn, $querySala, array($codSala), true);
   $nome_sala = $rsSala["NOMSALA"];
-}else{
+} else {
   $nome_sala = "TODOS";
 }
 
@@ -109,8 +96,11 @@ while ($apresentacao = fetchResult($result)) {
   $canais[] = $apresentacao["CANAL_VENDA"];
 }
 
+// Filtra os canais de venda para ter apenas nomes únicos
 $canais = array_unique($canais);
+// Ordena os canais de vendas
 sort($canais);
+
 foreach ($canais as $key => $value) {
   $tpl->canal = utf8_encode($value);
   $tpl->parseBlock("BLOCK_CANAL", true);
@@ -118,31 +108,33 @@ foreach ($canais as $key => $value) {
 }
 
 $resultApre = executeSQL($conn, $query, array());
+$total_apresentacao = 0;
+$apre_data_hora = "";
 while ($total = fetchResult($resultApre)) {
-  $tpl->data = $total["DATA_APRESENTACAO"];
+  if (strcmp($apre_data_hora, $total["DATA_APRESENTACAO"] . $total["HORSESSAO"]) == 0) {
+    continue;
+  }
+  $apre_data_hora = $total["DATA_APRESENTACAO"] . $total["HORSESSAO"];
+  $tpl->data = textToDate($total["DATA_APRESENTACAO"]);
   $tpl->hora = $total["HORSESSAO"];
 
   $total_qtde = 0;
   $total_valor = 0;
   foreach ($canais as $key => $value) {
-    if (strcmp($value, $total["CANAL_VENDA"]) == 0) {
-      $tpl->qtde = $total["QTDE"];
-      $tpl->valor = formatarValorNumerico($total["PAGTO"]);
-      $tpl->parseBlock("BLOCK_ITENS", true);
-
-      $total_qtde += $total["QTDE"];
-      $total_valor += $total["PAGTO"];
-    } else {
-      $tpl->qtde = 0;
-      $tpl->valor = "-";
-      $tpl->parseBlock("BLOCK_ITENS", true);
-    }
+    $result_qtde = search_value_presentation($query, $conn, $apre_data_hora, $value, 1);
+    $result_valor = search_value_presentation($query, $conn, $apre_data_hora, $value, 2);
+    $tpl->qtde = $result_qtde;
+    $tpl->valor = formatarValorNumerico($result_valor);
+    $total_qtde += $result_qtde;
+    $total_valor += $result_valor;
+    $tpl->parseBlock("BLOCK_ITENS", true);
   }
 
   $tpl->total_qtde = $total_qtde;
   $tpl->total_valor = formatarValorNumerico($total_valor);
   $tpl->parseBlock("BLOCK_TOTAL", true);
   $tpl->parseBlock("BLOCK_APRESENTACAO", true);
+  $total_apresentacao++;
 }
 
 $query = "SP_VEN_CON015 ";
@@ -159,6 +151,7 @@ while ($total = fetchResult($resultTotalGeral)) {
 }
 $tpl->total_qtde_geral_final = $total_qtde_geral;
 $tpl->total_valor_geral_final = formatarValorNumerico($total_valor_geral);
+$tpl->total_apresentacao = $total_apresentacao;
 
 $tpl->show();
 ?>

@@ -58,6 +58,13 @@ function retornaData($Data) {
   }
 }
 
+function textToDate($date) {
+  $dia = substr($date, 6, 2);
+  $mes = substr($date, 4, 2);
+  $ano = substr($date, 0, 4);
+  return $dia . "/" . $mes . "/" . $ano;
+}
+
 function DiaSemana($Data) {
   switch ($Data) {
     case 1:
@@ -87,6 +94,22 @@ function DiaSemana($Data) {
 
 function formatarConteudoVazio($valor) {
   return empty($valor) ? '-' : $valor;
+}
+
+function search_value_presentation($query, $conn, $date, $canal, $opcao) {
+  $resultado = 0;
+  $rs = executeSQL($conn, $query, array());
+  while ($dados = fetchResult($rs)) {
+    $dateDb = $dados["DATA_APRESENTACAO"] . $dados["HORSESSAO"];
+    if ((strcmp($dateDb, $date) == 0) && (strcmp($dados["CANAL_VENDA"], $canal) == 0)) {
+      if ($opcao == 1) {
+        $resultado = $dados["QTDE"];
+      } else {
+        $resultado = $dados["PAGTO"];
+      }
+    }
+  }
+  return $resultado;
 }
 
 ?>

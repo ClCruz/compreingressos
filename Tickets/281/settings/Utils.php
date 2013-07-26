@@ -98,7 +98,7 @@ function formatarConteudoVazio($valor) {
 
 function search_value_presentation($query, $conn, $date, $canal, $opcao) {
   $resultado = 0;
-  $rs = executeSQL($conn, $query, array());
+  $rs = executeSQL($conn, str_replace('SP_VEN_CON014', 'SP_VEN_CON016', $query), array());
   while ($dados = fetchResult($rs)) {
     $dateDb = $dados["DATA_APRESENTACAO"] . $dados["HORSESSAO"];
     if ((strcmp($dateDb, $date) == 0) && (strcmp($dados["CANAL_VENDA"], $canal) == 0)) {
@@ -110,6 +110,33 @@ function search_value_presentation($query, $conn, $date, $canal, $opcao) {
     }
   }
   return $resultado;
+}
+
+/**
+ * Verifica se o valor é diferente de vazio.
+ * @param String $value
+ * @return String
+ */
+function chk_value($value) {
+  if ((isset($value)) && (!empty($value))) {
+    return $value;
+  } else {
+    return "";
+  }
+}
+
+/**
+ * Verifica se o valor é diferente de vazio. <br/>
+ * Porém retorna uma string "null" caso seja.
+ * @param String $value
+ * @return String
+ */
+function chk_null($value) {
+  if ((isset($value)) && (!empty($value))) {
+    return $value;
+  } else {
+    return "null";
+  }
 }
 
 ?>

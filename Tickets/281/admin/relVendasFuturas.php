@@ -1,5 +1,8 @@
 <?php
 
+list($usec, $sec) = explode(' ', microtime());
+$script_start = (float) $sec + (float) $usec;
+
 require_once("../settings/functions.php");
 require_once('../settings/Template.class.php');
 require_once('../settings/Utils.php');
@@ -12,17 +15,17 @@ $conn_geral = getConnectionTsp();
 $conn = getConnection($_SESSION["IdBase"]);
 $conn_mw = mainConnection();
 // Variaveis passadas por parametro pela url
-$codApresentacao = $_GET["CodApresentacao"];
-$codPeca = (isset($_GET["CodPeca"]) && !empty($_GET["CodPeca"])) ? $_GET["CodPeca"] : "";
-$codSala = (isset($_GET["Sala"]) && !empty($_GET["Sala"])) ? $_GET["Sala"] : "";
-$dataIni = (isset($_GET["DataIni"]) && !empty($_GET["DataIni"])) ? $_GET["DataIni"] : "null";
-$dataFim = (isset($_GET["DataFim"]) && !empty($_GET["DataFim"])) ? $_GET["DataFim"] : "null";
-$horSessao = (isset($_GET["HorSessao"]) && !empty($_GET["HorSessao"])) ? $_GET["HorSessao"] : "null";
+$cod_apresentacao = $_GET["CodApresentacao"];
+$codPeca = chk_value($_GET["CodPeca"]);
+$codSala = chk_value($_GET["Sala"]);
+$dataIni = chk_null($_GET["DataIni"]);
+$dataFim = chk_null($_GET["DataFim"]);
+$horSessao = chk_null($_GET["HorSessao"]);
 $resumido = $_GET["Resumido"];
 
 if (isset($_GET["imagem"]) && $_GET["imagem"] == "logo") {
   $strSql = "SP_REL_BORDERO_VENDAS;2 ?, ?, ?";
-  $pRSBordero = executeSQL($conn_geral, $strSql, array($codPeca, $codApresentacao, "'" . $_SESSION["NomeBase"] . "'"));
+  $pRSBordero = executeSQL($conn_geral, $strSql, array($codPeca, $cod_apresentacao, "'" . $_SESSION["NomeBase"] . "'"));
   if (sqlErrors ())
     $err = "Erro #001 " . print_r(sqlErrors());
 }
@@ -91,6 +94,7 @@ $query = "SP_VEN_CON014 ";
 $query .= $codSala . "," . $codPeca . ",'" . tratarData($dataIni) . " 00:01:00','" . tratarData($dataFim) . " 23:59:00'";
 $result = executeSQL($conn, $query, array());
 
+// Contrói a lista de canal de venda
 $canais = array();
 while ($apresentacao = fetchResult($result)) {
   $canais[] = $apresentacao["CANAL_VENDA"];
@@ -107,10 +111,12 @@ foreach ($canais as $key => $value) {
   $tpl->parseBlock("BLOCK_HEADER_CANAL", true);
 }
 
-$resultApre = executeSQL($conn, $query, array());
+//sqlsrv_free_stmt($result);
+$rs_apresentacao = executeSQL($conn, $query, array());
+
 $total_apresentacao = 0;
 $apre_data_hora = "";
-while ($total = fetchResult($resultApre)) {
+while ($total = fetchResult($rs_apresentacao)) {
   if (strcmp($apre_data_hora, $total["DATA_APRESENTACAO"] . $total["HORSESSAO"]) == 0) {
     continue;
   }
@@ -139,11 +145,11 @@ while ($total = fetchResult($resultApre)) {
 
 $query = "SP_VEN_CON015 ";
 $query .= $codSala . "," . $codPeca . ",'" . tratarData($dataIni) . " 00:01:00','" . tratarData($dataFim) . " 23:59:00'";
-$resultTotalGeral = executeSQL($conn, $query, array());
+$rs_total_geral = executeSQL($conn, $query, array());
 $total_qtde_geral = 0;
 $total_valor_geral = 0;
 
-while ($total = fetchResult($resultTotalGeral)) {
+while ($total = fetchResult($rs_total_geral)) {
   $total_qtde_geral += $total["QTDE"];
   $total_valor_geral += $total["PAGTO"];
   $tpl->total_qtde_geral = $total["QTDE"];
@@ -153,6 +159,12 @@ while ($total = fetchResult($resultTotalGeral)) {
 $tpl->total_qtde_geral_final = $total_qtde_geral;
 $tpl->total_valor_geral_final = formatarValorNumerico($total_valor_geral);
 $tpl->total_apresentacao = $total_apresentacao;
+
+list($usec, $sec) = explode(' ', microtime());
+$script_end = (float) $sec + (float) $usec;
+$elapsed_time = round($script_end - $script_start, 5);
+
+echo 'Elapsed time: ', $elapsed_time, ' secs. Memory usage: ', round(((memory_get_peak_usage(true) / 1024) / 1024), 2), 'Mb';
 
 $tpl->show();
 ?>

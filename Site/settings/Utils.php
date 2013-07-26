@@ -98,11 +98,7 @@ function formatarConteudoVazio($valor) {
 
 function search_value_presentation($apresentacoes, $date, $canal) {
   $resultado = array(0, 0);
-  // $query .= "," . $canal;
-  //$rs = executeSQL($conn, str_replace('SP_VEN_CON014', 'SP_VEN_CON014', $query), array());
-  //while ($dados = fetchResult($rs)) {
   foreach($apresentacoes as $key => $apresentacao){
-    //$dateDb = $dados["DATA_APRESENTACAO"] . $dados["HORSESSAO"];
     $dateDb = $apresentacao->data . $apresentacao->hora;
     if ((strcmp($dateDb, $date) == 0) && (strcmp($apresentacao->canal, $canal) == 0)) {
       $resultado[0] = $apresentacao->qtde;

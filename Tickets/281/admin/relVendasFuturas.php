@@ -6,6 +6,7 @@ $script_start = (float) $sec + (float) $usec;
 require_once("../settings/functions.php");
 require_once('../settings/Template.class.php');
 require_once('../settings/Utils.php');
+require_once('../settings/Apresentacao.php');
 session_start();
 
 // Cria objeto do tipo Template para manipular estrutura HTML
@@ -96,10 +97,13 @@ $result = executeSQL($conn, $query, array());
 
 // Contrói a lista de canal de venda
 $canais = array();
+$lista_apresentacoes = array();
 while ($apresentacao = fetchResult($result)) {
+  $apr = new Apresentacao($apresentacao["CANAL_VENDA"], $apresentacao["QTDE"],
+          $apresentacao["PAGTO"], $apresentacao["DATA_APRESENTACAO"], $apresentacao["HORSESSAO"]);
+  $lista_apresentacoes[] = $apr;
   $canais[] = $apresentacao["CANAL_VENDA"];
 }
-
 // Filtra os canais de venda para ter apenas nomes únicos
 $canais = array_unique($canais);
 // Ordena os canais de vendas
@@ -111,7 +115,6 @@ foreach ($canais as $key => $value) {
   $tpl->parseBlock("BLOCK_HEADER_CANAL", true);
 }
 
-//sqlsrv_free_stmt($result);
 $rs_apresentacao = executeSQL($conn, $query, array());
 
 $total_apresentacao = 0;
@@ -127,7 +130,7 @@ while ($total = fetchResult($rs_apresentacao)) {
   $total_qtde = 0;
   $total_valor = 0;
   foreach ($canais as $key => $value) {
-    $valores = search_value_presentation($query, $conn, $apre_data_hora, $value);
+    $valores = search_value_presentation($lista_apresentacoes, $apre_data_hora, $value);
     $result_qtde = $valores[0];
     $result_valor = $valores[1];
     $tpl->qtde = $result_qtde;

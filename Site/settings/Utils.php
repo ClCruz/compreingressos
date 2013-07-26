@@ -96,15 +96,17 @@ function formatarConteudoVazio($valor) {
   return empty($valor) ? '-' : $valor;
 }
 
-function search_value_presentation($query, $conn, $date, $canal) {
+function search_value_presentation($apresentacoes, $date, $canal) {
   $resultado = array(0, 0);
- // $query .= "," . $canal;
-  $rs = executeSQL($conn, str_replace('SP_VEN_CON014', 'SP_VEN_CON014', $query), array());
-  while ($dados = fetchResult($rs)) {
-    $dateDb = $dados["DATA_APRESENTACAO"] . $dados["HORSESSAO"];
-    if ((strcmp($dateDb, $date) == 0) && (strcmp($dados["CANAL_VENDA"], $canal) == 0)) {
-      $resultado[0] = $dados["QTDE"];
-      $resultado[1] = $dados["PAGTO"];
+  // $query .= "," . $canal;
+  //$rs = executeSQL($conn, str_replace('SP_VEN_CON014', 'SP_VEN_CON014', $query), array());
+  //while ($dados = fetchResult($rs)) {
+  foreach($apresentacoes as $key => $apresentacao){
+    //$dateDb = $dados["DATA_APRESENTACAO"] . $dados["HORSESSAO"];
+    $dateDb = $apresentacao->data . $apresentacao->hora;
+    if ((strcmp($dateDb, $date) == 0) && (strcmp($apresentacao->canal, $canal) == 0)) {
+      $resultado[0] = $apresentacao->qtde;
+      $resultado[1] = $apresentacao->valor;
     }
   }
   return $resultado;
@@ -135,6 +137,20 @@ function chk_null($value) {
   } else {
     return "null";
   }
+}
+
+function arrayCopy(array $array) {
+  $result = array();
+  foreach ($array as $key => $val) {
+    if (is_array($val)) {
+      $result[$key] = arrayCopy($val);
+    } elseif (is_object($val)) {
+      $result[$key] = clone $val;
+    } else {
+      $result[$key] = $val;
+    }
+  }
+  return $result;
 }
 
 ?>

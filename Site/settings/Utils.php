@@ -96,18 +96,15 @@ function formatarConteudoVazio($valor) {
   return empty($valor) ? '-' : $valor;
 }
 
-function search_value_presentation($query, $conn, $date, $canal, $opcao) {
-  $resultado = 0;
-  $query .= ",". $canal;
-  $rs = executeSQL($conn, str_replace('SP_VEN_CON014', 'SP_VEN_CON016', $query), array());
+function search_value_presentation($query, $conn, $date, $canal) {
+  $resultado = array(0, 0);
+ // $query .= "," . $canal;
+  $rs = executeSQL($conn, str_replace('SP_VEN_CON014', 'SP_VEN_CON014', $query), array());
   while ($dados = fetchResult($rs)) {
     $dateDb = $dados["DATA_APRESENTACAO"] . $dados["HORSESSAO"];
     if ((strcmp($dateDb, $date) == 0) && (strcmp($dados["CANAL_VENDA"], $canal) == 0)) {
-      if ($opcao == 1) {
-        $resultado = $dados["QTDE"];
-      } else {
-        $resultado = $dados["PAGTO"];
-      }
+      $resultado[0] = $dados["QTDE"];
+      $resultado[1] = $dados["PAGTO"];
     }
   }
   return $resultado;

@@ -66,6 +66,7 @@ function getSetor(){
     data: 'CodPeca='+ CodPeca,
     success: function(data){
       $('#cboSala').html(data);
+      getPeriodo();
     },
     error: function(){
       $.dialog({

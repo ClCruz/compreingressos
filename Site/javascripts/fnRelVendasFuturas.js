@@ -85,6 +85,8 @@ function getPeriodo(){
     data: 'CodPeca='+ codPeca,
     dataType: 'json',
     success: function(data){
+      $('input[name="txtData1"]').val(data.inicial);
+      $('input[name="txtData2"]').val(data.fim);
       $('input[name="txtData1"]').datepicker('option', 'minDate', data.inicial);
       $('input[name="txtData2"]').datepicker('option', 'maxDate', data.fim);
     },

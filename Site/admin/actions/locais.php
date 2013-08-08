@@ -18,7 +18,7 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 	$query = "INSERT INTO MW_BASE
 					(DS_NOME_BASE_SQL, DS_NOME_TEATRO, IN_ATIVO)
 					VALUES (?, ?, ?)";
-	$params = array($_POST['nome'], $_POST['nomeSql'], $_POST['ativo']);
+	$params = array($_POST['nomeSql'], $_POST['nome'], $_POST['ativo']);
 
         $log = new Log($_SESSION['admin']);
         $log->__set('funcionalidade', 'Locais');

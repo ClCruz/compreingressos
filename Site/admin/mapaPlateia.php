@@ -17,13 +17,11 @@ if (isset($_GET['action'])) {
 <link rel="stylesheet" href="../stylesheets/annotations.css"/>
 <link rel="stylesheet" href="../stylesheets/ajustes.css"/>
 <link rel="stylesheet" href="../stylesheets/plateiaEdicao.css"/>
-<link rel="stylesheet" href="../stylesheets/jquery.tooltip.css"/>
 <link rel="stylesheet" href="../javascripts/uploadify/uploadify.css"/>
 
 <script type="text/javascript" src="../javascripts/jquery.utils.js"></script>
 <script type="text/javascript" src="../javascripts/jquery.annotate.js"></script>
 <script type="text/javascript" src="../javascripts/plateiaEdicao.js"></script>
-<script type="text/javascript" src="../javascripts/jquery.tooltip.min.js"></script>
 <script type="text/javascript" src="../javascripts/uploadify/swfobject.js"></script>
 <script type="text/javascript" src="../javascripts/uploadify/jquery.uploadify.v2.1.0.min.js"></script>
 <h2>Mapeamento de Plateia</h2>

@@ -102,14 +102,12 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
 	<link rel="stylesheet" href="../stylesheets/ci.css"/>
 	<link rel="stylesheet" href="../stylesheets/annotations.css"/>
 	<link rel="stylesheet" href="../stylesheets/ajustes.css"/>
-	<link rel="stylesheet" href="../stylesheets/jquery.tooltip.css"/>
-	<link rel="stylesheet" href="../stylesheets/smoothness/jquery-ui-1.8.4.custom.css"/>
+	<link rel="stylesheet" href="../stylesheets/smoothness/jquery-ui-1.10.3.custom.css"/>
 
 	<script type="text/javascript" src="../javascripts/jquery.js"></script>
 	<script type="text/javascript" src="../javascripts/jquery-ui.js"></script>
 	<script type="text/javascript" src="../javascripts/jquery.utils.js"></script>
 	<script type="text/javascript" src="../javascripts/jquery.annotate.js"></script>
-	<script type="text/javascript" src="../javascripts/jquery.tooltip.min.js"></script>
 	<script type="text/javascript" src="../javascripts/plateia.js?<?php echo $vars; ?>"></script>
 	<!-- SCRIPT TAG -->
 	<script type="text/JavaScript">

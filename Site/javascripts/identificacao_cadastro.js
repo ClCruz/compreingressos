@@ -1,7 +1,7 @@
 $(function() {
 	$('#esqueciForm, p.aviso, p.err_msg').hide();
 	
-	if ($.cookie('user') == null || $.browser.msie) $('#cadastro').slideUp(1);//IE
+	if ($.cookie('user') == null) $('#cadastro').slideUp(1);//IE
 	
 	$.busyCursor();
 	
@@ -101,7 +101,7 @@ $(function() {
 	$('a.bt_cadastro').click(function(event) {
 		event.preventDefault();
 		
-		if ($.browser.msie && $.browser.version.substr(0, 1) == 7) $('#cadastro > *').show();
+		//if ($.browser.msie && $.browser.version.substr(0, 1) == 7) $('#cadastro > *').show();
 		
 		if ($('#cadastro').is(':hidden')) {
 			$('#identificacao').slideUp('slow');

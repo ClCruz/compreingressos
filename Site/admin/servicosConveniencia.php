@@ -88,10 +88,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                         });
 
                         tr.find('td:not(.button):eq(0)').html('<?php echo comboEvento('idEvento', $_GET['teatro']); ?>');
-			             $('#idEvento option').filter(function(){return $(this).text() == values[0]}).attr('selected', 'selected');
+			             $('#idEvento option').filter(function(){return $(this).text() == values[0]}).prop('selected', 'selected');
                         tr.find('td:not(.button):eq(1)').html('<input name="data" type="text" class="datePicker inputStyle" id="data" maxlength="10" value="' + values[1] + '" readonly>');
                         tr.find('td:not(.button):eq(2)').html('<?php echo combo_tipo_valor('tipo'); ?>');
-                         $('#tipo option').filter(function(){return $(this).text() == values[2]}).attr('selected', 'selected');
+                         $('#tipo option').filter(function(){return $(this).text() == values[2]}).prop('selected', 'selected');
                         tr.find('td:not(.button):eq(3)').html('<input name="valor" type="text" class="inputStyle" id="valor" maxlength="6" value="' + values[3] + '" >');
                         tr.find('td:not(.button):eq(4)').html('<input name="valor2" type="text" class="inputStyle" id="valor2" maxlength="6" value="' + values[4] + '" >');
                         tr.find('td:not(.button):eq(5)').html('<input name="valor3" type="text" class="inputStyle" id="valor3" maxlength="6" value="' + values[5] + '" >');

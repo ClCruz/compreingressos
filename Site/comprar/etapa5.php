@@ -24,7 +24,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	<title>COMPREINGRESSOS.COM - Finaliza&ccedil;&atilde;o</title>
 	<meta name="author" content="C&C - Computação e Comunicação" />
 	<link href="favicon.ico" rel="shortcut icon"/>
-	<link rel="stylesheet" href="../stylesheets/smoothness/jquery-ui-1.8.4.custom.css"/>
+	<link rel="stylesheet" href="../stylesheets/smoothness/jquery-ui-1.10.3.custom.css"/>
 	<link rel="stylesheet" href="../stylesheets/ci.css"/>
 	<link rel="stylesheet" href="../stylesheets/annotations.css"/>
 	<link rel="stylesheet" href="../stylesheets/ajustes.css">

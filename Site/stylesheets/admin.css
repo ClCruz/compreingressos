@@ -39,17 +39,15 @@ body {
 	border-left:0px;
 	border-style:solid;
 	border-color:#F1A2A4;
-        background: #ce0b09;
-}
+    background: #ce0b09;
 
-#mainMenu.ui-state-active .ui-icon {background-image: url(customred/images/ui-icons_cc0000_256x2402.png); }
-#mainMenu.ui-state-hover .ui-icon, #mainMenu.ui-state-focus .ui-icon {background-image: url(customred/images/ui-icons_cc0000_256x2402.png); }
-#mainMenu.ui-state-default .ui-icon { background-image: url(customred/images/ui-icons_cc0000_256x2402.png); }
-	
-	.fg-button {
-		border-color:transparent;
-                background: #ce0b09;
-	} 
+    position: relative;
+    z-index: 9;
+}
+	#mainMenu #menu-items {
+		width: 100px;
+		white-space: nowrap;
+	}
 
 #content {
 	width:100%;

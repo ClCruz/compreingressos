@@ -10,10 +10,8 @@ session_start();
     <title><?php echo $title; ?></title>
     
     <link rel='stylesheet' type='text/css' href='../stylesheets/reset.css' />
-	 
-    <link rel='stylesheet' type='text/css' href='../javascripts/fg-menu/fg.menu.css' />
-    <link rel='stylesheet' type='text/css' href='../javascripts/fg-menu/theme/ui.all.css' />
-        <link rel="stylesheet" type="text/css" href="../stylesheets/customred/jquery-ui-1.8.12.custom.css"/>
+	
+    <link rel="stylesheet" type="text/css" href="../stylesheets/customred/jquery-ui-1.10.3.custom.css"/>
 	<!--<link rel="stylesheet" type="text/css" href="../stylesheets/customred/jquery-ui-1.7.3.custom.css"/>-->
 	 
     <link rel='stylesheet' type='text/css' href='../stylesheets/admin.css' />
@@ -24,44 +22,23 @@ session_start();
 	<![endif]-->
     
     <script type='text/javascript' src='../javascripts/jquery.js'></script>
-    <script type='text/javascript' src='../javascripts/jquery-ui-1.8.12.custom.min.js'></script>
-    <script type='text/javascript' src='../javascripts/fg-menu/fg.menu.js'></script>
+    <script type='text/javascript' src='../javascripts/jquery-ui.js'></script>
     <script type='text/javascript' src='../javascripts/jquery.ui.datepicker-pt-BR.js'></script>
     <script type='text/javascript' src='../javascripts/jquery.utils.js'></script>
 	 
 	 <script>
 		 $(function(){
-			// BUTTONS
-			$('.fg-button').hover(
-				function(){ $(this).removeClass('ui-state-default').addClass('ui-state-focus'); },
-				function(){ $(this).removeClass('ui-state-focus').addClass('ui-state-default'); }
-			);
-			
-			// MAIN MENU
-			$('#flyOut').menu({
-				content: $('#flyOut').next().html(), // grab content from this page
-				showSpeed: 400,
-				width: 200,
-				linkToFront: true,
-				flyOut: true
-			});
-			
-			$('#flyOut').next().find('a').unbind('click').click(function(event) {
-				event.preventDefault();
-				
-				var $this = $(this);
-				
-				if ($this.attr('href') != '#') {
-					$.ajax({
-						url: $.getUrlVar('p', $this.attr('href')) + '.php',
-						success: function(data) {
-							$('#app').fadeTo('fast', 0, function() {
-								$(this).html(data).fadeTo('fast', 1);
-							});
-						}
-					});
+
+		 	$('#menu-bt').button({
+				text: true,
+				icons: {
+					secondary: "ui-icon-triangle-1-s"
 				}
-			});
+	        }).removeClass('ui-corner-all').on('click', function(){
+	        	$('#menu-items').slideToggle();
+	        });
+
+	        $('#menu-items').hide().menu();
 			
 		 });
 	 </script>
@@ -87,7 +64,7 @@ session_start();
 		?>
     </div>
     
-    <div id='mainMenu' class="ui-state-default">
+    <div id='mainMenu'>
     	<?php
 		if (isset($_SESSION['admin'])) {
 			require_once('mainMenu.php');

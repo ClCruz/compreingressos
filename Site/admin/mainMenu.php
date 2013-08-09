@@ -15,7 +15,7 @@ function getChildren($conn, $id, $return = false) {
 	$hasRows = hasRows($result);
 	
 	if ($hasRows) {
-		echo '<ul>';
+		echo '<ul' . ($return ? " id='menu-items'" : '') . '>';
 		while ($rs = fetchResult($result)) {
 			echo '<li><a href="'.$rs['DS_URL'].'">'.utf8_encode($rs['DS_PROGRAMA']).'</a>';
 			getChildren($conn, $rs['ID_PROGRAMA']);
@@ -27,14 +27,9 @@ function getChildren($conn, $id, $return = false) {
 	if ($return) return $hasRows;
 }
 ?>
-<a class='fg-button fg-button-icon-right ui-widget ui-state-default' id='flyOut'>
-	<span class='ui-icon ui-icon-triangle-1-s'></span>
-	Menu
-</a>
-<div class='hidden'>
-	<?php
-		if (!getChildren($mainConnection, 0, true)) { 
-			echo '<ul><li><a href="login.php">Login</a></li></ul>';
-		}
-	?>
-</div>
+<a id='menu-bt'>Menu</a>
+<?php
+	if (!getChildren($mainConnection, 0, true)) { 
+		echo '<ul><li><a href="login.php">Login</a></li></ul>';
+	}
+?>

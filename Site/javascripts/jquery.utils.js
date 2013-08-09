@@ -67,13 +67,13 @@ function trim(text) {
 					 }
 				 },
 				 options = $.extend(true, defaults, options),
-				 element = $(document.createElement('div'))
+				 element = $('<div />')
 								.attr('title', options.title)
 								.hide()
-								.appendTo(document),
-				 p = $(document.createElement('p'))
+								.appendTo('body'),
+				 p = $('<p />')
 				 				.appendTo(element),
-				 span = (options.iconClass != '') ? $(document.createElement('span'))
+				 span = (options.iconClass != '') ? $('<span />')
 				 										.addClass(options.iconClass)
 														.css('float', 'left')
 														.css('margin', '0 7px 20px 0')
@@ -103,13 +103,13 @@ function trim(text) {
 				 },
 				 options = $.extend(true, defaults, options),
 				 //uiOptions = $.extend(uiOptionsDefault, options.uiOptions),
-				 element = $(document.createElement('div'))
+				 element = $('<div />')
 								.attr('title', options.title)
 								.hide()
-								.appendTo(document),
-				 p = $(document.createElement('p'))
+								.appendTo('body'),
+				 p = $('<p />')
 				 				.appendTo(element),
-				 span = (options.iconClass != '') ? $(document.createElement('span'))
+				 span = (options.iconClass != '') ? $('<span />')
 				 										.addClass(options.iconClass)
 														.css('float', 'left')
 														.css('margin', '0 7px 20px 0')

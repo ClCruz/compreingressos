@@ -1,7 +1,7 @@
 		<title>SISBIN - Sistema de Controle de BINs Promo&ccedil;&atilde;o Itaucard</title>
 		<link rel="shortcut icon" href="../images/itau/favicon.ico" type="image/x-icon" />
 		<link href="../stylesheets/itau.css" rel="stylesheet" type="text/css" media="all"/>
-		<link href="../stylesheets/smoothness/jquery-ui-1.8.4.custom.css" rel="stylesheet" type="text/css" media="all"/>
+		<link href="../stylesheets/smoothness/jquery-ui-1.10.3.custom.css" rel="stylesheet" type="text/css" media="all"/>
 		
 		<meta name="author" content="Faro Estúdio - www.faroestudio.com.br" />
 		<meta name="description" content="..."/>

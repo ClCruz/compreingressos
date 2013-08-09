@@ -76,7 +76,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 32, true)) {
 					tr.find('td:not(.button):eq(0)').html('<input name="dia" type="text" class="inputStyle datePicker" id="dia" maxlength="10" value="' + values[0] + '" readonly />');
 					tr.find('td:not(.button):eq(1)').html('<?php echo comboPaginas('pagina', $_GET['pagina']); ?>');
 					tr.find('td:not(.button):eq(2)').html('<input name="acessos" type="text" class="inputStyle" id="acessos" value="' + values[2].replace(/\./g, '') + '" maxlength="9" />');
-					$('#pagina').find('option').filter(function(){return $(this).text() == values[1];}).attr('selected', 'selected');
+					$('#pagina').find('option').filter(function(){return $(this).text() == values[1];}).prop('selected', 'selected');
 					$this.text('Salvar').attr('href', pagina + '?action=update&' + id);
 
 					setDatePickers();

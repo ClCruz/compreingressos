@@ -19,7 +19,7 @@ require('verificarServicosPedido.php');
 		<!--[IF IE]>
 		<link rel="stylesheet" href="../stylesheets/ajustesIE.css"/>
 		<![ENDIF]-->
-		<link rel="stylesheet" href="../stylesheets/smoothness/jquery-ui-1.8.4.custom.css"/>
+		<link rel="stylesheet" href="../stylesheets/smoothness/jquery-ui-1.10.3.custom.css"/>
 		
 		<script type="text/javascript" src="../javascripts/jquery.js"></script>
 		<script type="text/javascript" src="../javascripts/jquery-ui.js"></script>

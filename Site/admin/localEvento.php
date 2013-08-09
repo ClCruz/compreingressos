@@ -64,14 +64,14 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 29, true)) {
 
                         tr.find('td:not(.button):eq(0)').html('<input name="nome" type="text" class="inputStyle" id="nome" maxlength="50" value="' + values[0] + '" />');
                         tr.find('td:not(.button):eq(1)').html('<select id="tipolocal" name="tipolocal" class="inputStyle">'+'<?php echo comboTipoLocalOptions('tipolocal', ""); ?>'+'</select>');
-                        $('#tipolocal option').filter(function(){return $(this).text() == values[1]}).attr('selected', 'selected');
+                        $('#tipolocal option').filter(function(){return $(this).text() == values[1]}).prop('selected', 'selected');
 
                         tr.find('td:not(.button):eq(2)').html('<select id="idestado" name="idestado">'+'<?php echo comboEstadoOptions('idestado', "", true); ?>'+'</select>');
-                        $('#idestado option').filter(function(){return $(this).text() == values[2]}).attr('selected', 'selected');
+                        $('#idestado option').filter(function(){return $(this).text() == values[2]}).prop('selected', 'selected');
                         
                         tr.find('td:not(.button):eq(3)').html('<select id="idmunicipio" name="idmunicipio" class="inputStyle">'+'<?php echo comboMunicipio('idmunicipio', "", 0); ?>'+'</select>');                        
                         $('#idestado').change();
-                        $('#idmunicipio option').filter(function(){return $(this).text() == values[3]}).attr('selected', 'selected');
+                        $('#idmunicipio option').filter(function(){return $(this).text() == values[3]}).prop('selected', 'selected');
 
                         $this.text('Salvar').attr('href', pagina + '?action=update&' + id );
 

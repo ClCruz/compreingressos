@@ -10,7 +10,7 @@ require_once('../settings/functions.php');
 		<link href="favicon.ico" rel="shortcut icon"/>
 		<link rel="stylesheet" href="../stylesheets/ci.css"/>
 		<link rel="stylesheet" href="../stylesheets/ajustes.css"/>
-		<link rel="stylesheet" href="../stylesheets/smoothness/jquery-ui-1.8.4.custom.css"/>
+		<link rel="stylesheet" href="../stylesheets/smoothness/jquery-ui-1.10.3.custom.css"/>
 		
 		<script type="text/javascript" src="../javascripts/jquery.js"></script>
 		<script type="text/javascript" src="../javascripts/jquery-ui.js"></script>

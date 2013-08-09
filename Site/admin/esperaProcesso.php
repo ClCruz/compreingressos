@@ -6,7 +6,7 @@
     <title><?php echo $title; ?></title>
 
     <link rel='stylesheet' type='text/css' href='../stylesheets/reset.css' />
-    <link rel="stylesheet" type="text/css" href="../stylesheets/customred/jquery-ui-1.8.12.custom.css"/>
+    <link rel="stylesheet" type="text/css" href="../stylesheets/customred/jquery-ui-1.10.3.custom.css"/>
     <link rel='stylesheet' type='text/css' href='../stylesheets/admin.css' />
     <link rel='stylesheet' type='text/css' href='../stylesheets/ajustes.css' />
     <script type='text/javascript' src='../javascripts/jquery-ui.js'></script>

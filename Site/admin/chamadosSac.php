@@ -86,12 +86,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 213, true)) {
 			tr.find('td:not(.button):eq(4)').html('<input name="diaResolucao" type="text" class="inputStyle datePicker" id="diaResolucao" maxlength="10" size="10" readonly />');
 			tr.find('td:not(.button):eq(5)').html('<input name="obs" type="text" class="inputStyle" id="obs" maxlength="250" value="' + values[5] + '"/>');
 
-                        $('#origem').find('option[text=' + values[1] + ']').attr('selected', 'selected');
-                        $('#tipo').find('option[text=' + values[2] + ']').attr('selected', 'selected');
-                        $('#resolucao').find('option[text=' + values[3] + ']').attr('selected', 'selected');
-			//$('#origem').find('option').filter(function(){return $(this).text() == values[1];}).attr('selected','selected');
-			//$('#tipo').find('option').filter(function(){return $(this).text() == values[2];}).attr('selected', 'selected');
-			//$('#resolucao').find('option').filter(function(){return $(this).text() == values[3];}).attr('selected', 'selected');
+			$('#origem').find('option').filter(function(){return $(this).text() == values[1];}).prop('selected','selected');
+			$('#tipo').find('option').filter(function(){return $(this).text() == values[2];}).prop('selected', 'selected');
+			$('#resolucao').find('option').filter(function(){return $(this).text() == values[3];}).prop('selected', 'selected');
 
 			$this.text('Salvar').attr('href', pagina + '?action=update&' + id);
 

@@ -7,8 +7,22 @@ $(function() {
     endereco = $('#novo_endereco'),
     complemento = $('#novo_complemento'),
     cep1 = $('#novo_cep1'),
-    cep2 = $('#novo_cep2'),
-    allFields;
+    cep2 = $('#novo_cep2');
+
+    var estado = $('#novo_estado'),
+		cidade = $('#novo_cidade'),
+		bairro = $('#novo_bairro'),
+		endereco = $('#novo_endereco'),
+		complemento = $('#novo_complemento'),
+		cep1 = $('#novo_cep1'),
+		cep2 = $('#novo_cep2');
+		
+	var	allFields = $([]).add(endereco)
+		.add(bairro)
+		.add(cidade)
+		.add(estado)
+		.add(cep1)
+		.add(cep2);
 	
     $("#identificacao").css('margin', '0  0 0 15px').dialog({
 	title: 'Novo endere&ccedil;o de entrega',
@@ -21,21 +35,6 @@ $(function() {
 	    'Adicionar': function() {
 		var $this = $(this),
 		valido = true;
-
-		var estado = $('#novo_estado'),
-		cidade = $('#novo_cidade'),
-		bairro = $('#novo_bairro'),
-		endereco = $('#novo_endereco'),
-		complemento = $('#novo_complemento'),
-		cep1 = $('#novo_cep1'),
-		cep2 = $('#novo_cep2');
-		
-		allFields = $([]).add(endereco)
-		.add(bairro)
-		.add(cidade)
-		.add(estado)
-		.add(cep1)
-		.add(cep2);
 				
 		allFields.each(function() {
 		    if ($(this).val() == '') {
@@ -124,7 +123,7 @@ $(function() {
 	
     //Apagar novo endereco
 
-    $('.apagar_novo_endereco').live('click',function(event) {
+    $('#dados_entrega').on('click', '.apagar_novo_endereco', function(event) {
 	event.preventDefault();
 	var $this = $(this);
 	$.confirmDialog({

@@ -85,7 +85,7 @@ $(function() {
 			tr.find('td:not(.button):eq(0)').html('<?php echo comboPatrocinador('idPatrocinador'); ?>');
 			tr.find('td:not(.button):eq(1)').html('<?php echo comboCartaoPatrocinado('idCartaoPatrocinado', -1); ?>');
 			$('#idPatrocinador').val(idPatrocinador).change();
-			$('#idCartaoPatrocinado option').filter(function(){return $(this).text() == values[1]}).attr('selected', 'selected');
+			$('#idCartaoPatrocinado option').filter(function(){return $(this).text() == values[1]}).prop('selected', 'selected');
 			tr.find('td:not(.button):eq(2)').html('<input name="dtInicio" type="text" class="datePicker inputStyle" id="dtInicio" maxlength="10" value="' + values[2] + '" readonly />');
 			tr.find('td:not(.button):eq(3)').html('<input name="dtFim" type="text" class="datePicker inputStyle" id="dtFim" maxlength="10" value="' + values[3] + '" readonly />');
 			

@@ -33,7 +33,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
 		<title>COMPREINGRESSOS.COM - Minha Conta</title>
 		<meta name="author" content="C&C - Computação e Comunicação" />
 		<link href="favicon.ico" rel="shortcut icon"/>
-		<link rel="stylesheet" href="../stylesheets/smoothness/jquery-ui-1.8.4.custom.css"/>
+		<link rel="stylesheet" href="../stylesheets/smoothness/jquery-ui-1.10.3.custom.css"/>
 		<link rel="stylesheet" href="../stylesheets/ci.css"/>
 		<link rel="stylesheet" href="../stylesheets/ajustes.css"/>
 		

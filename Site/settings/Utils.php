@@ -149,4 +149,27 @@ function arrayCopy(array $array) {
   return $result;
 }
 
+/**
+ * Altera a formatação da data para o padrão "mm/dd/yyyy".
+ * @param String $date
+ * @return String
+ */
+function getDateF($date){
+  if ($date != ""){
+    $data = explode("/", $date);
+  }else{
+    $data = explode("/", date('y/m/d'));
+  }
+  $retorno = $data[1] ."/". $data[2] ."/". $data[0];
+  return $retorno;
+}
+
+/**
+ * Remove os caracteres "." e "-" do valor passado por parametro.<br/> 
+ * @param String $doc
+ * @return String
+ */
+function cleanDocuments($doc){
+  return str_replace(array(".","-"), "", $doc);
+}
 ?>

@@ -73,7 +73,7 @@ $(function() {
 	$('a.bt_cadastro').click(function(event) {
 		event.preventDefault();
 		
-		if ($.browser.msie && $.browser.version.substr(0, 1) == 7) $('#cadastro > *').show();//IE7 FIX
+		//if ($.browser.msie && $.browser.version.substr(0, 1) == 7) $('#cadastro > *').show();//IE7 FIX
 		
 		if ($('#cadastro').is(':hidden')) {
 			$('#resultadoBusca').slideUp('slow');

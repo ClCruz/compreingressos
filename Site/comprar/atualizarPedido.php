@@ -158,6 +158,13 @@ if (isset($_GET['action'])) {
 					 CD_BINITAU = ?
 					 WHERE ID_APRESENTACAO = ? AND ID_CADEIRA = ? AND ID_SESSION = ?';
 		$result = true;
+
+		$selectVB = 'SELECT E.ID_BASE, AB.CODTIPBILHETE, A.CODAPRESENTACAO
+					 FROM MW_APRESENTACAO_BILHETE AB
+					 INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = AB.ID_APRESENTACAO
+					 INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+					 WHERE AB.ID_APRESENTACAO_BILHETE = ? AND AB.ID_APRESENTACAO = ?';
+		$updateVB = 'UPDATE TABLUGSALA SET CODTIPBILHETE = ? WHERE CODAPRESENTACAO = ? AND INDICE = ? AND ID_SESSION = ?';
 		
 		$binArray = explode(',', $_POST['binArray']);
 		
@@ -167,16 +174,20 @@ if (isset($_GET['action'])) {
 			if (!isset($_POST['valorIngresso'][$i])) {
 				$_POST['valorIngresso'][$i] = 'NULL';
 			}
+
+			$rs = executeSQL($mainConnection, $selectVB, array($_POST['valorIngresso'][$i], $_POST['apresentacao'][$i]), true);
+			$conn = getConnection($rs['ID_BASE']);
+			$result = (executeSQL($conn, $updateVB, array($rs['CODTIPBILHETE'], $rs['CODAPRESENTACAO'], $_POST['cadeira'][$i], session_id())) and $result);
 			
 			$bin = (in_array($_POST['apresentacao'][$i].'|'.$_POST['cadeira'][$i], $binArray)) ? $_POST['bin1'].$_POST['bin2'] : NULL;
 			
 			$params = array(
-									$_POST['valorIngresso'][$i],
-									$bin,
-									$_POST['apresentacao'][$i],
-									$_POST['cadeira'][$i],
-									session_id()
-								);
+						$_POST['valorIngresso'][$i],
+						$bin,
+						$_POST['apresentacao'][$i],
+						$_POST['cadeira'][$i],
+						session_id()
+					);
 			
 			$result = (executeSQL($mainConnection, $query, $params) and $result);
 		}

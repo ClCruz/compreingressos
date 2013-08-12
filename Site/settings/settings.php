@@ -11,14 +11,16 @@ $maxIngressos = 10;//maximo por compra
 $uploadPath = '../images/uploads/';
 
 $is_teste = '1';
-
 $isContagemAcessos = true;
+$is_manutencao = false;
 
 $merchant_id_homologacao = 'AEDAFDE0-83A5-869F-214B-C8501B9C8697';
 $merchant_id_producao = 'BB478913-9023-931D-3EC9-D5DEA7DECD20';
+$merchant_id_homologacao = $merchant_id_producao;
 
 $url_braspag_homologacao = 'https://homologacao.pagador.com.br/webservice/pagadorTransaction.asmx?WSDL';
 $url_braspag_producao = 'https://transaction.pagador.com.br/webservice/pagadorTransaction.asmx?WSDL';
+$url_braspag_homologacao = $url_braspag_producao;
 
 /** PRODUCAO ---------------------------------------------------
 $recaptcha = array(

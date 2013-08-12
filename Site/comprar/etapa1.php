@@ -6,6 +6,11 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
     require_once('../settings/functions.php');
     require_once('../settings/settings.php');
 
+    if ($is_manutencao === true) {
+    	header("Location: manutencao.php");
+    	die();
+    }
+
     $mainConnection = mainConnection();
 
     $query = 'SELECT A.CODAPRESENTACAO, E.ID_BASE, E.ID_EVENTO, E.DS_EVENTO, B.DS_NOME_TEATRO, CONVERT(VARCHAR(10), A.DT_APRESENTACAO, 103) DT_APRESENTACAO, A.HR_APRESENTACAO

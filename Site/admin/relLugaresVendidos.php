@@ -2,7 +2,7 @@
 require_once('../settings/Utils.php');
 
 // Host do Reporting Services
-$report_host = "http://".$_SERVER["HTTP_HOST"];
+$report_host = "http://201.48.139.237:8081";
 // URL do ReportViewer
 $report_server = "/ReportServer/Pages/ReportViewer.aspx?";
 // Pasta onde esta o relatório no ReportServer

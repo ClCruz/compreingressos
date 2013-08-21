@@ -1,5 +1,7 @@
 <?php
 require_once('../settings/Utils.php');
+require_once("../settings/functions.php");
+$mainConnection = mainConnection();
 
 // Host do Reporting Services
 $report_host = "http://201.48.139.237:8081";
@@ -22,7 +24,8 @@ $params = array(
     8 => "rc:Parameters",
     9 => "rs:Command",
     10 => "PARAM_HR_INI",
-    11 => "PARAM_HR_FIM"
+    11 => "PARAM_HR_FIM",
+    12 => "cboTeatro"
 );
 foreach ($params as $key => $value) {
   if (!empty($_POST[$value])) {
@@ -33,6 +36,10 @@ foreach ($params as $key => $value) {
       $param = cleanDocuments($param);
     }else if($key == 2){
       $param = str_replace("TODOS", "-1", $param);
+    }else if($key == 12){
+      $strQuery = "SELECT DS_NOME_BASE_SQL FROM MW_BASE WHERE ID_BASE = " . $_POST[$value];
+      $stmt = executeSQL($mainConnection, $strQuery, array(), true);
+      $param = $stmt["DS_NOME_BASE_SQL"];
     }
     $url_report .= "&". $value ."=". $param;
   }

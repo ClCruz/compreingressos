@@ -221,3 +221,24 @@
 	width: 100px;
 	display: none;
 }
+
+/* --------------------------------------------------------------------------------------------- */
+
+.meia-entrada {
+	position: relative;
+	display: inline-block;
+	padding: 5px;
+	margin: 7px 0;
+	border: 2px solid #991427;
+	background-color: whitesmoke;
+}
+
+.meia-entrada .contagem-meia {
+	color: #F00;
+	font-size: larger;
+	font-weight: bold;
+}
+
+.bilhete_lote_indisponivel {
+	display: none;
+}

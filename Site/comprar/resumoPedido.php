@@ -44,6 +44,9 @@ while ($rs = fetchResult($result)) {
 									<h1><?php echo utf8_encode(strtoupper(strftime("%A", $tempo))); ?></h1>
 									<h1><?php echo $rs['DT_APRESENTACAO'] . ' - ' . $rs['HR_APRESENTACAO']; ?></h1>
 								</div>
+
+								<?php echo getCaixaTotalMeiaEntrada($rs['ID_APRESENTACAO']); ?>
+
 								<div class="resumo_pedido">
 									<table width="100%">
 										<tr>

@@ -1,7 +1,7 @@
 $(function() {
 	$('#esqueciForm, p.aviso, p.err_msg').hide();
 	
-	if ($.cookie('user') == null) $('#cadastro').slideUp(1);//IE
+	$('#cadastro').slideUp(1);//IE
 	
 	$.busyCursor();
 	

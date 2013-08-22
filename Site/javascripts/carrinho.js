@@ -4,10 +4,12 @@ $(function() {
 	
 	$.busyCursor();
 	
+	var combo_requests = 0;
+	var $combo_ingressos = $('[name="valorIngresso\\[\\]"]');
 	var fadeAndDestroy = function() {
-									$(this).remove();
-									updateAllValues();
-								};
+							$(this).remove();
+							updateAllValues();
+						};
 	
 	$('#cmb_entrega').change(function() {
 		if ($(this).val() == 'entrega') {
@@ -56,7 +58,6 @@ $(function() {
 			complete: function() {
 				$('#loadingIcon').fadeOut('slow');
 				calculaTotal();
-				
 			}
 		});
 	});
@@ -65,11 +66,35 @@ $(function() {
 		$('#calculaFrete').click();
 	});
 	
-	$('[name="valorIngresso\\[\\]"]').change(function() {
+	$combo_ingressos.focus(function() {
+	    //Store old value
+	    $(this).data('lastValue', $(this).val());
+	}).change(function() {
 		var $this = $(this),
-			$target = $this.parent('td').next('td').find('.valorConveniencia');
+			$target = $this.parent('td').next('td').find('.valorConveniencia'),
+			ids = [];
 
-		carregarDadosGerais(function(){updateValorServico($this.val(), $target)}, $('#pedido'));
+		carregarDadosGerais(function(){
+			if ($('.ui-dialog .bilhete_lote_indisponivel').length > 0) {
+				$this.val($this.data('lastValue'));
+
+				// IMPORTANT!: Firefox will not act properly without this:
+				$this.blur();
+			} else {
+				$this.data('lastValue', $this.val());
+			}
+
+			updateValorServico($this.val(), $target);
+		
+			combo_requests++;
+
+			$('#pedido :input[name="apresentacao\\[\\]"]').each(function(){
+				if (combo_requests > $combo_ingressos.length - 1 && $.inArray(this.value, ids) == -1) {
+					ids.push(this.value);
+					atualizarCaixaMeiaEntrada(this.value);
+				}
+			});
+		}, $('#pedido'));
 	}).change();
 	
 	$('.removerIngresso').click(function(event) {
@@ -198,10 +223,14 @@ $(function() {
 			type: form.attr('method'),
 			success: function(data) {
 				if (data == 'true') {
-					if (typeof($this) == 'function') $this();
-					else document.location = $this.attr('href');
+					if (typeof($this) == 'function') {
+						$this();
+					} else {
+						document.location = $this.attr('href');
+					}
 				} else {
 					$.dialog({text: data});
+					if (typeof($this) == 'function') $this();
 				}
 			},
 			complete: function() {

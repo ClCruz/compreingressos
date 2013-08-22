@@ -188,6 +188,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
 				<h1 class="uppercase"><?php echo utf8_encode($rs['DS_EVENTO']); ?></h1>
 				<h1><?php echo utf8_encode(strtoupper(strftime("%A", $tempo))); ?></h1>
 				<h1><?php echo $rs['DT_APRESENTACAO'] . ' - ' . $rs['HR_APRESENTACAO']; ?></h1>
+				<?php echo getCaixaTotalMeiaEntrada($_GET['apresentacao']); ?>
 			    </div>
 <?php if ($vendasPorTelefone >= 0) { ?>
     			    <div class="titulo">

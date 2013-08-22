@@ -152,6 +152,8 @@ if (isset($_GET['action'])) {
 		}
 	
 	} else if ($_GET['action'] == 'update' and isset($_POST['apresentacao']) and isset($_POST['cadeira'])) {
+
+		$retorno = '';
 	
 		$query = 'UPDATE MW_RESERVA SET
 					 ID_APRESENTACAO_BILHETE = ?,
@@ -159,12 +161,29 @@ if (isset($_GET['action'])) {
 					 WHERE ID_APRESENTACAO = ? AND ID_CADEIRA = ? AND ID_SESSION = ?';
 		$result = true;
 
-		$selectVB = 'SELECT E.ID_BASE, AB.CODTIPBILHETE, A.CODAPRESENTACAO
+		$selectInfoVB = 'SELECT E.ID_BASE, AB.CODTIPBILHETE, A.CODAPRESENTACAO
 					 FROM MW_APRESENTACAO_BILHETE AB
 					 INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = AB.ID_APRESENTACAO
 					 INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
 					 WHERE AB.ID_APRESENTACAO_BILHETE = ? AND AB.ID_APRESENTACAO = ?';
+
 		$updateVB = 'UPDATE TABLUGSALA SET CODTIPBILHETE = ? WHERE CODAPRESENTACAO = ? AND INDICE = ? AND ID_SESSION = ?';
+
+		$queryTipoBilhete = "SELECT STATIPBILHMEIAESTUDANTE, QTDVENDAPORLOTE FROM TABTIPBILHETE WHERE CODTIPBILHETE = ? AND STATIPBILHETE = 'A'";
+
+		$queryMeiaEstudanteNoCarrinho = "SELECT COUNT(1) AS NO_CARRINHO FROM TABLUGSALA L
+							INNER JOIN TABTIPBILHETE B ON L.CODTIPBILHETE = B.CODTIPBILHETE
+							WHERE B.STATIPBILHMEIAESTUDANTE = 'S' AND B.STATIPBILHETE = 'A'
+							AND B.CODTIPBILHETE = ? AND L.CODAPRESENTACAO = ? AND L.INDICE = ? AND L.ID_SESSION = ?";
+
+		$queryIsBilheteMeiaEstudante = "SELECT COUNT(1) AS BILHETE_MEIA FROM TABTIPBILHETE WHERE STATIPBILHMEIAESTUDANTE = 'S' AND STATIPBILHETE = 'A' AND CODTIPBILHETE = ?";
+
+		$queryLoteNoCarrinho = "SELECT COUNT(1) AS NO_CARRINHO FROM TABLUGSALA L
+							INNER JOIN TABTIPBILHETE B ON L.CODTIPBILHETE = B.CODTIPBILHETE
+							WHERE B.STATIPBILHMEIAESTUDANTE = 'N' AND B.STATIPBILHETE = 'A' AND B.QTDVENDAPORLOTE > 0
+							AND B.CODTIPBILHETE = ? AND L.CODAPRESENTACAO = ? AND L.INDICE = ? AND L.ID_SESSION = ?";
+
+		$queryIsLote = "SELECT COUNT(1) AS BILHETE_LOTE FROM TABTIPBILHETE WHERE STATIPBILHMEIAESTUDANTE = 'N' AND QTDVENDAPORLOTE > 0 AND STATIPBILHETE = 'A' AND CODTIPBILHETE = ?";
 		
 		$binArray = explode(',', $_POST['binArray']);
 		
@@ -175,21 +194,56 @@ if (isset($_GET['action'])) {
 				$_POST['valorIngresso'][$i] = 'NULL';
 			}
 
-			$rs = executeSQL($mainConnection, $selectVB, array($_POST['valorIngresso'][$i], $_POST['apresentacao'][$i]), true);
+			$rs = executeSQL($mainConnection, $selectInfoVB, array($_POST['valorIngresso'][$i], $_POST['apresentacao'][$i]), true);
 			$conn = getConnection($rs['ID_BASE']);
-			$result = (executeSQL($conn, $updateVB, array($rs['CODTIPBILHETE'], $rs['CODAPRESENTACAO'], $_POST['cadeira'][$i], session_id())) and $result);
-			
-			$bin = (in_array($_POST['apresentacao'][$i].'|'.$_POST['cadeira'][$i], $binArray)) ? $_POST['bin1'].$_POST['bin2'] : NULL;
-			
-			$params = array(
-						$_POST['valorIngresso'][$i],
-						$bin,
-						$_POST['apresentacao'][$i],
-						$_POST['cadeira'][$i],
-						session_id()
-					);
-			
-			$result = (executeSQL($mainConnection, $query, $params) and $result);
+
+			//identifica o bilhete como meia ou lote
+			$rs1 = executeSQL($conn, $queryTipoBilhete, array($rs['CODTIPBILHETE']), true);
+
+			//MEIA ESTUDANTE
+			if ($rs1['STATIPBILHMEIAESTUDANTE'] == 'S') {
+				//checar se o bilhete atual é meia estudante e está no carrinho
+				$rs2 = executeSQL($conn, $queryMeiaEstudanteNoCarrinho, array($rs['CODTIPBILHETE'], $rs['CODAPRESENTACAO'], $_POST['cadeira'][$i], session_id()), true);
+				$rs3 = executeSQL($conn, $queryIsBilheteMeiaEstudante, array($rs['CODTIPBILHETE']), true);
+
+				//checar se o numero disponivel de meia estudante esta zerado, ou seja, se a pessoa selecionou um bilhete nao disponivel
+				if (($rs2['NO_CARRINHO'] == 0 and $rs3['BILHETE_MEIA'] == 1) and getTotalMeiaEntradaDisponivel($_POST['apresentacao'][$i]) <= 0) {
+					
+					$retorno = 'Quantidade de meia entrada de estudante superou a cota disponível, altere um ou mais tipos de ingresso para efetuar a compra.';
+
+				}
+
+			//LOTE
+			} else if ($rs1['STATIPBILHMEIAESTUDANTE'] == 'N' and $rs1['QTDVENDAPORLOTE'] > 0) {
+				//checar se o bilhete atual é de lote e está no carrinho
+				$rs2 = executeSQL($conn, $queryLoteNoCarrinho, array($rs['CODTIPBILHETE'], $rs['CODAPRESENTACAO'], $_POST['cadeira'][$i], session_id()), true);
+				$rs3 = executeSQL($conn, $queryIsLote, array($rs['CODTIPBILHETE']), true);
+
+				//checar se o numero disponivel de lote esta zerado, ou seja, se a pessoa selecionou um bilhete nao disponivel
+				if (($rs2['NO_CARRINHO'] == 0 and $rs3['BILHETE_LOTE'] == 1) and getTotalLoteDisponivel($_POST['valorIngresso'][$i]) <= 0) {
+
+					$retorno = 'Ingresso esgotado, selecione outro tipo de ingresso para efetuar a compra.<span class="bilhete_lote_indisponivel">'.$_POST['valorIngresso'][$i].'</span>';
+
+				}
+			}
+
+			if ($retorno == '') {
+
+				$result = (executeSQL($conn, $updateVB, array($rs['CODTIPBILHETE'], $rs['CODAPRESENTACAO'], $_POST['cadeira'][$i], session_id())) and $result);
+				
+				$bin = (in_array($_POST['apresentacao'][$i].'|'.$_POST['cadeira'][$i], $binArray)) ? $_POST['bin1'].$_POST['bin2'] : NULL;
+				
+				$params = array(
+							$_POST['valorIngresso'][$i],
+							$bin,
+							$_POST['apresentacao'][$i],
+							$_POST['cadeira'][$i],
+							session_id()
+						);
+				
+				$result = (executeSQL($mainConnection, $query, $params) and $result);
+
+			}
 		}
 		
 		$errors = sqlErrors();
@@ -212,12 +266,14 @@ if (isset($_GET['action'])) {
 			}
 			
 			//extenderTempo();
-			echo 'true';
+			$retorno = $retorno ? $retorno : 'true';
 		} else {
 			rollbackTransaction($mainConnection);
-			echo 'Seu pedido contém erro(s)!<br><br>Favor revisá-lo.<br><br>Se o erro persistir, favor entrar em contato com o suporte.';
+			$retorno = 'Seu pedido contém erro(s)!<br><br>Favor revisá-lo.<br><br>Se o erro persistir, favor entrar em contato com o suporte.';
 		}
 		//print_r(sqlErrors('message'));
+
+		echo $retorno;
 
 	} else if ($_GET['action'] == 'delete' and isset($_REQUEST['apresentacao']) and isset($_REQUEST['id'])) {
 		
@@ -384,6 +440,9 @@ if (isset($_GET['action'])) {
 		} else {
 			echo 'Você selecionou o máximo de ingressos permitidos para compras pelo site.<br><br>Para selecionar mais ingressos finalize essa compra.';
 		}
+
+	} else if ($_GET['action'] == 'atualizarCaixaMeiaEntrada' and isset($_REQUEST['id'])) {
+		echo getCaixaTotalMeiaEntrada($_REQUEST['id']);
 	}
 }
 ?>

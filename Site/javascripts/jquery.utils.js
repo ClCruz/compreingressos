@@ -6,6 +6,27 @@ function trim(text) {
 	return text.replace(/^\s+|\s+$/g,"");
 }
 
+function atualizarCaixaMeiaEntrada(id) {
+	$('#loadingIcon').fadeIn('fast');
+
+	$.ajax({
+		url: 'atualizarPedido.php',
+		data: 'action=atualizarCaixaMeiaEntrada&id=' + id,
+		success: function(data) {
+			var caixa = $('#cme-'+id).html($(data).html());
+
+			if (caixa.find('.contagem-meia').text() == '0') {
+				caixa.next('.resumo_pedido').find('.valorIngresso\\[\\] :not(:selected)[meia_estudante="1"]').attr('disabled','disabled');
+			} else {
+				caixa.next('.resumo_pedido').find('.valorIngresso\\[\\] [meia_estudante="1"]').removeAttr('disabled');
+			}
+		},
+		complete: function() {
+			$('#loadingIcon').fadeOut('slow');
+		}
+	});
+}
+
 (function($){
 	$.ajaxSetup({cache: false});
 
@@ -52,17 +73,23 @@ function trim(text) {
 	
 	$.extend({
 		dialog: function(options) {
-			var defaults = {
-					title: 'Erro...',
+			var dialog,
+				defaults = {
+					title: 'Aviso...',
 					iconClass: 'ui-icon ui-icon-alert',
 					text: 'Ocorreu um erro durante o processo...<br><br>Favor informar o suporte!',
 					uiOptions: {
+						width: 500,
 						resizable: false,
 						modal: true,
+						autoOpen: false,
 						buttons: {
 							'Ok': function() {
 								$(this).dialog('close');
 							}
+						},
+						close: function() {
+							$(this).dialog('destroy').remove();
 						}
 					 }
 				 },
@@ -81,6 +108,13 @@ function trim(text) {
 				 
 			p.append(span).append(options.text);
 			element.dialog(options.uiOptions);
+
+			same_message = $('.ui-dialog-content').filter(function(i,e){
+				return $(e).text() == element.text();
+			}).length;
+console.log(same_message);
+			if (same_message == 1) element.dialog('open');
+			else element.dialog('destroy').remove();
 		},
 		
 		confirmDialog: function(options) {

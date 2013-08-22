@@ -15,7 +15,7 @@ function getChildren($conn, $id, $return = false) {
 	$hasRows = hasRows($result);
 	
 	if ($hasRows) {
-		echo '<ul' . ($return ? " id='menu-items'" : '') . '>';
+		echo '<ul' . ($return ? " id='menu-items' class='ui-helper-hidden'" : '') . '>';
 		while ($rs = fetchResult($result)) {
 			echo '<li><a href="'.$rs['DS_URL'].'">'.utf8_encode($rs['DS_PROGRAMA']).'</a>';
 			getChildren($conn, $rs['ID_PROGRAMA']);

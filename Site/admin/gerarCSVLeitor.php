@@ -61,8 +61,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
                 var_descTeatro = $('#cboTeatro').val();
                 var_descPeca = $('#cboPeca').val();
             };
-        </script>
-        <script language="javascript">
+
             var Janela
 
             function CarregaApresentacao()
@@ -111,16 +110,14 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
                     return false;
                 }
 
-                if(document.fPeca.cboApresentacao.value == ""
-                    && !document.fPeca.chkSmall.checked)
+                if(document.fPeca.cboApresentacao.value == "")
                 {
                     $.dialog({title: 'Alerta...', text: 'Selecione a apresentação'});
                     document.fPeca.cboApresentacao.focus();
                     return false;
                 }
 
-                if(document.fPeca.cboHorario.value == ""
-                    && !document.fPeca.chkSmall.checked)
+                if(document.fPeca.cboHorario.value == "")
                 {
                     $.dialog({title: 'Alerta...', text: 'Selecione o horário'});
                     document.fPeca.cboHorario.focus();
@@ -157,7 +154,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
         <h2>Gerar arquivo CSV de Códígo de Barras</h2>
     </head>
     <body>
-        <form action="javascript:validar();" name="fPeca" id="fPeca" method="POST">
+        <form name="fPeca" id="fPeca" method="POST">
             <table cellpadding='0' border='0' width='609' cellspacing='0'>
                 <tr>
                     <td><strong>Local:</strong><br>
@@ -205,8 +202,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
             <tr>
                 <td ALIGN="CENTER" COLSPAN="2">
                     <br>
-                    <button type="submit" class="button" style="width:100">Gerar Arq. CSV</button>&nbsp;
-                    <button class="button" onClick="limpar()">Limpar Campos</button>&nbsp;
+                    <input type="button" class="button enviar" value="Gerar Arq. CSV" onclick="validar()" />&nbsp;
+                    <input type="button" class="button limpar" value="Limpar Campos" onclick="limpar()" />&nbsp;
                 </td>
             </tr>
         </table>

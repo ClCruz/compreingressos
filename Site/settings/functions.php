@@ -246,6 +246,163 @@ function enviarEmailNovaConta ($login, $nome, $email) {
 	return authSendEmail($from, $namefrom, $email, $nome, $subject, $message);
 }
 
+function getTotalMeiaEntrada ($apresentacao) {
+	$mainConnection = mainConnection();
+	$total = 0;
+
+	$query = 'SELECT e.id_base
+				from mw_evento e
+				inner join mw_apresentacao a on e.id_evento = a.id_evento
+				where a.id_apresentacao = ?';
+	$rs = executeSQL($mainConnection, $query, array($apresentacao), true);
+
+	$conn = getConnection($rs['id_base']);
+
+	$query = "SELECT StaCalculoMeiaEstudante, CotaMeiaEstudante, StaCalculoPorSala
+				from tabTipBilhete
+				where StaTipBilhMeiaEstudante = 'S' and StaTipBilhete = 'A'
+				and CodTipBilhete in (select CodTipBilhete from ci_middleway..mw_apresentacao_bilhete where id_apresentacao = ? AND IN_ATIVO = 1)";
+	$rs = executeSQL($conn, $query, array($apresentacao), true);
+
+	if ($rs['StaCalculoMeiaEstudante'] == 'P') {
+		if ($rs['StaCalculoPorSala'] == 'S') {
+			$query = "SELECT COALESCE(COUNT(tsd.Indice), 0) as TOTAL FROM tabSalDetalhe tsd
+						INNER JOIN tabApresentacao ta ON ta.CodSala = tsd.CodSala
+						INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.CodApresentacao = ta.CodApresentacao
+						WHERE A.ID_APRESENTACAO = ? AND A.IN_ATIVO = 1 AND tsd.TipObjeto <> 'I'";
+			$params = array($apresentacao);
+		} else {
+			$query = "SELECT COALESCE(COUNT(tsd.Indice), 0) as TOTAL FROM tabSalDetalhe tsd
+						INNER JOIN tabApresentacao ta ON ta.CodSala = tsd.CodSala
+						INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.CodApresentacao = ta.CodApresentacao
+						WHERE A.ID_EVENTO = (SELECT ID_EVENTO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = 1)
+						AND A.DT_APRESENTACAO = (SELECT DT_APRESENTACAO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = 1)
+						AND A.HR_APRESENTACAO = (SELECT HR_APRESENTACAO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = 1)
+						AND A.IN_ATIVO = 1
+						AND tsd.TipObjeto <> 'I'";
+			$params = array($apresentacao, $apresentacao, $apresentacao);
+		}
+		
+		$rs2 = executeSQL($conn, $query, $params, true);
+
+		$total = ceil($rs2['TOTAL'] * ($rs['CotaMeiaEstudante'] / 100));
+	} else if ($rs['StaCalculoMeiaEstudante'] == 'Q') {
+		$total = $rs['CotaMeiaEstudante'];
+	}
+
+	return $total;
+}
+
+function getTotalMeiaEntradaDisponivel ($apresentacao) {
+	$mainConnection = mainConnection();
+	$total = 0;
+
+	$query = 'SELECT e.id_base
+				from mw_evento e
+				inner join mw_apresentacao a on e.id_evento = a.id_evento
+				where a.id_apresentacao = ?';
+	$rs = executeSQL($mainConnection, $query, array($apresentacao), true);
+
+	$conn = getConnection($rs['id_base']);
+
+	$query = "select StaCalculoPorSala
+				from tabTipBilhete
+				where StaTipBilhMeiaEstudante = 'S' and StaTipBilhete = 'A'
+				and CodTipBilhete in (select CodTipBilhete from ci_middleway..mw_apresentacao_bilhete where id_apresentacao = ?)";
+	$rs = executeSQL($conn, $query, array($apresentacao), true);
+
+	if ($rs['StaCalculoPorSala'] == 'S') {
+		$query = "SELECT COALESCE(COUNT(TLS.INDICE),0) AS TOTAL FROM TABLUGSALA TLS
+					INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.CODAPRESENTACAO = TLS.CODAPRESENTACAO
+					INNER JOIN TABTIPBILHETE TTB ON TTB.CODTIPBILHETE = TLS.CODTIPBILHETE
+					WHERE TLS.CODAPRESENTACAO IN (SELECT CODAPRESENTACAO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = A.ID_APRESENTACAO AND IN_ATIVO = 1)
+					AND TLS.CODTIPBILHETE IN (SELECT CODTIPBILHETE FROM CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE WHERE ID_APRESENTACAO = A.ID_APRESENTACAO AND IN_ATIVO = 1)
+					AND TTB.STATIPBILHMEIAESTUDANTE = 'S' AND TTB.STATIPBILHETE = 'A' AND A.ID_APRESENTACAO = ?";
+		$params = array($apresentacao);
+	} else {
+		$query = "SELECT COALESCE(COUNT(TLS.INDICE),0) AS TOTAL FROM TABLUGSALA TLS
+					INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.CODAPRESENTACAO = TLS.CODAPRESENTACAO
+					INNER JOIN TABTIPBILHETE TTB ON TTB.CODTIPBILHETE = TLS.CODTIPBILHETE
+					WHERE A.ID_EVENTO = (SELECT ID_EVENTO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = 1)
+					AND A.DT_APRESENTACAO = (SELECT DT_APRESENTACAO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = 1)
+					AND A.HR_APRESENTACAO = (SELECT HR_APRESENTACAO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = 1)
+					AND A.IN_ATIVO = 1
+					AND TLS.CODAPRESENTACAO IN (SELECT CODAPRESENTACAO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = A.ID_APRESENTACAO AND IN_ATIVO = 1)
+					AND TLS.CODTIPBILHETE IN (SELECT CODTIPBILHETE FROM CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE WHERE ID_APRESENTACAO = A.ID_APRESENTACAO AND IN_ATIVO = 1)
+					AND TTB.STATIPBILHMEIAESTUDANTE = 'S' AND TTB.STATIPBILHETE = 'A'";
+		$params = array($apresentacao, $apresentacao, $apresentacao);
+	}
+	
+	$rs = executeSQL($conn, $query, $params, true);
+
+	return getTotalMeiaEntrada($apresentacao) - $rs['TOTAL'];
+}
+
+function getCaixaTotalMeiaEntrada($apresentacao) {
+	$t = getTotalMeiaEntradaDisponivel($apresentacao);
+	//$t = $t < 0 ? 0 : $t;
+
+	$html = "<div class='meia-entrada' id='cme-" . $apresentacao . "'>
+				Qtde. total de meia entrada de estudante para a apresentação: " . getTotalMeiaEntrada($apresentacao) . "<br>
+				Qtde. meia entrada disponível às " . date('H:i:s') . ": <span class='contagem-meia'>" . $t . "</span>
+			</div>";
+
+	return $html;
+}
+
+function getTotalLote ($bilhete) {
+	$mainConnection = mainConnection();
+	$total = 0;
+
+	$query = 'SELECT e.id_base
+				from mw_evento e
+				inner join mw_apresentacao a on e.id_evento = a.id_evento
+				inner join mw_apresentacao_bilhete ab on ab.id_apresentacao = a.id_apresentacao
+				where ab.id_apresentacao_bilhete = ?';
+	$rs = executeSQL($mainConnection, $query, array($bilhete), true);
+
+	$conn = getConnection($rs['id_base']);
+
+	$query = "SELECT ttb.QtdVendaPorLote
+				from tabTipBilhete ttb
+				inner join ci_middleway..mw_apresentacao_bilhete ab on ab.CodTipBilhete = ttb.CodTipBilhete
+				where ttb.QTDVENDAPORLOTE > 0 and ttb.StaTipBilhMeiaEstudante = 'N' and ttb.StaTipBilhete = 'A'
+				and ab.id_apresentacao_bilhete = ? and ab.IN_ATIVO = 1";
+	$rs = executeSQL($conn, $query, array($bilhete), true);
+
+	return $rs['QtdVendaPorLote'];
+}
+
+function getTotalLoteDisponivel ($bilhete) {
+	$mainConnection = mainConnection();
+	$total = 0;
+
+	$query = 'SELECT e.id_base, A.ID_EVENTO, A.DT_APRESENTACAO, A.HR_APRESENTACAO, AB.CODTIPBILHETE
+				from mw_evento e
+				inner join mw_apresentacao a on e.id_evento = a.id_evento
+				inner join mw_apresentacao_bilhete ab on ab.id_apresentacao = a.id_apresentacao
+				where ab.id_apresentacao_bilhete = ?';
+	$rs = executeSQL($mainConnection, $query, array($bilhete), true);
+
+	$conn = getConnection($rs['id_base']);
+	
+	$query = "SELECT COALESCE(COUNT(TLS.INDICE),0) AS TOTAL FROM TABLUGSALA TLS
+				INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.CODAPRESENTACAO = TLS.CODAPRESENTACAO
+				INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO = A.ID_APRESENTACAO AND TLS.CODTIPBILHETE = AB.CODTIPBILHETE
+				INNER JOIN TABTIPBILHETE TTB ON TTB.CODTIPBILHETE = AB.CODTIPBILHETE
+				WHERE A.ID_EVENTO = ? AND A.DT_APRESENTACAO = ? AND A.HR_APRESENTACAO = ?
+				AND A.IN_ATIVO = 1 AND AB.IN_ATIVO = 1 AND TTB.CODTIPBILHETE = ?
+				AND TTB.QTDVENDAPORLOTE > 0 AND TTB.STATIPBILHMEIAESTUDANTE = 'N' AND TTB.STATIPBILHETE = 'A'";
+	$params = array($bilhete);
+	$rs = executeSQL($conn, $query, array($rs['ID_EVENTO'], $rs['DT_APRESENTACAO'], $rs['HR_APRESENTACAO'], $rs['CODTIPBILHETE']), true);
+
+	return getTotalLote($bilhete) - $rs['TOTAL'];
+}
+
+
+
+
+
 /*  BANCO  */
 
 
@@ -458,7 +615,7 @@ function comboTipoLocalOptions($name, $selected, $isCombo = true) {
 function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NULL, $isCombo = true) {
     $mainConnection = mainConnection();
 
-    $query = 'SELECT B.DS_NOME_BASE_SQL
+    $query = 'SELECT B.ID_BASE
 				 FROM
 				 MW_BASE B
 				 INNER JOIN MW_EVENTO E ON E.ID_BASE = B.ID_BASE
@@ -467,71 +624,113 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
     $params = array($apresentacaoID);
     $rs = executeSQL($mainConnection, $query, $params, true);
 
-    $query = 'SELECT ID_APRESENTACAO_BILHETE, AB.CODTIPBILHETE, DS_TIPO_BILHETE, VL_LIQUIDO_INGRESSO, P.IN_BIN_ITAU, ISNULL(P.QT_BIN_POR_CPF,0) AS QT_BIN_POR_CPF, P.CODTIPBILHETEBIN
-					FROM
-					 MW_APRESENTACAO_BILHETE AB 
-					 INNER JOIN 
-					 MW_APRESENTACAO   A
-					 ON A.ID_APRESENTACAO = AB.ID_APRESENTACAO
-					 INNER JOIN 
-					 MW_EVENTO   E
-					 ON E.ID_EVENTO = A.ID_EVENTO
-					 INNER JOIN
-					 ' . $rs['DS_NOME_BASE_SQL'] . '..TABTIPBILHETE B
-					 ON	 B.CODTIPBILHETE = AB.CODTIPBILHETE
-					 AND B.IN_VENDA_SITE = 1
-					 AND 0 = CASE DATEPART(W, A.DT_APRESENTACAO)
-								WHEN 1 THEN IN_DOM 
-								WHEN 2 THEN IN_SEG 
-								WHEN 3 THEN IN_TER 
-								WHEN 4 THEN IN_QUA 
-								WHEN 5 THEN IN_QUI 
-								WHEN 6 THEN IN_SEX 
-								ELSE IN_SAB
-								END
-					INNER JOIN
-					' . $rs['DS_NOME_BASE_SQL'] . '..TABPECA   P
-					ON P.CODPECA = E.CODPECA
-					WHERE AB.ID_APRESENTACAO = ? 
-					AND AB.IN_ATIVO = \'1\'
-					AND NOT EXISTS (SELECT 1 FROM 
-							' . $rs['DS_NOME_BASE_SQL'] . '..TABAPRESENTACAO AP
-							INNER JOIN
-							' . $rs['DS_NOME_BASE_SQL'] . '..TABRESTRICAOBILHETE R
-							ON AP.CODPECA = R.CODPECA
-							AND AP.CODSALA = R.CODSALA
-							AND R.CODSETOR IS NULL
-						 WHERE AB.CODTIPBILHETE = R.CODTIPBILHETE
-						   AND AP.CODAPRESENTACAO = A.CODAPRESENTACAO)
-					AND NOT EXISTS (SELECT 1 FROM 
-							' . $rs['DS_NOME_BASE_SQL'] . '..TABAPRESENTACAO AP
-							INNER JOIN
-							' . $rs['DS_NOME_BASE_SQL'] . '..TABRESTRICAOBILHETE R
-							ON AP.CODPECA = R.CODPECA
-							AND AP.CODSALA = R.CODSALA
-							INNER JOIN
-							' . $rs['DS_NOME_BASE_SQL'] . '..TABSALDETALHE D
-							ON D.CODSALA = AP.CODSALA
-							AND D.INDICE  = ?
-							AND D.CODSETOR = R.CODSETOR
-						 WHERE AB.CODTIPBILHETE = R.CODTIPBILHETE
-						   AND AP.CODAPRESENTACAO = A.CODAPRESENTACAO)
-						ORDER BY DS_TIPO_BILHETE';
-    $result = executeSQL($mainConnection, $query, array($apresentacaoID, $idCadeira));
+    $conn = getConnection($rs['ID_BASE']);
+
+    $query = "SELECT COUNT(1) AS MEIA_ESTUDANTE
+				FROM TABTIPBILHETE B
+				INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB ON AB.CODTIPBILHETE = B.CODTIPBILHETE
+				INNER JOIN CI_MIDDLEWAY..MW_RESERVA R ON AB.ID_APRESENTACAO = R.ID_APRESENTACAO
+				AND AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
+				WHERE B.STATIPBILHMEIAESTUDANTE = 'S' AND B.STATIPBILHETE = 'A'
+				AND R.ID_SESSION = ?";
+    $rs2 = executeSQL($conn, $query, array(session_id()), true);
+
+    $ocultarMeiaEstudante = (getTotalMeiaEntradaDisponivel($apresentacaoID) <= 0 and $rs2['MEIA_ESTUDANTE'] == 0) ? "AND (B.STATIPBILHMEIAESTUDANTE <> 'S' OR B.STATIPBILHMEIAESTUDANTE IS NULL) " : '';
+
+    $query = "SELECT B.CODTIPBILHETE
+				FROM TABTIPBILHETE B
+				INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB ON AB.CODTIPBILHETE = B.CODTIPBILHETE
+				INNER JOIN CI_MIDDLEWAY..MW_RESERVA R ON AB.ID_APRESENTACAO = R.ID_APRESENTACAO
+				AND AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
+				WHERE B.STATIPBILHMEIAESTUDANTE = 'N' AND B.STATIPBILHETE = 'A' AND B.QTDVENDAPORLOTE > 0
+				AND R.ID_SESSION = ?";
+    $result = executeSQL($conn, $query, array(session_id()));
+
+    $bilhetes_lote_no_carrinho = array();
+    while ($rs = fetchResult($result)) {
+    	$bilhetes_lote_no_carrinho[] = $rs['CODTIPBILHETE'];
+    }
+
+    $ocultarLote = (getTotalLoteDisponivel($apresentacaoID) <= 0 and $rs2['LOTE'] == 0) ? true : false;
+
+    $query = "SELECT ID_APRESENTACAO_BILHETE, AB.CODTIPBILHETE, DS_TIPO_BILHETE, VL_LIQUIDO_INGRESSO, P.IN_BIN_ITAU, ISNULL(P.QT_BIN_POR_CPF,0) AS QT_BIN_POR_CPF, P.CODTIPBILHETEBIN, B.STATIPBILHMEIAESTUDANTE, B.QTDVENDAPORLOTE
+				FROM
+				 CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB 
+				 INNER JOIN 
+				 CI_MIDDLEWAY..MW_APRESENTACAO   A
+				 ON A.ID_APRESENTACAO = AB.ID_APRESENTACAO
+				 INNER JOIN 
+				 CI_MIDDLEWAY..MW_EVENTO   E
+				 ON E.ID_EVENTO = A.ID_EVENTO
+				 INNER JOIN
+				 TABTIPBILHETE B
+				 ON	 B.CODTIPBILHETE = AB.CODTIPBILHETE
+				 AND B.IN_VENDA_SITE = 1
+				 AND 0 = CASE DATEPART(W, A.DT_APRESENTACAO)
+							WHEN 1 THEN IN_DOM 
+							WHEN 2 THEN IN_SEG 
+							WHEN 3 THEN IN_TER 
+							WHEN 4 THEN IN_QUA 
+							WHEN 5 THEN IN_QUI 
+							WHEN 6 THEN IN_SEX 
+							ELSE IN_SAB
+							END
+				INNER JOIN
+				TABPECA   P
+				ON P.CODPECA = E.CODPECA
+				WHERE AB.ID_APRESENTACAO = ? 
+				AND AB.IN_ATIVO = '1'
+				AND NOT EXISTS (SELECT 1 FROM 
+						TABAPRESENTACAO AP
+						INNER JOIN
+						TABRESTRICAOBILHETE R
+						ON AP.CODPECA = R.CODPECA
+						AND AP.CODSALA = R.CODSALA
+						AND R.CODSETOR IS NULL
+					 WHERE AB.CODTIPBILHETE = R.CODTIPBILHETE
+					   AND AP.CODAPRESENTACAO = A.CODAPRESENTACAO)
+				AND NOT EXISTS (SELECT 1 FROM 
+						TABAPRESENTACAO AP
+						INNER JOIN
+						TABRESTRICAOBILHETE R
+						ON AP.CODPECA = R.CODPECA
+						AND AP.CODSALA = R.CODSALA
+						INNER JOIN
+						TABSALDETALHE D
+						ON D.CODSALA = AP.CODSALA
+						AND D.INDICE  = ?
+						AND D.CODSETOR = R.CODSETOR
+				WHERE AB.CODTIPBILHETE = R.CODTIPBILHETE
+				   AND AP.CODAPRESENTACAO = A.CODAPRESENTACAO)
+					$ocultarMeiaEstudante
+				ORDER BY DS_TIPO_BILHETE";
+				
+    $result = executeSQL($conn, $query, array($apresentacaoID, $idCadeira));
 
     $combo = '<select name="' . $name . '" class="' . $name . ' inputStyle">'; //<option value="">Selecione um bilhete...</option>';
     while ($rs = fetchResult($result)) {
-	$BIN = ($rs['IN_BIN_ITAU'] and $rs['CODTIPBILHETEBIN'] == $rs['CODTIPBILHETE']) ? 'qtBin="' . $rs['QT_BIN_POR_CPF'] . '" codeBin="' . $rs['CODTIPBILHETEBIN'] . '"' : '';
+    	$is_lote = $rs['QTDVENDAPORLOTE'] > 0 and $rs['STATIPBILHMEIAESTUDANTE'] == 'N';
+    	$is_lote_disponivel = getTotalLoteDisponivel($rs['ID_APRESENTACAO_BILHETE']) > 0;
+    	$is_lote_no_carrinho = in_array($rs['CODTIPBILHETE'], $bilhetes_lote_no_carrinho);
 
-	if (($selected == $rs['ID_APRESENTACAO_BILHETE'])) {
-	    $isSelected = 'selected';
-	    $text = '<input type="hidden" name="' . $name . '" value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $BIN . '><span class="' . $name . ' inputStyle">' . utf8_encode($rs['DS_TIPO_BILHETE']) . ' - R$ ' . $rs['VL_LIQUIDO_INGRESSO'] . '</span>';
-	} else {
-	    $isSelected = '';
-	}
+		// ignorar lote se nao estiver disponivel, desde que o cliente nao tenha o bilhete no carrinho
+    	if (!$is_lote
+    		or ($is_lote and $is_lote_disponivel)
+    		or ($is_lote and $is_lote_no_carrinho)) {
+			$BIN = ($rs['IN_BIN_ITAU'] and $rs['CODTIPBILHETEBIN'] == $rs['CODTIPBILHETE']) ? 'qtBin="' . $rs['QT_BIN_POR_CPF'] . '" codeBin="' . $rs['CODTIPBILHETEBIN'] . '"' : '';
+			$meia_estudante = $rs['STATIPBILHMEIAESTUDANTE'] == 'S' ? ' meia_estudante="1"' : '';
+			$lote = ($rs['QTDVENDAPORLOTE'] > 0 and $rs['STATIPBILHMEIAESTUDANTE'] == 'N') ? ' lote="1"' : '';
 
-	$combo .= '<option value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $isSelected . ' ' . $BIN . '>';
-	$combo .= utf8_encode($rs['DS_TIPO_BILHETE']) . ' - R$ ' . $rs['VL_LIQUIDO_INGRESSO'] . '</option>';
+			if (($selected == $rs['ID_APRESENTACAO_BILHETE'])) {
+			    $isSelected = 'selected';
+			    $text = '<input type="hidden" name="' . $name . '" value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $BIN . '><span class="' . $name . ' inputStyle">' . utf8_encode($rs['DS_TIPO_BILHETE']) . ' - R$ ' . $rs['VL_LIQUIDO_INGRESSO'] . '</span>';
+			} else {
+			    $isSelected = '';
+			}
+
+			$combo .= '<option value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $isSelected . ' ' . $BIN . $meia_estudante . $lote . '>';
+			$combo .= utf8_encode($rs['DS_TIPO_BILHETE']) . ' - R$ ' . $rs['VL_LIQUIDO_INGRESSO'] . '</option>';
+		}
     }
     $combo .= '</select>';
 
@@ -1315,6 +1514,15 @@ function saveAndGetPath($image, $name) {
 	$gif = imagegif($image, $path);
 
 	return $path;
+}
+
+
+function normalize_string($string) {
+    // remove whitespace, leaving only a single space between words. 
+    $string = preg_replace('/\s+/', ' ', $string);
+    // flick diacritics off of their letters
+    $string = preg_replace('~&([a-z]{1,2})(?:acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml|caron);~i', '$1', htmlentities($string, ENT_COMPAT, 'UTF-8'));
+    return $string;
 }
 
 

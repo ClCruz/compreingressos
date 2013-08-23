@@ -146,7 +146,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
 
             function limpar()
             {
-                document.fPeca.cboTeatro.value = "";
                 document.fPeca.cboPeca.value = "";
                 document.fPeca.cboApresentacao.value = "";
                 document.fPeca.cboHorario.value = "";

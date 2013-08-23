@@ -24,7 +24,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
 
 		$csv1 = fopen($csv1_path, 'wt');
 
-		fwrite($csv1, "00;" . utf8_encode($rs['NOMPECA']) . ";" . $rs['DATINIPECA'] . ";00:00:00;" . $rs['DATFINPECA'] . ";23:59:59;\n");
+		$data = substr($_GET['DatApresentacao'], 0, 4) . '-' . substr($_GET['DatApresentacao'], 4, 2) . '-' . substr($_GET['DatApresentacao'], -2);
+
+		fwrite($csv1, "00;" . utf8_encode($rs['NOMPECA']) . ";" . $data . ";00:00:00;" . $data . ";23:59:59;\n");
 
 		$query = "SELECT V.CODTIPBILHETE, B.TIPBILHETE FROM TABVALBILHETE V
 				  INNER JOIN TABTIPBILHETE B ON V.CODTIPBILHETE = B.CODTIPBILHETE

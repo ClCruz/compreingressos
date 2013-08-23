@@ -103,7 +103,14 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
 
             function validar()
             {
-                if(document.fPeca.cboPeca.value == "")
+                if(document.fPeca.cboTeatro.value == "")
+                {
+                    $.dialog({title: 'Alerta...',text: 'Selecione o local'});
+                    document.fPeca.cboTeatro.focus();
+                    return false;
+                }
+
+                if(document.fPeca.cboPeca.value == "" || document.fPeca.cboPeca.value == "null")
                 {
                     $.dialog({title: 'Alerta...',text: 'Selecione o evento'});
                     document.fPeca.cboPeca.focus();
@@ -139,8 +146,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
 
             function limpar()
             {
-                document.fPeca.cboPeca.value = "";
                 document.fPeca.cboTeatro.value = "";
+                document.fPeca.cboPeca.value = "";
+                document.fPeca.cboApresentacao.value = "";
+                document.fPeca.cboHorario.value = "";
             };
         </script>
         <head>
@@ -151,7 +160,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
                     margin-top: 10px;
                 }
             </style>
-        <h2>Gerar arquivo CSV de Códígo de Barras</h2>
+        <h2>Gerar arquivo CSV de Código de Barras</h2>
     </head>
     <body>
         <form name="fPeca" id="fPeca" method="POST">

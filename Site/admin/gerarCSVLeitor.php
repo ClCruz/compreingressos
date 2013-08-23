@@ -146,9 +146,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
 
             function limpar()
             {
-                document.fPeca.cboPeca.value = "";
-                document.fPeca.cboApresentacao.value = "";
-                document.fPeca.cboHorario.value = "";
+                $(document.fPeca.cboTeatro).val('');
+                $(document.fPeca.cboPeca).val('').find('option:not(:selected)').remove();
+                $(document.fPeca.cboApresentacao).val('').find('option:not(:selected)').remove();
+                $(document.fPeca.cboHorario).val('').find('option:not(:selected)').remove();
             };
         </script>
         <head>
@@ -165,7 +166,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
         <form name="fPeca" id="fPeca" method="POST">
             <table cellpadding='0' border='0' width='609' cellspacing='0'>
                 <tr>
-                    <td><strong>Local:</strong><br>
+                    <td width="30%"><strong>Local:</strong><br>
                     <?php
                     $funcJavascript = 'onChange="ExibePeca(this.value, \'Peca\', \'SP_PEC_CON009;5\');PreencheDescricao()"';
                     //echo comboTeatro("cboTeatro", "", $funcJavascript);

@@ -60,13 +60,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
 			$data_apresentacao	=	substr($_GET['DatApresentacao'], -4);
 			$hora_apresentacao	=	str_replace(':', '', $_GET['HorSessao']);
 
-			foreach ($bilhetes as $key => $value) {
-				// $cod_bilhete = substr('000' . $key, -3);
-				$cod_bilhete = $key;
+			foreach ($bilhetes as $id => $name) {
+				$cod_bilhete = substr('000' . $id, -3);
 
 				for ($i = 1; $i <= $rs['TOTAL']; $i++) {
 					$sequencia_bilhete = substr('00000' . $i, -5);
-					fwrite($csv2, "02;" . $cod_apresentacao . $cod_setor . $data_apresentacao . $hora_apresentacao . $sequencia_bilhete . ";" . $cod_bilhete . ";;;;;I; \n");
+					fwrite($csv2, "02;" . $cod_apresentacao . $cod_setor . $data_apresentacao . $hora_apresentacao . $cod_bilhete . $sequencia_bilhete . ";" . $id . ";;;;;I; \n");
 				}
 			}
 		}

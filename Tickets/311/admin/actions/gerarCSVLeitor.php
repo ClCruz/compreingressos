@@ -63,7 +63,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
 			foreach ($bilhetes as $id => $name) {
 				$cod_bilhete = substr('000' . $id, -3);
 
-				for ($i = 1; $i <= $rs['TOTAL']; $i++) {
+				for ($i = 1; $i <= $rs['TOTAL'] * 1.2; $i++) {
 					$sequencia_bilhete = substr('00000' . $i, -5);
 					fwrite($csv2, "02;" . $cod_apresentacao . $cod_setor . $data_apresentacao . $hora_apresentacao . $cod_bilhete . $sequencia_bilhete . ";" . $id . ";;;;;I; \n");
 				}

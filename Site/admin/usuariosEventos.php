@@ -247,7 +247,9 @@ function validar(){
     <option value="vazio">Escolha o usuário</option>
     <?php 
 		while($rs = fetchResult($result)){
-			(isset($_GET["usuario"]) && $_GET["usuario"] == $rs["ID_USUARIO"]) ? $selected = "selected" : $selected = "";
+			$selected = ((isset($_GET["usuario"]) && $_GET["usuario"] == $rs["ID_USUARIO"])
+						or (isset($_GET["codusuario"]) && $_GET["codusuario"] == $rs["ID_USUARIO"])) ? "selected" : "";
+
 			print("<option ". $selected ." value=\"". $rs["ID_USUARIO"] ."\">". $rs["DS_NOME"] ."</option>");
 		}
 	?>

@@ -859,16 +859,24 @@ function comboFormaEntrega($forma = null) {
     return $return;
 }
 
-function comboLocal() {
+function comboLocal($name, $selected = '-1', $isCombo = true) {
     $mainConnection = mainConnection();
-    $tsql = "SELECT ID_BASE, DS_NOME_TEATRO, DS_NOME_BASE_SQL FROM CI_MIDDLEWAY..MW_BASE WHERE IN_ATIVO = 1 ORDER BY 2";
-    $stmt = executeSQL($mainConnection, $tsql, array());
+    $query = 'SELECT ID_BASE, DS_NOME_TEATRO, DS_NOME_BASE_SQL FROM CI_MIDDLEWAY..MW_BASE WHERE IN_ATIVO = 1 ORDER BY 2';
+    $result = executeSQL($mainConnection, $query);
 
-    print("<select name=\"local\" id=\"local\" >");
-    while ($locais = fetchResult($stmt)) {
-	print("<option value=\"" . $locais["ID_BASE"] . "\" >" . $locais["DS_NOME_TEATRO"] . "</option>");
+    $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um tipo...</option>';
+    while ($rs = fetchResult($result)) {
+	if (($selected == $rs['ID_BASE'])) {
+	    $isSelected = 'selected';
+	    $text = '<span name="' . $name . '" class="inputStyle">' . $rs["DS_NOME_TEATRO"] . '</span>';
+	} else {
+	    $isSelected = '';
+	}
+	$combo .= '<option value="' . $rs['ID_BASE'] . '"' . $isSelected . '>' . $rs["DS_NOME_TEATRO"] . '</option>';
     }
-    print("</select>");
+    $combo .= '</select>';
+
+    return $isCombo ? $combo : $text;
 }
 
 function comboEventos($idBase, $nomeBase, $idUsuario) {

@@ -54,8 +54,38 @@ $(function() {
 						tr.find('td.button a:last').attr('href', pagina + '?action=delete&' + id);
 						tr.removeAttr('id');
 
-						if (email != '') $.dialog({text: email});
-						else $.dialog({title: 'Aviso...', text: 'E-mail de notificação enviado com sucesso.'});
+						if (email == '') {
+							$.dialog({title: 'Aviso...', text: 'E-mail de notificação enviado com sucesso.'});
+						} else if (email != undefined) {
+							$.dialog({text: email});
+						}
+
+						if (href.indexOf('?action=add') != -1) {
+							$.dialog({
+								text: 'Você cadastrou um novo usuário no sistema, selecione a opção desejada:<br><br>' +
+									  'Clique no botão "Responsável pelo Teatro" para que o sistema gere automaticamente a permissão à todos os Eventos do teatro a ser selecionado.<br><br>' +
+									  'Clique no botão "Liberar Permissões" para o cadastramento manual de uma evento para o usuário.<br><br>' +
+									  'Clique no botão "Retornar" caso o usuário cadastrado seja um usuário padrão do sistema.',
+								uiOptions: {
+									buttons: {
+										'Responsável pelo Teatro': function(){
+											document.location = './?p=responsavelBase&' + id;
+										},
+										'Liberar Permissões': function(){
+											document.location = './?p=usuariosEventos&' + id;
+										},
+										'Retornar': function(){
+											$(this).dialog('close');
+										}
+									},
+									open: function(e, ui) {
+										$(this).next('.ui-dialog-buttonpane').find('span').filter(function(){
+											return $(this).text() == 'Ok';
+										}).parent().remove();
+									}
+								}
+							});
+						}
 					} else {
 						$.dialog({text: data});
 					}

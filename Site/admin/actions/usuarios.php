@@ -116,7 +116,11 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 }
 
 if (is_array($retorno)) {
-	echo $retorno[0]['message'];
+	if ($retorno[0]['code'] == 547) {
+		echo 'Existem permissões de acessos concedido para o usuário; exclusão não efetuada.';
+	} else {
+		echo $retorno[0]['message'];
+	}
 } else {
 	echo $retorno;
 	if ($sendMail) {

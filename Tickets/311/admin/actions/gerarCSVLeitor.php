@@ -30,7 +30,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
 
 		$query = "SELECT V.CODTIPBILHETE, B.TIPBILHETE FROM TABVALBILHETE V
 				  INNER JOIN TABTIPBILHETE B ON V.CODTIPBILHETE = B.CODTIPBILHETE
-				  WHERE CODPECA = ? AND DATINIDESCONTO <= GETDATE() AND DATFINDESCONTO >= GETDATE()";
+				  WHERE CODPECA = ?";
 		$params = array($_GET['CodPeca']);
 		$result = executeSQL($conn, $query, $params);
 

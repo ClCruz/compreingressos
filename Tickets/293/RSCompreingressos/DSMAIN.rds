@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<RptDataSource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Name>DSMAIN</Name>
-  <DataSourceID>6cfbb39a-a1c9-42c1-88ef-eddd89eb541a</DataSourceID>
-  <ConnectionProperties>
-    <Extension>SQL</Extension>
-    <ConnectString>Data Source=.;Initial Catalog=ci_coliseu</ConnectString>
-  </ConnectionProperties>
-</RptDataSource>

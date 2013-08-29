@@ -30,7 +30,8 @@ function ExibePeca(NmDB, Tipo, Procedure)
           data: 'NomeBase='+ NmDB +'&Proc='+ Procedure,
           success: function(data){
             $('#cboPeca').html(data);
-            $('#cboPeca').html(data + "<option selected value=\"\">TODOS</option>");
+            //Adiciona a opção TODOS no select de eventos
+            $('#cboPeca').html("<option selected value=\"\">&lt; TODOS &gt;</option>" + data);
           },
           error: function(){
             $.dialog({

@@ -231,6 +231,7 @@
 	margin: 7px 0;
 	border: 2px solid #991427;
 	background-color: whitesmoke;
+	display: none;
 }
 
 .meia-entrada .contagem-meia {

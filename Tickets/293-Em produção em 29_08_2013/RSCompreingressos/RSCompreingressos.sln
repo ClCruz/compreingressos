@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{F14B399A-7131-4C87-9E4B-1186C45EF12D}") = "RSCompreingressos", "RSCompreingressos.rptproj", "{53EC10ED-6C63-4E5A-813E-96EDAD5530FA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Default = Debug|Default
+		DebugLocal|Default = DebugLocal|Default
+		Production|Default = Production|Default
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{53EC10ED-6C63-4E5A-813E-96EDAD5530FA}.Debug|Default.ActiveCfg = Debug
+		{53EC10ED-6C63-4E5A-813E-96EDAD5530FA}.Debug|Default.Build.0 = DebugLocal
+		{53EC10ED-6C63-4E5A-813E-96EDAD5530FA}.Debug|Default.Deploy.0 = DebugLocal
+		{53EC10ED-6C63-4E5A-813E-96EDAD5530FA}.DebugLocal|Default.ActiveCfg = DebugLocal
+		{53EC10ED-6C63-4E5A-813E-96EDAD5530FA}.DebugLocal|Default.Build.0 = DebugLocal
+		{53EC10ED-6C63-4E5A-813E-96EDAD5530FA}.Production|Default.ActiveCfg = Production
+		{53EC10ED-6C63-4E5A-813E-96EDAD5530FA}.Production|Default.Build.0 = Production
+		{53EC10ED-6C63-4E5A-813E-96EDAD5530FA}.Production|Default.Deploy.0 = Production
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

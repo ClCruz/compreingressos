@@ -158,36 +158,59 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 14, true)) {
             function selecionar(valPai, checked) {
                 $(':checkbox.filho' + valPai).each(function(i, el) {
                     selecionar($(el).val(), checked);
-                }).attr('checked', checked);
+                }).prop('checked', checked);
+            }
+
+            if ($(':checkbox:not(.btnSelecionarTodos)').length == $(':checkbox:not(.btnSelecionarTodos):checked').length) {
+                $('.btnSelecionarTodos').prop('checked', true);
             }
 
             $(':checkbox').change(function() {
                 var $this = $(this),
-                checked = $this.attr('checked');
+                checked = $this.prop('checked');
 
-                selecionar($this.val(), checked);
-                if ($this.is(':checked')) {
-                    url = "programaUsuario.php?action=insert";
-                    $(':checkbox[value='+$this.attr('class').split('filho')[1]+']').attr('checked', true);
-                }else{
-                    url = "programaUsuario.php?action=delete";
-                }
-                $.ajax({
-                    url: url,
-                    type: 'POST',
-                    data: ({programas: $(this).val(),usuario: <?php echo $_POST["usuario"]; ?> }),
-                    success: function(data){
-                        if(data.substr(0,4) == 'true'){
-                            $.cookie('erro', 'true');
-                        }else{
-                            $.dialog({title: 'Erro', text: data});
-                        }
+                if (!$this.is('.btnSelecionarTodos')) {
 
+                    selecionar($this.val(), checked);
+                    if ($this.is(':checked')) {
+                        url = "programaUsuario.php?action=insert";
+                        $(':checkbox[value='+$this.attr('class').split('filho')[1]+']').prop('checked', true);
+                    }else{
+                        url = "programaUsuario.php?action=delete";
                     }
-                });
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: ({programas: $(this).val(),usuario: <?php echo $_POST["usuario"]; ?> }),
+                        success: function(data){
+                            if(data.substr(0,4) == 'true'){
+                                $.cookie('erro', 'true');
+                            }else{
+                                $.dialog({title: 'Erro', text: data});
+                            }
+
+                        }
+                    });
+
+                    if ($(':checkbox:not(.btnSelecionarTodos)').length == $(':checkbox:not(.btnSelecionarTodos):checked').length) {
+                        $('.btnSelecionarTodos').prop('checked', true);
+                    } else {
+                        $('.btnSelecionarTodos').prop('checked', false);
+                    }
+
+                } else {
+                    if ($this.is(':checked')) {
+                        $('.filho0').prop('checked', false).click();
+                    } else {
+                        $('.filho0').prop('checked', true).click();
+                    }
+                }
             });
         });
     </script>
+    <div class="selecionar">
+        <label>Selecionar Todos <input type="checkbox" class="btnSelecionarTodos" value="todos" /></label>
+    </div>
     <table class="ui-widget ui-widget-content" id="tabPedidos">
         <thead>
             <tr class="ui-widget-header">

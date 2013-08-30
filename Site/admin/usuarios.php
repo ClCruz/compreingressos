@@ -192,6 +192,12 @@ $(function() {
 		});
 		return valido;
 	}
+
+    $('tr:not(.ui-widget-header)').hover(function() {
+        $(this).addClass('ui-state-hover');
+    }, function() {
+        $(this).removeClass('ui-state-hover');
+    });
 });
 </script>
 <h2>Usu&aacute;rios</h2>
@@ -199,13 +205,13 @@ $(function() {
 	<table class="ui-widget ui-widget-content">
 		<thead>
 			<tr class="ui-widget-header ">
-				<th>Nome</th>
-				<th>E-mail</th>
-				<th>Login</th>
-				<th>Admin</th>
-				<th>Ativo</th>
-                <th>Telemarketing</th>
-				<th colspan="3">A&ccedil;&otilde;es</th>
+				<th width="25%">Nome</th>
+				<th width="25%">E-mail</th>
+				<th width="10%">Login</th>
+				<th width="5%">Admin</th>
+				<th width="5%">Ativo</th>
+                <th width="5%">Telemarketing</th>
+				<th width="25%" colspan="3">A&ccedil;&otilde;es</th>
 			</tr>
 		</thead>
 		<tbody>

@@ -205,13 +205,13 @@ $(function() {
 	<table class="ui-widget ui-widget-content">
 		<thead>
 			<tr class="ui-widget-header ">
-				<th width="25%">Nome</th>
+				<th width="20%">Nome</th>
 				<th width="25%">E-mail</th>
 				<th width="10%">Login</th>
 				<th width="5%">Admin</th>
 				<th width="5%">Ativo</th>
                 <th width="5%">Telemarketing</th>
-				<th width="25%" colspan="3">A&ccedil;&otilde;es</th>
+				<th width="30%" colspan="3">A&ccedil;&otilde;es</th>
 			</tr>
 		</thead>
 		<tbody>

@@ -83,8 +83,7 @@ BEGIN
 					UPDATE ci_middleway..mw_apresentacao
 					SET dt_apresentacao = @datapresentacao
 						,hr_apresentacao = @horsessao
-						,ds_piso = @nomsala
-						,in_ativo_bilheteria = @in_ativo_bilheteria
+						,ds_piso = @nomsala						
 						,in_ativo = @in_ativo_web
 					WHERE id_evento = @id_evento
 						AND codapresentacao = @codapresentacao
@@ -106,8 +105,7 @@ BEGIN
 						,hr_apresentacao
 						,id_evento
 						,ds_piso
-						,in_ativo
-						,in_ativo_bilheteria
+						,in_ativo						
 						)
 					VALUES (
 						@datapresentacao
@@ -115,8 +113,7 @@ BEGIN
 						,@horsessao
 						,@id_evento
 						,@nomsala
-						,1
-						,@in_ativo_bilheteria
+						,1						
 						)
 				END
 

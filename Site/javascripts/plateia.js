@@ -10,22 +10,30 @@ $(function() {
 		
 		$('#numIngressos').change(function() {
 			$('#loadingIcon').fadeIn('fast');
-			
-			$.ajax({
-				url: 'atualizarPedido.php?action=noNum',
-				data: scriptVars + '&numIngressos=' + $('#numIngressos').val() + '&' + $.serializeUrlVars(),
-				type: 'post',
-				success: function(data) {
-					if (data != 'true') {
-						$.dialog({title: 'Aviso...', text: data});
-					} else {
-						document.location = $('#botao_avancar').attr('href');
+
+			if ($('#numIngressos').val() == 0) {
+				document.location = $('#botao_avancar').attr('href');
+
+			} else {
+				$.ajax({
+					url: 'atualizarPedido.php?action=noNum',
+					data: scriptVars + '&numIngressos=' + $('#numIngressos').val() + '&' + $.serializeUrlVars(),
+					type: 'post',
+					success: function(data) {
+						if (data != 'true') {
+							$.dialog({title: 'Aviso...', text: data});
+							if (data == 'Não é possível comprar ingressos para apresentações diferentes no mesmo pedido, por favor, finalize a compra do pedido atual para poder selecionar novas apresentações.') {
+								$('#numIngressos').find('option:first').text('0').prop('value', '0').val('0').end().find('option:not(:first)').remove();
+							}
+						} else {
+							document.location = $('#botao_avancar').attr('href');
+						}
+					},
+					complete: function() {
+						$('#loadingIcon').fadeOut('slow');
 					}
-				},
-				complete: function() {
-					$('#loadingIcon').fadeOut('slow');
-				}
-			});
+				});
+			}
 		});
 		
 		$('.botao_avancar').click(function(event) {

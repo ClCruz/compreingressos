@@ -4,8 +4,29 @@ if (isset($_GET['action'])) {
 	require_once('../settings/settings.php');
 	session_start();
 	$mainConnection = mainConnection();
+
+	if ($_GET['action'] == 'add' or $_GET['action'] == 'noNum') {
+		$query = "SELECT ID_EVENTO, DT_APRESENTACAO, HR_APRESENTACAO FROM MW_APRESENTACAO
+					WHERE ID_APRESENTACAO = ? AND IN_ATIVO = '1'";
+		$params = array($_POST['apresentacao']);
+		$rs = executeSQL($mainConnection, $query, $params, true);
+
+		$query = "SELECT TOP 1 A.ID_EVENTO, A.DT_APRESENTACAO, A.HR_APRESENTACAO FROM MW_APRESENTACAO A
+					INNER JOIN MW_RESERVA R ON R.ID_APRESENTACAO = A.ID_APRESENTACAO
+					WHERE R.ID_SESSION = ?";
+		$params = array(session_id());
+		$rs2 = executeSQL($mainConnection, $query, $params, true);
+
+		// verifica se a selecao atual pertence ao mesmo evento, data e hora ou se ainda nao fez reserva
+		if ($rs2 === NULL or ($rs['ID_EVENTO'] == $rs2['ID_EVENTO'] and $rs['DT_APRESENTACAO'] == $rs2['DT_APRESENTACAO'] and $rs['HR_APRESENTACAO'] == $rs2['HR_APRESENTACAO'])) {
+		} else {
+			echo 'Não é possível comprar ingressos para apresentações diferentes no mesmo pedido, por favor, finalize a compra do pedido atual para poder selecionar novas apresentações.';
+			die();
+		}
+	}
 	
 	if ($_GET['action'] == 'add' and isset($_REQUEST['id'])) {
+
 		$query = 'SELECT SUM(1) FROM MW_RESERVA WHERE ID_SESSION = ? AND ID_APRESENTACAO = ?';
 		$params = array(session_id(), $_POST['apresentacao']);
 		$rs = executeSQL($mainConnection, $query, $params, true);

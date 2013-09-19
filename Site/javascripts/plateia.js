@@ -167,6 +167,16 @@ $(function() {
 				.removeClass(closedClass)
 				.addClass((indice.data('status') == 'C') ? closedClass : (indice.data('status') == 'O') ? opennedClass : standbyClass);
 		}
+		
+		$('.botao_avancar').click(function(event) {
+			event.preventDefault();
+			
+			if ($('#mapa_de_plateia span.standby').length > 0) {
+				document.location = $(this).attr('href');
+			} else {
+				$.dialog({title:'Aviso', text:'Selecione um lugar/quantidade de ingressos antes de avançar.'});
+			}
+		});
 	}
 	
 	$('#piso').change(function() {

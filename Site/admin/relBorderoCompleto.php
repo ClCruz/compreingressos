@@ -366,7 +366,7 @@ if (isset($err) && $err != "") {
 
                     // verificar se existe algum registro na tabForPagamento com StaTaxaCartoes = S
 
-                    $qtdeRegistros = numRows($connGeral, "select 1 from tabForPagamento where StaTaxaCartoes = 'S'");
+                    $qtdeRegistros = numRows($connGeral, "select 1 from tabForPagamento where StaTaxaCartoes = 'S' and staforpagto = 'A'");
 
                     if ($qtdeRegistros > 0) {
       ?>

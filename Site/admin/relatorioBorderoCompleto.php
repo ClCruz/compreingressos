@@ -223,7 +223,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 261, true)) {
                 <tr>
                     <td><strong>Local:</strong><br>
                     <?php
-                    $funcJavascript = 'onChange="ExibePeca(this.value, \'Peca\', \'SP_PEC_CON009;5\');PreencheDescricao()"';
+                    $funcJavascript = 'onChange="ExibePeca(this.value, \'Peca\', \'SP_PEC_CON009;8\');PreencheDescricao()"';
                     //echo comboTeatro("cboTeatro", "", $funcJavascript);
 
                     $result = executeSQL($mainConnection, 'SELECT DISTINCT B.ID_BASE, B.DS_NOME_TEATRO FROM MW_BASE B INNER JOIN MW_ACESSO_CONCEDIDO AC ON AC.ID_BASE = B.ID_BASE WHERE AC.ID_USUARIO ='. $_SESSION['admin'] .'  AND B.IN_ATIVO = \'1\' ORDER BY B.DS_NOME_TEATRO');

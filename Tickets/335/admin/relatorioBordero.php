@@ -5,7 +5,7 @@ $mainConnection = mainConnection();
 
 session_start();
 
-if (acessoPermitido($mainConnection, $_SESSION['admin'], 251, true)) {
+if (acessoPermitido($mainConnection, $_SESSION['admin'], 18, true)) {
 
     $pagina = basename(__FILE__);
 ?>
@@ -176,7 +176,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 251, true)) {
                     data1 = data2 = document.fPeca.cboApresentacao.value;
                 }
 
-                var url = "relBorderoVendasLiquidas.php";
+                var url = "relBorderoVendas.php";
                 url += "?CodPeca=" + document.fPeca.cboPeca.value;
                 url += "&logo=imagem";
 
@@ -215,7 +215,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 251, true)) {
                     margin-top: 10px;
                 }
             </style>
-        <h2>Borderô - Fechamento em Dinheiro</h2>
+        <h2>Borderô - Simplificado</h2>
     </head>
     <body>
         <form action="javascript:validar();" name="fPeca" id="fPeca" method="POST">

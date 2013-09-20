@@ -11,15 +11,15 @@ body {margin:0px 0px 0px 0px;}
 @media print {
   body {margin: 0px 0px 0px 0px;}
   .boxmenu {display: none;}
-
+/*
   *, TD, .normal, .botao, .result, .marrom, .texto, .label, .titulogrid, A:link, A:active, A:visited {
     font-size: 6px;
   }
-
+*/
   .linha_assinatura {
     font-size: 10px;
   }
-  
+
   .tabelaAuxiliar{border: none; width: 390px;}
 }
 

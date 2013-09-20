@@ -430,12 +430,21 @@ if (isset($err) && $err != "") {
       <?php
                     }
                   }
+
+                    // verificar se existe algum registro na tabForPagamento com StaTaxaCartoes = S
+
+                    $qtdeRegistros = numRows($connBase, "select 1 from tabForPagamento where StaTaxaCartoes = 'S'");
+
+                    if ($qtdeRegistros > 0) {
       ?>
                   <tr>
                     <td	align=left  class=texto>TAXA DOS CARTÕES (DÉBITO E CRÉDITO)</td>
                     <td	align=right class=texto> - </td>
                     <td	align=right class=texto><?php echo number_format($taxaDosCartoes, 2, ",", "."); ?></td>
                   </tr>
+      <?php
+                    }
+      ?>
                   <tr>
                     <td bgcolor="#FFFFFF" align="left" valign="top" rowspan="3" colspan="2"><font size=1 face="tahoma,verdana,arial">assinaturas dos responsáveis, <?php echo date("d/m/Y G:i:s"); ?></font></td>
                     <td bgcolor="LightGrey" colspan="2" align="center" class="label"><b>TOTAL DE DESPESAS</b></td>

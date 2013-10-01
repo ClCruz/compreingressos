@@ -39,6 +39,9 @@ if ($_POST) {
 	    	    } else titular.css({'border-color':'#DDD'});
 
 		    	if (valido) {
+		    		// para contagem regressiva
+		    		CountStepper = 0;
+
 		    		$('#travaOverlay').dialog({
 		    		    closeOnEscape: false,
 		    		    open: function(event, ui) {

@@ -339,10 +339,29 @@ if ($PaymentDataCollection['Amount'] > 0 and ($errors and empty($sqlErrors))) {
     $descricao_erro = '';
 
     $url_braspag = $is_teste == '1' ? $url_braspag_homologacao : $url_braspag_producao;
+
+    // echo "<br><br><br><pre>";
+    // var_dump(array('request' => $parametros));
+    // echo "</pre>";
+    // die(''.time());
     
 	try {
+        executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+            array($_SESSION['user'], json_encode(array('descricao' => 'inicialização do pedido ' . $parametros['OrderData']['OrderId'], 'url' => $url_braspag)))
+        );
+
         $client = @new SoapClient($url_braspag, $options);
+
+        executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+            array($_SESSION['user'], json_encode(array('descricao' => 'envio do pedido=' . $parametros['OrderData']['OrderId'], 'post' => $parametros)))
+        );
+        
         $result = $client->AuthorizeTransaction(array('request' => $parametros));
+
+        executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+            array($_SESSION['user'], json_encode(array('descricao' => 'retorno do pedido=' . $parametros['OrderData']['OrderId'], 'post' => $result)))
+        );
+        
     } catch (SoapFault $e) {
         $descricao_erro = $e->getMessage();
     } catch (Exception $e) {

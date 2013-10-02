@@ -340,8 +340,17 @@ if ($PaymentDataCollection['Amount'] > 0 and ($errors and empty($sqlErrors))) {
 
     $url_braspag = $is_teste == '1' ? $url_braspag_homologacao : $url_braspag_producao;
 
+
+    // ALTERACAO DOS DADOS DO CARTAO PARA GRAVACAO DO LOG
+    $parametrosLOG = array_merge(array(), $parametros);
+    $PaymentDataCollectionLOG = array_merge(array(), $PaymentDataCollection);
+    $PaymentDataCollectionLOG['CardNumber'] = substr($_POST['numCartao'], 0, 6) . '******' . substr($_POST['numCartao'], -4);
+    $PaymentDataCollectionLOG['CardSecurityCode'] = '***';
+    $parametrosLOG['PaymentDataCollection'] = array(new SoapVar($PaymentDataCollectionLOG, SOAP_ENC_ARRAY, 'CreditCardDataRequest', 'https://www.pagador.com.br/webservice/pagador', 'PaymentDataRequest'));
+
     // echo "<br><br><br><pre>";
-    // var_dump(array('request' => $parametros));
+    // var_dump(array('requestOriginal' => $parametros),
+    //     array('requestMascarado' => $parametrosLOG));
     // echo "</pre>";
     // die(''.time());
     
@@ -353,7 +362,7 @@ if ($PaymentDataCollection['Amount'] > 0 and ($errors and empty($sqlErrors))) {
         $client = @new SoapClient($url_braspag, $options);
 
         executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
-            array($_SESSION['user'], json_encode(array('descricao' => 'envio do pedido=' . $parametros['OrderData']['OrderId'], 'post' => $parametros)))
+            array($_SESSION['user'], json_encode(array('descricao' => 'envio do pedido=' . $parametros['OrderData']['OrderId'], 'post' => $parametrosLOG)))
         );
         
         $result = $client->AuthorizeTransaction(array('request' => $parametros));

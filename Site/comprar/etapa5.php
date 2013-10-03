@@ -16,6 +16,9 @@ if (isset($_COOKIE['entrega'])) {
     require('calculaFrete.php');
 }
 
+$json = json_encode(array('descricao' => ($_POST ? '2.' : '1.') .' etapa5 - ' . ($_POST ? 'envio de dados' : 'formulario cartao')));
+include('logiPagareChamada.php');
+
 $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">

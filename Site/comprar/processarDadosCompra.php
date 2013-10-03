@@ -356,19 +356,19 @@ if ($PaymentDataCollection['Amount'] > 0 and ($errors and empty($sqlErrors))) {
     
 	try {
         executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
-            array($_SESSION['user'], json_encode(array('descricao' => 'inicialização do pedido ' . $parametros['OrderData']['OrderId'], 'url' => $url_braspag)))
+            array($_SESSION['user'], json_encode(array('descricao' => '3. inicialização do pedido ' . $parametros['OrderData']['OrderId'], 'url' => $url_braspag)))
         );
 
         $client = @new SoapClient($url_braspag, $options);
 
         executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
-            array($_SESSION['user'], json_encode(array('descricao' => 'envio do pedido=' . $parametros['OrderData']['OrderId'], 'post' => $parametrosLOG)))
+            array($_SESSION['user'], json_encode(array('descricao' => '4. envio do pedido=' . $parametros['OrderData']['OrderId'], 'post' => $parametrosLOG)))
         );
         
         $result = $client->AuthorizeTransaction(array('request' => $parametros));
 
         executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
-            array($_SESSION['user'], json_encode(array('descricao' => 'retorno do pedido=' . $parametros['OrderData']['OrderId'], 'post' => $result)))
+            array($_SESSION['user'], json_encode(array('descricao' => '5. retorno do pedido=' . $parametros['OrderData']['OrderId'], 'post' => $result)))
         );
         
     } catch (SoapFault $e) {
@@ -395,7 +395,7 @@ if ($PaymentDataCollection['Amount'] > 0 and ($errors and empty($sqlErrors))) {
 
             ob_end_clean();
             header("Location: pagamento_ok.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : ''));
-            exit();
+            die();
         } else {
             $descricao_erro = "Transação não autorizada.";
         }
@@ -409,7 +409,7 @@ if ($PaymentDataCollection['Amount'] > 0 and ($errors and empty($sqlErrors))) {
 
     ob_end_clean();
     header("Location: pagamento_cancelado.php?falha&ws".(isset($_GET['tag']) ? $falha['tag_voltar'] : ''));
-    exit();
+    die();
 	
 } else {
 	

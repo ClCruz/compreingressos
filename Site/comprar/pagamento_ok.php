@@ -8,7 +8,7 @@ require_once('../settings/MCAPI.class.php');
 
 $mainConnection = mainConnection();
 
-$json = json_encode(array('descricao' => '1. chamada do pagamento_ok - codigo_pedido=' . $_GET['pedido'], 'Post='=>$_GET ));
+$json = json_encode(array('descricao' => '8. chamada do pagamento_ok - codigo_pedido=' . $_GET['pedido'], 'Post='=>$_GET ));
 include('logiPagareChamada.php');
 
 $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
@@ -35,7 +35,7 @@ $cidade = utf8_encode($rs['DS_CIDADE']);
 $estado = utf8_encode($rs['DS_ESTADO']);
 $nome = $rs['DS_NOME'];
 
-$json = json_encode(array('descricao' => '3. fim da chamada do pagamento_ok - codigo_pedido=' . $_GET['pedido'], 'Post='=>$_GET ));
+$json = json_encode(array('descricao' => '9. fim da chamada do pagamento_ok - codigo_pedido=' . $_GET['pedido'], 'Post='=>$_GET ));
 include('logiPagareChamada.php');
 
 $scriptTransactionAnalytics = "

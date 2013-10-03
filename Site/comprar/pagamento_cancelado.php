@@ -4,12 +4,16 @@ session_start();
 require_once('../settings/functions.php');
 require_once('../settings/settings.php');
 
+$mainConnection = mainConnection();
+
+$json = json_encode(array('descricao' => '99. chamada pagamento_cancelado', 'erro' => isset($_COOKIE['ipagareError']), 'manualmente' => isset($_GET['manualmente']), 'expirado' => isset($_GET['tempoExpirado'])));
+include('logiPagareChamada.php');
+
 if (isset($_COOKIE['ipagareError'])) {
 	foreach ($_COOKIE['ipagareError'] as $key => $val) {
 		setcookie('ipagareError['.$key.']', '', -1);
 	}
 } else if (isset($_GET['manualmente']) or isset($_GET['tempoExpirado'])) {
-	$mainConnection = mainConnection();
 	$query = 'SELECT DISTINCT E.ID_BASE
 				 FROM
 				 MW_EVENTO E

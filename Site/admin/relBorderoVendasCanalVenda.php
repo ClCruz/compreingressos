@@ -82,7 +82,7 @@ if (isset($err) && $err != "") {
         <td colspan="1" height="15"></td>
       </tr>
       <tr>
-        <td class="tabela" align="center" bgcolor="LightGrey"><b><font size=2 face="tahoma,verdana,arial">Borderô - Simplificado</font><br/>Contabilização dos Ingressos</b></td>
+        <td class="tabela" align="center" bgcolor="LightGrey"><b><font size=2 face="tahoma,verdana,arial">Borderô - Canal de Vendas</font><br/>Contabilização dos Ingressos</b></td>
       </tr>
       <tr>
         <td colspan="2">

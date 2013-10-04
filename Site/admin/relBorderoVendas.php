@@ -198,7 +198,7 @@ if (isset($err) && $err != "") {
                       $rsIngExc = executeSQL($connGeral, $strIngExc, array());
                       
                       if (hasRows($rsIngExc)) {
-                        $qtdIngressosExcedidos += ( $pRSBilhete["QtdeVendidos"] - $pRSBilhete["QtdeEstornados"]);
+                        $qtdIngressosExcedidos += $pRSBilhete["QtdeVendidos"];
                       }
                     }
                     $ingressosExcedentes[] = $pRSBilhete["CodTipBilhete"];

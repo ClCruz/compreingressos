@@ -201,7 +201,7 @@ if (isset($err) && $err != "") {
                         $strIngExc = logQuery($strIngExc, $paramIngExc);
                         $rsIngExc = executeSQL($conn, $strIngExc, array());
                         if (hasRows($rsIngExc)) {
-                          $qtdIngressosExcedidos += ( $pRSBilhete["QtdeVendidos"] - $pRSBilhete["QtdeEstornados"]);
+                          $qtdIngressosExcedidos += $pRSBilhete["QtdeVendidos"];
                         }
       ?>
                         <tr>
@@ -347,7 +347,7 @@ if (isset($err) && $err != "") {
                       $nTotalDesp += $taxaDosCartoes;
                     }
 
-                  
+
                     $nBrutoTot = 0;
                     $nTotLiqu = 0;
 

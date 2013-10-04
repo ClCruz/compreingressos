@@ -453,7 +453,15 @@ if (isset($err) && $err != "") {
                   } while ($rsApresentacao = fetchResult($resultApresentacoes));
 
                   $taxaDosCartoes = $nBrutoTot - $nTotLiqu;
-                  $nTotalDesp += $taxaDosCartoes;
+
+                    
+                  // verificar se existe algum registro na tabForPagamento com StaTaxaCartoes = S
+                  $qtdeRegistros = numRows($connBase, "select 1 from tabForPagamento where StaTaxaCartoes = 'S' and staforpagto = 'A'");
+
+                  // caso positivo calcular e exibir a taxa dos cartoes
+                  if ($qtdeRegistros > 0) {
+                    $nTotalDesp += $taxaDosCartoes;
+                  }
 
                   foreach ($despesas as $desp) {
                     /*
@@ -504,10 +512,7 @@ if (isset($err) && $err != "") {
                     }
                   }
 
-                    // verificar se existe algum registro na tabForPagamento com StaTaxaCartoes = S
-
-                    $qtdeRegistros = numRows($connBase, "select 1 from tabForPagamento where StaTaxaCartoes = 'S' and staforpagto = 'A'");
-
+                    // caso positivo calcular e exibir a taxa dos cartoes
                     if ($qtdeRegistros > 0) {
       ?>
                   <tr>

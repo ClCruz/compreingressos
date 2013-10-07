@@ -248,7 +248,7 @@ if (isset($err) && $err != "") {
                         </tr>
         <?php
                         $total_canal_valor += $pRSBilhete["Total"];
-                        $total_canal_ingressos += $pRSBilhete["Qtde"];
+                        $total_canal_ingressos += ($pRSBilhete["ComplementoMeia"] ? 0 : $pRSBilhete["Qtde"]);
                       }
                       $nTotalVendas += $pRSBilhete["Total"];
                     }

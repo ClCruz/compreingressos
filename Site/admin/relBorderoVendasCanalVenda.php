@@ -236,7 +236,7 @@ if (isset($err) && $err != "") {
                           if ($canal_atual == 1) {
                             ?>
                             <tr><td align=center colspan=5 class=texto style="background-color: whitesmoke; font-size: 11px;"><strong>VENDAS EXTERNAS</strong></td></tr>
-                            <?
+                            <?php
                           }
 
                           $canal_atual = $pRSBilhete['id_canal_venda'];

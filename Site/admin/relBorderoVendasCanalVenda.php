@@ -425,6 +425,7 @@ if (isset($err) && $err != "") {
                     }
 
                     $strDebito = logQuery($strDebito, $paramDebito);
+                    // echo $strDebito;die();
                     $queryDebito = executeSQL($connBase, $strDebito, array());                    
                     if (!sqlErrors()) {
                       if (hasRows($queryDebito)) {
@@ -436,6 +437,9 @@ if (isset($err) && $err != "") {
                             $valor = $rs["Valor"] / $qtdeSalas;
                             If ($rs["QtdeIngExcedidos"] > 0) {
                               $nomeDebBordero = $rs["DebBordero"] . " - QTDE. INGR.: " . $rs["QtdeIngExcedidos"];
+
+                              // possivel solucao para a divisao de salas quando é ingresso excedido
+                              $valor = $rs["Valor"];
                             } else {
                               continue;
                             }

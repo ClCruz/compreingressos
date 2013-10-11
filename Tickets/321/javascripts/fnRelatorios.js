@@ -32,6 +32,7 @@ function ExibePeca(NmDB, Tipo, Procedure)
             $('#cboPeca').html(data);
             //Adiciona a opção TODOS no select de eventos
             // $('#cboPeca').html("<option selected value=\"\">&lt; TODOS &gt;</option>" + data);
+            getPeriodo();
           },
           error: function(){
             $.dialog({
@@ -88,10 +89,11 @@ function getPeriodo(){
     data: 'CodPeca='+ codPeca,
     dataType: 'json',
     success: function(data){
+      $('input[name="PARAM_DATA_INI"]').datepicker('option', 'minDate', data.inicial);
+      $('input[name="PARAM_DATA_FIM"]').datepicker('option', 'minDate', data.inicial);
+      $('input[name="PARAM_DATA_FIM"]').datepicker('option', 'maxDate', data.fim);
       $('input[name="PARAM_DATA_INI"]').val(data.inicial);
       $('input[name="PARAM_DATA_FIM"]').val(data.fim);
-      $('input[name="PARAM_DATA_INI"]').datepicker('option', 'minDate', data.inicial);
-      $('input[name="PARAM_DATA_FIM"]').datepicker('option', 'maxDate', data.fim);
     },
     error: function(){
       $.dialog({

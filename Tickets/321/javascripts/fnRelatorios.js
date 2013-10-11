@@ -32,6 +32,7 @@ function ExibePeca(NmDB, Tipo, Procedure)
             $('#cboPeca').html(data);
             //Adiciona a opção TODOS no select de eventos
             // $('#cboPeca').html("<option selected value=\"\">&lt; TODOS &gt;</option>" + data);
+            getSetor();
             getPeriodo();
           },
           error: function(){

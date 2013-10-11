@@ -347,6 +347,9 @@ if (isset($err) && $err != "") {
                         $valor = $rs["Valor"] / $qtdeSalas;
                         If ($rs["QtdeIngExcedidos"] > 0) {
                           $nomeDebBordero = $rs["DebBordero"] . " - QTDE. INGR.: " . $rs["QtdeIngExcedidos"];
+                          // possivel solucao para a divisao de salas quando é ingresso excedido
+                          $valor = $rs["Valor"];
+
                         } else {
                           continue;
                         }

@@ -21,7 +21,7 @@ GO
 !   1    !     #336    ! 18/09/2013 ! Edicarlos S. B. ! Função Utilizada p/ Procedure SP_REL_CONSOLIDADO_LIQUIDO. !
 !        !             !            !                 ! Favor Não Alterar!!!									  !
 +========+=============+============+=================+===========================================================+'
-!        !             !            !                 !                                              		      !
+!   2    !    #321     ! 14/10/2013 ! Edicarlos S. B. ! Removido atribuição de @QTDE a @RESULT				      !
 +=================================================================================================================+
 */
 
@@ -38,18 +38,8 @@ BEGIN
 
 	SELECT @RESULT = 0
 
-	SELECT  
-		@RESULT = @QTDE
-	--FROM TMP_RESUMO_AUX T2 
-	--WHERE  
-	--	T2.DATA_APRESENTACAO = @DATAPRESENTACAO 
-	--	AND T2.HORSESSAO = @HORSESSAO 		
-	--GROUP BY T2.DATA_APRESENTACAO, 
-	--	T2.HORSESSAO,
-	--	T2.CANAL_VENDA	
-
-	IF @RESULT > @QTDLIMITEINGRPARAVENDA
-		SET @RESULT = @RESULT - @QTDLIMITEINGRPARAVENDA 
+	IF @QTDE > @QTDLIMITEINGRPARAVENDA
+		SET @RESULT = @QTDE - @QTDLIMITEINGRPARAVENDA 
 
 	RETURN @RESULT
 END

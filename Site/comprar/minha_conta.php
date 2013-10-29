@@ -21,7 +21,8 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
 				 CONVERT(VARCHAR(10), DT_PEDIDO_VENDA, 103) DT_PEDIDO_VENDA, VL_TOTAL_PEDIDO_VENDA,
 				 IN_SITUACAO
 				 FROM MW_PEDIDO_VENDA
-				 WHERE ID_CLIENTE = ? AND IN_SITUACAO <> \'P\'';
+				 WHERE ID_CLIENTE = ? AND IN_SITUACAO <> \'P\'
+				 ORDER BY 1 DESC';
 	$params = array($_SESSION['user']);
 	$result = executeSQL($mainConnection, $query, $params);
 }

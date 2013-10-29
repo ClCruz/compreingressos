@@ -11,7 +11,7 @@ $query = 'SELECT
 				WHEN \'E\' THEN \'Para o endereço...\'
 				ELSE \' - \'
 			 END IN_RETIRA_ENTREGA,
-			 CONVERT(VARCHAR(10), DT_PEDIDO_VENDA, 103) DT_PEDIDO_VENDA,
+			 DT_PEDIDO_VENDA,
 			 VL_TOTAL_PEDIDO_VENDA,
 			 IN_SITUACAO,
 			 VL_FRETE,
@@ -21,15 +21,30 @@ $query = 'SELECT
 			 DS_BAIRRO_ENTREGA,
 			 DS_CIDADE_ENTREGA,
 			 ID_ESTADO,
-			 CD_CEP_ENTREGA
+			 CD_CEP_ENTREGA,
+			 GETDATE() DATA_ATUAL,
+			 ID_PEDIDO_VENDA
 			 FROM MW_PEDIDO_VENDA
 			 WHERE ID_CLIENTE = ? AND ID_PEDIDO_VENDA = ?';
 $params = array($_SESSION['user'], $_GET['pedido']);
 $rsPedido = executeSQL($mainConnection, $query, $params, true);
+
+$ultima_data = executeSQL($mainConnection, 'SELECT MAX(A.DT_APRESENTACAO) APRESENTACAO
+											FROM MW_ITEM_PEDIDO_VENDA IPV
+											INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO
+											WHERE IPV.ID_PEDIDO_VENDA = ?', array($rsPedido['ID_PEDIDO_VENDA']), true);
+
+$exibir_bt_reimpressao = (	$rsPedido['IN_SITUACAO'] == 'F'
+							and
+							$ultima_data['APRESENTACAO']->format('Ymd') >= $rsPedido['DATA_ATUAL']->format('Ymd')
+						);
 ?>
 						<div class="titulo with_border_bottom uppercase">
-							Pedido <?php echo $_GET['pedido']; ?>
-							<p>Criado em <b><?php echo $rsPedido['DT_PEDIDO_VENDA']; ?></b> - Status <b><?php echo comboSituacao('situacao', $rsPedido['IN_SITUACAO'], false); ?></b></p>
+							Pedido <?php echo $_GET['pedido']; ?><br/>
+							<p style="display: inline-block">Criado em <b><?php echo $rsPedido['DT_PEDIDO_VENDA']->format('d/m/Y'); ?></b> - Status <b><?php echo comboSituacao('situacao', $rsPedido['IN_SITUACAO'], false); ?></b></p>
+							<?php if ($exibir_bt_reimpressao) { ?>
+							<p style="float:right; display:inline-block; font-size:small; font-weight:bold;"><a href="reimprimirEmail.php?pedido=<?php echo $_GET['pedido']; ?>" target="_blank">Reimpressão de Pedido</a></p>
+							<?php } ?>
 						</div>
 <?php
 $query = 'SELECT

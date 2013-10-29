@@ -1,16 +1,7 @@
 <?php
-if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
-	if ($_GET['action'] == 'reemail') {
-		
-		if ($_GET['emailAtual'] != $_POST['emailInformado']) {
-			$query = 'SELECT 1 FROM MW_CLIENTE WHERE CD_EMAIL_LOGIN = ?';
-			$params = array($_POST['emailInformado']);
-			$result = executeSQL($mainConnection, $query, $params);
+if (acessoPermitido($mainConnection, $_SESSION['admin'], 310, true)) {
 
-			if (hasRows($result)) {
-				die("O e-mail informado já está cadastrado. Favor informar outro e-mail.");
-			}
-		}
+	if ($_GET['action'] == 'reimprimir') {
 
 		$query = "SELECT
 						C.DS_NOME + ' ' + C.DS_SOBRENOME AS DS_NOME,
@@ -138,20 +129,18 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
 
 		if ($i >= 0) {
 
+			$print_email = true;
+
 			require "../comprar/successMail.php";
 
-			if ($successMail) {
-				$query = 'UPDATE MW_CLIENTE SET CD_EMAIL_LOGIN = ? WHERE CD_EMAIL_LOGIN = ?';
-				$params = array($_POST['emailInformado'], $_GET['emailAtual']);
-				executeSQL($mainConnection, $query, $params);
-				
-				echo "ok";
-			}
+			echo $successMail;
+
+			echo '<script>print()</script>';
 
 		} else {
-			echo "Não será possível reenviar o e-mail, pois o evento/apresentação estão inativos.";
+			echo "Não será possível reimprimir o pedido, pois o evento/apresentação estão inativos.";
 		}
-		
+
 	}
 
 }

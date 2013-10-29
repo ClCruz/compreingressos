@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Compreingressos Barcode Scanner</string>
+    <string name="scan_button">Scan</string>
+    <string name="result_success">Sucesso</string>
+    <string name="result_failure">Falha</string>
+    <string name="result_none"></string>
+    <string name="button_ok">OK</string>
+    <string name="button_login">Autenticar</string>
+    <string name="placeholder_login">Login</string>
+    <string name="placeholder_password">Senha</string>
+    <string name="hello_text">Logado como</string>
+    
+    <string name="button_flash">Flash</string>
+    <string name="button_focus">Foco Auto.</string>
+    
+    <string name="no_network_message">Conexão não encontrada.</string>
+    
+    <string name="loading_auth_title">Autenticando...</string>
+    <string name="loading_auth_description">Por favor, aguarde.</string>
+    
+    <string name="loading_scanner_title">Processando...</string>
+    <string name="loading_scanner_description">Por favor, aguarde o processamento do código.</string>
+    
+    <string name="loading_databases_title">Carregando Bases...</string>
+    <string name="loading_databases_description">Por favor, selecione o local desejado após o término do carregamento.</string>
+    
+    <string name="dialog_alert_title">Atenção!</string>
+
+</resources>

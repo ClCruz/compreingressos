@@ -1,0 +1,65 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SurfaceView
+        android:id="@+id/camera_preview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
+    <view
+        android:id="@+id/viewfinder_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        class="br.com.cc.ci_barcodescanner.view.ViewfinderView" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/hello_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:text="@string/hello_text"
+            android:textColor="#66FFFFFF"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:id="@+id/controls"
+            style="?buttonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:background="@color/black_overlay" >
+
+            <Spinner
+                android:id="@+id/spinner_places"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <ToggleButton
+                android:id="@+id/toggle_flash"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.50"
+                android:onClick="onToggleClicked"
+                android:textOff="@string/button_flash"
+                android:textOn="@string/button_flash" />
+
+            <ToggleButton
+                android:id="@+id/toggle_focus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.50"
+                android:onClick="onToggleClicked"
+                android:textOff="@string/button_focus"
+                android:textOn="@string/button_focus" />
+
+        </LinearLayout>
+    </FrameLayout>
+
+</merge>

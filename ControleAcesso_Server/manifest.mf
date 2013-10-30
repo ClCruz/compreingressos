@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Main-Class: com.controleacesso.socket.SocketTest
+Class-Path: metouia.jar
+X-Author: Edicarlos Barbosa
+X-URL: http://sockettest.sourceforge.net/

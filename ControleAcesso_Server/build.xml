@@ -1,0 +1,40 @@
+<project name="ControleAcesso_Server.Project" default="jar" basedir=".">
+    <property name="app.name"   value="ControleAcesso_Server" />
+    <property name="build.dir"  value="build/classes" />
+
+
+    <target name="compile">
+        <mkdir dir="${build.dir}"/>
+        <javac srcdir="src/" destdir="${build.dir}" optimize="on" debug="off">
+            <include name="**/*.java"/>
+        </javac>
+		<copy todir="${build.dir}/" overwrite="yes">
+			<fileset dir="src/">
+				<include name="*.txt"/>
+			</fileset>
+		 </copy>
+		 <copy todir="${build.dir}/icons" overwrite="yes">
+			<fileset dir="src/icons">
+				<include name="*.gif"/>
+			</fileset>
+		 </copy>
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="dist"/>
+        <jar jarfile="dist/${app.name}.jar"
+             basedir="${build.dir}" includes="**" manifest="manifest.mf">
+		</jar>
+    </target>
+
+	<target name="run" depends="jar">		
+		<java classname="com.controleacesso.socket.SocketTest" fork="true">
+		 <classpath>
+		   <pathelement location="build/lib/${app.name}.jar"/>
+		   <pathelement path="${java.class.path}"/>
+		 </classpath>
+		</java>
+	 </target>
+
+</project>
+

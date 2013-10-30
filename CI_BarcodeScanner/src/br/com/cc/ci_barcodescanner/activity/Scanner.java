@@ -3,7 +3,9 @@ package br.com.cc.ci_barcodescanner.activity;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -42,6 +44,7 @@ import br.com.cc.ci_barcodescanner.camera.CaptureActivityHandler;
 import br.com.cc.ci_barcodescanner.network.NetworkHandler;
 import br.com.cc.ci_barcodescanner.network.SocketService;
 import br.com.cc.ci_barcodescanner.util.FinishListener;
+import br.com.cc.ci_barcodescanner.util.MapQuery;
 import br.com.cc.ci_barcodescanner.util.SystemUiHider;
 import br.com.cc.ci_barcodescanner.view.ViewfinderView;
 
@@ -90,7 +93,7 @@ public final class Scanner extends Activity implements Callback,
 
 	int user_id;
 	int database_id;
-	int dbs_id[];
+	Map<String, String> databases;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -325,16 +328,16 @@ public final class Scanner extends Activity implements Callback,
 
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		switch (keyCode) {
-			case KeyEvent.KEYCODE_MENU: {
-				mSystemUiHider.toggle();
+		case KeyEvent.KEYCODE_MENU: {
+			mSystemUiHider.toggle();
+			return true;
+		}
+		case KeyEvent.KEYCODE_BACK: {
+			if (mSystemUiHider.isVisible()) {
+				mSystemUiHider.hide();
 				return true;
 			}
-			case KeyEvent.KEYCODE_BACK: {
-				if (mSystemUiHider.isVisible()) {
-					mSystemUiHider.hide();
-					return true;
-				}
-			}
+		}
 		}
 		return super.onKeyUp(keyCode, event);
 	}
@@ -343,11 +346,11 @@ public final class Scanner extends Activity implements Callback,
 		Boolean state = ((ToggleButton) v).isChecked();
 
 		switch (v.getId()) {
-			case R.id.toggle_flash:
-				cameraManager.setTorch(state);
+		case R.id.toggle_flash:
+			cameraManager.setTorch(state);
 			break;
-			case R.id.toggle_focus:
-				cameraManager.setFcous(state);
+		case R.id.toggle_focus:
+			cameraManager.setFcous(state);
 			break;
 		}
 	}
@@ -359,23 +362,24 @@ public final class Scanner extends Activity implements Callback,
 						.getString(R.string.loading_databases_description),
 				true, false, null);
 
-		boundService.sendMessage("u_id=" + user_id);
+		Map<String, String> request = new HashMap<String, String>();
+		request.put("action", "databases");
+		request.put("user_id", Integer.toString(user_id));
+
+		boundService.sendMessage(request);
 	}
 
-	public void setupSpinner(String databases) {
-		String dbs[] = databases.split("\\|\\|");
+	public void setupSpinner(String dbs) {
+		dbs = MapQuery.urlDecodeUTF8(dbs);
+		databases = MapQuery.stringToMap(dbs);
+		ArrayList<String> array_dbs = new ArrayList<String>();
 
-		dbs_id = new int[dbs.length];
-
-		for (int i = 0; i < dbs.length; i++) {
-			String split[] = dbs[i].split("\\=");
-
-			dbs_id[i] = Integer.parseInt(split[1]);
-			dbs[i] = split[0];
+		for (Map.Entry<?, ?> entry : databases.entrySet()) {
+			array_dbs.add(entry.getKey().toString());
 		}
 
 		ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
-				this, android.R.layout.simple_spinner_item, dbs);
+				this, android.R.layout.simple_spinner_item, array_dbs);
 		spinnerArrayAdapter
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner_databases.setAdapter(spinnerArrayAdapter);
@@ -391,17 +395,14 @@ public final class Scanner extends Activity implements Callback,
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getStringExtra("action");
-			String message = intent.getStringExtra("message");
-
-			Log.i("debug", action + "|" + message);
 
 			if (action.equals("status")) {
-				if (message.equals("online")) {
+				if (intent.getStringExtra("message").equals("online")) {
 				} else {
 					finish();
 				}
-			} else if (action.equals("response")) {
-				if (message.indexOf("ok") == 0) {
+			} else if (action.equals("barcode")) {
+				if (intent.getStringExtra("success").equals("true")) {
 					// viewfinderView.setMaskColor(getResources().getColor(R.color.viewfinder_mask_green));
 					//
 					// Runnable task = new Runnable() {
@@ -417,7 +418,7 @@ public final class Scanner extends Activity implements Callback,
 
 					alertDialog.setTitle(getResources().getText(
 							R.string.dialog_alert_title));
-					alertDialog.setMessage(message);
+					alertDialog.setMessage(intent.getStringExtra("message"));
 					alertDialog.setButton(RESULT_OK,
 							getResources().getText(R.string.button_ok),
 							new DialogInterface.OnClickListener() {
@@ -429,9 +430,29 @@ public final class Scanner extends Activity implements Callback,
 							});
 					alertDialog.show();
 				}
+				
 				pd.dismiss();
 			} else if (action.equals("databases")) {
-				setupSpinner(message);
+				if (intent.getStringExtra("success").equals("true")) {
+					setupSpinner(intent.getStringExtra("databases"));
+				} else {
+					AlertDialog alertDialog = new AlertDialog.Builder(
+							Scanner.this).create();
+
+					alertDialog.setTitle(getResources().getText(
+							R.string.dialog_alert_title));
+					alertDialog.setMessage(intent.getStringExtra("message"));
+					alertDialog.setButton(RESULT_OK,
+							getResources().getText(R.string.button_ok),
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									finish();
+								}
+							});
+					alertDialog.show();
+				}
 			}
 		}
 	};

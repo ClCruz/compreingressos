@@ -1,5 +1,8 @@
 package br.com.cc.ci_barcodescanner.activity;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -66,23 +69,23 @@ public final class Login extends Activity {
 				getResources().getString(R.string.loading_auth_title),
 				getResources().getString(R.string.loading_auth_description),
 				true, false, null);
+		
+		Map<String, String> request = new HashMap<String, String>();
+		request.put("action", "login");
+		request.put("user", user.getText().toString());
+		request.put("password", password.getText().toString());
 
-		boundService.sendMessage("u=" + user.getText().toString() + "&p="
-				+ password.getText().toString());
+		boundService.sendMessage(request);
 	}
 
 	private BroadcastReceiver socketServiceResponseReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getStringExtra("action");
-			String message = intent.getStringExtra("message");
-			
-			Log.i("debug", action + "|" + message);
 
-			if (action.equals("response")) {
-				if (message.indexOf("id=") == 0) {
-					int user_id = Integer.parseInt(message.substring(3)
-							.toString());
+			if (action.equals("login")) {
+				if (intent.getStringExtra("success").equals("true")) {
+					int user_id = Integer.parseInt(intent.getStringExtra("user_id"));
 
 					Intent intent2 = new Intent(Login.this, Scanner.class);
 					intent2.putExtra("user_id", user_id);
@@ -90,10 +93,9 @@ public final class Login extends Activity {
 				} else {
 					AlertDialog alertDialog = new AlertDialog.Builder(
 							Login.this).create();
-
 					alertDialog.setTitle(getResources().getText(
 							R.string.dialog_alert_title));
-					alertDialog.setMessage(message);
+					alertDialog.setMessage(intent.getStringExtra("message"));
 					alertDialog.setButton(RESULT_OK,
 							getResources().getText(R.string.button_ok),
 							new DialogInterface.OnClickListener() {
@@ -105,9 +107,10 @@ public final class Login extends Activity {
 							});
 					alertDialog.show();
 				}
+				
 				pd.dismiss();
 			} else if (action.equals("status")) {
-				if (message.equals("online")) {
+				if (intent.getStringExtra("message").equals("online")) {
 					auth_button.setEnabled(true);
 				} else {
 					auth_button.setEnabled(false);

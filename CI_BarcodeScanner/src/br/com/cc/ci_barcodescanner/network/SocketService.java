@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Map;
 
 import android.app.Service;
 import android.content.Intent;
@@ -14,6 +15,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import br.com.cc.ci_barcodescanner.util.MapQuery;
 
 public class SocketService extends Service {
 	public static final String SERVERIP = "192.168.1.101";
@@ -51,12 +53,8 @@ public class SocketService extends Service {
 		}
 	}
 
-	public String getLastResponse() {
-		if (in != null) {
-			return last_response;
-		}
-
-		return null;
+	public void sendMessage(Map<String, String> request) {
+		sendMessage(MapQuery.mapToString(request));
 	}
 
 	public Boolean isConnected() {
@@ -96,17 +94,14 @@ public class SocketService extends Service {
 
 					if (last_response != null) {
 						Intent intent = new Intent("SocketServiceResponse");
-						
-						if (last_response.indexOf("response") == 0) {
-							intent.putExtra("action", "response");
-							last_response = last_response.substring(8);
-						} else if (last_response.indexOf("databases") == 0) {
-							intent.putExtra("action", "databases");
-							last_response = last_response.substring(9);
+						Map<String, String> params = (Map<String, String>) MapQuery
+								.stringToMap(last_response);
+
+						for (Map.Entry<?, ?> entry : params.entrySet()) {
+							intent.putExtra(entry.getKey().toString(), entry
+									.getValue().toString());
 						}
 
-						intent.putExtra("message", last_response);
-						
 						LocalBroadcastManager.getInstance(SocketService.this)
 								.sendBroadcast(intent);
 					} else {

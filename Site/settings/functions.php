@@ -339,13 +339,33 @@ function getTotalMeiaEntradaDisponivel ($apresentacao) {
 }
 
 function getCaixaTotalMeiaEntrada($apresentacao) {
-	$t = getTotalMeiaEntradaDisponivel($apresentacao);
-	//$t = $t < 0 ? 0 : $t;
+	$mainConnection = mainConnection();
 
-	$html = "<div class='meia-entrada' id='cme-" . $apresentacao . "'>
-				Qtde. total de meia entrada de estudante para a apresentação: " . getTotalMeiaEntrada($apresentacao) . "<br>
-				Qtde. meia entrada disponível às " . date('H:i:s') . ": <span class='contagem-meia'>" . $t . "</span>
-			</div>";
+	$query = 'SELECT e.id_base
+				from mw_evento e
+				inner join mw_apresentacao a on e.id_evento = a.id_evento
+				where a.id_apresentacao = ?';
+	$rs = executeSQL($mainConnection, $query, array($apresentacao), true);
+
+	$conn = getConnection($rs['id_base']);
+
+	$query = "SELECT StaCalculoPorSala
+				from tabTipBilhete
+				where StaTipBilhMeiaEstudante = 'S' and StaTipBilhete = 'A'
+				and CodTipBilhete in (select CodTipBilhete from ci_middleway..mw_apresentacao_bilhete where id_apresentacao = ?)";
+	$rs = executeSQL($conn, $query, array($apresentacao), true);
+
+	if ($rs['StaCalculoPorSala'] == 'S') {
+		$t = getTotalMeiaEntradaDisponivel($apresentacao);
+		//$t = $t < 0 ? 0 : $t;
+
+		$html = "<div class='meia-entrada' id='cme-" . $apresentacao . "'>
+					Qtde. total de meia entrada de estudante para a apresentação: " . getTotalMeiaEntrada($apresentacao) . "<br>
+					Qtde. meia entrada disponível às " . date('H:i:s') . ": <span class='contagem-meia'>" . $t . "</span>
+				</div>";
+	} else {
+		$html = '';
+	}
 
 	return $html;
 }

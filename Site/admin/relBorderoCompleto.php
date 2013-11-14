@@ -209,7 +209,7 @@ if (isset($err) && $err != "") {
                           <td	align=left  class=texto><?php echo formatarConteudoVazio(utf8_encode($pRSBilhete["TipBilhete"])); ?></td>
                           <td	align=right  class=texto><?php echo formatarConteudoVazio($pRSBilhete["QtdeEstornados"]); ?></td>
                           <td	align=right  class=texto><?php echo formatarConteudoVazio($pRSBilhete["QtdeVendidos"]); ?></td>
-                          <td	align=right class=texto></td>
+                          <td	align=right class=texto><?php echo $pRSBilhete["QtdeAcessos"] == 0 ? '' : $pRSBilhete["QtdeAcessos"]; ?></td>
                           <td	align=right class=texto>R$&nbsp;<?php echo number_format($pRSBilhete["Preco"], 2, ",", "."); ?></td>
                           <td	align=right class=texto >R$&nbsp;<?php echo number_format($pRSBilhete["Total"], 2, ",", "."); ?></td>
                         </tr>

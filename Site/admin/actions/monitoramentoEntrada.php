@@ -189,9 +189,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 330, true)) {
 										and			  iac.id_usuario = ?
 										and			  iac.CodPeca = tbAp.CodPeca
 		            where               tbPc.CodPeca = ?
-					            /*AND CONVERT(DATETIME, CONVERT(VARCHAR(8), TBAP.DATAPRESENTACAO, 112) + ' ' + TBAP.HORSESSAO)
+					            AND CONVERT(DATETIME, CONVERT(VARCHAR(8), TBAP.DATAPRESENTACAO, 112) + ' ' + TBAP.HORSESSAO)
 									>= CONVERT(DATETIME, CONVERT(VARCHAR(8), DATEADD(DAY, -1, GETDATE()), 112) + ' 22:00')
-					            AND TBAP.DATAPRESENTACAO <= GETDATE()*/
+					            AND TBAP.DATAPRESENTACAO <= GETDATE()
 		            group by tbAp.DatApresentacao
 		            order by tbAp.DatApresentacao";
 		$params = array($_GET['cboTeatro'], $_SESSION['admin'], $_GET['cboPeca']);
@@ -219,8 +219,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 330, true)) {
 										and			  iac.id_usuario = ?
 										and			  iac.CodPeca = tbAp.CodPeca
 		            where       tbPc.CodPeca = ?
-				            /*AND CONVERT(DATETIME, CONVERT(VARCHAR(8), TBAP.DATAPRESENTACAO, 112) + ' ' + TBAP.HORSESSAO)
-				            	>= CONVERT(DATETIME, CONVERT(VARCHAR(8), DATEADD(DAY, -1, GETDATE()), 112) + ' 22:00')*/
+				            AND CONVERT(DATETIME, CONVERT(VARCHAR(8), TBAP.DATAPRESENTACAO, 112) + ' ' + TBAP.HORSESSAO)
+				            	>= CONVERT(DATETIME, CONVERT(VARCHAR(8), DATEADD(DAY, -1, GETDATE()), 112) + ' 22:00')
 				            AND TBAP.DATAPRESENTACAO = CONVERT(DATETIME, ?, 112)
 		            group by tbAp.HorSessao
 		            order by tbAp.HorSessao";

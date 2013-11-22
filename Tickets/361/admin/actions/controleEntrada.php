@@ -68,7 +68,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 
 				} elseif ($rs['STATUSINGRESSO'] == 'U') {
 
-					$retorno = array('class' => 'falha', 'mensagem' => 'Este ingresso já foi processado em ' .$rs['DATHRENTRADA']->format("d/m/Y h:i:s"). '.<br />Acesso não permitido.');
+					$retorno = array('class' => 'falha', 'mensagem' => 'Este ingresso já foi processado em<br />' .$rs['DATHRENTRADA']->format("d/m/Y h:i:s"). '.<br />Acesso não permitido.');
 
 				} elseif ($rs['STATUSINGRESSO'] == 'E') {
 
@@ -132,9 +132,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 										and			  iac.id_usuario = ?
 										and			  iac.CodPeca = tbAp.CodPeca
 		            where               tbPc.CodPeca = ?
-					            AND CONVERT(DATETIME, CONVERT(VARCHAR(8), TBAP.DATAPRESENTACAO, 112) + ' ' + TBAP.HORSESSAO)
+					            /*AND CONVERT(DATETIME, CONVERT(VARCHAR(8), TBAP.DATAPRESENTACAO, 112) + ' ' + TBAP.HORSESSAO)
 									>= CONVERT(DATETIME, CONVERT(VARCHAR(8), DATEADD(DAY, -1, GETDATE()), 112) + ' 22:00')
-					            AND TBAP.DATAPRESENTACAO <= GETDATE()
+					            AND TBAP.DATAPRESENTACAO <= GETDATE()*/
 		            group by tbAp.DatApresentacao
 		            order by tbAp.DatApresentacao";
 		$params = array($_GET['cboTeatro'], $_SESSION['admin'], $_GET['cboPeca']);
@@ -162,9 +162,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 										and			  iac.id_usuario = ?
 										and			  iac.CodPeca = tbAp.CodPeca
 		            where       tbPc.CodPeca = ?
-		            AND CONVERT(DATETIME, CONVERT(VARCHAR(8), TBAP.DATAPRESENTACAO, 112) + ' ' + TBAP.HORSESSAO)
-		            >= CONVERT(DATETIME, CONVERT(VARCHAR(8), DATEADD(DAY, -1, GETDATE()), 112) + ' 22:00')
-		            AND TBAP.DATAPRESENTACAO = CONVERT(DATETIME, ?, 112)
+				            /*AND CONVERT(DATETIME, CONVERT(VARCHAR(8), TBAP.DATAPRESENTACAO, 112) + ' ' + TBAP.HORSESSAO)
+				            >= CONVERT(DATETIME, CONVERT(VARCHAR(8), DATEADD(DAY, -1, GETDATE()), 112) + ' 22:00')*/
+				            AND TBAP.DATAPRESENTACAO = CONVERT(DATETIME, ?, 112)
 		            group by tbAp.HorSessao
 		            order by tbAp.HorSessao";
 		$params = array($_GET['cboTeatro'], $_SESSION['admin'], $_GET['cboPeca'], $_GET['cboApresentacao']);

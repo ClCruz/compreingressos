@@ -30,7 +30,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
                 $cboTeatro = $('#cboTeatro'),
                 $cboPeca = $('#cboPeca'),
                 $cboApresentacao = $('#cboApresentacao'),
-                $cboHorario = $('#cboHorario');
+                $cboHorario = $('#cboHorario'),
+                $header = $('#header, #mainMenu');
 
             $('.button, [type="button"]').button();
 
@@ -50,6 +51,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
                 if ($table_leitura.is(':hidden')) {
                     $table_filtro.find('select').prop('disabled', true);
 
+                    $header.hide();
                     $table_leitura.show();
                     $play_stop.val('Parar Leitura');
 
@@ -61,6 +63,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
                 } else {
                     $table_filtro.find('select').prop('disabled', false);
 
+                    $header.show();
                     $table_leitura.hide();
                     $play_stop.val('Iniciar Leitura');
 
@@ -154,19 +157,20 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
             }
 
             #resultado_leitura {
-                font-size: 50px;
-                padding: 20px;
+                font-size: 40px;
+                padding: 15px;
+                color: white;
             }
 
             .sucesso {
                 color: darkgreen;
-                background-color: lightgreen;
+                background-color: darkgreen;
                 border: 5px solid darkgreen;
             }
 
             .falha {
                 color: darkred;
-                background-color: lightpink;
+                background-color: darkred;
                 border: 5px solid darkred;
             }
         </style>

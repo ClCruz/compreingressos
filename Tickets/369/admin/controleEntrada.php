@@ -30,13 +30,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
                 $cboTeatro = $('#cboTeatro'),
                 $cboPeca = $('#cboPeca'),
                 $cboApresentacao = $('#cboApresentacao'),
-                $cboHorario = $('#cboHorario');
+                $cboHorario = $('#cboHorario'),
+                $cboSala = $('#cboSala'),
+                $header = $('#header, #mainMenu');
 
             $('.button, [type="button"]').button();
 
             $play_stop.on('click', function(){
 
-                if ($cboTeatro.val() == '' || $cboPeca.val() == '' || $cboApresentacao.val() == '' || $cboHorario.val() == '') {
+                if ($cboTeatro.val() == '' || $cboPeca.val() == '' || $cboApresentacao.val() == '' || $cboHorario.val() == '' || $cboSala.val() == '') {
                     $.dialog({
                             title: 'Alerta...',
                             text: 'Preencha todas as informações antes de iniciar a leitura.'
@@ -50,6 +52,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
                 if ($table_leitura.is(':hidden')) {
                     $table_filtro.find('select').prop('disabled', true);
 
+                    $header.hide();
                     $table_leitura.show();
                     $play_stop.val('Parar Leitura');
 
@@ -61,6 +64,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
                 } else {
                     $table_filtro.find('select').prop('disabled', false);
 
+                    $header.show();
                     $table_leitura.hide();
                     $play_stop.val('Iniciar Leitura');
 
@@ -87,10 +91,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
                     $resultado_leitura
                         .addClass(data.class)
                         .html(data.mensagem);
-                }).fail(function(){
+                }).fail(function(a,b,c,d,e){
+                    console.log(a,b,c,d,e);
                     $resultado_leitura
                         .addClass('falha')
-                        .html('Falha na conexão.<br /><br />Favor tentar novamente.');
+                        .html('Falha na conexão.<br />Favor tentar novamente.');
                 }).always(function(){
                     $codigo.focus().select();
                 });
@@ -127,7 +132,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
                 }).done(function(html){
                     $cboHorario.html(html).trigger('change');
                 });
-            })
+            });
+
+            $cboHorario.on('change', function(){
+                $.ajax({
+                    url: pagina + '?action=cboSala&cboTeatro=' + $cboTeatro.val() + '&cboPeca=' + $cboPeca.val() + '&cboApresentacao=' + $cboApresentacao.val() + '&cboHorario=' + $cboHorario.val()
+                }).done(function(html){
+                    $cboSala.html(html).trigger('change');
+                });
+            });
         });
     </script>
     <head>
@@ -154,19 +167,20 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
             }
 
             #resultado_leitura {
-                font-size: 50px;
-                padding: 20px;
+                font-size: 40px;
+                padding: 15px;
+                color: white;
             }
 
             .sucesso {
                 color: darkgreen;
-                background-color: lightgreen;
+                background-color: darkgreen;
                 border: 5px solid darkgreen;
             }
 
             .falha {
                 color: darkred;
-                background-color: lightpink;
+                background-color: darkred;
                 border: 5px solid darkred;
             }
         </style>
@@ -180,7 +194,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
                     <strong>Local:</strong><br>
                     <select name="cboTeatro" id="cboTeatro"><option value="">Carregando...</option></select>
                 </td>
-                <td colspan="2">
+                <td>
                     <strong>Evento:</strong><br>
                     <select name="cboPeca" id="cboPeca"><option value="">Selecione um Local...</option></select>
                 </td>
@@ -195,6 +209,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
                     <br>
                     <strong>Hor&aacute;rio:</strong><br>
                     <select name="cboHorario" id="cboHorario"><option value="">Selecione uma Apresentação...</option></select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <br>
+                    <strong>Setor:</strong><br>
+                    <select name="cboSala" id="cboSala"><option value="">Selecione um Hor&aacute;rio...</option></select>
                 </td>
                 <td style="vertical-align: bottom;">
                     <input id="play_stop" type="button" value="Iniciar Leitura" />

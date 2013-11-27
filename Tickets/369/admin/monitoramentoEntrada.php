@@ -5,11 +5,11 @@ $mainConnection = mainConnection();
 
 session_start();
 
-if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
+if (acessoPermitido($mainConnection, $_SESSION['admin'], 330, true)) {
 
     $pagina = basename(__FILE__);
 
-    if (isset($_GET['action']) or isset($_POST['codigo'])) {
+    if (isset($_GET['action'])) {
         
         require('actions/'.$pagina);
 
@@ -21,87 +21,88 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
         $(document).ready(function(){
             var pagina = '<?php echo $pagina; ?>',
                 $table_leitura = $('#table_leitura'),
-                $play_stop = $('#play_stop'),
+                $refresh = $('#refresh'),
                 $table_filtro = $('#table_filtro'),
                 $dados = $('#dados'),
-                $resultado_leitura = $('#resultado_leitura'),
-                $codigo = $('#codigo'),
-                $document = $(document),
                 $cboTeatro = $('#cboTeatro'),
                 $cboPeca = $('#cboPeca'),
                 $cboApresentacao = $('#cboApresentacao'),
                 $cboHorario = $('#cboHorario'),
                 $cboSala = $('#cboSala'),
-                $header = $('#header, #mainMenu');
+                $print = $('#print'),
+                $action = $('#action'),
+                autoRefresh = false,
+                defaultInterval = 60;
 
             $('.button, [type="button"]').button();
 
-            $play_stop.on('click', function(){
+            function countdown(s) {
+                if (autoRefresh) {
+                    $refresh.val('Parar ou próxima atualização em '+s+' segundos');
 
-                if ($cboTeatro.val() == '' || $cboPeca.val() == '' || $cboApresentacao.val() == '' || $cboHorario.val() == '' || $cboSala.val() == '') {
+                    if (s == 0) {
+                        $dados.trigger('submit');
+                    } else {
+                        setTimeout(function(){countdown(s-1)}, 1000);
+                    }
+                } else {
+                    $refresh.val('Atualizar');
+                }
+            }
+
+            $refresh.on('click', function(){
+                if ($cboTeatro.val() == '' || $cboPeca.val() == '' || $cboApresentacao.val() == '' || $cboHorario.val() == '') {
                     $.dialog({
                             title: 'Alerta...',
-                            text: 'Preencha todas as informações antes de iniciar a leitura.'
+                            text: 'Preencha todas as informações antes de iniciar o monitoramento.'
                         });
                     return false;
                 }
 
-                $codigo.val('');
-                $resultado_leitura.removeClass('sucesso falha').html('');
-
-                if ($table_leitura.is(':hidden')) {
-                    $table_filtro.find('select').prop('disabled', true);
-
-                    $header.hide();
-                    $table_leitura.show();
-                    $play_stop.val('Parar Leitura');
-
-                    $document.on('click blur focus', function(){
-                        $codigo.focus().select();
-                    });
-
-                    $codigo.val('').trigger('focus');
-                } else {
+                if (autoRefresh) {
+                    autoRefresh = false;
                     $table_filtro.find('select').prop('disabled', false);
-
-                    $header.show();
-                    $table_leitura.hide();
-                    $play_stop.val('Iniciar Leitura');
-
-                    $document.off('click blur focus');
+                } else {
+                    autoRefresh = true;
+                    $table_filtro.find('select').prop('disabled', true);
+                    $dados.trigger('submit');
                 }
+            });
+
+            $print.on('click', function(){
+                if ($table_leitura.find('tr').length < 3) {
+                    $.dialog({
+                            title: 'Alerta...',
+                            text: 'Nenhum registro encontrado para impressão.'
+                        });
+                    return false;
+                }
+
+                print();
             });
 
             $dados.on('submit', function(e){
                 e.preventDefault();
 
-                $codigo.prop('readonly', true);
                 $disabled_fields = $dados.find(':disabled').prop('disabled', false);
 
-                $resultado_leitura
-                    .removeClass('sucesso falha')
-                    .html('<img src="../images/catraca_loading.gif" />');
+                $table_leitura.html('<tr><td align="center"><img src="../images/catraca_loading.gif" /></td></tr>');
 
                 $.ajax({
-                    url: pagina,
+                    url: pagina + '?action=getTable',
                     type: 'POST',
                     data: $dados.serialize(),
-                    dataType: "json"
-                }).done(function(data){
-                    $resultado_leitura
-                        .addClass(data.class)
-                        .html(data.mensagem);
-                }).fail(function(a,b,c,d,e){
-                    console.log(a,b,c,d,e);
-                    $resultado_leitura
-                        .addClass('falha')
-                        .html('Falha na conexão.<br />Favor tentar novamente.');
+                    dataType: "html"
+                }).done(function(html){
+                    $table_leitura.html(html);
+
+                    $table_filtro.find('tr:last').html($table_leitura.find('tr:last').html());
+                    $table_leitura.find('tr:last').remove()
                 }).always(function(){
-                    $codigo.focus().select();
+                    setTimeout(function(){countdown(defaultInterval)}, 1000);
                 });
 
                 $disabled_fields.prop('disabled', true);
-                $codigo.prop('readonly', false);
             });
 
             $.ajax({
@@ -141,60 +142,39 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
                     $cboSala.html(html).trigger('change');
                 });
             });
+
+            $table_leitura.on('mouseenter mouseleave', 'tr:not(.ui-widget-header)', function() {
+                $(this).toggleClass('ui-state-hover');
+            });
         });
     </script>
     <head>
         <style type="text/css">
-            #table_leitura {
-                display: none;
-            }
+            @media print {
+                #holder > * {
+                    display: none;
+                }
 
-            #codigo {
-                border: none;
-                border-bottom: 1px solid #000;
-                font-size: 30px;
-                line-height: 30px;
-                text-align: center;
-                width: 550px;
-            }
+                #content {
+                    display: block;
+                }
 
-            #codigo::selection {
-                background: white;
-            }
-
-            #codigo::-moz-selection {
-                background: white;
-            }
-
-            #resultado_leitura {
-                font-size: 40px;
-                padding: 15px;
-                color: white;
-            }
-
-            .sucesso {
-                color: darkgreen;
-                background-color: darkgreen;
-                border: 5px solid darkgreen;
-            }
-
-            .falha {
-                color: darkred;
-                background-color: darkred;
-                border: 5px solid darkred;
+                #refresh, #print {
+                    display: none;
+                }
             }
         </style>
 </head>
 <body>
-    <h2>Controle de Entrada</h2>
-    <form id="dados" action="" method="POST">
+    <h2>Monitoramento do Controle de Entrada</h2>
+    <form id="dados" action="<?php echo $pagina; ?>" target="_blank" method="POST">
         <table id="table_filtro">
             <tr>
                 <td>
                     <strong>Local:</strong><br>
                     <select name="cboTeatro" id="cboTeatro"><option value="">Carregando...</option></select>
                 </td>
-                <td>
+                <td colspan="3">
                     <strong>Evento:</strong><br>
                     <select name="cboPeca" id="cboPeca"><option value="">Selecione um Local...</option></select>
                 </td>
@@ -205,7 +185,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
                     <strong>Apresenta&ccedil;&atilde;o:</strong><br>
                     <select name="cboApresentacao" id="cboApresentacao"><option value="">Selecione um Evento...</option></select>
                 </td>
-                <td>
+                <td colspan="3">
                     <br>
                     <strong>Hor&aacute;rio:</strong><br>
                     <select name="cboHorario" id="cboHorario"><option value="">Selecione uma Apresentação...</option></select>
@@ -217,31 +197,16 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
                     <strong>Setor:</strong><br>
                     <select name="cboSala" id="cboSala"><option value="">Selecione um Hor&aacute;rio...</option></select>
                 </td>
-                <td style="vertical-align: bottom;">
-                    <input id="play_stop" type="button" value="Iniciar Leitura" />
+                <td colspan="3" style="vertical-align: bottom;">
+                    <input id="refresh" type="button" value="Atualizar" /> <input id="print" type="button" value="imprimir" />
                 </td>
             </tr>
+            <tr><td colspan="4"></td></tr>
         </table>
 
-        <table id="table_leitura">
-            <tr>
-                <td>
-                    <h2>Leitura</h2>
-                </td>
-            </tr>
+        <br />
 
-            <tr>
-                <td align="center">
-                    <input type="text" name="codigo" id="codigo" />
-                </td>
-            </tr>
-
-            <tr>
-                <td align="center">
-                    <div id="resultado_leitura"><img src="../images/catraca_loading.gif" /></div>
-                </td>
-            </tr>
-        </table>
+        <table id="table_leitura" class="ui-widget ui-widget-content printable"></table>
     </form>
 </BODY>
 </html>

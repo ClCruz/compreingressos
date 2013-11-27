@@ -60,8 +60,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 330, true)) {
 														  AND TTLB1.ICPERCVLR     = 'V'
 														  AND TTLB1.ICUSOLCTO    != 'C'
 														  AND TTLB1.INATIVO       = 'A')
-														AND TTBTL.INATIVO        = 'A'), 0) AS OUTROSVALORES2,
-					TS.NOMSETOR
+														AND TTBTL.INATIVO        = 'A'), 0) AS OUTROSVALORES2
 					FROM TABCONTROLESEQVENDA C
 					INNER JOIN TABTIPBILHETE B ON B.CODTIPBILHETE = SUBSTRING(C.CODBAR, 15, 3)
 					INNER JOIN TABLANCAMENTO L ON L.CODAPRESENTACAO = SUBSTRING(C.CODBAR, 1, 5)
@@ -75,10 +74,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 330, true)) {
 												AND TLS.CODTIPBILHETE = L.CODTIPBILHETE
 					LEFT JOIN TABINGRESSOAGREGADOS TIA ON TIA.CODVENDA = TLS.CODVENDA
 												AND TIA.INDICE = TLS.INDICE
-					
-					INNER JOIN TABSALDETALHE TSD ON TSD.INDICE = TLS.INDICE
-					INNER JOIN TABSETOR TS ON TS.CODSALA = TSD.CODSALA
-												AND TS.CODSETOR = TSD.CODSETOR
 					WHERE
 						C.STATUSINGRESSO = 'U'
 					AND A.DATAPRESENTACAO = ?
@@ -91,24 +86,21 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 330, true)) {
 					COUNT(1) QTDE,
 					(VALPAGTO - VLRAGREGADOS + OUTROSVALORES1 + OUTROSVALORES2) AS VALORUNITARIO,
 					STATIPBILHMEIA,
-					COUNT(1) * (VALPAGTO - VLRAGREGADOS + OUTROSVALORES1 + OUTROSVALORES2) AS TOTAL,
-					NOMSETOR
+					COUNT(1) * (VALPAGTO - VLRAGREGADOS + OUTROSVALORES1 + OUTROSVALORES2) AS TOTAL
 				FROM RESULTADO
 				GROUP BY 
 					TIPBILHETE,
 					(VALPAGTO - VLRAGREGADOS + OUTROSVALORES1 + OUTROSVALORES2),
-					STATIPBILHMEIA,
-					NOMSETOR
+					STATIPBILHMEIA
 				ORDER BY TIPBILHETE";
 		$params = array($_POST['cboApresentacao'], $_POST['cboHorario'], $_POST['cboSala'], $_POST['cboSala'], $_POST['cboPeca']);
 		$result = executeSQL($conn, $query, $params);
-var_dump($params);
+
 		if (hasRows($result)) {
 
 			$html = '<thead>
 						<tr class="ui-widget-header">
-							<th align="left">Tipo de Bilhete</th>
-							<th align="left">Setor</th>
+							<th>Tipo de Bilhete</th>
 							<th align="right">Qtde. Ingressos</th>
 							<th align="right">Preço Unitário</th>
 							<th align="right">Total</th>
@@ -121,7 +113,6 @@ var_dump($params);
 			while ($rs = fetchResult($result)) {
 				$html .= '<tr>
 							<td>'.utf8_encode($rs['TIPBILHETE']).'</td>
-							<td>'.utf8_encode($rs['NOMSETOR']).'</td>
 							<td align="right">'.$rs['QTDE'].'</td>
 							<td align="right">'.number_format($rs['VALORUNITARIO'], 2, ',', '').'</td>
 							<td align="right">'.number_format($rs['TOTAL'], 2, ',', '').'</td>
@@ -132,7 +123,7 @@ var_dump($params);
 			}
 
 			$html .= '<tr>
-						<th colspan="2">Total de Acessos (Pessoas)</th>
+						<th>Total de Acessos (Pessoas)</th>
 						<th align="right">'.$totalQuantidade.'</th>
 						<th></th>
 						<th align="right">'.number_format($totalValor, 2, ',', '').'</th>

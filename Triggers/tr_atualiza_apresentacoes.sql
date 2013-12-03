@@ -8,6 +8,9 @@
 +========+=============+============+=================+===========================================================+'
 !   2    !    #328     ! 13/09/2013 ! Edicarlos S. B. ! Alterado a forma utilizada p/ atualizar a tabela	      !
 !        !             !            !                 ! mw_apresentacao_bilhete buscando o id_apresentacao_bilhete!
++========+=============+============+=================+===========================================================+'
+!   3    !             ! 03/12/2013 ! Edicarlos S. B. ! Alterado o UPDATE final p/ trocar o @codapresentacao p/   !
+!        !             !            !                 ! d.codapresentacao										  !
 +=================================================================================================================+
 */
 
@@ -206,7 +209,7 @@ BEGIN
 			INNER JOIN deleted d ON d.codpeca = e.codpeca
 			INNER JOIN ci_middleway..mw_apresentacao a ON a.id_evento = e.id_evento
 			WHERE id_base = @id_base
-				AND a.codapresentacao = @codapresentacao
+				AND a.codapresentacao = d.codapresentacao
 		END
 	END
 END

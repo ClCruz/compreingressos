@@ -57,7 +57,7 @@ $queryCodigos = 'SELECT codbar
                 ORDER BY c.Indice';
 foreach ($itensPedido as $item) {
     $lineCount++;
-    if ($CodApresentacao != $item['CodApresentacao']) {
+    if ($CodApresentacao !== $item['CodApresentacao']) {
         $conn = getConnection($item['id_base']);
         $codigos = executeSQL($conn, $queryCodigos, array($item['CodApresentacao'], $item['CodVenda']));
 

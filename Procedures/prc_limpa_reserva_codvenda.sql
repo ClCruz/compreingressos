@@ -11,7 +11,7 @@ fetch next from C into @base
 while @@fetch_status = 0
 BEGIN
 	IF (EXISTS (SELECT 1 FROM master.dbo.sysdatabases WHERE ('[' + name + ']' = @base OR name = @base)))
-		exec('delete from ' + @base + '..tabResCodVenda where datReserva <= getDate()-1')
+		exec('delete from ' + @base + '..tabResCodVenda where convert(varchar(10), datReserva, 112) <= convert(varchar(10), getdate()-1, 112)')
 	
 	fetch next from C into @base
 END

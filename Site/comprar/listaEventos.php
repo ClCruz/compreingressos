@@ -30,9 +30,6 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador']) and isset
 	
 	if (hasRows($result)) {
 	?>
-	<div class="titulo">
-		<h1>Escolha de Evento</h1>
-	</div>
 	<p>Selecione o evento desejado:</p>
 	<ul>
 	<?php while ($rs = fetchResult($result)) { ?>

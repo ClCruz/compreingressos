@@ -29,7 +29,8 @@ $query = "SELECT
 				PV.DS_CIDADE_ENTREGA,
 				PV.CD_CEP_ENTREGA,
 				PV.IN_RETIRA_ENTREGA,
-				C.CD_EMAIL_LOGIN
+				C.CD_EMAIL_LOGIN,
+				PV.NR_PARCELAS_PGTO
 			FROM MW_PEDIDO_VENDA PV
 			INNER JOIN MW_CLIENTE C ON PV.ID_CLIENTE = C.ID_CLIENTE
 			LEFT JOIN MW_MEIO_PAGAMENTO MP ON PV.ID_MEIO_PAGAMENTO = MP.ID_MEIO_PAGAMENTO
@@ -51,6 +52,7 @@ if (!empty($rsDados)) {
 	$valores['date'] = $rsDados['DT_PEDIDO_VENDA'];
 	$PaymentDataCollection['Amount'] = $rsDados['VL_TOTAL_PEDIDO_VENDA'] * 100;
 	$PaymentDataCollection['PaymentMethod'] = $rsDados['CD_MEIO_PAGAMENTO'];
+	$PaymentDataCollection['NumberOfPayments'] = $rsDados['NR_PARCELAS_PGTO'];
 	$parametros['CustomerData']['CustomerIdentity'] = $rsDados['CD_CPF'];
 	$parametros['CustomerData']['CustomerEmail'] = $rsDados['CD_EMAIL_LOGIN'];
 	$dadosExtrasEmail['cpf_cnpj_cliente'] = $parametros['CustomerData']['CustomerIdentity'];
@@ -120,10 +122,12 @@ if (!empty($rsDados)) {
 	        $valorConveniencia = obterValorServico($itens['ID_APRESENTACAO_BILHETE'], false, $_GET['pedido']);
 	    }
 
+	    $evento_info = getEvento($itens['ID_EVENTO']);
+
 	    $itensPedido[$i]['descricao_item']['evento'] = utf8_encode($itens['DS_EVENTO']);
 	    $itensPedido[$i]['descricao_item']['data'] = $itens['DT_APRESENTACAO'];
 	    $itensPedido[$i]['descricao_item']['hora'] = $itens['HR_APRESENTACAO'];
-	    $itensPedido[$i]['descricao_item']['teatro'] = utf8_encode($itens['DS_NOME_TEATRO']);
+	    $itensPedido[$i]['descricao_item']['teatro'] = utf8_encode($evento_info['nome_teatro']);
 	    $itensPedido[$i]['descricao_item']['setor'] = utf8_encode($itens['DS_SETOR']);
 	    $itensPedido[$i]['descricao_item']['cadeira'] = utf8_encode($itens['DS_CADEIRA']);
 	    $itensPedido[$i]['descricao_item']['bilhete'] = utf8_encode($itens['DS_TIPO_BILHETE']);

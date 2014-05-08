@@ -1,167 +1,234 @@
 $(function() {
-    $.busyCursor();
-	
-    var estado = $('#novo_estado'),
-    cidade = $('#novo_cidade'),
-    bairro = $('#novo_bairro'),
-    endereco = $('#novo_endereco'),
-    complemento = $('#novo_complemento'),
-    cep1 = $('#novo_cep1'),
-    cep2 = $('#novo_cep2');
-
     var estado = $('#novo_estado'),
 		cidade = $('#novo_cidade'),
 		bairro = $('#novo_bairro'),
 		endereco = $('#novo_endereco'),
 		complemento = $('#novo_complemento'),
-		cep1 = $('#novo_cep1'),
-		cep2 = $('#novo_cep2');
-		
-	var	allFields = $([]).add(endereco)
-		.add(bairro)
-		.add(cidade)
-		.add(estado)
-		.add(cep1)
-		.add(cep2);
+		cep = $('#novo_cep'),
+		nome = $('#novo_titulo_endereco'),
+		id = $('#id'),
+		entrega_permitida = false;
 	
-    $("#identificacao").css('margin', '0  0 0 15px').dialog({
-	title: 'Novo endere&ccedil;o de entrega',
-	autoOpen: false,
-	//height: 300,
-	width: 340,
-	modal: true,
-	resizable: false,
-	buttons: {
-	    'Adicionar': function() {
-		var $this = $(this),
-		valido = true;
-				
-		allFields.each(function() {
-		    if ($(this).val() == '') {
-			$(this).findNextMsg().slideDown('fast');
-			valido = false;
-		    } else {
-			$(this).findNextMsg().slideUp('slow');
-		    }
-		})
-		allFields = allFields.add(complemento);
-								
-		if (valido) {
-		    $('#loadingIcon').fadeIn('fast');
-					
-		    $.ajax({
-			url: 'cadastro.php?action=manageAddresses',
-			type: 'post',
-			data: 'endereco=' + endereco.val() +
-			'&complemento=' + complemento.val() +
-			'&bairro=' + bairro.val() +
-			'&cidade=' + cidade.val() +
-			'&estado=' + estado.val() +
-			'&cep=' + cep1.val() + cep2.val(),
-			success: function(data) {
-			    if (data.substr(0, 4) == 'true') {
-				$('<div class="entrega">' +
-				    '<label>' +
-				    '<div class="endereco_radio">' +
-				    '<input name="entrega" type="radio" value="'+data.split('?')[1]+'">' +
-				    '<a class="apagar_novo_endereco" href="cadastro.php?action=manageAddresses&enderecoID='+data.split('?')[1]+'">X</a>' +
-				    '</div>' +
-				    '<div class="endereco_entrega">' +
-				    '<h2>' + endereco.val() + '</h2>' +
-				    '<p>' + complemento.val() + (complemento.val() != '' ? ' - ' : '') + bairro.val() + '</p>' +
-				    '<p>' + cidade.val() + ' - ' + estado.find(':selected').text() + '</p>' +
-				    '<p>' + cep1.val() + '-' + cep2.val() + '</p>' +
-				    '</div>' +
-				    '</label>' +
-				    '</div>'
-				    ).insertBefore('div.entrega:last');
-				$this.dialog('close');
-			    } else {
-				$.dialog({
-				    text: data
-				});
-			    }
-			},
-			complete: function() {
-			    $('#loadingIcon').fadeOut('slow');
-			}
-		    });
-		}
-	    },
-	    'Cancelar': function() {
-		$(this).dialog('close');
-	    }
-	},
-	close: function() {
-	    allFields.val('');
-	    $('.err_msg').hide();
-	}
-    });
-	
-    /**
-	$('a[href^="cadastro.php?action=manageAddresses"]').click(function(event) {
-		event.preventDefault();
-		
-		var $this = $(this);
-		
-		$('#loadingIcon').fadeIn('fast');
-		
+	$('#bt_novo_endereco').on('click', function(e){
+		e.preventDefault();
+
+		$(this).next('div').slideToggle();
+	});
+
+	$('.container_enderecos').on('change', 'input.radio', function(){
 		$.ajax({
-			url: $this.attr('href'),
+			url: 'calculaFrete.php?action=verificatempo&etapa=4',
+			data: 'idestado=' + $(this).val(),
+			type: 'post',
 			success: function(data) {
 				if (data == 'true') {
-					$this.closest('div.entrega').remove();
+					entrega_permitida = true;
 				} else {
-					$.dialog({text: data});
+					entrega_permitida = false;
+					data = $.parseJSON(data);
+					$.confirmDialog({
+						text: data.text,
+						detail: data.detail,
+						uiOptions: {
+							buttons: {
+								'Ok, entendi': ['', function(){
+									estado.selectbox('detach')
+									estado.val('');
+									estado.selectbox('attach')
+									fecharOverlay();
+								}]
+							}
+						}
+					});
 				}
-			},
-			complete: function() {
-				$('#loadingIcon').fadeOut('slow');
 			}
 		});
-	});**/
-	
-    //Apagar novo endereco
+	});
 
-    $('#dados_entrega').on('click', '.apagar_novo_endereco', function(event) {
-	event.preventDefault();
-	var $this = $(this);
-	$.confirmDialog({
-	    text: 'Deseja apagar o endereço',
-	    title: 'Atenção',
-	    height:140,
-	    uiOptions: {
-		resizable: false,
-		modal: true,
-		buttons: {
-		    'Sim': function() {
-			$.ajax({
-			    url: $this.attr('href'),
-			    type: 'get',
-			    success: function(data) {
-				if (data == 'true') {
-				    $this.closest('div.entrega').remove();
-				} else {
-				    $.dialog({
-					text: data
-				    });
+	$('.end_salvar').on('click', function(e) {
+		e.preventDefault();
+
+		var $this = $(this),
+			valido = true;
+		
+		var	allFields = $([]).add(endereco)
+			.add(bairro)
+			.add(cidade)
+			.add(estado)
+			.add(cep)
+			.add(nome);
+				
+		allFields.each(function() {
+			if (!$(this).is(':hidden')) {
+			    if ($(this).val() == '') {
+					$(this).addClass('erro').findNextMsg().slideDown('fast');
+					valido = false;
+			    } else {
+					$(this).removeClass('erro').findNextMsg().slideUp('slow');
+			    }
+			}
+		});
+
+	    if (estado.val() == '') {
+			estado.addClass('erro').findNextMsg().slideDown('fast');
+			valido = false;
+	    } else {
+			estado.removeClass('erro').findNextMsg().slideUp('slow');
+	    }
+
+		allFields = allFields.add(complemento).add(id);
+								
+		if (valido) {
+		    $.ajax({
+				url: 'cadastro.php?action=manageAddresses',
+				type: 'post',
+				data: 'endereco=' + endereco.val() +
+						'&complemento=' + complemento.val() +
+						'&bairro=' + bairro.val() +
+						'&cidade=' + cidade.val() +
+						'&estado=' + estado.val() +
+						'&cep=' + cep.val() +
+						'&nome=' + nome.val() +
+						'&id=' + id.val(),
+				success: function(data) {
+				    if (data.substr(0, 4) == 'true') {
+				    	var new_id = data.split('?')[1];
+
+				    	if (id) {
+				    		$('#radio_endereco_'+id.val()).closest('.select_endereco').remove();
+				    	}
+
+						$('<table class="select_endereco">'+
+							'<tbody>'+
+								'<tr>'+
+									'<td class="input">'+
+										'<input id="radio_endereco_'+new_id+'" type="radio" name="radio_endereco" class="radio" value="'+new_id+'">'+
+										'<label class="radio" for="radio_endereco_'+new_id+'"></label>'+
+									'</td>'+
+									'<td>'+
+										'<div class="container_endereco">'+
+										'<p class="titulo">' + nome.val() + '</p>'+
+											'<p class="endereco">'+
+												endereco.val() + (complemento.val() ? complemento.val()+'<br>' : '') + '<br>'+
+												bairro.val() + ', ' + cidade.val() + ' - ' + estado.find(':selected').text() + '<br>'+
+												cep.val() +
+											'</p>'+
+										'</div>'+
+									'</td>'+
+								'</tr>'+
+							'<tr>'+
+								'<td class="input"></td>'+
+								'<td>'+
+									'<a href="cadastro.php?action=manageAddresses&id='+new_id+'" class="end_apagar">apagar</a>'+
+									'<a href="cadastro.php?action=getAddresses&id='+new_id+'" class="end_editar">editar</a>'+
+								'</td>'+
+							'</tr>'+
+							'</tbody>'+
+						'</table>').insertAfter('table.select_endereco:last');
+						$('.end_cancelar').trigger('click');
+				    } else {
+						$.dialog({text: data});
+				    }
 				}
-			    },
-			    complete: function() {
-				$('#loadingIcon').fadeOut('slow');
-				$( this ).dialog( "close" );
+			});
+		}
+	});
+
+	$('.end_cancelar').on('click', function(e) {
+		e.preventDefault();
+		estado.selectbox('detach');
+		$([]).add(endereco)
+			.add(bairro)
+			.add(cidade)
+			.add(estado)
+			.add(cep)
+			.add(nome)
+			.add(complemento)
+			.add(id)
+			.val('');
+		estado.selectbox('attach');
+		$('#bt_novo_endereco').next('div').slideToggle();
+	});
+
+    $('.container_enderecos').on('click', '.end_apagar', function(event) {
+		event.preventDefault();
+
+		var $this = $(this);
+
+		$.confirmDialog({
+		    text: 'Tem certeza que deseja<br>apagar o endereço com o título',
+		    detail: $this.closest('.select_endereco').find('.titulo').text(),
+		    uiOptions: {
+				buttons: {
+				    'Não': ['Quero continuar usando esse endereço', function() {
+						fecharOverlay();
+				    }],
+				    'Sim': ['Quero apagar esse endereço', function() {
+						$.ajax({
+						    url: $this.attr('href'),
+						    success: function(data) {
+								if (data == 'true') {
+								    $this.closest('table.select_endereco').remove();
+								} else {
+								    $.dialog({text: data});
+								}
+						    }
+						});
+						fecharOverlay();
+				    }]
+				}
+			}
+		});
+    });
+
+    $('.container_enderecos').on('click', '.end_editar', function(event) {
+		event.preventDefault();
+
+		var $this = $(this);
+
+		$.ajax({
+		    url: $this.attr('href'),
+		    dataType: 'json',
+		    success: function(data) {
+				console.log(data);
+
+				endereco.val(data.endereco);
+				bairro.val(data.bairro);
+				cidade.val(data.cidade);
+				estado.selectbox('detach');
+				estado.val(data.estado);
+				estado.selectbox('attach');
+				cep.val(data.cep);
+				nome.val(data.nome);
+				complemento.val(data.complemento);
+				id.val(data.id);
+
+				$('#bt_novo_endereco').next('div').slideDown();
+		    }
+		});
+    });
+
+    $('.etapa3 a.botao.avancar').on('click', function(e){
+    	e.preventDefault();
+
+		var $this = $(this);
+
+		if ($('input[name=radio_endereco]:checked').val() && entrega_permitida) {
+	    	$.ajax({
+			    url: 'atualizarPedido.php?action=update',
+				type: 'post',
+			    data: 'entrega='+$('input[name=radio_endereco]:checked').val(),
+			    success: function(data) {
+					if (data == 'true') {
+						document.location = $this.attr('href');
+					} else {
+					    $.dialog({text: data});
+					}
 			    }
 			});
-			$( this ).dialog( "close" );
-
-		    },
-		    'Cancelar': function() {
-			$(this).dialog('close');
-		    }
-		}
+	    } else {
+	    	$.dialog({text: 'Selecione um endereço válido para a entrega.'});
 	    }
-	});
-		
     });
 	
 });

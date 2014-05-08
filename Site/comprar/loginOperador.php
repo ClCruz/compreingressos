@@ -1,25 +1,28 @@
 <?php
 require_once('../settings/functions.php');
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>COMPREINGRESSOS.COM - Operador</title>
-		<meta name="author" content="C&C - Computação e Comunicação" />
-		<link href="favicon.ico" rel="shortcut icon"/>
-		<link rel="stylesheet" href="../stylesheets/ci.css"/>
-		<link rel="stylesheet" href="../stylesheets/ajustes.css"/>
-		<link rel="stylesheet" href="../stylesheets/smoothness/jquery-ui-1.10.3.custom.css"/>
-		
-		<script type="text/javascript" src="../javascripts/jquery.js"></script>
-		<script type="text/javascript" src="../javascripts/jquery-ui.js"></script>
-		<script type="text/javascript" src="../javascripts/jquery.utils.js"></script>
-		<script type="text/javascript" src="../javascripts/jquery.cookie.js"></script>
-		<script>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<meta name="robots" content="noindex,nofollow">
+	<link href="../images/favicon.ico" rel="shortcut icon"/>
+	<link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
+	<link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
+
+	<script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.placeholder.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.selectbox-0.2.min.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.mask.min.js" type="text/javascript"></script>
+	<script src="../javascripts/cicompra.js" type="text/javascript"></script>
+
+	<script src="../javascripts/jquery.cookie.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
+	<script src="../javascripts/common.js" type="text/javascript"></script>
+	<script>
 		$(function() {
-			$('p.aviso, p.err_msg').hide();
-			$.busyCursor();
+			$('p.erro').hide();
 			
 			$('#logar').click(function(event) {
 				event.preventDefault();
@@ -35,8 +38,6 @@ require_once('../settings/functions.php');
 				} else senha.findNextMsg().slideUp('slow');
 				
 				if (valido) {
-					$("#loadingIcon").fadeIn('fast');
-					
 					$.ajax({
 						url: form.attr('action') + '?' + $.serializeUrlVars(),
 						data: form.serialize(),
@@ -47,60 +48,79 @@ require_once('../settings/functions.php');
 								document.location = data;
 							} else {
 								$this.findNextMsg().slideUp('fast', function() {
-									$(this).text(data).slideDown('fast')
+									$(this).html(data).slideDown('fast')
 								});
 							}
-						},
-						complete: function() {
-							$('#loadingIcon').fadeOut('slow');
 						}
 					});
 				}
 			});
 		});
-		</script>
-	</head>
-	<body>
-		<div id="background_holder">
-			<div id="respiro">
-				<div id="content_container">
-					<?php require "header.php"; ?>
-					<div id="crumbs">
-						<a href="http://www.compreingressos.com">home</a> / <a href="#minha_conta" class="selected">minha conta</a>
+	</script>
+
+	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
+</head>
+<body>
+	<div id="pai">
+		<?php require "header.php"; ?>
+		<div id="content">
+			<div class="alert">
+				<div class="centraliza">
+					<img src="../images/ico_erro_notificacao.png">
+					<div class="container_erros"></div>
+					<a>fechar</a>
+				</div>
+			</div>
+
+			<div class="centraliza">
+				<div class="descricao_pag">
+					<div class="img">
+						<img src="">
 					</div>
-					<?php include "banners.php"; ?>
-					<div id="center">
-						<div id="center_left">
-							<h1>Operador</h1>
-							<p class="help_text">Identifique-se com seu login e senha de acesso.</p>
-						</div>
-						<div id="center_right">
-							<form id="identificacaoForm" name="identificacao" method="post" action="autenticacaoOperador.php">
-								<div id="identificacao">
-									<img class="icone_id" src="../images/icon_sou.jpg" alt="Sou cliente COMPREINGRESSOS.COM" title="Sou cliente COMPREINGRESSOS.COM"/>
-									<div id="id_left">
-										<h1>Sou operador compreingressos.com</h1>
-										<p class="help_text">Autentique-se usando seu login e senha!</p>
-										<h2>Login</h2>
-										<input name="login" type="text" id="login" size="30" maxlength="100"/>
-										<p class="err_msg">Insira seu login</p>
-										<h2>Senha</h2>
-										<input name="senha" type="password" id="senha" size="15" maxlength="30"/>
-										<p class="err_msg">Insira sua senha (no m&iacute;nimo 6 caract&eacute;res)</p>
-										<a id="logar" href="#">
-											<div class="botoes_ticket">autentique-se</div>
-										</a>
-										<p class="err_msg">Combinação de login/senha inválida<br>Por favor tente novamente.</p>
-									</div>
-								</div>
-							</form>
+					<div class="descricao">
+						<p class="nome">Identificação</p>
+						<p class="descricao">
+							identifique-se com seu login e senha de acesso
+						</p>
+						<div class="sessao">
+							<p class="tempo" id="tempoRestante"></p>
+							<p class="mensagem"></p>
 						</div>
 					</div>
 				</div>
+
+				<form id="identificacaoForm" name="identificacao" method="post" action="autenticacaoOperador.php">
+					<div class="identificacao">
+						<p class="frase"><b>Sou</b> operador</p>
+						<p class="site">compreingressos.com</p>
+						<input name="login" type="text" id="login" size="30" maxlength="100" placeholder="Login"/>
+						<div class="erro_help">
+							<p class="erro">insira seu login</p>
+							<p class="help"></p>
+						</div>
+						<input type="password" name="senha" placeholder="digite sua senha" id="senha" maxlength="30">
+						<div class="erro_help">
+							<p class="erro">senha inválida</p>
+							<p class="help"></p>
+						</div>
+						<input type="button" class="submit avancar passo4" id="logar" href="etapa4.php">
+						<div class="erro_help" style="height:25px">
+							<p class="erro">Combinação de login/senha inválida<br>Por favor tente novamente.</p>
+							<p class="help"></p>
+						</div>
+					</div>
+				</form>
+
 			</div>
-			<!-- fim respiro -->
 		</div>
-		<!-- fim background -->
+
+		<div id="texts">
+			<div class="centraliza"></div>
+		</div>
+
 		<?php include "footer.php"; ?>
-	</body>
+
+		<?php include "selos.php"; ?>
+	</div>
+</body>
 </html>

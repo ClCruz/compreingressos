@@ -7,28 +7,28 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
 } else header("Location: loginOperador.php?redirect=etapa0.php");
 //echo session_id();
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>COMPREINGRESSOS.COM - Escolha de Local e Evento</title>
-		<meta name="author" content="C&C - Computação e Comunicação" />
-		<link href="favicon.ico" rel="shortcut icon"/>
-		<link rel="stylesheet" href="../stylesheets/ci.css"/>
-		<link rel="stylesheet" href="../stylesheets/annotations.css"/>
-		<link rel="stylesheet" href="../stylesheets/ajustes.css"/>
-		<link rel="stylesheet" href="../stylesheets/smoothness/jquery-ui-1.10.3.custom.css"/>
-		
-		<script type="text/javascript" src="../javascripts/jquery.js"></script>
-		<script type="text/javascript" src="../javascripts/jquery-ui.js"></script>
-		<script type="text/javascript" src="../javascripts/jquery.utils.js"></script>
-		<script>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<meta name="robots" content="noindex,nofollow">
+	<link href="../images/favicon.ico" rel="shortcut icon"/>
+	<link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
+	<link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
+
+	<script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.placeholder.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.selectbox-0.2.min.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.mask.min.js" type="text/javascript"></script>
+	<script src="../javascripts/cicompra.js" type="text/javascript"></script>
+
+	<script src="../javascripts/jquery.cookie.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
+	<script src="../javascripts/common.js" type="text/javascript"></script>
+	<script>
 		$(function() {
-			$.busyCursor();
-			
-			$('#teatro').change(function() {
-				$('loadingIcon').fadeIn('fast');
-				
+			$('#teatro').on('change', function() {
 				$.ajax({
 					url: 'listaEventos.php',
 					type: 'get',
@@ -37,71 +37,61 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
 						$('#eventos').slideUp('fast', function() {
 							$(this).html(data);
 						}).slideDown('fast');
-					},
-					complete: function() {
-						$('loadingIcon').fadeOut('slow');
 					}
 				});
 			});
+
+			if ($('#teatro').val() != '') {
+				$('#teatro').trigger('change');
+			}
 		});
-		</script>
-	</head>
-	<body>
-		<div id="background_holder">
-			<div id="respiro">
-				<div id="content_container">
-					<?php require "header.php"; ?>
-					<div id="crumbs">
-						<a href="http://www.compreingressos.com">home</a> /
-						<a href="#espetaculo">atra&ccedil;&otilde;es</a> /
-						<a href="#espetaculo"><?php echo utf8_encode($rs['DS_EVENTO']); ?></a> /
-						<a href="#assentos" class="selected">escolha de assentos</a>
+	</script>
+
+	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
+</head>
+<body>
+	<div id="pai">
+		<?php require "header.php"; ?>
+		<div id="content">
+			<div class="alert">
+				<div class="centraliza">
+					<img src="../images/ico_erro_notificacao.png">
+					<div class="container_erros"></div>
+					<a>fechar</a>
+				</div>
+			</div>
+
+			<div class="centraliza">
+				<div class="descricao_pag">
+					<div class="img">
+						<img src="">
 					</div>
-					<?php include "banners.php"; ?>
-					<div id="center">
-						<div id="center_left">
-							<h1>Escolha de assentos</h1>
-							<p class="help_text">Escolha até <?php echo $maxIngressos; ?> lugares desejados e clique em avan&ccedil;ar para continuar 
-							o processo de compra de ingressos.</p>
-							<?php include "seloCertificado.php"; ?>
-						</div>
-						<div id="center_right">
-							<div id="passos">
-								<ul>
-									<li><span class="numero">1. </span>Escolha de assentos</li>
-									<li><span class="numero">2. </span>Conferir Itens</li>
-									<li><span class="numero">3. </span>Identifica&ccedil;&atilde;o</li>
-									<li><span class="numero">4. </span>Confirma&ccedil;&atilde;o</li>
-									<li><span class="numero">5. </span>Pagamento</li>
-								</ul>
-							</div>
-							
-							<div id="header_ticket">
-								<a href="logout.php?redirect=loginOperador.php" id="botao_voltar">
-									<div class="botoes_ticket">logoff</div>
-								</a>
-							</div>
-							
-							<div class="titulo">
-								<h1>Escolha de Local</h1>
-							</div>
-							
-							<p>Selecione o local desejado: <?php echo comboTeatro('teatro'); ?></p>
-							<div id="eventos"></div>
-							
-							<div id="footer_ticket">
-								<a href="logout.php?redirect=loginOperador.php" id="botao_voltar">
-									<div class="botoes_ticket">logoff</div>
-								</a>
-							</div>
-							
+					<div class="descricao">
+						<p class="nome">Escolha de Local</p>
+						<p class="descricao">
+							selecione o local desejado
+						</p>
+						<div class="sessao">
+							<p class="tempo" id="tempoRestante"></p>
+							<p class="mensagem"></p>
 						</div>
 					</div>
 				</div>
+
+				<span style="display: inline-block; margin-bottom: 20px;"><?php echo comboTeatro('teatro'); ?></span>
+
+				<div id="eventos"></div>
+
 			</div>
-			<!-- fim respiro -->
 		</div>
-		<!-- fim background -->
+
+		<div id="texts">
+			<div class="centraliza"></div>
+		</div>
+
 		<?php include "footer.php"; ?>
-	</body>
+
+		<?php include "selos.php"; ?>
+	</div>
+</body>
 </html>

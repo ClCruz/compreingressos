@@ -1,8 +1,6 @@
 $(function() {
-	$('p.aviso, p.err_msg').hide();
+	$('#dados_conta, p.erro').hide();
 	$('#cadastro').slideUp(1);//IE7 FIX
-	
-	$.busyCursor();
 	
 	$('.number').onlyNumbers();
 	
@@ -22,8 +20,6 @@ $(function() {
 			}).slideDown('fast');
 			return false;
 		}
-
-		$("#loadingIcon").fadeIn('fast');
 		
 		$.ajax({
 			url: form.attr('action') + '?' + $.serializeUrlVars(),
@@ -33,9 +29,6 @@ $(function() {
 				$('#resultadoBusca').slideUp('fast', function() {
 					$(this).html(data);
 				}).slideDown('fast');
-			},
-			complete: function() {
-				$('#loadingIcon').fadeOut('slow');
 			}
 		});
 	});
@@ -51,151 +44,84 @@ $(function() {
 		$('#nomeBusca').val('').focus();
 	});
 	
-	$('#resultadoBusca').delegate('.cliente', 'click', function(event) {
+	$('#resultadoBusca').on('click', '.cliente', function(event) {
 		event.preventDefault();
-		
-		var $this = $(this);
-		
-		$("#loadingIcon").fadeIn('fast');
-		
-		$.ajax({
-			url: $this.attr('href'),
-			success: function() {
-				$('#resultadoBusca').slideUp('fast');
-				document.location = $('#buscar').attr('href');
-			},
-			complete: function() {
-				$("#loadingIcon").fadeOut('slow');
-			}
-		});
-	});
-	
-	$('a.bt_cadastro').click(function(event) {
-		event.preventDefault();
-		
-		//if ($.browser.msie && $.browser.version.substr(0, 1) == 7) $('#cadastro > *').show();//IE7 FIX
-		
-		if ($('#cadastro').is(':hidden')) {
-			$('#resultadoBusca').slideUp('slow');
-			$('#identificacao').slideUp('slow');
-			$('#cadastro').slideDown('slow');
-		} else {
-			$('#resultadoBusca').slideDown('slow');
-			$('#identificacao').slideDown('slow');
-			$('#cadastro').slideUp('slow');
-		}
-	});
-	
-	$('.contrato').click(function(event) {
-		event.preventDefault();
-		
-		$('#loadingIcon').fadeIn('fast')
 		
 		var $this = $(this);
 		
 		$.ajax({
 			url: $this.attr('href'),
 			success: function(data) {
-				var page = ($('#aux').length == 0) ? $(document.createElement('div')).appendTo('body') : $('#aux');
-				
-				page.html(data);
-				
-				page.dialog({
-					modal: true,
-					width: 500,
-					height: 600,
-					title: $this.attr('title'),
-					buttons: {
-						'OK': function() {
-							$( this ).dialog( "close" );
-						}
-					}
-				});
-			},
-			complete: function() {
-				$('#loadingIcon').fadeOut('slow');
+				$('#resultadoBusca').slideUp('fast');
+				document.location = data;
 			}
 		});
 	});
 	
-	$('#cadastreme').click(function(event) {
+	$('.bt_cadastro').on('click', function(event) {
+		event.preventDefault();
+		
+		//if ($.browser.msie && $.browser.version.substr(0, 1) == 7) $('#dados_conta > *').show();//IE7 FIX
+		
+		if ($('#dados_conta').is(':hidden')) {
+			$('#resultadoBusca').hide();
+			$('#identificacao').hide();
+			$('#dados_conta').show();
+		} else {
+			$('#resultadoBusca').show();
+			$('#identificacao').show();
+			$('#dados_conta').hide();
+		}
+	});
+	
+	$('.salvar_dados').click(function(event) {
 		event.preventDefault();
 				
 		var $this = $(this),
-			 naoRequeridos = '#email1,#email2,#senha1,#senha2,#ddd2,#celular,#complemento,#extra_info,#extra_sms',
-			 especiais = ',#ddd1,#telefone,#rg,#estado,#cidade,#bairro,#endereco,#cep1,#cep2'
+			 naoRequeridos = '#senha1,#senha2,#celular,#complemento,#checkbox_guia,#checkbox_sms,#cep',
+			 especiais = ',#email1,#email2,#fixo,#rg,#estado,#cidade,#bairro,#endereco'
 			 formulario = $('#form_cadastro'),
 			 campos = formulario.find(':input:not(' + naoRequeridos + especiais +')'),
-			 valido = true;
+			 valido = true,
+			 email_pattern = /\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/i,
+			 email = $('#email1'),
+			 email_txt = email.val();
 		
 		campos.each(function() {
 			var $this = $(this);
-			
-			$this.val(trim($this.val()));
 			
 			if ($this.is(':radio')) {
 				var radio = '[name=' + $this.attr('name') + ']';
 				
 				if (!$(radio).is(':checked')) {
-					$this.findNextMsg().slideDown('fast');
+					$this.addClass('erro').findNextMsg().slideDown('fast');
 					valido = false;
-				} else $this.findNextMsg().slideUp('slow');
+				} else {
+					$this.removeClass('erro').findNextMsg().slideUp('slow');
+				}
 			} else if ((($this.is(':text') || $this.is('select')) && ($this.val() == '' || $this.val() == undefined)) ||
 				($this.is(':checkbox') && !$this.is(':checked'))) {
-				$this.findNextMsg().slideDown('fast');
+				$this.addClass('erro').findNextMsg().slideDown('fast');
 				valido = false;
-			} else $this.findNextMsg().slideUp('slow');
+			} else $this.removeClass('erro').findNextMsg().slideUp('slow');
 		});
-		
-		if ($('#ddd1').val() == '') {
-				$('#ddd1').findNextMsg().slideDown('fast');
-				valido = false;
-		} else {
-			if ($('#telefone').val().length < 6) {
-				$('#ddd1').findNextMsg().slideDown('fast');
-				valido = false;
-			} else {
-				$('#ddd1').findNextMsg().slideUp('slow');
-			}
-		}
 
-                if ($('#ddd2').val() != '' && $('#celular').val() == ''){
-                                $('#ddd2').findNextMsg().slideDown('fast');
-				valido = false;
-		} else {
-                        if ($('#ddd2').val() == '' && $('#celular').val() != '') {
-                            $('#celular').findNextMsg().slideDown('fast');
-                            valido = false;
-                        } else {
-                            $('#ddd2').findNextMsg().slideUp('slow');
-                        }
+		if (!email_pattern.test(email_txt)) {
+			email.addClass('erro').findNextMsg().slideDown('fast');
+			valido = false;
+		} else email.removeClass('erro').findNextMsg().slideUp('slow');
 
-		}
-		
-		/*if ($.cookie('user') == null) {
-			if (!email_pattern.test($('#email1').val())) {
-				$('#email1').findNextMsg().slideDown('fast');
-				valido = false;
-			} else $('#email1').findNextMsg().slideUp('slow');
-			
-			if ($('#email2').val() != $('#email1').val()) {
-				$('#email2').findNextMsg().slideDown('fast');
-				valido = false;
-			} else $('#email2').findNextMsg().slideUp('slow');
-			
-			if ($('#senha1').val().length < 6) {
-				$('#senha1').findNextMsg().slideDown('fast');
-				valido = false;
-			} else $('#senha1').findNextMsg().slideUp('slow');
-			
-			if ($('#senha2').val() != $('#senha1').val()) {
-				$('#senha2').findNextMsg().slideDown('fast');
-				valido = false;
-			} else $('#senha2').findNextMsg().slideUp('slow');
-		}*/
+		if ($('#fixo').val().length < 13){
+			$('#fixo').addClass('erro').findNextMsg().slideDown('fast');
+			valido = false;
+		} else $('#fixo').removeClass('erro').findNextMsg().slideUp('slow');
+
+		if ($('#celular').val() != '' && $('#celular').val().length < 13){
+			$('#celular').addClass('erro').findNextMsg().slideDown('fast');
+			valido = false;
+		} else $('#celular').removeClass('erro').findNextMsg().slideUp('slow');
 		
 		if (valido) {
-			$('#loadingIcon').fadeIn('fast');
 			$.ajax({
 				url: formulario.attr('action') + '?action=add',
 				data: formulario.serialize(),
@@ -211,17 +137,16 @@ $(function() {
 					} else {
 						$('#nomeBusca').val($('#nome').val());
 						$('#sobrenomeBusca').val($('#sobrenome').val());
-						$('#telefoneBusca').val($('#telefone').val());
+						$('#telefoneBusca').val($('#fixo').val());
 						$('#cpfBusca').val($('#cpf').val());
 						$('#buscar').click();
 						
-						$('a.bt_cadastro:first').click();
+						$('.bt_cadastro:first').click();
 					}
-				},
-				complete: function() {
-					$('#loadingIcon').fadeOut('slow');
 				}
 			});
+		} else {
+			$.dialog({text: 'Preencha os campos em vermelho' + ($('#checkbox_politica').is(':checked') ? '' : '<br>Para se cadastrar você deve estar de acordo com nossa política de privacidade')});
 		}
 	});
 });

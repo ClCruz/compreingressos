@@ -1,31 +1,19 @@
-						<form id="identificacaoForm" name="identificacao" method="post" action="busca.php">
-							<div id="identificacao">
-								<img class="icone_id" src="../images/icon_sou.jpg" alt="Sou cliente COMPREINGRESSOS.COM" title="Sou cliente COMPREINGRESSOS.COM"/>
-								<div id="id_left">
-									<h1>J&aacute; &eacute; cliente compreingressos.com?</h1>
-									<p class="help_text">Busque utilizando o nome, o telefone ou o CPF do cliente!</p>
-									<h2>Nome</h2>
-									<input name="nomeBusca" type="text" id="nomeBusca" size="30" maxlength="50"/>
-									<h2>Sobrenome</h2>
-									<input name="sobrenomeBusca" type="text" id="sobrenomeBusca" size="30" maxlength="50"/>
-									<h2>Telefone</h2>
-									<input name="telefoneBusca" type="text" id="telefoneBusca" size="15" maxlength="15"/>
-									<h2>CPF</h2>
-									<input name="cpfBusca" type="text" id="cpfBusca" size="15" maxlength="11"/>
-									<a id="buscar" href="etapa4.php">
-										<div class="botoes_ticket">buscar</div>
-									</a>
-									<a id="limpar" href="#">
-										<div class="botoes_ticket">limpar</div>
-									</a>
-								</div>
-								<img class="icone_id" src="../images/icon_naosou.jpg" alt="Sou cliente COMPREINGRESSOS.COM" title="Sou cliente COMPREINGRESSOS.COM"/>
-								<div id="id_right">
-									<h1>N&atilde;o &eacute; cliente compreingressos.com?</h1>
-									<p class="help_text">Clique no link abaixo e preencha o cadastro.</p>
-									<a class="bt_cadastro" href="#cadastro">
-										<div class="botoes_ticket">novo cadastro</div>
-									</a>
-								</div>
-							</div>
-						</form>
+<span id="identificacao" style="display: inline-block">
+	<form id="identificacaoForm" name="identificacao" method="post" action="busca.php">
+		<div class="identificacao">
+			<p class="frase"><b>Já sou</b> cliente</p>
+			<p class="site">compreingressos.com</p>
+			<input name="nomeBusca" type="text" id="nomeBusca" size="30" maxlength="50" placeholder="Nome"/>
+			<input name="sobrenomeBusca" type="text" id="sobrenomeBusca" size="30" maxlength="50" placeholder="Sobrenome"/>
+			<input name="telefoneBusca" type="text" id="telefoneBusca" size="15" maxlength="15" placeholder="Telefone"/>
+			<input name="cpfBusca" type="text" id="cpfBusca" size="15" maxlength="11" placeholder="CPF"/>
+			<a id="buscar" href="etapa4.php">buscar</a>
+			<a id="limpar" href="#">limpar</a>
+		</div>
+		<div class="identificacao">
+			<p class="frase"><b>Não sou</b> cliente</p>
+			<p class="site">compreingressos.com</p>
+			<a href="" class="botao cadastrar bt_cadastro">cadastrar</a>
+		</div>
+	</form>
+</span>

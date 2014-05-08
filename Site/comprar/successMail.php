@@ -21,6 +21,7 @@ $valores['meio_pagamento'] = $rs['ds_meio_pagamento'];
 $valores['codigo_cliente'] = $parametros['CustomerData']['CustomerIdentity'];
 $valores['email_cliente'] = $parametros['CustomerData']['CustomerEmail'];
 $valores['cpf_cnpj_cliente'] = $dadosExtrasEmail['cpf_cnpj_cliente'];
+$valores['numero_parcelas'] = $PaymentDataCollection['NumberOfPayments'];
 
 $valores['ddd_telefone1'] = $dadosExtrasEmail['ddd_telefone1'];
 $valores['numero_telefone1'] = $dadosExtrasEmail['numero_telefone1'];
@@ -68,7 +69,7 @@ foreach ($itensPedido as $item) {
     }
 
     $code = $rsCodigo['codbar'];
-    $barcodeImage2 = encodeToBarcode($code, 'Aztec', array('X' => 0.12));
+    $barcodeImage2 = encodeToBarcode($code, 'Aztec', array('X' => '0.12'));
     $path2 = saveAndGetPath($barcodeImage2, $code . '_2');
 
     $barcodes[] = array('path' => $path2, 'cid' => $code . '_2');
@@ -253,9 +254,8 @@ ob_start(); //Turn on output buffering
                                     Data: ##data_hora_status##<br />
                                     Total: R$ ##valor_total##<br />
                                     Status: ##nome_status##<br />
-                                    Data de pagamento: ##data_hora_pagamento##<br />
-                                    Total de pagamento R$ ##total_pagamento##<br />
-                                    Meio de pagamento: ##meio_pagamento##
+                                    Meio de pagamento: ##meio_pagamento##<br />
+                                    Número de parcelas: ##numero_parcelas##
                                 </div>
                             </td>
                             <td width="40" style="padding:0;"></td>

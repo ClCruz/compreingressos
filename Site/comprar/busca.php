@@ -5,16 +5,25 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
 		
 		foreach ($_POST as $key => $val) {
 			if ($val != '') {
-				$_POST[$key] = '%' . $val . '%';
+				$_POST[$key] = '%' . utf8_decode($val) . '%';
 			}
 		}
+
+		// formatacao dos campos do layout 2.0 para o antigo (para manter compatibilidade)
+		$_POST['cpfBusca'] = preg_replace("/[^0-9%]/", "", $_POST['cpfBusca']);
+
+		if (preg_match('/\s/', $_POST['telefoneBusca'])) {
+			$_POST['telefoneBusca'] =  explode(' ', $_POST['telefoneBusca']);
+			$_POST['telefoneBusca'] = preg_replace("/[^0-9%]/", "", $_POST['telefoneBusca'][1]);
+		}
+		// -------------------------------------------------------------------------------
 		
 		require_once('../settings/functions.php');
 		
 		$mainConnection = mainConnection();
 		
 		$params = array();
-		$query = 'SELECT ID_CLIENTE, DS_NOME, DS_SOBRENOME, DS_DDD_TELEFONE, DS_TELEFONE, CD_CPF
+		$query = 'SELECT top 50 ID_CLIENTE, DS_NOME, DS_SOBRENOME, DS_DDD_TELEFONE, DS_TELEFONE, CD_CPF
 					 FROM MW_CLIENTE
 					 WHERE 1=1 ';
 		if ($_POST['nomeBusca'] != '') {
@@ -43,7 +52,7 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
 			<?php
 			while ($rs = fetchResult($result)) {
 			?>
-				<a href="autenticacao.php?id=<?php echo $rs['ID_CLIENTE']; ?>" class="cliente">
+				<a href="autenticacao.php?id=<?php echo $rs['ID_CLIENTE']; ?>&redirect=<?php echo $_COOKIE['entrega'] ? 'etapa3_entrega.php' : 'etapa4.php'?>" class="cliente">
 					<li>
 						<p>
 							Nome: <?php echo utf8_encode($rs['DS_NOME'] . ' ' . $rs['DS_SOBRENOME']); ?><br>

@@ -1,9 +1,5 @@
 $(function() {
-	$('#esqueciForm, p.aviso, p.err_msg').hide();
-	
-	$('#cadastro').slideUp(1);//IE
-	
-	$.busyCursor();
+	$('#dados_conta, #esqueciForm, p.erro').hide();
 	
 	$('.number').onlyNumbers();
 	
@@ -20,32 +16,26 @@ $(function() {
 			 valido = true;
 		
 		if (!email_pattern.test(email_txt)) {
-			email.findNextMsg().slideDown('fast');
+			email.addClass('erro').findNextMsg().slideDown('fast');
 			valido = false;
-		} else email.findNextMsg().slideUp('slow');
+		} else email.removeClass('erro').findNextMsg().slideUp('slow');
 		
 		if (senha_txt.length < 6) {
-			senha.findNextMsg().slideDown('fast');
+			senha.addClass('erro').findNextMsg().slideDown('fast');
 			valido = false;
-		} else senha.findNextMsg().slideUp('slow');
+		} else senha.removeClass('erro').findNextMsg().slideUp('slow');
 		
 		if (valido) {
-			$("#loadingIcon").fadeIn('fast');
-			
 			$.ajax({
 				url: form.attr('action') + '?' + $.serializeUrlVars(),
 				data: form.serialize(),
 				type: form.attr('method'),
 				success: function(data) {
 					if (data.substr(0, 4) == 'redi') {
-						$this.findNextMsg().slideUp('slow');
 						document.location = data;
 					} else {
-						$this.findNextMsg().slideDown('fast');
+						$.dialog({text:'Combinação de usuário e senha incorreto'});
 					}
-				},
-				complete: function() {
-					$('#loadingIcon').fadeOut('slow');
 				}
 			});
 		}
@@ -67,14 +57,9 @@ $(function() {
 			 email_txt = email.val();
 		
 		if (!email_pattern.test(email_txt)) {
-			email.findNextMsg()
-				.slideDown('fast')
-				.delay(3000)
-				.slideUp('slow');
+			email.addClass('erro').findNextMsg().slideDown('fast');
 			return false;
-		}
-		
-		$("#loadingIcon").fadeIn('fast');
+		} else email.removeClass('erro').findNextMsg().slideUp('slow');
 		
 		$.ajax({
 			url: $this.attr('href'),
@@ -82,18 +67,14 @@ $(function() {
 			success: function(data) {
 				if (data == 'true') {
 					email.val('');
-					$this.findNextMsg()
-						//.text(data)
+					$this.next('.resultado').find('span').text(email_txt).end()
 						.slideDown('fast')
-						.delay(3000)
+						.delay(6000)
 						.slideUp('slow');
-					$('#esqueciForm').slideDown().delay(3500).slideUp('slow');
+					$('#esqueciForm').slideDown().delay(6500).slideUp('slow');
 				} else {
 					$.dialog({title: 'Aviso...', text: data});
 				}
-			},
-			complete: function() {
-				$('#loadingIcon').fadeOut('slow');
 			}
 		});
 	});
@@ -101,202 +82,181 @@ $(function() {
 	$('a.bt_cadastro').click(function(event) {
 		event.preventDefault();
 		
-		//if ($.browser.msie && $.browser.version.substr(0, 1) == 7) $('#cadastro > *').show();
+		//if ($.browser.msie && $.browser.version.substr(0, 1) == 7) $('#dados_conta > *').show();
 		
-		if ($('#cadastro').is(':hidden')) {
+		if ($('#dados_conta').is(':hidden')) {
 			$('#identificacao').slideUp('slow');
-			$('#cadastro').slideDown('slow');
+			$('#dados_conta').slideDown('slow');
 		} else {
-			$('#cadastro').slideUp('slow');
+			$('#dados_conta').slideUp('slow');
 			$('#identificacao').slideDown('slow');
 		}
 	});
 	
-	$('.contrato').click(function(event) {
-		event.preventDefault();
-		
-		$('#loadingIcon').fadeIn('fast')
-		
-		var $this = $(this);
-		
-		$.ajax({
-			url: $this.attr('href'),
-			success: function(data) {
-				var page = ($('#aux').length == 0) ? $(document.createElement('div')).appendTo('body') : $('#aux');
-				
-				page.html(data);
-				
-				page.dialog({
-					modal: true,
-					width: 500,
-					height: 600,
-					title: $this.attr('title'),
-					buttons: {
-						'OK': function() {
-							$( this ).dialog( "close" );
-						}
-					}
-				});
-			},
-			complete: function() {
-				$('#loadingIcon').fadeOut('slow');
-			}
-		});
-	});
-	
 	// comum para minhaconta
 	
-	$('#cadastreme').click(function(event) {
+	$('.salvar_dados').click(function(event) {
 		event.preventDefault();
 		
 		//alteração de senha
-		if ($.cookie('user') != null && $('#cadastro').is(':hidden')) {
-			var form = $('#trocaSenha'),
-				 campos = form.find(':input'),
-				 valido = true;
+		if ($.cookie('user') != null && $('#dados_conta').is(':hidden')) {
+			var form = $('#trocar_senha'),
+				 campos = form.find(':input:not([type="button"])'),
+				 valido = true,
+				 $this = $(this);
 			
 			campos.each(function() {
 				if (($(this).is("[id*='senha']") && $(this).val().length < 6) || ($(this).val() == '')) {
-					$(this).findNextMsg().slideDown('fast');
+					$(this).addClass('erro').findNextMsg().slideDown('fast');
 					valido = false;
 				} else {
-					$(this).findNextMsg().slideUp('slow');
+					$(this).removeClass('erro').findNextMsg().slideUp('slow');
 				}
 			});
 			
-			if ($('#senha1').val() != $('#senha2').val()) {
-				$('#senha2').findNextMsg().slideDown('fast');
+			if ($('#senha1').val() != $('#senha2').val() || $('#senha1').val() == '') {
+				$('#senha2').addClass('erro').findNextMsg().slideDown('fast');
 				valido = false;
 			} else {
-				$('#senha2').findNextMsg().slideUp('slow');
+				$('#senha2').removeClass('erro').findNextMsg().slideUp('slow');
 			}
 			
 			if (valido) {
-				$('#loadingIcon').fadeIn('fast');
-				
 				$.ajax({
 					url: form.attr('action') + '?action=passChange',
 					data: form.serialize(),
 					type: form.attr('method'),
 					success: function(data) {
-						$.dialog({title: 'Aviso...', text: data, iconClass: ''});
-						campos.val('');
-					},
-					complete: function() {
-						$('#loadingIcon').fadeOut('slow');
+						if (data == 'true') {
+							$this.next('.erro_help').find('.help').slideDown('fast').delay(3500).slideUp('slow');
+							campos.val('');
+						} else {
+							$(("[id='senha']")).addClass('erro').findNextMsg().slideDown('fast');
+						}
 					}
 				});
 			}
 			
 			return;
-		}
-		
-		var $this = $(this),
-			 naoRequeridos = '#email,[id^=nascimento],#ddd2,#celular,#complemento,#extra_info,#extra_sms',
-			 especiais = ',#ddd1,#telefone,#email1,#email2,#senha1,#senha2,[name="tag"],#recaptcha_challenge_field,#recaptcha_response_field'
-			 formulario = $('#form_cadastro'),
-			 campos = formulario.find(':input:not(' + naoRequeridos + especiais +')'),
-			 valido = true;
-		
-		campos.each(function() {
-			var $this = $(this);
-			
-			$this.val(trim($this.val()));
-			
-			if ($this.is(':radio')) {
-				var radio = '[name=' + $this.attr('name') + ']';
-				
-				if (!$(radio).is(':checked')) {
-					$this.findNextMsg().slideDown('fast');
-					valido = false;
-				} else $this.findNextMsg().slideUp('slow');
-			} else if ((($this.is(':text') || $this.is('select')) && ($this.val() == '' || $this.val() == undefined)) ||
-				($this.is(':checkbox') && !$this.is(':checked'))) {
-				$this.findNextMsg().slideDown('fast');
-				valido = false;
-			} else $this.findNextMsg().slideUp('slow');
-		});
-		
-		if ($('#ddd1').val() == '') {
-				$('#ddd1').findNextMsg().slideDown('fast');
-				valido = false;
 		} else {
-			if ($('#telefone').val().length < 6) {
-				$('#ddd1').findNextMsg().slideDown('fast');
+		
+			var $this = $(this),
+				 naoRequeridos = '#email,[id^=nascimento],#celular,#complemento,#checkbox_guia,#checkbox_sms',
+				 especiais = '#fixo,#email1,#email2,#senha1,#senha2,[name="tag"],#recaptcha_challenge_field,#recaptcha_response_field,[type="button"]'
+				 formulario = $('#form_cadastro'),
+				 campos = formulario.find(':input:not(' + naoRequeridos + ',' + especiais +')'),
+				 valido = true;
+			
+			campos.each(function() {
+				var $this = $(this);
+				
+				if ($this.is(':radio')) {
+					var radio = '[name=' + $this.attr('name') + ']';
+					
+					if (!$(radio).is(':checked')) {
+						$this.addClass('erro').findNextMsg().slideDown('fast');
+						valido = false;
+					} else {
+						$this.removeClass('erro').findNextMsg().slideUp('slow');
+					}
+				} else if ((($this.is(':text') || $this.is('select')) && ($this.val() == '' || $this.val() == undefined)) ||
+					($this.is(':checkbox') && !$this.is(':checked'))) {
+					$this.addClass('erro').findNextMsg().slideDown('fast');
+					valido = false;
+				} else $this.removeClass('erro').findNextMsg().slideUp('slow');
+			});
+
+			if ($('#fixo').val().length < 13){
+				$('#fixo').addClass('erro').findNextMsg().slideDown('fast');
 				valido = false;
+			} else $('#fixo').removeClass('erro').findNextMsg().slideUp('slow');
+
+			if ($('#celular').val() != '' && $('#celular').val().length < 13){
+				$('#celular').addClass('erro').findNextMsg().slideDown('fast');
+				valido = false;
+			} else $('#celular').removeClass('erro').findNextMsg().slideUp('slow');
+			
+			if ($.cookie('user') == null) {
+				if (!email_pattern.test($('#email1').val())) {
+					$('#email1').addClass('erro').findNextMsg().slideDown('fast');
+					valido = false;
+				} else $('#email1').removeClass('erro').findNextMsg().slideUp('slow');
+				
+				if ($('#email2').val() != $('#email1').val()) {
+					$('#email2').addClass('erro').findNextMsg().slideDown('fast');
+					valido = false;
+				} else $('#email2').removeClass('erro').findNextMsg().slideUp('slow');
+				
+				if ($('#senha1').val().length < 6) {
+					$('#senha1').addClass('erro').findNextMsg().slideDown('fast');
+					valido = false;
+				} else $('#senha1').removeClass('erro').findNextMsg().slideUp('slow');
+				
+				if ($('#senha2').val() != $('#senha1').val()) {
+					$('#senha2').addClass('erro').findNextMsg().slideDown('fast');
+					valido = false;
+				} else $('#senha2').removeClass('erro').findNextMsg().slideUp('slow');
+			}
+
+			if (valido) {
+				$.ajax({
+					url: formulario.attr('action') + '?action=' + (($.cookie('user') == null) ? 'add' : 'update'),
+					data: formulario.serialize(),
+					type: formulario.attr('method'),
+					success: function(data) {
+						if (data != 'true') {
+							if (typeof(Recaptcha) !== 'undefined') Recaptcha.reload();
+							
+							if (data == 'Seus dados foram atualizados com sucesso!') {
+								$this.next('.erro_help').find('.help').slideDown('fast').delay(3000).slideUp('slow');
+							} else {
+								$.dialog({text: data});
+							}
+						} else {
+							$.ajax({
+								url: 'autenticacao.php?' + $.serializeUrlVars(),
+								data: 'email=' + $('#email1').val() + '&senha=' + $('#senha1').val() + '&from=cadastro',
+								type: 'POST',
+								success: function(data) {
+									document.location = data;
+								}
+							});
+						}
+					}
+				});
 			} else {
-				$('#ddd1').findNextMsg().slideUp('slow');
+				$.dialog({text: 'Preencha os campos em vermelho' + ($('#checkbox_politica').is(':checked') ? '' : '<br>Para se cadastrar você deve estar de acordo com nossa política de privacidade')});
+			}
+
+		}
+	});
+
+	$('div.input_area').on('change blur', ':input', function(e){
+		var $area = $(e.delegateTarget),
+			$this = $(this),
+			pattern = $this.attr('pattern') ? new RegExp($this.attr('pattern')) : null;
+
+		if (pattern != null) {
+			if (pattern.test($this.val())) {
+				$this.removeClass('erro').findNextMsg().slideUp('slow');
+			} else {
+				$this.addClass('erro').findNextMsg().slideDown('fast');
+			}
+		} else if ($this.is(':radio')) {
+			var $radio = $('[name=' + $this.attr('name') + ']');
+			
+			if (!$radio.is(':checked')) {
+				$radio.addClass('erro').findNextMsg().slideDown('fast');
+			} else {
+				$radio.removeClass('erro').findNextMsg().slideUp('slow');
 			}
 		}
 
-                if ($('#ddd2').val() != '' && $('#celular').val() == ''){
-                                $('#ddd2').findNextMsg().slideDown('fast');
-				valido = false;
+		if ($area.find(':input.erro').length > 0) {
+			$area.addClass('erro')
 		} else {
-                        if ($('#ddd2').val() == '' && $('#celular').val() != '') {
-                            $('#celular').findNextMsg().slideDown('fast');
-                            valido = false;
-                        } else {
-                            $('#ddd2').findNextMsg().slideUp('slow');
-                        }
-
-		}
-		
-		if ($.cookie('user') == null) {
-			if (!email_pattern.test($('#email1').val())) {
-				$('#email1').findNextMsg().slideDown('fast');
-				valido = false;
-			} else $('#email1').findNextMsg().slideUp('slow');
-			
-			if ($('#email2').val() != $('#email1').val()) {
-				$('#email2').findNextMsg().slideDown('fast');
-				valido = false;
-			} else $('#email2').findNextMsg().slideUp('slow');
-			
-			if ($('#senha1').val().length < 6) {
-				$('#senha1').findNextMsg().slideDown('fast');
-				valido = false;
-			} else $('#senha1').findNextMsg().slideUp('slow');
-			
-			if ($('#senha2').val() != $('#senha1').val()) {
-				$('#senha2').findNextMsg().slideDown('fast');
-				valido = false;
-			} else $('#senha2').findNextMsg().slideUp('slow');
-		}
-		if (valido) {
-			$('#loadingIcon').fadeIn('fast');
-			$.ajax({
-				url: formulario.attr('action') + '?action=' + (($.cookie('user') == null) ? 'add' : 'update'),
-				data: formulario.serialize(),
-				type: formulario.attr('method'),
-				success: function(data) {
-					$('#loadingIcon').fadeIn('fast');
-					if (data != 'true') {
-						if (typeof(Recaptcha) !== 'undefined') Recaptcha.reload();
-						
-						if ($.cookie('user') == null) {
-							$.dialog({text: data});
-						} else {
-							$.dialog({title: 'Aviso...', text: data, iconClass: ''});
-						}
-					} else {
-						$.ajax({
-							url: 'autenticacao.php?' + $.serializeUrlVars(),
-							data: 'email=' + $('#email1').val() + '&senha=' + $('#senha1').val() + '&from=cadastro',
-							type: 'POST',
-							success: function(data) {
-								document.location = data;
-							},
-							complete: function() {
-								$('#loadingIcon').fadeOut('slow');
-							}
-						});
-					}
-				},
-				complete: function() {
-					$('#loadingIcon').fadeOut('slow');
-				}
-			});
+			$area.removeClass('erro')
 		}
 	});
+
 });

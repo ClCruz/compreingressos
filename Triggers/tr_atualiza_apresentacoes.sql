@@ -10,7 +10,8 @@
 !        !             !            !                 ! mw_apresentacao_bilhete buscando o id_apresentacao_bilhete!
 +========+=============+============+=================+===========================================================+'
 !   3    !             ! 03/12/2013 ! Edicarlos S. B. ! Alterado o UPDATE final p/ trocar o @codapresentacao p/   !
-!        !             !            !                 ! d.codapresentacao										  !
+!        !             !            !                 ! d.codapresentacao e adicionado o CURSOR p/ atualizar a	  !
+!        !             !            !                 ! tabela mw_apresentacao_bilhete							  !
 +=================================================================================================================+
 */
 
@@ -98,8 +99,11 @@ BEGIN
 					WHERE id_evento = @id_evento
 						AND codapresentacao = @codapresentacao												
 					
+					-- #3 Adicionado CURSOR p/ correção de erro quando alterado as apresentações no VB.
+					DECLARE C2 CURSOR FOR
+					
 					-- #328 Atualiza Apresentação Bilhete
-					SELECT @id_apresentacao_bilhete = ab.id_apresentacao_bilhete
+					SELECT ab.id_apresentacao_bilhete
 					FROM ci_middleway..mw_apresentacao_bilhete AS ab
 					INNER JOIN 	ci_middleway..mw_evento AS mw_evento ON mw_evento.id_base = @id_base
 						AND mw_evento.codpeca = @codpeca
@@ -108,9 +112,23 @@ BEGIN
 						AND mw_apresentacao.codapresentacao = @codapresentacao					
 					WHERE ab.id_apresentacao = mw_apresentacao.id_apresentacao
 					
-					UPDATE ci_middleway..mw_apresentacao_bilhete
-					SET in_ativo = 0
-					WHERE id_apresentacao_bilhete = @id_apresentacao_bilhete
+					OPEN C2 
+					FETCH NEXT FROM C2
+					INTO @id_apresentacao_bilhete
+					
+					WHILE @@FETCH_STATUS = 0
+					BEGIN											
+						UPDATE ci_middleway..mw_apresentacao_bilhete
+						SET in_ativo = 0
+						WHERE id_apresentacao_bilhete = @id_apresentacao_bilhete
+						
+					FETCH NEXT FROM C2
+					INTO @id_apresentacao_bilhete
+					END
+					
+					CLOSE C2
+					DEALLOCATE C2	
+					-- #3 Final da alteração desta ordem.				
 				END
 				ELSE
 				BEGIN
@@ -203,6 +221,7 @@ BEGIN
 		END
 		ELSE
 		BEGIN
+			-- #3 Alterado o codapresentacao no WHERE de @codapresentacao p/ d.codapresentacao
 			UPDATE ci_middleway..mw_apresentacao
 			SET in_ativo = 0
 			FROM ci_middleway..mw_evento e

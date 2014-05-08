@@ -17,14 +17,10 @@ require_once('../settings/functions.php');
 		<script type="text/javascript" src="../javascripts/jquery.utils.js"></script>
 		<script>
 		$(function() {
-			$.busyCursor();
-			
 			$('#logar').click(function(event) {
 				event.preventDefault();
 				
 				var form = $('#identificacaoForm');
-
-				$("#loadingIcon").fadeIn('fast');
 				
 				$.ajax({
 					url: form.attr('action') + '?' + $.serializeUrlVars(),
@@ -36,9 +32,6 @@ require_once('../settings/functions.php');
 						} else {
 							$.dialog({title: 'Aviso...', text: data});
 						}
-					},
-					complete: function() {
-						$('#loadingIcon').fadeOut('slow');
 					}
 				});
 			});

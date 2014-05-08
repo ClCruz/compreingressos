@@ -1,77 +1,70 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<?php
+  require_once('../settings/settings.php');
+  require_once('../settings/functions.php');
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
-    <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title>COMPREINGRESSOS.COM - Escolha de Assentos</title>
-	<meta name="author" content="C&C - Computação e Comunicação" />
-	<link href="favicon.ico" rel="shortcut icon"/>
-	<link rel="stylesheet" href="../stylesheets/ci.css"/>
-	<link rel="stylesheet" href="../stylesheets/annotations.css"/>
-	<link rel="stylesheet" href="../stylesheets/ajustes.css"/>
-	<link rel="stylesheet" href="../stylesheets/jquery.tooltip.css"/>
-	<link rel="stylesheet" href="../stylesheets/smoothness/jquery-ui-1.10.3.custom.css"/>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<meta name="robots" content="noindex,nofollow">
+	<link href="../images/favicon.ico" rel="shortcut icon"/>
+	<link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
+	<link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
 
-	<script type="text/javascript" src="../javascripts/jquery.js"></script>
-	<script type="text/javascript" src="../javascripts/jquery-ui.js"></script>
-	<script type="text/javascript" src="../javascripts/jquery.utils.js"></script>
-	<script type="text/javascript" src="../javascripts/jquery.annotate.js"></script>
-	<script type="text/javascript" src="../javascripts/jquery.tooltip.min.js"></script>
-	<script type="text/javascript" src="../javascripts/plateia.js?<?php echo $vars; ?>"></script>
-	<!-- SCRIPT TAG -->
-	<script type="text/JavaScript">
-	    var idcampanha = <?php echo ($idcampanha != "") ? $idcampanha : 0; ?>;
-	    if(idcampanha != 0){
-		var ADM_rnd_<?php echo $idcampanha; ?> = Math.round(Math.random() * 9999);
-		var ADM_post_<?php echo $idcampanha; ?> = new Image();
-		ADM_post_<?php echo $idcampanha; ?>.src = 'https://ia.nspmotion.com/ptag/?pt=<?php echo $idcampanha; ?>&r='+ADM_rnd_<?php echo $idcampanha; ?>;
-	    }
-	</script>
-	<!-- END SCRIPT TAG -->
-	<?php echo $campanha['script']; ?>
-    </head>
-    <body>
-	<div id="background_holder">
-	    <div id="respiro">
-		<div id="content_container">
-<?php require "header.php"; ?>
-		    <div id="crumbs">
-			<a href="http://www.compreingressos.com">home</a> /
-			<a href="#espetaculo">atra&ccedil;&otilde;es</a> /
-			<a href="#espetaculo"><?php echo utf8_encode($rs['DS_EVENTO']); ?></a> /
-			<a href="#assentos" class="selected">escolha de assentos</a>
-		    </div>
-<?php include "banners.php"; ?>
-		    <div id="center">
-			<div id="center_left">
-			    <h1>Escolha de assentos</h1>
-			    <p class="help_text">Escolha at&eacute; <?php echo $maxIngressos; ?> lugares desejados e clique em avan&ccedil;ar para continuar
-							o processo de compra de ingressos.</p>
-			    <h3>Outras apresenta&ccedil;&otilde;es</h3>
-			    <iframe src="timeTable.php?evento=<?php echo $rs['ID_EVENTO']; ?>" style="width:inherit; width:100%; height:400px;" frameborder="0"></iframe>
-				<?php include "seloCertificado.php"; ?>
+	<script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.placeholder.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.selectbox-0.2.min.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.mask.min.js" type="text/javascript"></script>
+	<script src="../javascripts/cicompra.js" type="text/javascript"></script>
+
+	<script src="../javascripts/jquery.cookie.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
+	<script src="../javascripts/common.js" type="text/javascript"></script>
+	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
+</head>
+<body>
+	<div id="pai">
+		<?php require "header.php"; ?>
+		<div id="content">
+			<div class="alert">
+				<div class="centraliza">
+					<img src="../images/ico_erro_notificacao.png">
+					<div class="container_erros"></div>
+					<a>fechar</a>
+				</div>
 			</div>
-			<div id="center_right" class="scroll">
-			    <div id="passos">
-				<ul>
-				    <li class="passo_ativo"><span class="numero">1. </span>Escolha de assentos</li>
-				    <li><span class="numero">2. </span>Conferir Itens</li>
-				    <li><span class="numero">3. </span>Identifica&ccedil;&atilde;o</li>
-				    <li><span class="numero">4. </span>Confirma&ccedil;&atilde;o</li>
-				    <li><span class="numero">5. </span>Pagamento</li>
-				</ul>
-			    </div>
-			    <div id="header_ticket"></div>
-			    <div class="titulo">
-				<h1 class="uppercase">Site em Manutenção</h1>
-			    </div>
-    			    <div id="footer_ticket"></div>
+
+			<div class="centraliza">
+				<div class="descricao_pag">
+					<div class="img">
+						<img src="../images/ico_black_passo2.png">
+					</div>
+					<div class="descricao">
+						<p class="nome">Site em Manutenção</p>
+						<p class="descricao">
+							desculpem-nos pelo transtorno.
+						</p>
+						<div class="sessao">
+							<p class="tempo" id="tempoRestante"></p>
+							<p class="mensagem"></p>
+						</div>
+					</div>
+				</div>
+
 			</div>
-		    </div>
 		</div>
-	    </div>
-	    <!-- fim respiro -->
+
+		<div id="texts">
+			<div class="centraliza">
+				<span id="cme"></span>
+				<p>...</p>
+			</div>
+		</div>
+
+		<?php include "footer.php"; ?>
+
+		<?php include "selos.php"; ?>
 	</div>
-	<!-- fim background -->
-<?php include "footer.php"; ?>
-    </body>
+</body>
 </html>

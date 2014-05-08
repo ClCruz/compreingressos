@@ -18,13 +18,17 @@ function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copi
 	$mail->IsSMTP();
 	$mail->Host = "smtp.compreingressos.com";
 	$mail->Host = "smtp.bra.terra.com.br";
+	// $mail->Host = "smtp.gmail.com";
 	$mail->Port = 587;
-	$mail->Port = 25;
 	$mail->SMTPAuth = true;
 	$mail->Username = "lembrete@compreingressos.com";
 	$mail->Username = "gabriel.monteiro@cc.com.br";
+	// $mail->Username = "cecsuporte";
 	$mail->Password = "lembrete0015";
 	$mail->Password = "te14cx";
+
+	// somente gmail
+	// $mail->SMTPSecure = "tls";
 	
 	$mail->From = $from;
 	$mail->FromName = $namefrom;

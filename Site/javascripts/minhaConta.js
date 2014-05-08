@@ -1,66 +1,50 @@
 $(function() {
-	$('#abas_minha_conta').delegate('div.aba_minha_conta', 'click', function(event) {
-		var target_href = $(this).closest('a').attr('href');
+	$('.menu_conta').on('click', 'a.botao', function(e) {
+		var target_href = $(this).attr('href');
 		
 		if (target_href.substr(0, 1) == '#') {
-			event.preventDefault();
+			e.preventDefault();
 		} else {
 			return true;
 		}
+
+		$('#detalhes_pedido').hide();
+		$('#meus_pedidos tbody tr').show();
 		
-		$('div.aba_minha_conta').each(function() {
+		$('.menu_conta a').each(function() {
 			var $this = $(this),
-				 this_href = $this.removeClass('aba_down').closest('a').attr('href');
+				 this_href = $this.removeClass('ativo').attr('href');
 			
 			if (this_href != target_href) {
 				$(this_href).hide();
-				$('span.\\' + this_href).hide();
 			} else {
-				$this.addClass('aba_down');
+				$this.addClass('ativo');
 				$(this_href).show();
-				$('span.\\' + this_href).show();
 			}
 		});
-			
-		if (target_href == '#pedidos') {
-			$('#botao_pagamento').hide();
-		} else {
-			$('#botao_pagamento').show();
-		}
-		
-		$('#botao_voltar, #detalhes_pedido').hide();
-	}).find('div:first').click();
+	}).find('a:first').click();
 	
-	$('#pedidos').delegate('a', 'click', function(event) {
+	$('#meus_pedidos').on('click', 'a', function(event) {
 		event.preventDefault();
-		$('#loadingIcon').fadeIn('fast');
 		
-		var href = $(this).attr('href').split('?');
+		var $this = $(this),
+			href = $this.attr('href').split('?');
 		
 		$.ajax({
 			url: href[0],
 			data: href[1],
 			success: function(data) {
-				$('#pedidos').hide();
+				$('#meus_pedidos tbody tr').hide();
+
+				$this.closest('tr').show();
 				
 				$('#detalhes_pedido').html(data).show();
-				
-				$('#botao_voltar').show();
-			},
-			complete: function() {
-				$('#loadingIcon').fadeOut('slow');
 			}
 		});
 	});
 	
-	$('#botao_voltar').click(function() {
-		$('#detalhes_pedido').hide().html('');
-		$('#pedidos').show();
-		$(this).hide();
-	});
-	
 	if ($.getUrlVar('pedido') != undefined && $.getUrlVar('pedido') != '') {
-		$('#abas_minha_conta a[href*="#pedido"] div').click();
-		$('#pedidos a[href*="detalhes_pedido.php?pedido=' + $.getUrlVar('pedido') + '"]').click();
+		$('.menu_conta a[href*="#meus_pedidos"]').click();
+		$('#meus_pedidos a[href*="detalhes_pedido.php?pedido=' + $.getUrlVar('pedido') + '"]').click();
 	}
 })

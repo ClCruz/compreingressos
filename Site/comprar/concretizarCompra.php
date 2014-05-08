@@ -142,10 +142,12 @@ if ($noErrors and empty($sqlErrors)) {
 	        $valorConveniencia = obterValorServico($itens['ID_APRESENTACAO_BILHETE'], false, $pedido_id);
 	    }
 
+	    $evento_info = getEvento($itens['ID_EVENTO']);
+
 	    $itensPedido[$i]['descricao_item']['evento'] = utf8_encode($itens['DS_EVENTO']);
 	    $itensPedido[$i]['descricao_item']['data'] = $itens['DT_APRESENTACAO'];
 	    $itensPedido[$i]['descricao_item']['hora'] = $itens['HR_APRESENTACAO'];
-	    $itensPedido[$i]['descricao_item']['teatro'] = utf8_encode($itens['DS_NOME_TEATRO']);
+	    $itensPedido[$i]['descricao_item']['teatro'] = utf8_encode($evento_info['nome_teatro']);
 	    $itensPedido[$i]['descricao_item']['setor'] = utf8_encode($itens['DS_SETOR']);
 	    $itensPedido[$i]['descricao_item']['cadeira'] = utf8_encode($itens['DS_CADEIRA']);
 	    $itensPedido[$i]['descricao_item']['bilhete'] = utf8_encode($itens['DS_TIPO_BILHETE']);

@@ -1,6 +1,7 @@
 <?php
 require_once('../settings/functions.php');
 require_once('../settings/settings.php');
+require_once('../settings/Utils.php');
 
 require_once('../settings/MCAPI.class.php');
 
@@ -26,6 +27,21 @@ if (isset($_GET['action'])) {
 	}
 	
 	if ($_GET['action'] == 'add' or $_GET['action'] == 'update') {
+
+		// formatacao dos campos do layout 2.0 para o antigo (para manter compatibilidade)
+		$_POST['cpf'] = preg_replace("/[^0-9]/", "", $_POST['cpf']);
+
+		$_POST['cep'] = preg_replace("/[^0-9]/", "", $_POST['cep']);
+		
+		$_POST['telefone'] = explode(' ', $_POST['fixo']);
+		$_POST['ddd1'] = preg_replace("/[^0-9]/", "", $_POST['telefone'][0]);
+		$_POST['telefone'] = preg_replace("/[^0-9]/", "", $_POST['telefone'][1]);
+
+		$_POST['celular'] = explode(' ', $_POST['celular']);
+		$_POST['ddd2'] = preg_replace("/[^0-9]/", "", $_POST['celular'][0]);
+		$_POST['celular'] = preg_replace("/[^0-9]/", "", $_POST['celular'][1]);
+		// -------------------------------------------------------------------------------
+
 		if (!isset($_POST['extra_info'])) $_POST['extra_info'] = 'N';
 		if (!isset($_POST['extra_sms'])) $_POST['extra_sms'] = 'N';
 		if (!isset($_POST['concordo'])) $_POST['concordo'] = 'N';
@@ -119,7 +135,7 @@ if (isset($_GET['action'])) {
 							$_POST['bairro'],
 							$_POST['cidade'],
 							$_POST['estado'],
-							$_POST['cep1'].$_POST['cep2'],
+							$_POST['cep'],
 							$_POST['email1'],
 							md5($_POST['senha1']),
 							$_POST['extra_info'],
@@ -146,7 +162,12 @@ if (isset($_GET['action'])) {
 			
 			if (hasRows($result)) {
 				echo 'Já existe um usuário cadastrado com esse email.';
-				exit();
+				die();
+			}
+
+			if (strlen($_POST['email']) < 3) {
+				echo 'Favor informar um e-mail válido.';
+				die();
 			}
 		}
 		
@@ -190,7 +211,7 @@ if (isset($_GET['action'])) {
 							$_POST['bairro'],
 							$_POST['cidade'],
 							$_POST['estado'],
-							$_POST['cep1'].$_POST['cep2']
+							$_POST['cep']
 							);
 		if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
 			$params[] = $_POST['email'];
@@ -227,52 +248,66 @@ if (isset($_GET['action'])) {
 				$params = array(md5($_POST['senha1']), $_SESSION['user']);
 				
 				if (executeSQL($mainConnection, $query, $params)) {
-					$retorno = 'Sua senha foi alterada com sucesso!';
+					$retorno = 'true';
 				} else {
 					$retorno = sqlErrors();
 				}
 			} else {
-				$retorno = 'Sua senha atual não confere com a senha informada!';
+				$retorno = 'false';
 			}
 		} else {
 			$retorno = 'A senha nova deve ter, no mínimo, 6 caracteres.';
 		}
-	} else if ($_GET['action'] == 'manageAddresses' and isset($_SESSION['user']) and isset($_GET['enderecoID'])) {
-		
-		$query = 'DELETE FROM MW_ENDERECO_CLIENTE
-						WHERE ID_CLIENTE = ? AND ID_ENDERECO_CLIENTE = ?';
-		$params = array($_SESSION['user'], $_GET['enderecoID']);
-		
-		if (executeSQL($mainConnection, $query, $params)) {
-			$retorno = 'true';
-		} else {
-			$retorno = sqlErrors();
-		}
-		
 	} else if ($_GET['action'] == 'manageAddresses' and isset($_SESSION['user'])) {
-		
-		$query = 'INSERT INTO MW_ENDERECO_CLIENTE
-						(DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO, ID_CLIENTE)
-						VALUES
-						(?, ?, ?, ?, ?, ?, ?)';
-		$params = array($_POST['endereco'], $_POST['complemento'], $_POST['bairro'], $_POST['cidade'], $_POST['cep'], $_POST['estado'], $_SESSION['user']);
-		
-		if (executeSQL($mainConnection, $query, $params)) {
-			$query = 'SELECT ID_ENDERECO_CLIENTE
-				    FROM MW_ENDERECO_CLIENTE
-				    WHERE
-				    DS_ENDERECO = ? '.($_POST['complemento'] ? 'AND DS_COMPL_ENDERECO = ?' : '').' AND DS_BAIRRO = ? AND DS_CIDADE = ? AND CD_CEP = ? AND ID_ESTADO = ? AND ID_CLIENTE = ?';
-			$params = ($_POST['complemento'])
-				    ? array($_POST['endereco'], $_POST['complemento'], $_POST['bairro'], $_POST['cidade'], $_POST['cep'], $_POST['estado'], $_SESSION['user'])
-				    : array($_POST['endereco'], $_POST['bairro'], $_POST['cidade'], $_POST['cep'], $_POST['estado'], $_SESSION['user']);
 
-			$rs = executeSQL($mainConnection, $query, $params, true);
+		if ($_POST['id'] || $_GET['id']) {
+			$query = 'DELETE FROM MW_ENDERECO_CLIENTE
+						WHERE ID_CLIENTE = ? AND ID_ENDERECO_CLIENTE = ?';
+			$params = array($_SESSION['user'], ($_POST['id'] ? $_POST['id'] : $_GET['id']));
 			
-			$retorno = 'true?'.$rs[0];
-		} else {
-			$retorno = sqlErrors();
+			if (executeSQL($mainConnection, $query, $params)) {
+				$retorno = 'true';
+			} else {
+				$retorno = sqlErrors();
+			}
 		}
 		
+		if ($_POST['endereco']) {
+			$query = 'SELECT COUNT(1) AS ENDERECOS_REGISTRADOS FROM MW_ENDERECO_CLIENTE WHERE ID_CLIENTE = ?';
+			$rs = executeSQL($mainConnection, $query, array($_SESSION['user']), true);
+
+			if ($rs['ENDERECOS_REGISTRADOS'] < 3) {
+
+				$_POST['cep'] = str_replace('-', '', $_POST['cep']);
+
+				$query = 'INSERT INTO MW_ENDERECO_CLIENTE
+								(DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO, ID_CLIENTE, NM_ENDERECO)
+								VALUES
+								(?, ?, ?, ?, ?, ?, ?, ?)';
+				$params = array($_POST['endereco'], $_POST['complemento'], $_POST['bairro'], $_POST['cidade'], $_POST['cep'], $_POST['estado'], $_SESSION['user'], $_POST['nome']);
+				
+				if (executeSQL($mainConnection, $query, $params)) {
+					$query = 'SELECT ID_ENDERECO_CLIENTE
+						    FROM MW_ENDERECO_CLIENTE
+						    WHERE
+						    DS_ENDERECO = ? '.($_POST['complemento'] ? 'AND DS_COMPL_ENDERECO = ?' : '').' AND DS_BAIRRO = ? AND DS_CIDADE = ? AND CD_CEP = ? AND ID_ESTADO = ? AND ID_CLIENTE = ? AND NM_ENDERECO = ?';
+					$params = ($_POST['complemento'])
+						    ? array($_POST['endereco'], $_POST['complemento'], $_POST['bairro'], $_POST['cidade'], $_POST['cep'], $_POST['estado'], $_SESSION['user'], $_POST['nome'])
+						    : array($_POST['endereco'], $_POST['bairro'], $_POST['cidade'], $_POST['cep'], $_POST['estado'], $_SESSION['user'], $_POST['nome']);
+
+					$rs = executeSQL($mainConnection, $query, $params, true);
+					
+					$retorno = 'true?'.$rs[0];
+				} else {
+					$retorno = sqlErrors();
+				}
+			} else {
+				$retorno = "O número máximo de endereços registrados foi atingido.<br><br>Favor apagar/alterar um endereço para continuar.";
+			}
+		}
+		
+	} else if ($_GET['action'] == 'getAddresses' and isset($_SESSION['user']) and $_GET['id']) {
+		$retorno = json_encode(getEnderecoCliente($_SESSION['user'], $_GET['id']));
 	}
 
 	if ($send_mailchimp) {
@@ -289,7 +324,7 @@ if (isset($_GET['action'])) {
 			'CELULAR' => $_POST['celular'],
 			'BAIRRO' => $_POST['bairro'],
 			'CIDADE' => utf8_encode($_POST['cidade']),
-			'CEP' => $_POST['cep1'].$_POST['cep2'],
+			'CEP' => $_POST['cep'],
 			'NASCIMENTO' => (($_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] != '//') ? $_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] : NULL),
 			'SEXO' => $_POST['sexo'],
 			'UF' => utf8_encode($rs['DS_ESTADO'])
@@ -315,7 +350,7 @@ if (isset($_GET['action'])) {
 		if ($retorno[0]['code'] == 242) {
 			echo 'Data de Nascimento inválida';
 		} else {
-			echo $retorno[0]['message'];
+			var_dump($query, $params, $retorno);
 		}
 	} else {
 		echo $retorno;

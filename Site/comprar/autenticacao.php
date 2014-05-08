@@ -36,6 +36,6 @@ if (isset($_POST['email']) and isset($_POST['senha'])) {
 	}
 } else if (isset($_SESSION['operador']) and isset($_GET['id'])) {
 	$_SESSION['user'] = $_GET['id'];
-	echo 'true';
+	echo 'redirect.php?redirect=' . str_replace_once("&tag=3._Identificaçao_-_Autentique-se", "", $_GET['redirect']) . urlencode($url);
 }
 ?>

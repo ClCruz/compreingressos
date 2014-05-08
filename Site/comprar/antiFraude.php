@@ -16,7 +16,8 @@ if (!isset($_SESSION['operador'])) {
 	//print_r(array('<pre>', $query, $params, '</pre>'));die();
 
 	if ($rows > 0) {
-		header("Location: pagamento_cancelado.php?erro=539");
+		echo "Prezado Cliente, por favor entre em contato com a nossa central de atendimento, através do número 11 2122 4070
+				de segunda a domingo das 09h00 às 21h00, informando a seguinte mensagem: (erro 539)";
 		die();
 	}
 

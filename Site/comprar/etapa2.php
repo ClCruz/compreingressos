@@ -7,118 +7,107 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 
 require('verificarServicosPedido.php');
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>COMPREINGRESSOS.COM - Confer&ecirc;ncia de Itens</title>
-		<meta name="author" content="C&C - Computação e Comunicação" />
-		<link href="favicon.ico" rel="shortcut icon"/>
-		<link rel="stylesheet" href="../stylesheets/ci.css"/>
-		<link rel="stylesheet" href="../stylesheets/ajustes.css"/>
-		<!--[IF IE]>
-		<link rel="stylesheet" href="../stylesheets/ajustesIE.css"/>
-		<![ENDIF]-->
-		<link rel="stylesheet" href="../stylesheets/smoothness/jquery-ui-1.10.3.custom.css"/>
-		
-		<script type="text/javascript" src="../javascripts/jquery.js"></script>
-		<script type="text/javascript" src="../javascripts/jquery-ui.js"></script>
-		<script type="text/javascript" src="../javascripts/jquery.utils.js"></script>
-		<script type="text/javascript" src="../javascripts/jquery.cookie.js"></script>
-		
-		<script type="text/javascript" src="../javascripts/contagemRegressiva.js?until=<?php echo tempoRestante(); ?>"></script>
-		<script type="text/javascript" src="../javascripts/carrinho.js"></script>
-		<script type="text/javascript" src="../javascripts/dadosEntrega.js"></script>
-		<?php echo $scriptServicosPorPedido; ?>
-		
-		<?php echo $campanha['script']; ?>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<meta name="robots" content="noindex,nofollow">
+	<link href="../images/favicon.ico" rel="shortcut icon"/>
+	<link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
+	<link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
 
-		<script type="text/javascript">
-		  var _gaq = _gaq || [];
-		  _gaq.push(['_setAccount', 'UA-16656615-1']);
-		  _gaq.push(['_setDomainName', 'compreingressos.com']);
-		  _gaq.push(['_setAllowLinker', true]);
-		  _gaq.push(['_trackPageview']);
+	<script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.placeholder.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.selectbox-0.2.min.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.mask.min.js" type="text/javascript"></script>
+	<script src="../javascripts/cicompra.js" type="text/javascript"></script>
 
-		  (function() {
-		    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-		    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-		    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-		  })();
-		</script>
-	</head>
-	<body>
-		<div id="background_holder">
-			<div id="respiro">
-				<div id="content_container">
-					<?php require "header.php"; ?>
-					<div id="crumbs">
-						<a href="http://www.compreingressos.com">home</a> /
-						<a href="#carrinho">carrinho</a> /
-						<a href="#conferencia" class="selected">conferir itens</a>
-					</div>
-					<?php include "banners.php"; ?>
-					<div id="center">
-						<div id="center_left">
-							<h1>Conferir itens</h1>
-							<p class="help_text">Confira o(s) assento(s) escolhido(s), o pre&ccedil;o, a forma de
-							entrega e clique em avan&ccedil;ar para continuar com o processo de compra.<br><br>
-							Formas de entrega:<br>
-							1. Retirar no local<br>
-							No dia da atração escolhida, os ingressos estarão disponíveis na bilheteria, balcão ou
-							guichê determinados pelo local onde se realizará o evento.</p>
-                                                        <p class="help_text2">
-                                                            - Seus ingressos <b>só poderão ser retirados no dia da apresentação</b> sendo obrigatório <b>apresentar
-                                                            o cartão utilizado na compra e um documento de identificação pessoal</b>.<br>
-                                                            - No caso de <b>meia entrada</b> ou de <b>promoções</b> é obrigatório a apresentação do documento que comprove o
-                                                            benefício no momento da retirada dos ingressos e na entrada no local.
-                                                        </p><br>
-							<?php include "seloCertificado.php"; ?>
-						</div>
-						<div id="center_right">
-							<div id="passos">
-								<ul>
-									<li><span class="numero">1. </span>Escolha de assentos</li>
-									<li class="passo_ativo"><span class="numero">2. </span>Conferir Itens</li>
-									<li><span class="numero">3. </span>Identifica&ccedil;&atilde;o</li>
-									<li><span class="numero">4. </span>Confirma&ccedil;&atilde;o</li>
-									<li><span class="numero">5. </span>Pagamento</li>
-								</ul>
-							</div>
-							<div id="header_ticket">
-								<a href="etapa1.php?<?php echo $_COOKIE['lastEvent']; ?><?php echo $campanha['tag_voltar']; ?>">
-									<div class="botoes_ticket" id="botao_voltar">voltar</div>
-								</a>
-								<?php if (isset($_SESSION['operador'])) { ?>
-								<a href="pagamento_cancelado.php?manualmente&operador" class="botao_cancelar">
-									<div class="botoes_ticket">cancelar</div>
-								</a>
-								<?php } ?>
-								<a href="etapa3.php?redirect=<?php echo urlencode('etapa4.php?eventoDS=' . $_GET['eventoDS'] . $campanha['tag_avancar']); ?><?php echo $campanha['tag_avancar']; ?>" id="botao_avancar" class="botao_avancar">
-									<div class="botoes_ticket">avan&ccedil;ar</div>
-								</a>
-							</div>
-							<?php require "resumoPedido.php"; ?>
-							<div id="footer_ticket">
-								<a href="etapa1.php?<?php echo $_COOKIE['lastEvent']; ?><?php echo $campanha['tag_voltar']; ?>">
-									<div class="botoes_ticket" id="botao_voltar">voltar</div>
-								</a>
-								<?php if (isset($_SESSION['operador'])) { ?>
-								<a href="pagamento_cancelado.php?manualmente&operador" class="botao_cancelar">
-									<div class="botoes_ticket">cancelar</div>
-								</a>
-								<?php } ?>
-								<a href="etapa3.php?redirect=<?php echo urlencode('etapa4.php?eventoDS=' . $_GET['eventoDS'] . $campanha['tag_avancar']); ?><?php echo $campanha['tag_avancar']; ?>" id="botao_avancar" class="botao_avancar">
-									<div class="botoes_ticket">avan&ccedil;ar</div>
-								</a>
-							</div>
-						</div>
-					</div>
+	<script src="../javascripts/jquery.cookie.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
+	<script src="../javascripts/common.js" type="text/javascript"></script>
+
+	<script type="text/javascript" src="../javascripts/contagemRegressiva.js?until=<?php echo tempoRestante(); ?>"></script>
+	<script type="text/javascript" src="../javascripts/carrinho.js"></script>
+	<script type="text/javascript" src="../javascripts/dadosEntrega.js"></script>
+	<?php echo $scriptServicosPorPedido; ?>
+	
+	<?php echo $campanha['script']; ?>
+
+	<script type="text/javascript">
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-16656615-1']);
+	  _gaq.push(['_setDomainName', 'compreingressos.com']);
+	  _gaq.push(['_setAllowLinker', true]);
+	  _gaq.push(['_trackPageview']);
+
+	  (function() {
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+	</script>
+
+	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
+</head>
+<body>
+	<div id="pai">
+		<?php require "header.php"; ?>
+		<div id="content">
+			<div class="alert">
+				<div class="centraliza">
+					<img src="../images/ico_erro_notificacao.png">
+					<div class="container_erros"></div>
+					<a>fechar</a>
 				</div>
 			</div>
-			<!-- fim respiro -->
+
+			<div class="centraliza">
+				<div class="descricao_pag">
+					<div class="img">
+						<img src="../images/ico_black_passo2.png">
+					</div>
+					<div class="descricao">
+						<p class="nome">2. Tipo de ingresso</p>
+						<p class="descricao">
+							passo <b>2 de 5</b> escolha descontos e vantagens
+						</p>
+						<div class="sessao">
+							<p class="tempo" id="tempoRestante"></p>
+							<p class="mensagem">
+								Após essse prazo seu pedido será cancelado<br>
+								automaticamente e os lugares liberados
+							</p>
+						</div>
+					</div>
+					<a href="etapa3.php?redirect=<?php echo urlencode('etapa4.php?eventoDS=' . $_GET['eventoDS'] . $campanha['tag_avancar']); ?><?php echo $campanha['tag_avancar']; ?>" class="botao avancar passo3 botao_avancar">outros pedidos</a>
+				</div>
+				
+				<?php require "resumoPedido.php"; ?>
+
+				<a href="etapa1.php?<?php echo $_COOKIE['lastEvent']; ?><?php echo $campanha['tag_voltar']; ?>" class="botao voltar passo1">outros pedidos</a>
+				<a href="etapa3.php?redirect=<?php echo urlencode('etapa4.php?eventoDS=' . $_GET['eventoDS'] . $campanha['tag_avancar']); ?><?php echo $campanha['tag_avancar']; ?>" class="botao avancar passo3 botao_avancar">outros pedidos</a>
+
+			</div>
 		</div>
-		<!-- fim background -->
+
+		<div id="texts">
+			<div class="centraliza">
+				<span id="cme"></span>
+				
+				<p>Confira o(s) assento(s) escolhido(s), o preço, a forma de entrega e clique em avançar para continuar com o processo de compra.</p>
+
+				<p>Formas de entrega:</p>
+				<p>1. Retirar no local</p>
+				<p>No dia da atração escolhida, os ingressos estarão disponíveis na bilheteria, balcão ou guichê determinados pelo local onde se realizará o evento.</p>
+				<p>- Seus ingressos só poderão ser retirados no dia da apresentação sendo obrigatório apresentar o cartão utilizado na compra e um documento de identificação pessoal.</p>
+				<p>- No caso de meia entrada ou de promoções é obrigatório a apresentação do documento que comprove o benefício no momento da retirada dos ingressos e na entrada no local.</p>
+			</div>
+		</div>
+
 		<?php include "footer.php"; ?>
-	</body>
+
+		<?php include "selos.php"; ?>
+	</div>
+</body>
 </html>

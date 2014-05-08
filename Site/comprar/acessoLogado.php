@@ -5,7 +5,7 @@ session_start();
 
 //ACESSO PERMITIDO APENAS PARA CLIENTES LOGADOS
 if (isset($_SESSION['user'])) {
-	setcookie('user', $_SESSION['user'], $cookieExpireTime);
+	setcookie('user', true, $cookieExpireTime);
 } else {
 	header("Location: login.php?redirect=" . urlencode(getCurrentUrl()));
 }

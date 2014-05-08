@@ -56,7 +56,7 @@
 				element.data(key, val);
 			});
 			
-			element.attr('title', element.data('name') + ' - ' + element.data('setor') + ' -- Clique apenas 1 vez e aguarde a seleção do lugar escolhido.')
+			element.attr('title', element.data('name') + ' // ' + element.data('setor'))
 			//if (top > containerHeight) element.hide();
 		});
 	};

@@ -10,162 +10,164 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
 	$rs = executeSQL($mainConnection, $query, $params, true);
 	
 	$rs['DT_NASCIMENTO'] = explode('/', $rs['DT_NASCIMENTO']);
-	$rs['CD_CEP'] = array(substr($rs['CD_CEP'], 0, 5), substr($rs['CD_CEP'], -3));
 	
-	$query = 'SELECT ID_PEDIDO_VENDA,
-				 CASE IN_RETIRA_ENTREGA
-				 	WHEN \'R\' THEN \'Retirada no Local\'
-					WHEN \'E\' THEN \'Para o endereço...\'
-					ELSE \' - \'
-				 END IN_RETIRA_ENTREGA,
-				 CONVERT(VARCHAR(10), DT_PEDIDO_VENDA, 103) DT_PEDIDO_VENDA, VL_TOTAL_PEDIDO_VENDA,
-				 IN_SITUACAO
-				 FROM MW_PEDIDO_VENDA
-				 WHERE ID_CLIENTE = ? AND IN_SITUACAO <> \'P\'
-				 ORDER BY 1 DESC';
+	$query = "SELECT ID_PEDIDO_VENDA,
+	CASE IN_RETIRA_ENTREGA
+	WHEN 'R' THEN 'retirada no Local'
+	WHEN 'E' THEN 'no endereço'
+	ELSE ' - '
+	END IN_RETIRA_ENTREGA,
+	CONVERT(VARCHAR(10), DT_PEDIDO_VENDA, 103) DT_PEDIDO_VENDA, VL_TOTAL_PEDIDO_VENDA,
+	IN_SITUACAO
+	FROM MW_PEDIDO_VENDA
+	WHERE ID_CLIENTE = ? AND IN_SITUACAO <> 'P'
+	ORDER BY 1 DESC";
 	$params = array($_SESSION['user']);
 	$result = executeSQL($mainConnection, $query, $params);
 }
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>COMPREINGRESSOS.COM - Minha Conta</title>
-		<meta name="author" content="C&C - Computação e Comunicação" />
-		<link href="favicon.ico" rel="shortcut icon"/>
-		<link rel="stylesheet" href="../stylesheets/smoothness/jquery-ui-1.10.3.custom.css"/>
-		<link rel="stylesheet" href="../stylesheets/ci.css"/>
-		<link rel="stylesheet" href="../stylesheets/ajustes.css"/>
-		
-		<script type="text/javascript" src="../javascripts/jquery.js"></script>
-		<script type="text/javascript" src="../javascripts/jquery-ui.js"></script>
-		<script type="text/javascript" src="../javascripts/jquery.utils.js"></script>
-		<script type="text/javascript" src="../javascripts/jquery.cookie.js"></script>
-		<script type="text/javascript" src="../javascripts/identificacao_cadastro.js"></script>
-		<script type="text/javascript" src="../javascripts/minhaConta.js"></script>
-	</head>
-	<body>
-		<div id="background_holder">
-			<div id="respiro">
-				<div id="content_container">
-					<?php require "header.php"; ?>
-					<div id="crumbs">
-						<a href="http://www.compreingressos.com">home</a> / <a href="#minha_conta" class="selected">minha conta</a>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<meta name="robots" content="noindex,nofollow">
+	<link href="../images/favicon.ico" rel="shortcut icon"/>
+	<link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
+	<link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
+
+	<script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.placeholder.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.selectbox-0.2.min.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.mask.min.js" type="text/javascript"></script>
+	<script src="../javascripts/cicompra.js" type="text/javascript"></script>
+
+	<script src="../javascripts/jquery.cookie.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
+	<script src="../javascripts/common.js" type="text/javascript"></script>
+
+	<script src="../javascripts/minhaConta.js" type="text/javascript"></script>
+	<script src="../javascripts/identificacao_cadastro.js" type="text/javascript"></script>
+	<script src="../javascripts/dadosEntrega.js" type="text/javascript"></script>
+	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
+</head>
+<body>
+	<div id="pai">
+		<?php require "header.php"; ?>
+		<div id="content">
+			<div class="alert">
+				<div class="centraliza">
+					<img src="../images/ico_erro_notificacao.png">
+					<div class="container_erros"></div>
+					<a>fechar</a>
+				</div>
+			</div>
+
+			<div class="centraliza">
+				<div class="descricao_pag">
+					<div class="img">
+						<img src="../images/ico_enderecos.png">
 					</div>
-					<?php include "banners.php"; ?>
-					<div id="center">
-						<div id="center_left">
-							<span class="#cadastro">
-								<h1>Dados Pessoais</h1>
-								<p class="help_text">Navegue pelos menus para acessar seus dados.</p>
-								<p class="help_text">As informa&ccedil;&otilde;es ao lado foram preenchidas no ato do 
-									seu cadastro, para alter&aacute;-las basta escrever nos campos e clicar em salvar.</p>
-							</span>
-							
-							<span class="#pedidos">
-								<h1>Pedidos</h1>
-								<p class="help_text">Navegue pelos menus para acessar seus dados.</p>
-								<p class="help_text">Confira na lista ao lado todos os pedidos listados na sua conta.</p>
-							</span>
-							
+					<div class="descricao">
+						<p class="nome">
+							Minha conta
+							<a href="logout.php">logout</a>
+						</p>
+						<p class="descricao">
+							Olá <b><?php echo utf8_encode($rs['DS_NOME']); ?>,</b> veja seus dados da conta, histórico de pedidos, troque
+							a sua senha ou altere suas configurações do guia de espetáculos
+						</p>
+						<div class="menu_conta">
+							<a href="#meus_pedidos" class="botao meus_pedidos ativo">meus pedidos</a>
+							<a href="#dados_conta" class="botao dados_conta">dados da conta</a>
 							<?php if (!(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) { ?>
-							<span class="#identificacao">
-								<h1>Senha</h1>
-								<p class="help_text">Navegue pelos menus para acessar seus dados.</p>
-								<p class="help_text">As informa&ccedil;&otilde;es ao lado foram preenchidas no ato do 
-								seu cadastro, para alter&aacute;-las basta escrever nos campos e clicar em salvar.</p>
-							</span>
+							<a href="#trocar_senha" class="botao trocar_senha">troca de senha</a>
 							<?php } ?>
-							<?php include "seloCertificado.php"; ?>
-						</div>
-						<div id="center_right">
-							<div id="header_ticket">
-								<a href="etapa2.php" class="botao_cancelar" style="margin:0">
-									<div class="botoes_ticket">minha compra</div>
-								</a>
-							</div>
-							<div class="titulo with_border_bottom">
-								<h1>Ol&aacute; <?php echo utf8_encode($rs['DS_NOME']); ?></h1>
-							</div>
-							<div id="abas_minha_conta">
-								<a href="#cadastro">
-									<div class="aba_minha_conta aba_down">dados pessoais</div>
-								</a>
-								<?php if (!(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) { ?>
-								<a href="#identificacao">
-									<div class="aba_minha_conta">senha</div>
-								</a>
-								<?php } ?>
-								<a href="#pedidos">
-									<div class="aba_minha_conta">pedidos</div>
-								</a>
-								<?php if (!(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) { ?>
-								<a href="logout.php">
-									<div class="aba_minha_conta">sair</div>
-								</a>
-								<?php } ?>
-							</div>
-							<?php require 'div_cadastro.php'; ?>
-							<div id="pedidos">
-								<table>
-									<tr>
-										<th>Pedido</th>
-										<th>Forma de Entrega</th>
-										<th>Data do Pedido</th>
-										<th>Total do Pedido</th>
-										<th>Status</th>	
-									</tr>
-									<?php
-									while ($rs = fetchResult($result)) {
-									?>
-									<tr>
-										<td><a href="detalhes_pedido.php?pedido=<?php echo $rs['ID_PEDIDO_VENDA']; ?>"><?php echo $rs['ID_PEDIDO_VENDA']; ?></a></td>
-										<td><?php echo $rs['IN_RETIRA_ENTREGA']; ?></td>
-										<td><?php echo $rs['DT_PEDIDO_VENDA']; ?></td>
-										<td>R$ <?php echo $rs['VL_TOTAL_PEDIDO_VENDA']; ?></td>
-										<td><?php echo comboSituacao('situacao', $rs['IN_SITUACAO'], false); ?></td>
-									</tr>
-									<?php
-									}
-									?>
-								</table>
-							</div>
-							<span id="detalhes_pedido"></span>
-							
-							<?php if (!(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) { ?>
-							<div id="identificacao">
-								<form id="trocaSenha" method="post" action="cadastro.php">
-									<h2>Senha atual</h2>
-									<input name="senha" type="password" id="senha" size="30" maxlength="30"/>
-									<p class="err_msg">Insira sua senha atual</p>
-									<h2>Nova senha</h2>
-									<input name="senha1" type="password" id="senha1" size="30" maxlength="30"/>
-									<p class="err_msg">Insira uma nova senha</p>
-									<h2>Confirme sua nova senha</h2>
-									<input name="senha2" type="password" id="senha2" size="30" maxlength="30"/>
-									<p class="err_msg">Confirme sua senha</p>
-								</form>
-							</div>
-							<?php } ?>
-							<div id="footer_ticket">
-								<a href="etapa2.php" class="botao_cancelar" style="margin:0 15px 0 0;">
-									<div class="botoes_ticket">minha compra</div>
-								</a>
-								<a href="#minha_conta_pedidos">
-									<div class="botoes_ticket" id="botao_voltar">voltar</div>
-								</a>
-								<a href="#minha_conta_senha" id="cadastreme">
-									<div class="botoes_ticket" id="botao_pagamento">salvar altera&ccedil;&otilde;es</div>
-								</a>
-							</div>
+							<a href="#enderecos" class="botao enderecos ativo">endereços</a>
 						</div>
 					</div>
 				</div>
+
+				<?php require 'div_cadastro.php'; ?>
+
+				<table id="meus_pedidos">
+					<thead>
+						<tr>
+							<td width="170">Pedido</td>
+							<td width="200">Forma de Entrega</td>
+							<td width="160">Data do Pedido</td>
+							<td width="160">Total do Pedido</td>
+							<td width="200">Status</td>
+						</tr>
+					</thead>
+					<tbody>
+						<?php
+						while ($rs = fetchResult($result)) {
+							?>
+							<tr>
+								<td class="npedido"><a href="detalhes_pedido.php?pedido=<?php echo $rs['ID_PEDIDO_VENDA']; ?>"><?php echo $rs['ID_PEDIDO_VENDA']; ?></a></td>
+								<td><?php echo $rs['IN_RETIRA_ENTREGA']; ?></td>
+								<td><?php echo $rs['DT_PEDIDO_VENDA']; ?></td>
+								<td>R$ <?php echo number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, ',', ''); ?></td>
+								<td><?php echo comboSituacao('situacao', $rs['IN_SITUACAO'], false); ?></td>
+							</tr>
+							<?php
+						}
+						?>
+					</tbody>
+				</table>
+				<span id="detalhes_pedido"></span>
+
+				<?php if (!(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) { ?>
+				<form id="trocar_senha" method="post" action="cadastro.php">
+					<div class="coluna">
+						<div class="input_area login troca_de_senha">
+							<div class="icone"></div>
+							<div class="inputs">
+								<p class="titulo">Login</p>
+								<input type="password" name="senha" id="senha" placeholder="digite sua senha atual">
+								<div class="erro_help">
+									<p class="erro">senha atual não confere</p>
+									<p class="help"></p>
+								</div>
+
+								<input type="password" name="senha1" id="senha1" placeholder="digite sua nova senha">
+								<div class="erro_help">
+									<p class="erro"></p>
+									<p class="help senha">mínimo 6 caracteres com letras e números</p>
+								</div>
+
+								<input type="password" name="senha2" id="senha2" placeholder="confirme sua nova senha">
+								<div class="erro_help">
+									<p class="erro">as senhas devem ser idênticas</p>
+									<p class="help"></p>
+								</div>
+
+								<input type="button" class="submit salvar_dados">
+								<div class="erro_help">
+									<p class="help senha hidden">sua senha foi alterada com sucesso</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+				<?php } ?>
+
+				<span id="enderecos" class="minha_conta">
+				<?php require "dadosEntrega.php"; ?>
+				</span>
 			</div>
-			<!-- fim respiro -->
 		</div>
-		<!-- fim background -->
+
+		<div id="texts">
+			<div class="centraliza">
+				<p></p>
+			</div>
+		</div>
+
 		<?php include "footer.php"; ?>
-	</body>
+
+		<?php include "selos.php"; ?>
+	</div>
+</body>
 </html>

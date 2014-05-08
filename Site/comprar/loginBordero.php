@@ -1,97 +1,125 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html><head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>COMPREINGRESSOS.COM - Borderô Web</title>
-	<meta name="author" content="C&C - Computação e Comunicação" />
-	<link href="favicon.ico" rel="shortcut icon"/>
-	<link rel="stylesheet" href="../stylesheets/ci.css"/>
-	<link rel="stylesheet" href="../stylesheets/annotations.css"/>
-	<link rel="stylesheet" href="../stylesheets/ajustes.css"/>
-	<link rel="stylesheet" href="../stylesheets/smoothness/jquery-ui-1.10.3.custom.css"/>
+<?php
+require_once('../settings/functions.php');
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<meta name="robots" content="noindex,nofollow">
+	<link href="../images/favicon.ico" rel="shortcut icon"/>
+	<link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
+	<link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
 
-	<script type="text/javascript" src="../javascripts/jquery.js"></script>
-	<script type="text/javascript" src="../javascripts/jquery-ui.js"></script>
-	<script type="text/javascript" src="../javascripts/jquery.utils.js"></script>
+	<script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.placeholder.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.selectbox-0.2.min.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.mask.min.js" type="text/javascript"></script>
+	<script src="../javascripts/cicompra.js" type="text/javascript"></script>
+
+	<script src="../javascripts/jquery.cookie.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
+	<script src="../javascripts/common.js" type="text/javascript"></script>
 	<script>
-	    $(function() {
-		var email_pattern = /\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/i;
-		
-		$.busyCursor();
-		$('p.aviso, p.err_msg').hide();
-
-		$('#logar').click(function(event) {
-		    event.preventDefault();
-
-		    var form = $('form'),
-			$this = $(this);
-
-		    $("#loadingIcon").fadeIn('fast');
-
-		    $.ajax({
-			url: form.attr('action') + '?' + $.serializeUrlVars(),
-			data: form.serialize(),
-			type: form.attr('method'),
-			success: function(data) {
-			    if (data.substr(0, 4) == 'redi') {
-				$this.findNextMsg().slideUp('slow');
-				document.location = data;
-			    } else {
-				$this.findNextMsg().slideDown('fast');
-			    }
-			},
-			complete: function() {
-			    $('#loadingIcon').fadeOut('slow');
-			}
-		    });
+		$(function() {
+			$('p.erro').hide();
+			
+			$('#logar').click(function(event) {
+				event.preventDefault();
+				var $this = $(this),
+					 form = $('#identificacaoForm'),
+					 senha = $('#senha'),
+					 senha_txt = senha.val(),
+					 valido = true;
+				
+				if (senha_txt.length < 6) {
+					senha.findNextMsg().slideDown('fast');
+					valido = false;
+				} else senha.findNextMsg().slideUp('slow');
+				
+				if (valido) {
+					$.ajax({
+						url: form.attr('action') + '?' + $.serializeUrlVars(),
+						data: form.serialize(),
+						type: form.attr('method'),
+						success: function(data) {
+							if (data.substr(0, 4) == 'redi') {
+								$this.findNextMsg().slideUp('slow');
+								document.location = data;
+							} else {
+								$this.findNextMsg().slideUp('fast', function() {
+									$(this).html(data).slideDown('fast')
+								});
+							}
+						}
+					});
+				}
+			});
 		});
-	    });
 	</script>
-    </head>
-    <body>
-	<div id="background_holder">
-	    <div id="respiro">
-		<div id="content_container">
-		    <?php require "header.php"; ?>
-		    <div id="crumbs">
-			<a href="http://www.compreingressos.com/">home</a> / <a href="#minha_conta" class="selected">borderô web</a>
-		    </div>
-		    <?php include "banners.php"; ?>
-		    <div id="center">
-			<div id="center_left">
-			    <h1>Borderô Web</h1>
-			    <p class="help_text">Identifique-se com seu login e senha de operador.</p>
-			    <?php include "seloCertificado.php"; ?>
-			</div>
-			<div id="center_right">
-			    <form method="post" action="../admin/autenticacao.php">
-				<div id="identificacao">
-				    <img class="icone_id" src="../images/icon_sou.jpg" alt="Sou cliente COMPREINGRESSOS.COM" title="Sou cliente COMPREINGRESSOS.COM">
-				    <div id="id_left">
-					<h1>SGV - Sistema de Gestão e Venda de Ingressos</h1>
-					<p class="help_text">Autentique-se usando seu login e senha!</p>
-					<h2>Login</h2>
-					<input name="usuario" size="30" maxlength="30" type="text">
-					<p style="display: none;" class="err_msg">Insira seu login</p>
-					<h2>Senha</h2>
-					<input name="senha" size="20" maxlength="30" type="password">
-					<a id="logar" href="#">
-					    <div class="botoes_ticket">autentique-se</div>
-					</a>
-					<p style="display: none;" class="err_msg">Combinação de login/senha inválida<br>Por favor tente novamente.</p>
-					<p class="menorzinho">Melhor Utilização no navegador GOOGLE CHROME.</p>
-				    </div>
-				    <div id="id_right" style="margin:60px 0 0 80px;text-align:center">
-					<img src="../images/logo_grupocicom.jpg" />
-				    </div>
+
+	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
+</head>
+<body>
+	<div id="pai">
+		<?php require "header.php"; ?>
+		<div id="content">
+			<div class="alert">
+				<div class="centraliza">
+					<img src="../images/ico_erro_notificacao.png">
+					<div class="container_erros"></div>
+					<a>fechar</a>
 				</div>
-			    </form>
 			</div>
-		    </div>
+
+			<div class="centraliza">
+				<div class="descricao_pag">
+					<div class="img">
+						<img src="">
+					</div>
+					<div class="descricao">
+						<p class="nome">SGV</p>
+						<p class="descricao">
+							Sistema de Gestão e Venda de Ingressos
+						</p>
+						<div class="sessao">
+							<p class="tempo" id="tempoRestante"></p>
+							<p class="mensagem"></p>
+						</div>
+					</div>
+				</div>
+
+				<form id="identificacaoForm" name="identificacao" method="post" action="../admin/autenticacao.php">
+					<div class="identificacao">
+						<p class="site" style="font-size:28px;">Acesse aqui as informações do seu evento</p>
+						<input name="usuario" type="text" id="login" size="30" maxlength="100" placeholder="Login"/>
+						<div class="erro_help">
+							<p class="erro">insira seu login</p>
+							<p class="help"></p>
+						</div>
+						<input type="password" name="senha" placeholder="digite sua senha" id="senha" maxlength="30">
+						<div class="erro_help">
+							<p class="erro">senha inválida</p>
+							<p class="help"></p>
+						</div>
+						<input type="button" class="submit avancar passo4" id="logar" href="etapa4.php">
+						<div class="erro_help" style="height:25px">
+							<p class="erro">Combinação de login/senha inválida<br>Por favor tente novamente.</p>
+							<p class="help"></p>
+						</div>
+					</div>
+				</form>
+
+			</div>
 		</div>
-	    </div>
-	    <!-- fim respiro -->
+
+		<div id="texts">
+			<div class="centraliza"></div>
+		</div>
+
+		<?php include "footer.php"; ?>
+
+		<?php include "selos.php"; ?>
 	</div>
-	<!-- fim background -->
-	<?php include "footer.php"; ?>
-    </body>
+</body>
 </html>

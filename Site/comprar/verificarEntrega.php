@@ -1,5 +1,4 @@
 <?php
-
 if (isset($_COOKIE['entrega'])) {
     require_once('../settings/functions.php');
     require_once('../settings/settings.php');

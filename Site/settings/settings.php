@@ -1,6 +1,10 @@
 <?php
+error_reporting(0);
 $nomeSite = 'COMPREINGRESSOS.COM';
+$homeSite = 'http://www.compreingressos.com/';
 $title = $nomeSite;// . ' - Painel Administrativo';
+
+$locale = setlocale(LC_ALL, "pt_BR", "pt_BR.iso-8859-1", "pt_BR.utf-8", "portuguese");
 
 $cookieExpireTime = time() + 60 * 20; //20min
 
@@ -16,11 +20,11 @@ $is_manutencao = false;
 
 $merchant_id_homologacao = 'AEDAFDE0-83A5-869F-214B-C8501B9C8697';
 $merchant_id_producao = 'BB478913-9023-931D-3EC9-D5DEA7DECD20';
-$merchant_id_homologacao = $merchant_id_producao;
+// $merchant_id_homologacao = $merchant_id_producao;
 
 $url_braspag_homologacao = 'https://homologacao.pagador.com.br/webservice/pagadorTransaction.asmx?WSDL';
 $url_braspag_producao = 'https://transaction.pagador.com.br/webservice/pagadorTransaction.asmx?WSDL';
-$url_braspag_homologacao = $url_braspag_producao;
+// $url_braspag_homologacao = $url_braspag_producao;
 
 /** PRODUCAO ---------------------------------------------------
 $recaptcha = array(
@@ -29,10 +33,10 @@ $recaptcha = array(
 );
 // ----------------------------------------------------------- */
 
-//** ENDERECO 201.48.139.201 -----------------------------------
+//** ENDERECO 186.237.201.132 -----------------------------------
 $recaptcha = array(
-	'private_key' => '6LefZdkSAAAAAGZcDHifNvtk54IzJNQ_mS0gGRZI',
-	'public_key' => '6LefZdkSAAAAAPdM1TYpaRWNy4BWVN0o9HDoPRL2'
+	'private_key' => '6LdstukSAAAAAJ5P_ZVwxKvbnhnq7pmbwI1SAFId',
+	'public_key' => '6LdstukSAAAAAM6ccRL9u4ngToheQ_56GVQQPQU9'
 );
 // ----------------------------------------------------------- */
 

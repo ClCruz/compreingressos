@@ -32,7 +32,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 330, true)) {
                 $print = $('#print'),
                 $action = $('#action'),
                 autoRefresh = false,
-                defaultInterval = 3;
+                defaultInterval = 60;
 
             $('.button, [type="button"]').button();
 

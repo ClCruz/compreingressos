@@ -46,9 +46,11 @@ if (isset($_GET['action'])) {
 		if (!isset($_POST['extra_sms'])) $_POST['extra_sms'] = 'N';
 		if (!isset($_POST['concordo'])) $_POST['concordo'] = 'N';
 		
-		if (!verificaCPF($_POST['cpf'])) {
-			echo 'CPF Inválido';
-			exit();
+		if ($_POST['estado'] != 28) {
+			if (!verificaCPF($_POST['cpf'])) {
+				echo 'CPF Inválido';
+				exit();
+			}
 		}
 	}
 	
@@ -116,10 +118,11 @@ if (isset($_GET['action'])) {
 							IN_RECEBE_INFO,
 							IN_RECEBE_SMS,
 							IN_CONCORDA_TERMOS,
-							IN_SEXO
+							IN_SEXO,
+							ID_DOC_ESTRANGEIRO
 						)
 						VALUES
-						('.$newID.',?,?,' . (($_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] != '//') ? 'CONVERT(DATETIME, ?, 103)' : '?') . ',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+						('.$newID.',?,?,' . (($_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] != '//') ? 'CONVERT(DATETIME, ?, 103)' : '?') . ',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
 		$params = array(
 							$_POST['nome'],
 							$_POST['sobrenome'],
@@ -141,13 +144,19 @@ if (isset($_GET['action'])) {
 							$_POST['extra_info'],
 							$_POST['extra_sms'],
 							$_POST['concordo'],
-							$_POST['sexo']
+							$_POST['sexo'],
+							$_POST['tipo_documento']
 							);
 		
 		if (executeSQL($mainConnection, $query, $params)) {
 			$retorno = 'true';
 			$send_mailchimp = true;
 			$email = $_POST['email1'];
+
+			// se for do exterior usar o id de usuario como cpf
+			if ($_POST['estado'] == 28) {
+				executeSQL($mainConnection, "UPDATE MW_CLIENTE SET CD_CPF = RIGHT('00000000000' + CONVERT(VARCHAR(20), ID_CLIENTE), 11) WHERE CD_EMAIL_LOGIN = ?", array($_POST['email1']));
+			}
 			
 			dispararTrocaSenha($_POST['email1']);
 		} else {
@@ -170,6 +179,9 @@ if (isset($_GET['action'])) {
 				die();
 			}
 		}
+
+		// se for do exterior usar o id de usuario como cpf
+		$_POST['cpf'] = $_POST['estado'] == 28 ? substr('00000000000' . $_SESSION['user'], -11) : $_POST['cpf'];
 		
 		$query = 'SELECT CD_EMAIL_LOGIN FROM MW_CLIENTE WHERE ID_CLIENTE = ?';
 		$params = array($_SESSION['user']);
@@ -194,7 +206,8 @@ if (isset($_GET['action'])) {
 							CD_CEP = ?,' . ((isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) ? 'CD_EMAIL_LOGIN = ?,' : '') . '
 							IN_RECEBE_INFO = ?,
 							IN_RECEBE_SMS = ?,
-							IN_SEXO = ?
+							IN_SEXO = ?,
+							ID_DOC_ESTRANGEIRO = ?
 						WHERE ID_CLIENTE = ?';
 		$params = array(
 							$_POST['nome'],
@@ -219,6 +232,7 @@ if (isset($_GET['action'])) {
 		$params[] = $_POST['extra_info'];
 		$params[] = $_POST['extra_sms'];
 		$params[] = $_POST['sexo'];
+		$params[] = $_POST['tipo_documento'];
 		$params[] = $_SESSION['user'];
 		
 		if (executeSQL($mainConnection, $query, $params)) {

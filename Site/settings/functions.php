@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 function getSiteLogo() {
     echo "<img src='../images/menu_logo.jpg' height='60px' id='logo' />";
@@ -1230,6 +1230,21 @@ function comboUsuariosPorBase($name, $teatro, $selected) {
 	$combo .= '<option value="' . $rs['CODUSUARIO'] . '"' .
 		(($selected == $rs['CODUSUARIO']) ? ' selected' : '') .
 		'>' . utf8_encode($rs['NOMUSUARIO']) . '</option>';
+    }
+    $combo .= '</select>';
+
+    return $combo;
+}
+
+function comboTipoDocumento($name, $selected) {
+    $mainConnection = mainConnection();
+    $result = executeSQL($mainConnection, 'SELECT ID_DOC_ESTRANGEIRO, DS_DOC_ESTRANGEIRO FROM MW_DOC_ESTRANGEIRO');
+
+    $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Document type / Tipo de documento</option>';
+    while ($rs = fetchResult($result)) {
+	$combo .= '<option value="' . $rs['ID_DOC_ESTRANGEIRO'] . '"' .
+		(($selected == $rs['ID_DOC_ESTRANGEIRO']) ? ' selected' : '') .
+		'>' . utf8_encode($rs['DS_DOC_ESTRANGEIRO']) . '</option>';
     }
     $combo .= '</select>';
 

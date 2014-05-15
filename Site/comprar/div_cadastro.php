@@ -86,9 +86,31 @@
 				<div class="icone"></div>
 				<div class="inputs">
 					<p class="titulo">Identificação</p>
-					<input type="text" name="rg" id="rg" placeholder="R.G" maxlength="11" pattern=".{1,20}" value="<?php echo utf8_encode($rs['CD_RG']); ?>"/>
+
+					<input id="checkbox_estrangeiro" type="checkbox" name="checkbox_estrangeiro" class="checkbox" value="true" <?php echo $rs['ID_DOC_ESTRANGEIRO'] ? 'checked' : ''; ?>>
+					<label class="checkbox" for="checkbox_estrangeiro">
+						Não sou brasileiro e não tenho CPF<br/>
+						I am not a Brazilian and I don't have a CPF<br/>
+						Yo no soy de Brasil y no tengo la CPF
+					</label><br/><br/>
+
+					<span>
+					<?php echo comboTipoDocumento('tipo_documento', $rs['ID_DOC_ESTRANGEIRO']); ?>
+					</span>
 					<div class="erro_help">
-						<p class="erro">informe seu RG</p>
+						<p class="erro">
+							select the document type<br/>
+							seleccione el tipo de documento
+						</p>
+						<p class="help"></p>
+					</div>
+
+					<input type="text" name="rg" id="rg" placeholder="R.G./Document/Documento" maxlength="22" pattern=".{1,22}" value="<?php echo utf8_encode($rs['CD_RG']); ?>"/>
+					<div class="erro_help">
+						<p class="erro">
+							Type your document<br/>
+							Escriba su documento
+						</p>
 						<p class="help"></p>
 					</div>
 					<input type="text" name="cpf" id="cpf" placeholder="C.P.F" maxlength="14" autocomplete="off" maxlength="11" pattern=".{14}" value="<?php echo utf8_encode($rs['CD_CPF']); ?>">

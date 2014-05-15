@@ -32,6 +32,35 @@ $(function() {
 			}
 		});
 	});
+
+	$('#estado').on('change', function(){
+		// estado == exterior?
+		if ($(this).val() == 28) {
+			$('#cpf').val('n√£o se aplica').prop('disabled', true).addClass('disabled').slideUp('slow').findNextMsg().slideUp('slow');
+  			$('#cep').mask('AAAAAAAA').attr('pattern', '.{3,8}');
+		} else {
+			if ($('#cpf').val() == 'n√£o se aplica') {
+				$('#cpf').val('').prop('disabled', false).removeClass('disabled').slideDown('fast');
+			}
+			$('#cep').mask('00000-000').attr('pattern', '.{9}');
+		}
+	}).trigger('change');
+
+	$('#checkbox_estrangeiro').on('change', function(){
+		$('#estado').selectbox('detach');
+		if ($(this).is(':checked')) {
+			$('#estado').append('<option value="28">Exterior</option>').val(28);
+			$('#estado').selectbox('attach').selectbox('disable');
+			$('#tipo_documento').parent('span').slideDown('fast');
+			$('#tipo_documento').parent('span').next('div').slideDown('fast');
+		} else {
+			$('#estado').val('').find('option[value=28]').remove();
+			$('#estado').selectbox('attach').selectbox('enable');
+			$('#tipo_documento').parent('span').slideUp('slow');
+			$('#tipo_documento').parent('span').next('div').slideUp('slow');
+		}
+		$('#estado').trigger('change');
+	}).trigger('change');
 	
 	$('#limpar').click(function(event) {
 		event.preventDefault();
@@ -78,8 +107,8 @@ $(function() {
 		event.preventDefault();
 				
 		var $this = $(this),
-			 naoRequeridos = '#senha1,#senha2,#celular,#complemento,#checkbox_guia,#checkbox_sms,#cep',
-			 especiais = ',#email1,#email2,#fixo,#rg,#estado,#cidade,#bairro,#endereco'
+			 naoRequeridos = '#senha1,#senha2,#celular,#complemento,#checkbox_guia,#checkbox_sms,#cep,#checkbox_estrangeiro',
+			 especiais = ',#email1,#email2,#fixo,#rg,#estado,#cidade,#bairro,#endereco,#cpf,#tipo_documento',
 			 formulario = $('#form_cadastro'),
 			 campos = formulario.find(':input:not(' + naoRequeridos + especiais +')'),
 			 valido = true,
@@ -120,6 +149,26 @@ $(function() {
 			$('#celular').addClass('erro').findNextMsg().slideDown('fast');
 			valido = false;
 		} else $('#celular').removeClass('erro').findNextMsg().slideUp('slow');
+
+		if ($('#checkbox_estrangeiro').is(':checked')) {
+			if ($('#tipo_documento').val() == '') {
+				$('#tipo_documento').findNextMsg().slideDown('fast');
+				valido = false;
+			} else $('#tipo_documento').findNextMsg().slideUp('slow');
+
+			if ($('#rg').val() == '') {
+				$('#rg').findNextMsg().slideDown('fast');
+				valido = false;
+			} else $('#rg').findNextMsg().slideUp('slow');
+		} else $('#rg').findNextMsg().slideUp('slow');
+
+		// estado == exterior?
+		if ($('#estado').val() != 28) {
+			if ($('#cpf').val().length < 6) {
+				$('#cpf').findNextMsg().slideDown('fast');
+				valido = false;
+			} else $('#cpf').findNextMsg().slideUp('slow');
+		}
 		
 		if (valido) {
 			$.ajax({

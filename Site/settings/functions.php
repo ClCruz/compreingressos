@@ -1654,7 +1654,7 @@ function getEnderecoCliente($id_cliente, $id_endereco) {
 		'bairro' => $rs['DS_BAIRRO'],
 		'cidade' => $rs['DS_CIDADE'],
 		'estado' => $rs['ID_ESTADO'],
-		'cep' => substr($rs['CD_CEP'], 0, 5).'-'.substr($rs['CD_CEP'], -3),
+		'cep' => $rs['CD_CEP'],
 		'nome' => $rs['NM_ENDERECO'],
 		'complemento' => $rs['DS_COMPL_ENDERECO'],
 		'id' => $rs['ID_ENDERECO_CLIENTE']

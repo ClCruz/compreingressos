@@ -33,13 +33,17 @@ if (isset($_GET['action'])) {
 
 		$_POST['cep'] = preg_replace("/[^0-9]/", "", $_POST['cep']);
 		
-		$_POST['telefone'] = explode(' ', $_POST['fixo']);
-		$_POST['ddd1'] = preg_replace("/[^0-9]/", "", $_POST['telefone'][0]);
-		$_POST['telefone'] = preg_replace("/[^0-9]/", "", $_POST['telefone'][1]);
+		if ($_POST['estado'] != 28) {
+			$_POST['telefone'] = explode(' ', $_POST['fixo']);
+			$_POST['ddd1'] = preg_replace("/[^0-9]/", "", $_POST['telefone'][0]);
+			$_POST['telefone'] = preg_replace("/[^0-9]/", "", $_POST['telefone'][1]);
 
-		$_POST['celular'] = explode(' ', $_POST['celular']);
-		$_POST['ddd2'] = preg_replace("/[^0-9]/", "", $_POST['celular'][0]);
-		$_POST['celular'] = preg_replace("/[^0-9]/", "", $_POST['celular'][1]);
+			$_POST['celular'] = explode(' ', $_POST['celular']);
+			$_POST['ddd2'] = preg_replace("/[^0-9]/", "", $_POST['celular'][0]);
+			$_POST['celular'] = preg_replace("/[^0-9]/", "", $_POST['celular'][1]);
+		} else {
+			$_POST['telefone'] = $_POST['fixo'];
+		}
 		// -------------------------------------------------------------------------------
 
 		if (!isset($_POST['extra_info'])) $_POST['extra_info'] = 'N';

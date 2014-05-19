@@ -21,7 +21,7 @@ $rs = getEnderecoCliente($_SESSION['user'], -1);
 						<p class="endereco">
 							<?php echo $rs['endereco']; ?><?php echo $rs['complemento'] ? ' - '.$rs['complemento'] : ''; ?><br>
 							<?php echo $rs['bairro']; ?>, <?php echo $rs['cidade']; ?> - <?php echo comboEstado('estado', $rs['estado'], false, false); ?><br>
-							<?php echo substr($rs['cep'], 0, 5).'-'.substr($rs['cep'], -3); ?>
+							<?php echo $rs['estado'] != 28 ? substr($rs['cep'], 0, 5).'-'.substr($rs['cep'], -3) : $rs['cep']; ?>
 						</p>
 					</div>
 				</td>
@@ -54,7 +54,7 @@ while ($rs = fetchResult($result)) {
 						<p class="endereco">
 							<?php echo utf8_encode($rs['DS_ENDERECO']); ?><?php echo $rs['DS_COMPL_ENDERECO'] ? ' - '.$rs['DS_COMPL_ENDERECO'] : ''; ?><br>
 							<?php echo utf8_encode($rs['DS_BAIRRO']); ?>, <?php echo utf8_encode($rs['DS_CIDADE']); ?> - <?php echo comboEstado('estado', $rs['ID_ESTADO'], false, false); ?><br>
-							<?php echo substr($rs['CD_CEP'], 0, 5).'-'.substr($rs['CD_CEP'], -3); ?>
+							<?php echo $rs['ID_ESTADO'] != 28 ? substr($rs['CD_CEP'], 0, 5).'-'.substr($rs['CD_CEP'], -3) : $rs['CD_CEP']; ?>
 						</p>
 					</div>
 				</td>

@@ -90,7 +90,7 @@
 					<input id="checkbox_estrangeiro" type="checkbox" name="checkbox_estrangeiro" class="checkbox" value="true" <?php echo $rs['ID_DOC_ESTRANGEIRO'] ? 'checked' : ''; ?>>
 					<label class="checkbox" for="checkbox_estrangeiro">
 						Não sou brasileiro e não tenho CPF<br/>
-						I am not a Brazilian and I don't have a CPF<br/>
+						I am not Brazilian and I don't have a CPF<br/>
 						Yo no soy de Brasil y no tengo la CPF
 					</label><br/><br/>
 

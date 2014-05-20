@@ -18,7 +18,7 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 	$query = "INSERT INTO MW_BASE
 					(DS_NOME_BASE_SQL, DS_NOME_TEATRO, IN_ATIVO)
 					VALUES (?, ?, ?)";
-	$params = array($_POST['nomeSql'], $_POST['nome'], $_POST['ativo']);
+	$params = array(utf8_decode($_POST['nomeSql']), utf8_decode($_POST['nome']), $_POST['ativo']);
 
         $log = new Log($_SESSION['admin']);
         $log->__set('funcionalidade', 'Locais');
@@ -28,7 +28,7 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 	
 	if (executeSQL($mainConnection, $query, $params)) {
 		$query = 'SELECT ID_BASE FROM MW_BASE WHERE DS_NOME_TEATRO = ?';
-		$params = array($_POST['nome']);
+		$params = array(utf8_decode($_POST['nome']));
 		
 		$rs = executeSQL($mainConnection, $query, $params, true);
 		
@@ -45,7 +45,7 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 					IN_ATIVO = ?
 				WHERE
 					ID_BASE = ?";
-	$params = array($_POST['nomeSql'], $_POST['nome'], $_POST['ativo'], $_GET['id']);
+	$params = array(utf8_decode($_POST['nomeSql']), utf8_decode($_POST['nome']), $_POST['ativo'], $_GET['id']);
 
         $log = new Log($_SESSION['admin']);
         $log->__set('funcionalidade', 'Locais');

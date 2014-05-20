@@ -66,6 +66,8 @@ if (isset($err) && $err != "") {
 <html>
   <title>Borderô - Simplificado</title>
   <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    
     <link rel="stylesheet" type="text/css" href="../stylesheets/estilos_ra.css">
     <link rel="stylesheet" type="text/css" href="../stylesheets/padraoRelat.CSS">
     <link rel="stylesheet" type="text/css" href="../stylesheets/relatorio_bordero.css" />

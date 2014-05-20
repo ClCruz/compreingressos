@@ -169,6 +169,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
 					$sqlErrors = sqlErrors();
 
 					if (empty($sqlErrors)) {
+						executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+				            array($_SESSION['user'], json_encode(array('descricao' => 'estorno/cancelamento do pedido ' . $_POST['pedido'], 'retorno' => $response)))
+				        );
+						
 						$retorno = 'ok';
 					} else {
 						$retorno = $sqlErrors;
@@ -183,7 +187,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
 		        }
 
 		        if (count(get_object_vars($response->ErrorReportDataCollection)) > 0 or $envia_error_mail) {
-		            include('../comprar/errorMail.php');
+		            // include('../comprar/errorMail.php');
+
+		            executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+			            array($_SESSION['user'], json_encode(array('descricao' => 'erro no estorno/cancelamento do pedido ' . $_POST['pedido'], 'retorno' => $response)))
+			        );
 		        }
 	    	} else {
 	    		$retorno = "Requisição forçada!<br/><br/>O que você está tentando fazer?";

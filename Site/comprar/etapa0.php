@@ -28,6 +28,8 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
 	<script src="../javascripts/common.js" type="text/javascript"></script>
 	<script>
 		$(function() {
+			$('#teatro').selectbox('detach');
+
 			$('#teatro').on('change', function() {
 				$.ajax({
 					url: 'listaEventos.php',
@@ -39,6 +41,10 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
 						}).slideDown('fast');
 					}
 				});
+			});
+
+			$('#eventos').on('change', '#evento', function() {
+				if ($(this).val() != '') document.location = $(this).val();
 			});
 
 			if ($('#teatro').val() != '') {
@@ -63,14 +69,9 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
 
 			<div class="centraliza">
 				<div class="descricao_pag">
-					<div class="img">
-						<img src="">
-					</div>
 					<div class="descricao">
-						<p class="nome">Escolha de Local</p>
-						<p class="descricao">
-							selecione o local desejado
-						</p>
+						<p class="nome">Escolha de Local/Evento</p>
+						<p class="descricao"></p>
 						<div class="sessao">
 							<p class="tempo" id="tempoRestante"></p>
 							<p class="mensagem"></p>
@@ -78,7 +79,10 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
 					</div>
 				</div>
 
-				<span style="display: inline-block; margin-bottom: 20px;"><?php echo comboTeatro('teatro'); ?></span>
+				<span style="display: inline-block; margin-bottom: 20px;">
+					<p>Selecione o local desejado:</p>
+					<?php echo comboTeatro('teatro'); ?>
+				</span>
 
 				<div id="eventos"></div>
 

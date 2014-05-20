@@ -31,11 +31,12 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador']) and isset
 	if (hasRows($result)) {
 	?>
 	<p>Selecione o evento desejado:</p>
-	<ul>
+	<select id="evento">
+	<option />
 	<?php while ($rs = fetchResult($result)) { ?>
-		<li><a href="etapa1.php?apresentacao=<?php echo $rs['ID_APRESENTACAO']; ?>&eventoDS=<?php echo utf8_encode($rs['DS_EVENTO']); ?>" target="_top"><?php echo utf8_encode($rs['DS_EVENTO']); ?></a></li>
+		<option value="etapa1.php?apresentacao=<?php echo $rs['ID_APRESENTACAO']; ?>&eventoDS=<?php echo utf8_encode($rs['DS_EVENTO']); ?>"><?php echo utf8_encode($rs['DS_EVENTO']); ?></option>
 	<?php } ?>
-	</ul>
+	</select>
 	<?php
 	} else {
 	?>

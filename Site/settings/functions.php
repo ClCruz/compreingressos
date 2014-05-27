@@ -981,7 +981,7 @@ function comboCartaoPatrocinado($name, $idPatrocinador, $selected = '-1', $isCom
 }
 
 function comboTabPeca($name, $conn, $selected = '-1', $isCombo = true) {
-    $query = 'SELECT CODPECA, NOMPECA FROM TABPECA';
+    $query = 'SELECT CODPECA, NOMPECA FROM TABPECA ORDER BY NOMPECA';
     $result = executeSQL($conn, $query);
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione uma pe&ccedil;a...</option>';

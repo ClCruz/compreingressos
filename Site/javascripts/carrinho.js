@@ -137,6 +137,7 @@ $(function() {
 							.slideDown();
 						$this.closest('tr').next('.beneficio').find('[name="bin\\[\\]"]')
 							.val($mesmoBinSelecionado.filter(function(){return !$(this).parent().is($this)}).closest('tr.complementar').next('.beneficio').find('[name="bin\\[\\]"]').val());
+						window.validarBin = function(){$this.closest('tr').next('.beneficio').find('.validarBin').trigger('click', [true])};
 					} else {
 						$this.closest('tr').addClass('complementar')
 							.next('.beneficio').slideDown()
@@ -198,12 +199,14 @@ $(function() {
 					atualizarCaixaMeiaEntrada(this.value);
 				}
 			});
+
+			if (window.validarBin != undefined) window.validarBin();
 		}, $('#pedido'));
 
 		$('#pedido').find('[name="trigger"]').val('')
 	}).trigger('change', ['automatico']);
 
-	$('.beneficio').on('click', '.validarBin', function(e) {
+	$('.beneficio').on('click', '.validarBin', function(e, skipChanges) {
 		e.preventDefault();
 
 		var $tr = $(this).closest('tr'),
@@ -217,20 +220,24 @@ $(function() {
 		} else {
 			$bin.removeClass('erro');
 
-			$.ajax({
+			ajax = $.ajax({
 				url: 'validarBin.php?carrinho=1',
 				type: 'post',
 				data: 'reserva=' + reserva + '&bin=' + $bin.val()
-			}).done(function(data){
-				if (data == 'true') {
-					$hidden.removeClass('hidden').addClass('notHidden');
-					$notHidden.removeClass('notHidden').addClass('hidden');
-					$tr.find('.icone_validador').addClass('valido');
-					$bin.prop('readonly', true);
-				} else {
-					$.dialog({text: data});
-				}
-			})
+			});
+
+			if (!skipChanges) {
+				ajax.done(function(data){
+					if (data == 'true') {
+						$hidden.removeClass('hidden').addClass('notHidden');
+						$notHidden.removeClass('notHidden').addClass('hidden');
+						$tr.find('.icone_validador').addClass('valido');
+						$bin.prop('readonly', true);
+					} else {
+						$.dialog({text: data});
+					}
+				});
+			}
 		}
 	})
 	

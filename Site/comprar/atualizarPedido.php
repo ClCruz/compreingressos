@@ -201,7 +201,7 @@ if (isset($_GET['action'])) {
 
 		$queryIsLote = "SELECT COUNT(1) AS BILHETE_LOTE FROM TABTIPBILHETE WHERE STATIPBILHMEIAESTUDANTE = 'N' AND QTDVENDAPORLOTE > 0 AND STATIPBILHETE = 'A' AND CODTIPBILHETE = ?";
 		
-		beginTransaction($mainConnection);
+		//beginTransaction($mainConnection);
 		
 		for ($i = 0; $i < count($_POST['apresentacao']); $i++) {
 			if (!isset($_POST['valorIngresso'][$i])) {
@@ -244,8 +244,21 @@ if (isset($_GET['action'])) {
 			if ($retorno == '') {
 
 				$result = (executeSQL($conn, $updateVB, array($rs['CODTIPBILHETE'], $rs['CODAPRESENTACAO'], $_POST['cadeira'][$i], session_id())) and $result);
+
+				$query = 'SELECT 1 AS USA_BIN
+							FROM CI_MIDDLEWAY..MW_RESERVA R 
+							INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+							INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+							INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO = R.ID_APRESENTACAO AND AB.IN_ATIVO = 1 AND AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
+							INNER JOIN TABPECA P ON P.CODPECA = E.CODPECA AND P.CODTIPBILHETEBIN = AB.CODTIPBILHETE
+							WHERE P.IN_BIN_ITAU = 1
+							AND R.ID_APRESENTACAO_BILHETE = ? AND R.ID_APRESENTACAO = ? AND R.ID_CADEIRA = ? AND R.ID_SESSION = ?';
+				$ticket = executeSQL($conn, $query, array($_POST['valorIngresso'][$i],
+						$_POST['apresentacao'][$i],
+						$_POST['cadeira'][$i],
+						session_id()), true);
 				
-				if ($_POST['trigger'] == 'automatico'){
+				if ($ticket['USA_BIN']){
 					$query = 'UPDATE MW_RESERVA SET
 							ID_APRESENTACAO_BILHETE = ?
 							WHERE ID_APRESENTACAO = ? AND ID_CADEIRA = ? AND ID_SESSION = ?';
@@ -262,7 +275,7 @@ if (isset($_GET['action'])) {
 								WHERE ID_APRESENTACAO = ? AND ID_CADEIRA = ? AND ID_SESSION = ?';
 					$params = array(
 						$_POST['valorIngresso'][$i],
-						$_POST['bin'][$i] ? $_POST['bin'][$i] : NULL,
+						NULL,
 						$_POST['apresentacao'][$i],
 						$_POST['cadeira'][$i],
 						session_id()
@@ -275,7 +288,7 @@ if (isset($_GET['action'])) {
 		
 		$errors = sqlErrors();
 		if (empty($errors)) {
-			commitTransaction($mainConnection);
+			//commitTransaction($mainConnection);
 			if ($_POST['entrega']) {
 				setcookie('entrega', $_POST['entrega']);
 			} else {
@@ -289,7 +302,7 @@ if (isset($_GET['action'])) {
 			//extenderTempo();
 			$retorno = $retorno ? $retorno : 'true';
 		} else {
-			rollbackTransaction($mainConnection);
+			//rollbackTransaction($mainConnection);
 			$retorno = 'Seu pedido contém erro(s)!<br><br>Favor revisá-lo.<br><br>Se o erro persistir, favor entrar em contato com o suporte.';
 		}
 		// var_dump($errors, $query, $params);

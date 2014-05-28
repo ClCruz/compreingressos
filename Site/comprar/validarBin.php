@@ -43,11 +43,30 @@ if ($_GET['carrinho']) {
 
 } else {
 
-	$query = "SELECT distinct cd_binitau from mw_reserva where cd_binitau is not null and id_session = ?";
-	$numBinsUtilizados = numRows($mainConnection, $query, array(session_id()));
+	$query = "SELECT TOP 1 E.ID_BASE
+				FROM MW_EVENTO E
+				INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
+				INNER JOIN MW_RESERVA R ON R.ID_APRESENTACAO = A.ID_APRESENTACAO
+				WHERE R.ID_SESSION = ?";
+	$params = array(session_id());
+	$rs = executeSQL($mainConnection, $query, $params, true);
+
+	$conn = getConnection($rs['ID_BASE']);
+
+	$query = "SELECT DISTINCT CD_BINITAU 
+				FROM CI_MIDDLEWAY..MW_RESERVA R 
+				INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+				INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+				INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO = R.ID_APRESENTACAO AND AB.IN_ATIVO = 1 AND AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
+				INNER JOIN TABPECA P ON P.CODPECA = E.CODPECA AND P.CODTIPBILHETEBIN = AB.CODTIPBILHETE
+				WHERE P.IN_BIN_ITAU = 1
+				AND R.ID_SESSION = ?";
+	$params = array(session_id());
+
+	$numBinsUtilizados = numRows($conn, $query, $params);
 
 	if ($numBinsUtilizados > 1) {
-		echo "Não é possível utilizar dois ou mais códigos promocionais de cartões diferentes.";
+		echo "Não é possível utilizar dois ou mais códigos promocionais de cartões diferentes.<br/><br/>Por favor, retorne e valide seu código promocional novamente.";
 		die();
 	}
 

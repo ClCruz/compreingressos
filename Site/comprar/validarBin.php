@@ -74,6 +74,11 @@ if ($_GET['carrinho']) {
 	$bin = executeSQL($mainConnection, $query, array(session_id()), true);
 	$numeroDoCartao = $bin['cd_binitau'];
 
+	if (substr(str_replace('-', '', $_POST['numCartao']), 0, 6) != $numeroDoCartao) {
+		echo "O cartão utilizado não corresponde ao cartão informado para validação da promoção.";
+		die();
+	}
+
 	$rs = executeSQL($mainConnection, 'SELECT CD_CPF FROM MW_CLIENTE WHERE ID_CLIENTE = ?', array($_SESSION['user']), true);
 	$cpf = $rs[0];
 

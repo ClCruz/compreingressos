@@ -167,6 +167,18 @@ if ($entrega) {
     $frete = 0;
 }
 
+$query = "SELECT 1 FROM MW_APRESENTACAO_BILHETE AB INNER JOIN MW_RESERVA R ON R.ID_APRESENTACAO_BILHETE = AB.ID_APRESENTACAO_BILHETE WHERE R.ID_SESSION = ? AND AB.IN_ATIVO = 0";
+$params = array(session_id());
+$bilhete_inativo = executeSQL($mainConnection, $query, $params, true);
+
+if ($bilhete_inativo[0]) {
+    echo 'Prezado cliente, ocorreu uma inconsistência no Tipo de Ingresso selecionado,
+            será necessário selecioná-lo novamente. Por favor, retorne até a etapa 
+            "2. Tipo de ingresso passo 2 de 5 escolha descontos e vantagens", e selecione-o novamente. 
+            Para navegar para esta etapa, clique duas vezes no botão "Voltar".';
+    die();
+}
+
 //Dados dos itens de pedido
 $query = "SELECT R.ID_RESERVA, R.ID_APRESENTACAO, R.ID_APRESENTACAO_BILHETE, R.ID_CADEIRA, R.DS_CADEIRA, R.DS_SETOR, E.ID_EVENTO, E.DS_EVENTO, ISNULL(LE.DS_LOCAL_EVENTO, B.DS_NOME_TEATRO) DS_NOME_TEATRO, CONVERT(VARCHAR(10), A.DT_APRESENTACAO, 103) DT_APRESENTACAO, A.HR_APRESENTACAO,
             AB.VL_LIQUIDO_INGRESSO, AB.DS_TIPO_BILHETE
@@ -337,6 +349,15 @@ if ($errors and empty($sqlErrors)) {
 
 $campanha = get_campanha_etapa('pagamento_ok');
 $falha = get_campanha_etapa('etapa5');
+
+$query = "SELECT COUNT(1) FROM MW_RESERVA WHERE ID_SESSION = ?";
+$params = array(session_id());
+$contador_reserva = executeSQL($mainConnection, $query, $params, true);
+
+if ($contador_reserva[0] != count($params2)) {
+    echo 'Ocorreu uma falha durante o processamento, por favor selecione novamente os lugares desejados.';
+    die();
+}
 
 if ($PaymentDataCollection['Amount'] > 0 and ($errors and empty($sqlErrors))) {
     $parametros['PaymentDataCollection'] = array(new SoapVar($PaymentDataCollection, SOAP_ENC_ARRAY, 'CreditCardDataRequest', 'https://www.pagador.com.br/webservice/pagador', 'PaymentDataRequest'));

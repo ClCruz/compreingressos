@@ -13,7 +13,7 @@ if (isset($_GET['action'])) {
 	
 } else {
 	
-	$result = executeSQL($mainConnection, 'SELECT ID_USUARIO, CD_LOGIN, DS_NOME, DS_EMAIL, IN_ATIVO, IN_ADMIN, IN_TELEMARKETING FROM MW_USUARIO ORDER BY DS_NOME ASC');
+	$result = executeSQL($mainConnection, 'SELECT ID_USUARIO, CD_LOGIN, DS_NOME, DS_EMAIL, IN_ATIVO, IN_ADMIN, IN_TELEMARKETING, IN_PDV FROM MW_USUARIO ORDER BY DS_NOME ASC');
 	
 ?>
 
@@ -48,6 +48,7 @@ $(function() {
 						tr.find('td:not(.button):eq(3)').html($('#admin').is(':checked') ? 'sim' : 'n&atilde;o');
 						tr.find('td:not(.button):eq(4)').html($('#ativo').is(':checked') ? 'sim' : 'n&atilde;o');
 						tr.find('td:not(.button):eq(5)').html($('#telemarketing').is(':checked') ? 'sim' : 'n&atilde;o');
+                                                tr.find('td:not(.button):eq(6)').html($('#pdv').is(':checked') ? 'sim' : 'n&atilde;o');
 						
 						$this.text('Editar').attr('href', pagina + '?action=edit&' + id);
 						tr.find('td.button a:eq(1)').attr('href', pagina + '?action=reset&' + id);
@@ -108,6 +109,7 @@ $(function() {
 			tr.find('td:not(.button):eq(3)').html('<input name="admin" type="checkbox" class="inputStyle" id="admin" ' + (values[3] == 'sim' ? 'checked' : ''  )+ ' />');
 			tr.find('td:not(.button):eq(4)').html('<input name="ativo" type="checkbox" class="inputStyle" id="ativo" ' + (values[4] == 'sim' ? 'checked' : ''  )+ ' />');
 			tr.find('td:not(.button):eq(5)').html('<input name="telemarketing" type="checkbox" class="inputStyle" id="telemarketing" ' + (values[5] == 'sim' ? 'checked' : ''  )+ ' />');
+                        tr.find('td:not(.button):eq(6)').html('<input name="pdv" type="checkbox" class="inputStyle" id="pdv" ' + (values[6] == 'sim' ? 'checked' : ''  )+ ' />');
 			
 			$this.text('Salvar').attr('href', pagina + '?action=update&' + id);
 			
@@ -168,6 +170,7 @@ $(function() {
                                                     '<td><input name="admin" type="checkbox" class="inputStyle" id="admin" /></td>' +
                                                     '<td><input name="ativo" type="checkbox" class="inputStyle" id="ativo" /></td>' +
                                                     '<td><input name="telemarketing" type="checkbox" class="inputStyle" id="telemarketing" /></td>' +
+                                                    '<td><input name="pdv" type="checkbox" class="inputStyle" id="pdv" /></td>' +
                                                     '<td class="button"><a href="' + pagina + '?action=add">Salvar</a></td>' +
                                                     '<td class="button"><a href="#reset">Restaurar Senha</a></td>' +
                                                     '<td class="button"><a href="#delete">Apagar</a></td>' +
@@ -210,8 +213,9 @@ $(function() {
 				<th width="10%">Login</th>
 				<th width="5%">Admin</th>
 				<th width="5%">Ativo</th>
-                <th width="5%">Telemarketing</th>
-				<th width="30%" colspan="3">A&ccedil;&otilde;es</th>
+                                <th width="5%">Telemarketing</th>
+                                <th width="10%">Usuário PDV</th>
+				<th width="20%" colspan="3">A&ccedil;&otilde;es</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -225,7 +229,8 @@ $(function() {
 				<td><?php echo utf8_encode($rs['CD_LOGIN']); ?></td>
 				<td><?php echo $rs['IN_ADMIN'] ? 'sim' : 'n&atilde;o'; ?></td>
 				<td><?php echo $rs['IN_ATIVO'] ? 'sim' : 'n&atilde;o'; ?></td>
-                <td><?php echo $rs['IN_TELEMARKETING'] ? 'sim' : 'n&atilde;o'; ?></td>
+                                <td><?php echo $rs['IN_TELEMARKETING'] ? 'sim' : 'n&atilde;o'; ?></td>
+                                <td><?php echo $rs['IN_PDV'] ? 'sim' : 'n&atilde;o'; ?></td>
 				<td class="button"><a href="<?php echo $pagina; ?>?action=edit&codusuario=<?php echo $id; ?>">Editar</a></td>
 				<td class="button"><a href="<?php echo $pagina; ?>?action=reset&codusuario=<?php echo $id; ?>">Restaurar Senha</a></td>
 				<td class="button"><a href="<?php echo $pagina; ?>?action=delete&codusuario=<?php echo $id; ?>">Apagar</a></td>

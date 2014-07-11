@@ -9,7 +9,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 
 
 		// TEATRO MUNICIPAL
-		if ($_POST['cboTeatro'] == 139 || $is_teste) {
+		if ($_POST['cboTeatro'] == 139) {
 			$conn = getConnection($_POST['cboTeatro']);
 
 			$query = "SELECT DTHRENTRADA, [Data do Evento], [Horario do Evento] FROM TABCODBARRATEMP WHERE CODIGOBARRAS = ?";
@@ -183,7 +183,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 										and			  iac.CodPeca = tbAp.CodPeca
 		            where               tbPc.CodPeca = ?
 					            AND CONVERT(DATETIME, CONVERT(VARCHAR(8), TBAP.DATAPRESENTACAO, 112) + ' ' + TBAP.HORSESSAO) >= CONVERT(DATETIME, CONVERT(VARCHAR(8), DATEADD(DAY, -1, GETDATE()), 112) + ' 22:00')
-					            --AND TBAP.DATAPRESENTACAO <= GETDATE()
+					            AND TBAP.DATAPRESENTACAO <= GETDATE()
 		            group by tbAp.DatApresentacao
 		            order by tbAp.DatApresentacao";
 		$params = array($_GET['cboTeatro'], $_SESSION['admin'], $_GET['cboPeca']);

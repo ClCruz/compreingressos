@@ -181,12 +181,9 @@ $(function() {
 				$lastLocal = '';
 				$lastUsuario = '';
 				$lastEvento = '';
-				$somaTotal = 0;
-				$somaQuant = 0;
-				$somaServico = 0;
-				$somaTotalUsuario = 0;
-				$somaQuantUsuario = 0;
-				$somaServicoUsuario = 0;
+				$somaTotal = $somaTotalUsuario = 0;
+				$somaQuant = $somaQuantUsuario = 0;
+				$somaServico = $somaServicoUsuario = 0;
 				while($rs = fetchResult($result)) {
 					// quebra por usuario
 					if ($lastUsuario != $rs['DS_NOME'] and $lastUsuario != '') {
@@ -242,7 +239,7 @@ $(function() {
 		?>
 		<tr class="total">
 			<td colspan="4" class="number">Sub-Total (usuário)</td>
-			<td class="number"><?php echo $somaQuant; ?></td>
+			<td class="number"><?php echo $somaQuantUsuario; ?></td>
 			<td class="number"><?php echo number_format($somaTotalUsuario, 2, ',', '.'); ?></td>
 			<td class="number"><?php echo number_format($somaServicoUsuario, 2, ',', '.'); ?></td>
 		</tr>

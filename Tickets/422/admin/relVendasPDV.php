@@ -39,6 +39,7 @@ if(isset($_GET["dt_inicial"]) && isset($_GET["dt_final"])){
 
 				WHERE DT_HORA_CANCELAMENTO IS NULL
 				AND DT_PEDIDO_VENDA BETWEEN CONVERT(DATETIME, ? + ' 00:00:00', 103) AND CONVERT(DATETIME, ? + ' 23:59:59', 103)
+				AND PV.IN_SITUACAO = 'F'
 				GROUP BY 
 					UI.DS_NOME,
 					LE.DS_LOCAL_EVENTO,
@@ -64,7 +65,8 @@ if(isset($_GET["dt_inicial"]) && isset($_GET["dt_final"])){
 					ON MP.ID_MEIO_PAGAMENTO = PV.ID_MEIO_PAGAMENTO AND MP.IN_TRANSACAO_PDV = 1
 
 				WHERE PV.DT_HORA_CANCELAMENTO IS NULL
-				AND PV.DT_PEDIDO_VENDA BETWEEN CONVERT(DATETIME, ? + ' 00:00:00', 103) AND CONVERT(DATETIME, ? + ' 23:59:59', 103)";
+				AND PV.DT_PEDIDO_VENDA BETWEEN CONVERT(DATETIME, ? + ' 00:00:00', 103) AND CONVERT(DATETIME, ? + ' 23:59:59', 103)
+				AND PV.IN_SITUACAO = 'F'";
 	$rs = executeSQL($mainConnection, $query, $params, true);
 	$total['TOTAL_PEDIDO'] = $rs['TOTAL_VENDA'];
 	$total['QUANTIDADE'] = $rs['QT_INGRESSOS'];

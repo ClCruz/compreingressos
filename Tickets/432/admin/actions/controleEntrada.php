@@ -9,7 +9,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 
 
 		// TEATRO MUNICIPAL
-		if ($_POST['cboTeatro'] == 139) {
+		if ($_POST['cboTeatro'] == 139 || $is_teste) {
 			$conn = getConnection($_POST['cboTeatro']);
 
 			$query = "SELECT DTHRENTRADA, [Data do Evento], [Horario do Evento] FROM TABCODBARRATEMP WHERE CODIGOBARRAS = ?";
@@ -39,6 +39,42 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 
 				if ($rs['DTHRENTRADA'] == null) {
 					executeSQL($conn, 'UPDATE TABCODBARRATEMP SET DTHRENTRADA = GETDATE() WHERE CODIGOBARRAS = ?', $params);
+
+					$retorno = array('class' => 'sucesso', 'mensagem' => 'Acesso autorizado.');
+				} else {
+					$retorno = array('class' => 'falha', 'mensagem' => 'Este ingresso já foi processado em ' .$rs['DTHRENTRADA']->format("d/m/Y H:i:s"). '.<br />Acesso não permitido.');
+				}
+
+				echo json_encode($retorno);
+				die();
+			}
+
+			$query = "SELECT DTHRENTRADA, DATA_EVENTO, HORA_EVENTO FROM TABCODBARRATEMPINGFAC WHERE CODIGO_BARRAS = ?";
+			$result = executeSQL($conn, $query, $params);
+
+			if (hasRows($result)) {
+				$rs = fetchResult($result);
+
+				// data confere?
+				if ($_POST['cboApresentacao'] != $rs['DATA_EVENTO']->format("Ymd")) {
+					echo json_encode(array(
+						'class' => 'falha',
+						'mensagem' => 'Data do ingresso inválida para a apresentação.<br />Ingresso válido para: ' . $rs['DATA_EVENTO']->format("d/m/Y") .' '. $rs['HORA_EVENTO']->format("H:i")
+					));
+					die();
+				}
+
+				// hora confere?
+				if ($_POST['cboHorario'] != $rs['HORA_EVENTO']->format("H:i")) {
+					echo json_encode(array(
+						'class' => 'falha',
+						'mensagem' => 'Este ingresso pertence a outro horário.<br />Ingresso válido para: ' . $rs['DATA_EVENTO']->format("d/m/Y") .' '. $rs['HORA_EVENTO']->format("H:i")
+					));
+					die();
+				}
+
+				if ($rs['DTHRENTRADA'] == null) {
+					executeSQL($conn, 'UPDATE TABCODBARRATEMPINGFAC SET DTHRENTRADA = GETDATE() WHERE CODIGO_BARRAS = ?', $params);
 
 					$retorno = array('class' => 'sucesso', 'mensagem' => 'Acesso autorizado.');
 				} else {
@@ -182,8 +218,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 										and			  iac.id_usuario = ?
 										and			  iac.CodPeca = tbAp.CodPeca
 		            where               tbPc.CodPeca = ?
-					            AND CONVERT(DATETIME, CONVERT(VARCHAR(8), TBAP.DATAPRESENTACAO, 112) + ' ' + TBAP.HORSESSAO) >= CONVERT(DATETIME, CONVERT(VARCHAR(8), DATEADD(DAY, -1, GETDATE()), 112) + ' 22:00')
-					            AND TBAP.DATAPRESENTACAO <= GETDATE()
+		            -- comentar para homologacao
+					AND CONVERT(DATETIME, CONVERT(VARCHAR(8), TBAP.DATAPRESENTACAO, 112) + ' ' + TBAP.HORSESSAO) >= CONVERT(DATETIME, CONVERT(VARCHAR(8), DATEADD(DAY, -1, GETDATE()), 112) + ' 22:00')
+					AND TBAP.DATAPRESENTACAO <= GETDATE()
+					----------------------------
 		            group by tbAp.DatApresentacao
 		            order by tbAp.DatApresentacao";
 		$params = array($_GET['cboTeatro'], $_SESSION['admin'], $_GET['cboPeca']);
@@ -211,8 +249,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 										and			  iac.id_usuario = ?
 										and			  iac.CodPeca = tbAp.CodPeca
 		            where       tbPc.CodPeca = ?
-		            AND CONVERT(DATETIME, CONVERT(VARCHAR(8), TBAP.DATAPRESENTACAO, 112) + ' ' + TBAP.HORSESSAO)
-		            >= CONVERT(DATETIME, CONVERT(VARCHAR(8), DATEADD(DAY, -1, GETDATE()), 112) + ' 22:00')
+		            AND CONVERT(DATETIME, CONVERT(VARCHAR(8), TBAP.DATAPRESENTACAO, 112) + ' ' + TBAP.HORSESSAO) >= CONVERT(DATETIME, CONVERT(VARCHAR(8), DATEADD(DAY, -1, GETDATE()), 112) + ' 22:00')
 		            AND TBAP.DATAPRESENTACAO = CONVERT(DATETIME, ?, 112)
 		            group by tbAp.HorSessao
 		            order by tbAp.HorSessao";

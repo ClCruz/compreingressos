@@ -24,9 +24,9 @@ if (isset($_GET['evento']) and is_numeric($_GET['evento'])) {
 	
 	if (!empty($rs)) {
 		// Verifica se o evento está ativo e se pode vender pela web
-		$query = 'SELECT (ISNULL(QT_HR_ANTECED, 24) * -1) AS QT_HR_ANTECED
-					 FROM ' . $nomeBase . '..TABPECA
-					 WHERE CODPECA = ? AND STAPECA = \'A\' AND CONVERT(CHAR(8), DATFINPECA,112) >= CONVERT(CHAR(8), GETDATE(),112)';
+		$query = "SELECT (ISNULL(QT_HR_ANTECED, 24) * -1) AS QT_HR_ANTECED
+					 FROM ".$nomeBase."..TABPECA
+					 WHERE CODPECA = ? AND STAPECA = 'A' AND CONVERT(CHAR(8), DATFINPECA,112) >= CONVERT(CHAR(8), GETDATE(),112)";
 		
 		$params = array($rs['CODPECA']);
 		$rs = executeSQL($mainConnection, $query, $params, true);
@@ -45,6 +45,7 @@ if (isset($_GET['evento']) and is_numeric($_GET['evento'])) {
 														AND L.CODAPRESENTACAO = A2.CODAPRESENTACAO)) AS DISPONIVEIS
 						FROM MW_EVENTO E
 						INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO AND A.IN_ATIVO = '1'
+						INNER JOIN ".$nomeBase."..TABPECA TP ON TP.CODPECA = E.CODPECA
 						WHERE E.ID_EVENTO = ? AND E.IN_ATIVO = '1'
 						AND CONVERT(CHAR(8), A.DT_APRESENTACAO,112) >= CONVERT(CHAR(8), GETDATE(),112)
 						AND A.ID_APRESENTACAO IN
@@ -61,6 +62,11 @@ if (isset($_GET['evento']) and is_numeric($_GET['evento'])) {
 								AND A2.ID_EVENTO = A1.ID_EVENTO
 								AND A2.DT_APRESENTACAO = A1.DT_APRESENTACAO
 							)
+						)
+						AND  (
+							(TP.QT_DIAS_APRESENTACAO <> 0 AND A.DT_APRESENTACAO <= DATEADD(DAY, TP.QT_DIAS_APRESENTACAO, GETDATE()))
+							OR
+							(TP.QT_DIAS_APRESENTACAO = 0)
 						)
 					)
 					SELECT DS_EVENTO, MIN(ID_APRESENTACAO) AS ID_APRESENTACAO, DT_APRESENTACAO, HR_APRESENTACAO, DT_APRESENTACAO_ORDER, TELEFONE, DISPONIVEIS

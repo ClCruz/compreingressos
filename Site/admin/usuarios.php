@@ -17,6 +17,10 @@ if (isset($_GET['action'])) {
 	
 ?>
 
+<style type="text/css">
+    .center{text-align: center;}
+    #app{width: 95%;}
+</style>
 <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
 <script>
 $(function() {
@@ -209,13 +213,13 @@ $(function() {
 		<thead>
 			<tr class="ui-widget-header ">
 				<th width="20%">Nome</th>
-				<th width="25%">E-mail</th>
+				<th width="20%">E-mail</th>
 				<th width="10%">Login</th>
-				<th width="5%">Admin</th>
-				<th width="5%">Ativo</th>
-                                <th width="5%">Telemarketing</th>
-                                <th width="10%">Usuário PDV</th>
-				<th width="20%" colspan="3">A&ccedil;&otilde;es</th>
+				<th width="5%" class="center">Admin</th>
+				<th width="5%" class="center">Ativo</th>
+                                <th width="5%" class="center">Telemarketing</th>
+                                <th width="10%" class="center">Usuário PDV</th>
+				<th width="25%" class="center" colspan="3">A&ccedil;&otilde;es</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -224,13 +228,13 @@ $(function() {
 					$id = $rs['ID_USUARIO'];
 			?>
 			<tr>
-				<td><?php echo utf8_encode($rs['DS_NOME']); ?></td>
-				<td><?php echo utf8_encode($rs['DS_EMAIL']); ?></td>
-				<td><?php echo utf8_encode($rs['CD_LOGIN']); ?></td>
-				<td><?php echo $rs['IN_ADMIN'] ? 'sim' : 'n&atilde;o'; ?></td>
-				<td><?php echo $rs['IN_ATIVO'] ? 'sim' : 'n&atilde;o'; ?></td>
-                                <td><?php echo $rs['IN_TELEMARKETING'] ? 'sim' : 'n&atilde;o'; ?></td>
-                                <td><?php echo $rs['IN_PDV'] ? 'sim' : 'n&atilde;o'; ?></td>
+				<td><?php echo $rs['DS_NOME']; ?></td>
+				<td><?php echo $rs['DS_EMAIL']; ?></td>
+				<td><?php echo $rs['CD_LOGIN']; ?></td>
+				<td class="center"><?php echo $rs['IN_ADMIN'] ? 'sim' : 'n&atilde;o'; ?></td>
+				<td class="center"><?php echo $rs['IN_ATIVO'] ? 'sim' : 'n&atilde;o'; ?></td>
+                                <td class="center"><?php echo $rs['IN_TELEMARKETING'] ? 'sim' : 'n&atilde;o'; ?></td>
+                                <td class="center"><?php echo $rs['IN_PDV'] ? 'sim' : 'n&atilde;o'; ?></td>
 				<td class="button"><a href="<?php echo $pagina; ?>?action=edit&codusuario=<?php echo $id; ?>">Editar</a></td>
 				<td class="button"><a href="<?php echo $pagina; ?>?action=reset&codusuario=<?php echo $id; ?>">Restaurar Senha</a></td>
 				<td class="button"><a href="<?php echo $pagina; ?>?action=delete&codusuario=<?php echo $id; ?>">Apagar</a></td>

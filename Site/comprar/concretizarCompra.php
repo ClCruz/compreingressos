@@ -4,7 +4,13 @@ $braspag_id = $result->AuthorizeTransactionResult->OrderData->BraspagOrderId;
 $braspag_transaction_id = $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId;
 $transaction_id = $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId;
 $transaction_auth = $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AuthorizationCode;
-$meio_pagamento = $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->PaymentMethod;
+
+if(isset($_SESSION['usuario_pdv']) and $_SESSION['usuario_pdv'] == 1){
+    $meio_pagamento = $_POST['codCartao'];
+}else{
+    $meio_pagamento = $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->PaymentMethod;
+}
+
 
 $query = 'SELECT ID_MEIO_PAGAMENTO
 			 FROM MW_MEIO_PAGAMENTO MP

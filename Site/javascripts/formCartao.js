@@ -11,10 +11,12 @@ $(function(){
 	    var $this = $(this),
 	    	valido = true;
 
-	    if ($('[name=codCartao]:checked').val() === undefined) {
-	    	$.dialog({text: 'Selecione o cartão desejado.'});
-	    	return false;
-	    }
+            if ($('input[name="usuario_pdv"]').val() == 0){
+                if ($('[name=codCartao]:checked').val() === undefined) {
+                    $.dialog({text: 'Selecione o cartão desejado.'});
+                    return false;
+                }
+            }
 
 	    $this.find(':input:not(#recaptcha_response_field)').each(function(i,e) {
     		var e = $(e);
@@ -24,10 +26,12 @@ $(function(){
     		} else e.removeClass('erro');
 	    });
 
-	    if (titular.val().length < 3) {
-	    	titular.addClass('erro');
-    		valido = false;
-	    } else titular.removeClass('erro');
+            if ($('input[name="usuario_pdv"]').val() == 0){
+                if (titular.val().length < 3) {
+                    titular.addClass('erro');
+                    valido = false;
+                } else titular.removeClass('erro');
+            }
 
     	if (valido) {
     		// parar contagem regressiva

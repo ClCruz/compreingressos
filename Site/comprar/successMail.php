@@ -3,7 +3,7 @@ require_once('../settings/functions.php');
 $subject = 'Pedido ' . $parametros['OrderData']['OrderId'] . ' - Pago';
 
 $namefrom = utf8_decode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS');
-$from = 'lembrete@compreingressos.com';
+//$from = 'lembrete@compreingressos.com';
 $from = 'contato@cc.com.br';
 
 $query = 'SELECT ds_meio_pagamento FROM mw_meio_pagamento WHERE cd_meio_pagamento = ?';
@@ -299,4 +299,4 @@ $bcc = ($is_teste == '1')
         ? array('Pedidos=>jefferson.ferreira@cc.com.br')
         : array('Pedidos=>pedidos@compreingressos.com');
 
-$successMail = $print_email ? $message : @authSendEmail($from, $namefrom, $parametros['CustomerData']['CustomerEmail'], $parametros['CustomerData']['CustomerName'], $subject, utf8_decode($message), array(), $bcc, 'iso-8859-1', $barcodes);
+$successMail = $print_email ? $message : authSendEmail($from, $namefrom, $parametros['CustomerData']['CustomerEmail'], $parametros['CustomerData']['CustomerName'], $subject, utf8_decode($message), array(), $bcc, 'iso-8859-1', $barcodes);

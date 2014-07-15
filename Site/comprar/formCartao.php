@@ -4,15 +4,22 @@ require_once('../settings/settings.php');
 
 session_start();
 
-if ($_POST) {
-    
+if ($_POST) {    
     require('validarBin.php');
     require('processarDadosCompra.php');
-
 } else {
-
 	$mainConnection = mainConnection();
-	$query = "SELECT cd_meio_pagamento, ds_meio_pagamento, nm_cartao_exibicao_site from mw_meio_pagamento where in_ativo = 1 order by ds_meio_pagamento";
+
+        if(isset($_SESSION['usuario_pdv']) and $_SESSION['usuario_pdv'] == 1){
+            $queryAux = " AND IN_TRANSACAO_PDV = 1 ";
+        } else{
+            $queryAux = " AND IN_TRANSACAO_PDV <> 1 ";
+        }
+        
+	$query = "SELECT cd_meio_pagamento, ds_meio_pagamento, nm_cartao_exibicao_site 
+                  from mw_meio_pagamento
+                  where in_ativo = 1 ". $queryAux ."
+                  order by ds_meio_pagamento";
 	$result = executeSQL($mainConnection, $query);
 
 	$query = "SELECT top 1 cd_binitau from mw_reserva where cd_binitau is not null and id_session = ?";
@@ -61,57 +68,69 @@ if ($_POST) {
 		</div>
 	</div>
 	<div class="container_dados" style="display:block;">
-		<p class="frase">5.2 Dados do cartão</p>
-		<div class="linha">
-			<div class="input">
-				<p class="titulo">nome do titular</p>
-				<input type="text" name="nomeCartao">
-				<div class="erro_help">
-					<p class="help">como impresso no cartão</p>
-				</div>
-			</div>
-			<div class="input parcelas">
-				<p class="titulo">forma de pagamento</p>
-				<select name="parcelas">
-					<?php
-						for ($i = 1; $i <= $parcelas; $i++) {
-							$valor = number_format(str_replace(',', '.', $_COOKIE['total_exibicao']) / $i, 2, ',', '');
-							$desc = $i == 1 ? 'à vista' : $i . 'x';
+            <?php
+            if($_SESSION['usuario_pdv'] == 0){
+            ?>
+            <p class="frase">5.2 Dados do cartão</p>
+            <div class="linha">
+                <div class="input">
+                    <p class="titulo">nome do titular</p>
+                    <input type="text" name="nomeCartao">
+                    <div class="erro_help">
+                        <p class="help">como impresso no cartão</p>
+                    </div>
+                </div>
+            <?php
+            }
+            ?>
+                <div class="input parcelas">
+                    <p class="titulo">forma de pagamento</p>
+                    <select name="parcelas">
+                        <?php
+                        for ($i = 1; $i <= $parcelas; $i++) {
+                            $valor = number_format(str_replace(',', '.', $_COOKIE['total_exibicao']) / $i, 2, ',', '');
+                            $desc = $i == 1 ? 'à vista' : $i . 'x';
 
-							echo "<option value='$i'>$desc - R$ $valor</option>";
-						}
-					?>
-				</select>
-			</div>
-		</div>
-		<div class="linha">
-			<div class="input">
-				<p class="titulo">número do cartão</p>
-				<input type="text" name="numCartao" value="<?php echo $bin; ?>">
-				<div class="erro_help">
-					<p class="help">XXXX-XXXX-XXXX-XXXX</p>
-				</div>
-			</div>
-			<div class="input codigo">
-				<p class="titulo">código de segurança</p>
-				<input type="text" name="codSeguranca">
-				<div class="erro_help">
-					<p class="help"><a href="#" class="meu_codigo_cartao">onde está meu código?</a></p>
-				</div>
-			</div>
-			<div class="input data">
-				<p class="titulo">validade</p>
-				<div class="mes">
-					<?php echo comboMeses('validadeMes', '', true, true); ?>
-				</div>
-				<div class="ano">
-					<?php echo comboAnos('validadeAno', '', date('Y'), date('Y') + 15, true); ?>
-				</div>
-				<div class="erro_help">
-					<p class="help">insira a data de validade</p>
-				</div>
-			</div>
-		</div>
+                            echo "<option value='$i'>$desc - R$ $valor</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+            <?php
+            if($_SESSION['usuario_pdv'] == 0){
+            ?>
+            </div>
+            <div class="linha">
+                <div class="input">
+                    <p class="titulo">número do cartão</p>
+                    <input type="text" name="numCartao" value="<?php echo $bin; ?>">
+                    <div class="erro_help">
+                        <p class="help">XXXX-XXXX-XXXX-XXXX</p>
+                    </div>
+                </div>
+                <div class="input codigo">
+                    <p class="titulo">código de segurança</p>
+                    <input type="text" name="codSeguranca">
+                    <div class="erro_help">
+                        <p class="help"><a href="#" class="meu_codigo_cartao">onde está meu código?</a></p>
+                    </div>
+                </div>
+                <div class="input data">
+                    <p class="titulo">validade</p>
+                    <div class="mes">
+                        <?php echo comboMeses('validadeMes', '', true, true); ?>
+                    </div>
+                    <div class="ano">
+                        <?php echo comboAnos('validadeAno', '', date('Y'), date('Y') + 15, true); ?>
+                    </div>
+                    <div class="erro_help">
+                        <p class="help">insira a data de validade</p>
+                    </div>
+                </div>
+            </div>
+            <?php
+            }
+            ?>
 	</div>
 <?php
 }

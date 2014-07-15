@@ -27,11 +27,27 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
     $pagina = basename(__FILE__);
 
     if (isset($_GET['action'])) {
-
         require('actions/' . $pagina);
     } else {
-
-        $result = executeSQL($mainConnection, 'SELECT E.DS_EVENTO, CONVERT(VARCHAR(10), T.DT_INICIO_VIGENCIA, 103) DT_INICIO_VIGENCIA, T.IN_TAXA_POR_PEDIDO, T.IN_TAXA_CONVENIENCIA, T.VL_TAXA_CONVENIENCIA, T.VL_TAXA_PROMOCIONAL, T.VL_TAXA_UM_INGRESSO, CASE WHEN CONVERT(CHAR(8), T.DT_INICIO_VIGENCIA, 112) >= CONVERT(CHAR(8), GETDATE(), 112) THEN 1 ELSE 0 END EDICAO FROM MW_TAXA_CONVENIENCIA T INNER JOIN MW_EVENTO E ON E.ID_EVENTO = T.ID_EVENTO WHERE E.ID_BASE = ?', array($_GET['teatro']));
+        $result = executeSQL($mainConnection,
+               'SELECT E.DS_EVENTO,
+                CONVERT(VARCHAR(10),
+                T.DT_INICIO_VIGENCIA, 103) DT_INICIO_VIGENCIA,
+                T.IN_TAXA_POR_PEDIDO,
+                T.IN_TAXA_CONVENIENCIA,
+                T.VL_TAXA_CONVENIENCIA,
+                T.VL_TAXA_PROMOCIONAL,
+                T.VL_TAXA_UM_INGRESSO,
+                CASE
+                    WHEN CONVERT(CHAR(8), T.DT_INICIO_VIGENCIA, 112) >= CONVERT(CHAR(8), GETDATE(), 112)
+                        THEN 1
+                        ELSE 0
+                END EDICAO,
+                T.IN_COBRAR_PDV
+                FROM MW_TAXA_CONVENIENCIA T
+                INNER JOIN MW_EVENTO E ON E.ID_EVENTO = T.ID_EVENTO
+                WHERE E.ID_BASE = ?',
+                array($_GET['teatro']));
 
         $resultTeatros = executeSQL($mainConnection, 'SELECT ID_BASE, DS_NOME_TEATRO FROM MW_BASE WHERE IN_ATIVO = \'1\'');
 ?>
@@ -67,6 +83,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                                     tr.find('td:not(.button):eq(4)').html($('#valor2').val());
                                     tr.find('td:not(.button):eq(5)').html($('#valor3').val());
                                     tr.find('td:not(.button):eq(6)').html($('#cobrarPorPedido').is(':checked') ? 'sim' : 'n&atilde;o');
+                                    tr.find('td:not(.button):eq(7)').html($('#cobrarNoPDV').is(':checked') ? 'sim' : 'n&atilde;o');
 
                                     $this.text('Editar').attr('href', pagina + '?action=edit&' + id);
                                     tr.find('td.button a:last').attr('href', pagina + '?action=delete&' + id);
@@ -96,6 +113,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                         tr.find('td:not(.button):eq(4)').html('<input name="valor2" type="text" class="inputStyle" id="valor2" maxlength="6" value="' + values[4] + '" >');
                         tr.find('td:not(.button):eq(5)').html('<input name="valor3" type="text" class="inputStyle" id="valor3" maxlength="6" value="' + values[5] + '" >');
                         tr.find('td:not(.button):eq(6)').html('<input name="cobrarPorPedido" type="checkbox" class="inputStyle" id="cobrarPorPedido" ' + (values[6] == 'sim' ? 'checked' : ''  )+ ' />');
+                        tr.find('td:not(.button):eq(7)').html('<input name="cobrarNoPDV" type="checkbox" class="inputStyle" id="cobrarNoPDV" ' + (values[7] == 'sim' ? 'checked' : ''  )+ ' />');
 
                         $this.text('Salvar').attr('href', pagina + '?action=update&' + id);
 
@@ -138,6 +156,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                         '<td><input name="valor2" type="text" class="number inputStyle" id="valor2" maxlength="6" ></td>' +
                         '<td><input name="valor3" type="text" class="number inputStyle" id="valor3" maxlength="6" ></td>' +
                         '<td><input name="cobrarPorPedido" type="checkbox" class="inputStyle" id="cobrarPorPedido" /></td>' +
+                        '<td><input name="cobrarNoPDV" type="checkbox" class="inputStyle" id="cobrarNoPDV" /></td>' +
                         '<td class="button"><a href="' + pagina + '?action=add">Salvar</a></td>' +
                         '<td class="button"><a href="#delete">Apagar</a></td>' +
                         '</tr>';
@@ -248,6 +267,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                         <th>Promocional</th>
                         <th>Um Ingresso</th>
                         <th>Cobrar por Pedido</th>
+                        <th>Cobrar no PDV</th>
                         <th colspan="2">A&ccedil;&otilde;es</th>
                     </tr>
                 </thead>
@@ -261,6 +281,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
             $valor2 = $rs['VL_TAXA_PROMOCIONAL'];
             $valor3 = $rs['VL_TAXA_UM_INGRESSO'];
             $cobrarPorPedido = $rs['IN_TAXA_POR_PEDIDO'];
+            $cobrarNoPDV = $rs['IN_COBRAR_PDV']
 ?>
             <tr>
                 <td><?php echo $idEvento; ?></td>
@@ -270,6 +291,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                 <td><?php echo formatNumber($valor2); ?></td>
                 <td><?php echo formatNumber($valor3); ?></td>
                 <td><?php echo $cobrarPorPedido == 'S' ? 'sim' : 'n&atilde;o'; ?></td>
+                <td><?php echo $cobrarNoPDV == 'S' ? 'sim' : 'n&atilde;o'; ?></td>
 
 <?php if ($rs['EDICAO']) { ?>
                     <td class="button"><a href="<?php echo $pagina; ?>?action=edit&idEvento=<?php echo urlencode($idEvento); ?>&data=<?php echo $data; ?>">Editar</a></td>

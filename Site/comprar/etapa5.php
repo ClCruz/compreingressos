@@ -84,7 +84,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 			</div>
 
 			<form id="dadosPagamento" action="formCartao.php" method="post">
-
+                            <input type="hidden" name="usuario_pdv" value="<?php echo (isset($_SESSION["usuario_pdv"])) ? $_SESSION["usuario_pdv"] : 0; ?>" />
 				<div class="centraliza">
 					<div class="descricao_pag">
 						<div class="img">

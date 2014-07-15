@@ -274,7 +274,7 @@ $rsServicos = executeSQL($mainConnection, $queryServicos, array(session_id()), t
 $itensPedido = 0;
 while ($itens = fetchResult($result)) {
     $itensPedido++;
-
+    
     if ($itensPedido == 1) {
         if ($rsServicos['IN_TAXA_POR_PEDIDO'] == 'S') {
             $valorConveniencia = $valorConvenienciaAUX = obterValorServico($itens['ID_APRESENTACAO_BILHETE'], true);
@@ -423,16 +423,22 @@ if ($PaymentDataCollection['Amount'] > 0 and ($errors and empty($sqlErrors))) {
     if ($descricao_erro == '') {
         setcookie('id_braspag', $result->AuthorizeTransactionResult->OrderData->BraspagOrderId);
 
-        if ($result->AuthorizeTransactionResult->CorrelationId == $ri
-            &&
-            $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->Status == '0') {
-
+        if(isset($_SESSION['usuario_pdv']) and $_SESSION['usuario_pdv'] == 1){
             require('concretizarCompra.php');
-
             echo "redirect.php?redirect=".urlencode("pagamento_ok.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : ''));
             die();
-        } else {
-            $descricao_erro = "Transação não autorizada.";
+        }else{
+            if ($result->AuthorizeTransactionResult->CorrelationId == $ri
+                &&
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->Status == '0') {
+
+                require('concretizarCompra.php');
+
+                echo "redirect.php?redirect=".urlencode("pagamento_ok.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : ''));
+                die();
+            } else {
+                $descricao_erro = "Transação não autorizada.";
+            }
         }
 
         if (count(get_object_vars($result->AuthorizeTransactionResult->ErrorReportDataCollection)) > 0) {

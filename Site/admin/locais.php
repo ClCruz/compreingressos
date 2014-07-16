@@ -49,6 +49,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                 $("#numero_banco").keypress(verificaNumero);
                 $("#taxa_cc").keypress(verificaNumeroEVirgula);
                 $("#taxa_cd").keypress(verificaNumeroEVirgula);
+                $("#taxa_rp").keypress(verificaNumeroEVirgula);
                 $("#valor").keypress(verificaNumeroEVirgula);
 
                 var dialog, form,
@@ -72,10 +73,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                 email = $( "#email" ),
                 taxa_cc = $( "#taxa_cc" ),
                 taxa_cd = $( "#taxa_cd" ),
+                taxa_rp = $( "#taxa_rp" ),
                 valor = $( "#valor" ),
                 allFields = $( [] ).add( razao_social ).add( cpf_cnpj ).add( prazo ).add( ativo ).
                     add( banco ).add( numero_banco ).add( numero_agencia ).add( numero_conta ).
-                    add( contato ).add( telefone ).add( celular ).add( email ).
+                    add( contato ).add( telefone ).add( celular ).add( email ).add( taxa_rp ).
                     add( taxa_cc ).add( taxa_cd ).add( valor ).add( nomeSql ).add( nome ),
                 tips = $( ".validateTips" );
 
@@ -115,6 +117,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                             $( "#email" ).val(data.email);
                             $( "#taxa_cc" ).val(data.taxa_cc);
                             $( "#taxa_cd" ).val(data.taxa_cd);
+                            $( "#taxa_rp" ).val(data.taxa_rp);
                             $( "#valor" ).val(data.valor);
                         });
                         dialog.dialog( "open" );
@@ -297,9 +300,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                     <label for="razao_social">Razão Social</label>
                     <input type="text" name="razao_social" maxlength="80" id="razao_social" value="" class="text ui-widget-content ui-corner-all">
                     <label for="cpf_cnpj">CPF / CNPJ (Digite apenas números)</label>
-                    <input type="text" name="cpf_cnpj" maxlength="14" id="cpf_cnpj" value="" class="text ui-widget-content ui-corner-all">
-                    <label for="prazo">Prazo para repasse em dias</label>
-                    <input type="text" name="prazo" id="prazo" value="" class="text ui-widget-content ui-corner-all">
+                    <input type="text" name="cpf_cnpj" maxlength="14" id="cpf_cnpj" value="" class="text ui-widget-content ui-corner-all">                    
 
                     <h2>Dados bancários</h2><br/>
                     <label for="banco">Nome do Banco</label>
@@ -322,11 +323,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                     <input type="text" name="celular" id="celular" value="" class="text ui-widget-content ui-corner-all">
                     <label for="email">E-Mail</label>
                     <input type="text" name="email" id="email" value="" class="text ui-widget-content ui-corner-all">
-                    <label for="taxa_cc">Taxa de Cartão de Crédito</label>
+                    <label for="prazo">Prazo para repasse em dias</label>
+                    <input type="text" name="prazo" id="prazo" value="" class="text ui-widget-content ui-corner-all">
+                    <label for="taxa_cc">Taxa de Cartão de Crédito (%)</label>
                     <input type="text" name="taxa_cc" id="taxa_cc" value="" class="text ui-widget-content ui-corner-all">
-                    <label for="taxa_cd">Taxa de Cartão de Débito</label>
+                    <label for="taxa_cd">Taxa de Cartão de Débito (%)</label>
                     <input type="text" name="taxa_cd" id="taxa_cd" value="" class="text ui-widget-content ui-corner-all">
-                    <label for="valor">Valor dos Ingressos</label>
+                    <label for="taxa_rp">Taxa do Repasse (%)</label>
+                    <input type="text" name="taxa_rp" id="taxa_rp" value="" class="text ui-widget-content ui-corner-all">
+                    <label for="valor">Custos dos Ingressos (R$)</label>
                     <input type="text" name="valor" id="valor" value="" class="text ui-widget-content ui-corner-all">
 
                     <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">

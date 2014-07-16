@@ -12,6 +12,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
         $_POST["valor"] = str_replace(",", ".", $_POST["valor"]);
         $_POST["taxa_cc"] = str_replace(",", ".", $_POST["taxa_cc"]);
         $_POST["taxa_cd"] = str_replace(",", ".", $_POST["taxa_cd"]);
+        $_POST["taxa_rp"] = str_replace(",", ".", $_POST["taxa_rp"]);
     }
 
     if ($_GET['action'] == 'add') { /* ------------ INSERT ------------ */
@@ -43,8 +44,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                     DS_EMAIL,
                     VL_TAXA_CARTAO_CRED,
                     VL_TAXA_CARTAO_DEB,
+                    VL_TAXA_REPASSE,
                     VL_INGRESSO)
-                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $params = array(utf8_decode($_POST['nomeSql']),
                         utf8_decode($_POST['nome']),
                         $_POST['ativo'],
@@ -64,6 +66,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                         $_POST['email'],
                         $_POST['taxa_cc'],
                         $_POST['taxa_cd'],
+                        $_POST['taxa_rp'],
                         $_POST['valor'] );
         
         $log = new Log($_SESSION['admin']);
@@ -102,6 +105,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                     DS_EMAIL = ?,
                     VL_TAXA_CARTAO_CRED = ?,
                     VL_TAXA_CARTAO_DEB = ?,
+                    VL_TAXA_REPASSE = ?,
                     VL_INGRESSO = ?
                  WHERE
                     ID_BASE = ?";
@@ -124,6 +128,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                         $_POST['email'],
                         $_POST['taxa_cc'],
                         $_POST['taxa_cd'],
+                        $_POST['taxa_rp'],
                         $_POST['valor'],
                         $_GET['id']);
 
@@ -176,6 +181,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                   ,[DS_EMAIL]
                   ,[VL_TAXA_CARTAO_CRED]
                   ,[VL_TAXA_CARTAO_DEB]
+                  ,[VL_TAXA_REPASSE]
                   ,[VL_INGRESSO]
                   FROM MW_BASE WHERE ID_BASE = ?';
         $params = array($_GET['id']);
@@ -201,6 +207,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                 "email" => $rs["DS_EMAIL"],
                 "taxa_cc" => number_format($rs["VL_TAXA_CARTAO_CRED"], 2, ",", "."),
                 "taxa_cd" => number_format($rs["VL_TAXA_CARTAO_DEB"], 2, ",", "."),
+                "taxa_rp" => number_format($rs["VL_TAXA_REPASSE"], 2, ",", "."),
                 "valor" => number_format($rs["VL_INGRESSO"], 2, ",", ".") );
         }
         $retorno = json_encode($ret);

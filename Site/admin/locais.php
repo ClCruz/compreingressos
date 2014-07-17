@@ -97,7 +97,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                             $( "#nomeSql" ).val(data.nomeSql);
                             if(data.ativo == 1){
                                 document.getElementById("ativo").checked = true;
-                                //$( "#ativo" ).attr('checked');
                             }
                             $( "#razao_social" ).val(data.razao_social);
                             $( "#cpf_cnpj" ).val(data.cpf_cnpj);
@@ -325,12 +324,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                     <input type="text" name="email" id="email" value="" class="text ui-widget-content ui-corner-all">
                     <label for="prazo">Prazo para repasse em dias</label>
                     <input type="text" name="prazo" id="prazo" value="" class="text ui-widget-content ui-corner-all">
+                    <label for="taxa_rp">Taxa do Repasse (%)</label>
+                    <input type="text" name="taxa_rp" id="taxa_rp" value="" class="text ui-widget-content ui-corner-all">
                     <label for="taxa_cc">Taxa de Cartão de Crédito (%)</label>
                     <input type="text" name="taxa_cc" id="taxa_cc" value="" class="text ui-widget-content ui-corner-all">
                     <label for="taxa_cd">Taxa de Cartão de Débito (%)</label>
-                    <input type="text" name="taxa_cd" id="taxa_cd" value="" class="text ui-widget-content ui-corner-all">
-                    <label for="taxa_rp">Taxa do Repasse (%)</label>
-                    <input type="text" name="taxa_rp" id="taxa_rp" value="" class="text ui-widget-content ui-corner-all">
+                    <input type="text" name="taxa_cd" id="taxa_cd" value="" class="text ui-widget-content ui-corner-all">                    
                     <label for="valor">Custos dos Ingressos (R$)</label>
                     <input type="text" name="valor" id="valor" value="" class="text ui-widget-content ui-corner-all">
 

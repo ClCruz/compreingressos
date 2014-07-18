@@ -102,6 +102,12 @@ $(function() {
           $('#loadingIcon').fadeOut('slow');
         }
       });
+
+      loadListaFotos();
+
+      $('#areaUploadFotos').show(function(){
+        $('#fotos').uploadifySettings('folder', uploadPath + 'fotos/' + $('#teatroID').val());
+      });
     }
   });
 	
@@ -166,6 +172,39 @@ $(function() {
   $('#resetEvento').click(function() {
     loadAnnotations('&reset=1');
   });
+
+  $('#lista_fotos').on('click', 'img,span', function() {
+    if ($(".ui-selected")[0]) {
+      var path = $(this).attr('src') ? $(this).attr('src') : '';
+
+      $("#dialog-confirm")
+        .find('.img').html($(this).clone().wrap('<span />').parent().html()).end()
+        .find('.text').text('Deseja ' + (path ? 'aplicar a imagem ao lado aos' : 'remover as imagens dos') + ' itens selecionados?').end()
+        .dialog('open');
+    }
+  });
+
+  $("#dialog-confirm").dialog({
+    resizable: false,
+    height: 'auto',
+    modal: true,
+    autoOpen: false,
+    buttons: {
+      OK: function() {
+        var path = $("#dialog-confirm .img").find('img,span').attr('src');
+        path = path ? path : '';
+
+        $(".ui-selected").each(function() {
+          $(this).data('img', path);
+        });
+
+        $(this).dialog("close");
+      },
+      Cancelar: function() {
+          $(this).dialog("close");
+      }
+    }
+  });
 	
   function loadAnnotations(dados) {
     if ($('#teatroID').val() != '' && $('#salaID').val() != '') {
@@ -188,8 +227,16 @@ $(function() {
           $('#mapa_de_plateia').addAnnotations(annotation, eval(data[0]));
           $('#mapa_de_plateia span').tooltip({
             track: true,
-            showBody: ' - ',
-            fade: 250
+            content: function() {
+              var element = $(this),
+                  text = element.attr("title");
+
+              if (element.data('img')) {
+                text += "<br /><br /><img src='"+element.data('img')+"' class='foto-plateia' />";
+              }
+
+              return text;
+            }
           });
 					
           if (data[1].length > 0) {
@@ -325,6 +372,29 @@ $(function() {
         }
       }
     });
+
+    $('#fotos').uploadify({
+      uploader: '../javascripts/uploadify/uploadify.swf',
+      checkScript: '../javascripts/uploadify/check.php',
+      script: '../javascripts/uploadify/uploadify.php',
+      cancelImg: '../javascripts/uploadify/cancel.png',
+      auto: true,
+      multi: true,
+      folder: uploadPath + 'fotos',
+      fileDesc: 'Apenas Imagens',
+      fileExt: '*.gif;*.jpg;*.jpeg;*.png;',
+      queueID:'uploadifyQueue3',
+      width: 300,
+      onComplete: function(event, queueID, fileObj, response, data) {
+        if (response.substr(0, 4) == 'true') {
+          loadListaFotos();
+        } else {
+          $.dialog({
+            text: response
+          });
+        }
+      }
+    });
   }
 	
   function changeScale(x, y) {
@@ -370,5 +440,16 @@ $(function() {
         value: 10
       });
     }
+  }
+
+  function loadListaFotos() {
+    $.ajax({
+        url: 'mapaPlateia.php?action=lista_fotos',
+        type: 'post',
+        data: 'teatro='+$('#teatroID').val(),
+        success: function(data) {
+          $('#lista_fotos').html(data);
+        }
+    });
   }
 });

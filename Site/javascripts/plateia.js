@@ -83,6 +83,7 @@ $(function() {
                             '<p class="local">'+dados[1]+'</p>'+
                             '<p class="descricao">clique apenas uma vez e aguarde<br>a reserva do lugar escolhido</p>'+
                           '</div>'+
+                          ($(this).data('img') ? '<span>Visão aproximada do palco</span><img src="'+$(this).data('img')+'" class="foto-plateia">' : '')+
                         '</div>';
               }
             });

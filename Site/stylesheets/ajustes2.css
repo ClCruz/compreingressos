@@ -60,6 +60,12 @@ div.tooltip {
 	background: #FFF;
 	margin: auto;
 	font-family: 'Source Sans Pro', Arial, Helvetica, sans-serif;
+	text-align: center;
+}
+
+div.tooltip img.foto-plateia {
+	margin-bottom: 14px;
+	width: 220px;
 }
 
 div.img_cod_cartao {
@@ -98,4 +104,18 @@ div.container_escolha_ingresso div.ingresso div.descricao p.help {
 
 .bilhete_lote_indisponivel {
 	display: none;
+}
+
+div.tooltip div.informacoes {
+	margin-top: 10px;
+}
+
+div.tooltip span {
+	display: inline-block;
+	border-top: 1px solid #B2B2B2;
+	width: 100%;
+	background-color: #A6181B;
+	color: #FFF;
+	font-size: 11px;
+	line-height: 24px;
 }

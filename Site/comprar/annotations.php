@@ -9,7 +9,8 @@ if (isset($_GET['teatro']) and isset($_GET['codapresentacao'])) {
 						WHEN \'D\' THEN \'O\'
 						ELSE \'C\'
 					END STATUS,
-					L.ID_SESSION
+					L.ID_SESSION,
+					S.IMGVISAOLUGAR
 					FROM TABSALDETALHE S
 					INNER JOIN TABSETOR SE ON SE.CODSALA = S.CODSALA AND SE.CODSETOR = S.CODSETOR
 					INNER JOIN TABAPRESENTACAO A ON A.CODSALA = S.CODSALA
@@ -35,6 +36,7 @@ if (isset($_GET['teatro']) and isset($_GET['codapresentacao'])) {
 						",y:" . $rs['POSYSITE'] .
 						// O = openned / C = closed / S = standby = selected by current user
 						",status:'" . $rs['STATUS'] . "'" .
+						($rs['IMGVISAOLUGAR'] ? ",img:'" . $rs['IMGVISAOLUGAR'] . "'" : '') .
 						"},";
 	}
 	

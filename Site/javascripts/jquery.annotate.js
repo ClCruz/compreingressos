@@ -56,7 +56,8 @@
 				element.data(key, val);
 			});
 			
-			element.attr('title', element.data('name') + ' // ' + element.data('setor'))
+			element.attr('title', element.data('name') + ' // ' + element.data('setor'));
+			if (element.data('img')) element.attr('data-img', element.data('img'));
 			//if (top > containerHeight) element.hide();
 		});
 	};
@@ -79,7 +80,8 @@
 					y: $(this).relativeY(yPosition),
 					id: $(this).data('id'),
 					name: $(this).data('name'),
-					setor: $(this).data('setor')
+					setor: $(this).data('setor'),
+					img: $(this).data('img')
 				}
 			);
 		});

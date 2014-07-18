@@ -27,7 +27,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
       <form id="dados" name="dados" method="post">
         <table border="0" cellspacing="0" cellpadding="0">
           <tr>
-            <td><h3>Teatro</h3></td>
+            <td><h3>Local</h3></td>
           </tr>
           <tr>
             <td><?php echo comboTeatro('teatroID'); ?></td>
@@ -60,11 +60,43 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
               <input type="button" id="resetEvento" class="button" value="Recalcular" />
             </td>
           </tr>
+        </table>
+        <table border="0" cellspacing="0" cellpadding="0">
           <tr>
-            <td>&nbsp;</td>
+            <td><h3>Tamanho do Lugar:</h3></td>
           </tr>
           <tr>
-            <td><h3>Tamanho da imagem:</h3></td>
+            <td>
+              Tamanho:<input class="readonly" type="text" id="Size" value="10px" readonly /> <a href="#" id="sizeReset">reset</a>
+              <span style="float:left">(-)</span><span style="float:right">(+)</span>
+              <div id="ScaleSize"></div>
+            </td>
+          </tr>
+          <tr>
+            <td><h3>Visão do Lugar (foto):</h3></td>
+          </tr>
+          <tr>
+            <td>
+              <div id="lista_fotos"></div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div id="areaUploadFotos" style="width:300px; height:16px;">
+                Enviar fotos panorâmicas dos lugares para o servidor<br/>
+                <div style="width:300px; height:16px; position:absolute; top:auto; z-index:1;"><input type="button" class="button" value="Enviar Fotos" /></div>
+                <div style="width:300px; height:16px; position:absolute; top:auto; z-index:100; opacity:0; filter:Alpha(Opacity=0);"><input style="width:300px;" type="file" name="fotos" id="fotos" /></div>
+              </div>
+              &nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td><div id="uploadifyQueue3" class="uploadifyQueue"></div>&nbsp;</td>
+          </tr>
+        </table>
+        <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td><h3>Tamanho da imagem de fundo:</h3></td>
           </tr>
           <tr>
             <td>
@@ -84,14 +116,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
             <td>&nbsp;</td>
           </tr>
           <tr>
-            <td><h3>Tamanho do Lugar:</h3></td>
-          </tr>
-          <tr>
-            <td>
-              Tamanho:<input class="readonly" type="text" id="Size" value="10px" readonly /> <a href="#" id="sizeReset">reset</a>
-              <span style="float:left">(-)</span><span style="float:right">(+)</span>
-              <div id="ScaleSize"></div>
-            </td>
+            <td align="left" valign="middle">
+              <input type="button" id="removerImagem" class="button" value="Remover Imagem" style="display:inline-block" />
+              <div style="width:97px; height:16px; display:inline-block">
+                <div style="width:97px; height:16px; position:absolute; top:auto; z-index:1;"><input type="button" id="trocarImagem" class="button" value="Trocar Imagem" /></div>
+                <div style="width:97px; height:16px; position:absolute; top:auto; z-index:100; opacity:0; filter:Alpha(Opacity=0);"><input type="file" name="background" id="background" /></div>
+              </div>
+              <div id="uploadifyQueue2" class="uploadifyQueue"></div>
           </tr>
           <tr>
             <td>&nbsp;</td>
@@ -102,23 +133,16 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
               <input type="button" id="salvarEvento" class="button" value="Salvar" />
             </td>
           </tr>
-          <tr>
-            <td>&nbsp;</td>
-          </tr>
-          <tr>
-            <td align="left" valign="middle">
-              <input type="button" id="removerImagem" class="button" value="Remover Imagem" style="display:inline-block" />
-              <div style="width:97px; height:16px; display:inline-block">
-                <div style="width:97px; height:16px; position:absolute; top:auto; z-index:1;"><input type="button" id="trocarImagem" class="button" value="Trocar Imagem" /></div>
-                <div style="width:97px; height:16px; position:absolute; top:auto; z-index:100; opacity:0; filter:Alpha(Opacity=0);"><input type="file" name="background" id="background" /></div>
-              </div>
-              <div id="uploadifyQueue2" class="uploadifyQueue"></div>
-          </tr>
         </table>
       </form>
     </div>
-    <div id="mapa_de_plateia">
+    <div id="mapa_de_plateia" class="edicao">
       <img src="../images/palco.png" width="630" height="500">
+    </div>
+
+    <div id="dialog-confirm">
+      <span class="img"></span>
+      <span class="text">Deseja aplicar a imagem aos itens selecionados?</span>
     </div>
 
 <?php

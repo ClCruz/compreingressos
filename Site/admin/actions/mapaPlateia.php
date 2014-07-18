@@ -23,13 +23,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
       $size = $rs[3];
     }
 
-    $query = 'SELECT MAX(POSX) MAXX, MAX(POSY) MAXY, MAX(POSXSITE) MAXXSITE, 
+    $query = "SELECT MAX(POSX) MAXX, MAX(POSY) MAXY, MAX(POSXSITE) MAXXSITE, 
               MAX(POSYSITE) MAXYSITE FROM TABSALDETALHE
-              WHERE CODSALA = ? AND TIPOBJETO = \'C\'';
+              WHERE CODSALA = ? AND TIPOBJETO = 'C'";
     $params = array($_POST['sala']);
     $rs = executeSQL($conn, $query, $params, true);
 
-    $query = 'SELECT S.INDICE, S.NOMOBJETO, S.CODSETOR, SE.NOMSETOR, ';
+    $query = 'SELECT S.INDICE, S.NOMOBJETO, S.CODSETOR, SE.NOMSETOR, S.IMGVISAOLUGAR, ';
 
     if ($rs['MAXXSITE'] == '' or $rs['MAXYSITE'] == '' or $_POST['reset']) {
       $query .= '(((S.POSX * ?) / ?) + ?) POSXSITE, (((S.POSY * ?) / ?) + ?) POSYSITE';
@@ -64,6 +64,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
               ",codSetor:'" . $rs['CODSETOR'] . "'" .
               ",x:" . $rs['POSXSITE'] .
               ",y:" . $rs['POSYSITE'] .
+              ($rs['IMGVISAOLUGAR'] ? ",img:'" . $rs['IMGVISAOLUGAR'] . "'" : '') .
               "},";
     }
 
@@ -89,7 +90,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
 
     $query = 'UPDATE TABSALDETALHE SET
               POSXSITE = ?,
-              POSYSITE = ?
+              POSYSITE = ?,
+              IMGVISAOLUGAR = ?
               WHERE CODSALA = ? AND INDICE = ?';
 
     $obj = json_decode($_POST['obj']);
@@ -98,7 +100,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
 
     foreach ($obj as $cadeira) {
       $cadeira = get_object_vars($cadeira);
-      $params = array($cadeira['x'], $cadeira['y'], $_POST['sala'], $cadeira['id']);
+      $params = array($cadeira['x'], $cadeira['y'], $cadeira['img'], $_POST['sala'], $cadeira['id']);
 
       executeSQL($conn, $query, $params);
     }
@@ -111,6 +113,18 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
     } else {
       rollbackTransaction($conn);
       echo sqlErrors('messsage');
+    }
+  } else if ($_GET['action'] == 'lista_fotos') {
+    require_once('../settings/settings.php');
+
+    $fotos_path = $uploadPath . 'fotos/' . $_REQUEST['teatro'] . '/';
+    
+    $files = array_diff(scandir($fotos_path), array('..', '.'));
+
+    echo "<span class='reset'>Sem Foto</span>";
+
+    foreach ($files as $file_name) {
+      echo "<img src='".$fotos_path.$file_name."' />";
     }
   }
 }

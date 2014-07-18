@@ -71,7 +71,7 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
                     <div class="descricao_pag">
                         <div class="descricao">
                             <p class="nome">Escolha de Local/Evento
-                                <a href="logout.php?redirect=etapa0.php">logout</a>
+                                <a href="logout.php?redirect=<?php echo $_SESSION['usuario_pdv'] ? 'loginPDV.php' : 'etapa0.php'; ?>">logout</a>
                             </p>
                             <p class="descricao"></p>
                             <div class="sessao">

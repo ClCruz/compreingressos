@@ -320,9 +320,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                         $('#tabPedidos').find('.itensDoPedido').hide();
 
                         if ($this.next('.estorno').length > 0) {
-                            $this.next('.estorno').after('<tr class="itensDoPedido"><td colspan="10">' + data + '</td></tr>');
+                            $this.next('.estorno').after('<tr class="itensDoPedido"><td colspan="11">' + data + '</td></tr>');
                         } else {
-                            $this.after('<tr class="itensDoPedido"><td colspan="10">' + data + '</td></tr>');
+                            $this.after('<tr class="itensDoPedido"><td colspan="11">' + data + '</td></tr>');
                         }
                     },
                     complete: function() {

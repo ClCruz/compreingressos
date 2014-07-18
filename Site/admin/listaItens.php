@@ -18,15 +18,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
 			INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO
 			INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
 			WHERE PV.ID_PEDIDO_VENDA = ?
-                        GROUP BY
-                            (CONVERT(VARCHAR(10), A.DT_APRESENTACAO, 103) + ' ' + CONVERT(VARCHAR(5), A.HR_APRESENTACAO)),
-                            E.DS_EVENTO,
-                            IPV.DS_SETOR,
-                            IPV.DS_LOCALIZACAO,
-                            QT_INGRESSOS,
-                            VL_UNITARIO,
-                            VL_TAXA_CONVENIENCIA,
-                            PV.VL_TOTAL_TAXA_CONVENIENCIA
 			UNION ALL
 			SELECT
 				 DS_NOME_EVENTO AS DS_EVENTO,  DS_SETOR, DS_LOCALIZACAO, QT_INGRESSOS, VL_UNITARIO,VL_TAXA_CONVENIENCIA,

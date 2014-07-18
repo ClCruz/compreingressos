@@ -53,11 +53,11 @@ if ($_POST) {
 			?>
 			<div class="container_cartao">
 				<input id="<?php echo $rs['cd_meio_pagamento']; ?>" type="radio" name="codCartao" class="radio" value="<?php echo $rs['cd_meio_pagamento']; ?>"
-					imgHelp="../images/cartoes/help_<?php echo file_exists('../images/cartoes/help_'.utf8_encode($rs['nm_cartao_exibicao_site']).'.png') ? utf8_encode($rs['nm_cartao_exibicao_site']) : 'default'; ?>.png"
+					imgHelp="../images/cartoes/help_<?php echo file_exists('../images/cartoes/help_'.$rs['nm_cartao_exibicao_site'].'.png') ? utf8_encode($rs['nm_cartao_exibicao_site']) : 'default'; ?>.png"
 					formatoCartao="<?php echo $rs['nm_cartao_exibicao_site'] == 'Amex' ? '0000-000000-00000' : '0000-0000-0000-0000'; ?>"
 					formatoCodigo="<?php echo $rs['nm_cartao_exibicao_site'] == 'Amex' ? '0000' : '000'; ?>">
 				<label class="radio" for="<?php echo $rs['cd_meio_pagamento']; ?>">
-					<img src="../images/cartoes/ico_<?php echo file_exists('../images/cartoes/ico_'.utf8_encode($rs['nm_cartao_exibicao_site']).'.png') ? utf8_encode($rs['nm_cartao_exibicao_site']) : 'default'; ?>.png"><br>
+					<img src="../images/cartoes/ico_<?php echo file_exists('../images/cartoes/ico_'.$rs['nm_cartao_exibicao_site'].'.png') ? utf8_encode($rs['nm_cartao_exibicao_site']) : 'default'; ?>.png"><br>
 				</label>
 				<p class="nome"><?php echo $rs['nm_cartao_exibicao_site'] ? utf8_encode($rs['nm_cartao_exibicao_site']) : utf8_encode($rs['ds_meio_pagamento']); ?></p>
 			</div>

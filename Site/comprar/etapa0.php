@@ -70,7 +70,9 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
                 <div class="centraliza">
                     <div class="descricao_pag">
                         <div class="descricao">
-                            <p class="nome">Escolha de Local/Evento</p>
+                            <p class="nome">Escolha de Local/Evento
+                                <a href="logout.php?redirect=etapa0.php">logout</a>
+                            </p>
                             <p class="descricao"></p>
                             <div class="sessao">
                                 <p class="tempo" id="tempoRestante"></p>

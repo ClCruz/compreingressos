@@ -688,6 +688,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
     $params = array($apresentacaoID);
     $rs = executeSQL($mainConnection, $query, $params, true);
 
+    $id_base = $rs['ID_BASE'];
     $conn = getConnection($rs['ID_BASE']);
 
     $query = "SELECT COUNT(1) AS MEIA_ESTUDANTE
@@ -717,7 +718,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 
     $ocultarLote = (getTotalLoteDisponivel($apresentacaoID) <= 0 and $rs2['LOTE'] == 0) ? true : false;
 
-    $query = "SELECT ID_APRESENTACAO_BILHETE, AB.CODTIPBILHETE, DS_TIPO_BILHETE, VL_LIQUIDO_INGRESSO, P.IN_BIN_ITAU, ISNULL(P.QT_BIN_POR_CPF,0) AS QT_BIN_POR_CPF, P.CODTIPBILHETEBIN, B.STATIPBILHMEIAESTUDANTE, B.QTDVENDAPORLOTE, B.IMG1PROMOCAO, B.IMG2PROMOCAO
+    $query = "SELECT ID_APRESENTACAO_BILHETE, AB.CODTIPBILHETE, DS_TIPO_BILHETE, VL_LIQUIDO_INGRESSO, P.IN_BIN_ITAU, ISNULL(P.QT_BIN_POR_CPF,0) AS QT_BIN_POR_CPF, P.CODTIPBILHETEBIN, B.STATIPBILHMEIAESTUDANTE, B.QTDVENDAPORLOTE, B.IMG1PROMOCAO, B.IMG2PROMOCAO, A.ID_EVENTO
 				FROM
 				 CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB 
 				 INNER JOIN 
@@ -786,8 +787,19 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 				$rs['IMG1PROMOCAO'] = '../images/promocional/' . basename($rs['IMG1PROMOCAO']);
 				$rs['IMG2PROMOCAO'] = '../images/promocional/' . basename($rs['IMG2PROMOCAO']);
 
+				if ($id_base == 136 || (IS_TESTE && $id_base == 137)) {
+					$query = "select 1 from mw_evento
+								where codpeca in (2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44)
+								and id_evento = ?";
+					$result_aux = executeSQL($mainConnection, $query, array($rs['ID_EVENTO']));
+
+        			if (hasRows($result_aux)) {
+        				$sizeBin = 12;
+        			}
+				}
+
 				$BIN = 'qtBin="' . $rs['QT_BIN_POR_CPF'] . '" codeBin="' . $rs['CODTIPBILHETEBIN'] .
-						'" img1="' . $rs['IMG1PROMOCAO'] . '" img2="' . $rs['IMG2PROMOCAO'] . '"';
+						'" img1="' . $rs['IMG1PROMOCAO'] . '" img2="' . $rs['IMG2PROMOCAO'] . '"' . ($sizeBin ? ' sizeBin="'.$sizeBin.'"' : '');
 			} else{
 				$BIN = '';
 			}
@@ -1277,6 +1289,25 @@ function comboTipoDocumento($name, $selected) {
 	$combo .= '<option value="' . $rs['ID_DOC_ESTRANGEIRO'] . '"' .
 		(($selected == $rs['ID_DOC_ESTRANGEIRO']) ? ' selected' : '') .
 		'>' . utf8_encode($rs['DS_DOC_ESTRANGEIRO']) . '</option>';
+    }
+    $combo .= '</select>';
+
+    return $combo;
+}
+
+function comboSetor($name, $apresentacao_id) {
+	$mainConnection = mainConnection();
+    $result = executeSQL($mainConnection, "SELECT ID_APRESENTACAO, DS_PISO FROM MW_APRESENTACAO
+				                          WHERE ID_EVENTO = (SELECT ID_EVENTO FROM MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = '1')
+				                          AND DT_APRESENTACAO = (SELECT DT_APRESENTACAO FROM MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = '1')
+				                          AND HR_APRESENTACAO = (SELECT HR_APRESENTACAO FROM MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = '1')
+				                          AND IN_ATIVO = '1'
+				                          ORDER BY DS_PISO", array($apresentacao_id, $apresentacao_id, $apresentacao_id));
+
+    $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um setor...</option>';
+    while ($rs = fetchResult($result)) {
+	$combo .= '<option value="' . $rs['ID_APRESENTACAO'] . '"' .
+		(($apresentacao_id == $rs['ID_APRESENTACAO']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_PISO']) . '</option>';
     }
     $combo .= '</select>';
 

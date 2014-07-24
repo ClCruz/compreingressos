@@ -7,39 +7,60 @@ $mainConnection = mainConnection();
 
 if ($_GET['carrinho']) {
 
-    $query = "SELECT E.ID_BASE
-            FROM MW_EVENTO E
-            INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
-            INNER JOIN MW_RESERVA R ON R.ID_APRESENTACAO = A.ID_APRESENTACAO
-            WHERE R.ID_RESERVA = ?";
-    $params = array($_POST['reserva']);
-    $rs = executeSQL($mainConnection, $query, $params, true);
+    if (strlen($_POST['bin']) <= 6) {
 
-    $conn = getConnection($rs['ID_BASE']);
+        $query = "SELECT E.ID_BASE
+                FROM MW_EVENTO E
+                INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
+                INNER JOIN MW_RESERVA R ON R.ID_APRESENTACAO = A.ID_APRESENTACAO
+                WHERE R.ID_RESERVA = ?";
+        $params = array($_POST['reserva']);
+        $rs = executeSQL($mainConnection, $query, $params, true);
 
-    $query = "SELECT TOP 1 1
-            FROM
-            CI_MIDDLEWAY..MW_RESERVA R
-            INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
-            INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
-            INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO = R.ID_APRESENTACAO AND AB.IN_ATIVO = 1 AND AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
-            INNER JOIN TABPECA P ON P.CODPECA = E.CODPECA AND P.CODTIPBILHETEBIN = AB.CODTIPBILHETE
-            INNER JOIN CI_MIDDLEWAY..MW_EVENTO_PATROCINADO EP ON EP.CODPECA = E.CODPECA AND EP.ID_BASE = E.ID_BASE AND A.DT_APRESENTACAO BETWEEN EP.DT_INICIO AND EP.DT_FIM
-            INNER JOIN CI_MIDDLEWAY..MW_CARTAO_PATROCINADO CP ON CP.ID_CARTAO_PATROCINADO = EP.ID_CARTAO_PATROCINADO
-            AND CP.CD_BIN = ?
-            WHERE P.IN_BIN_ITAU = 1
-            AND R.ID_RESERVA = ?";
-    $params = array($_POST['bin'], $_POST['reserva']);
+        $conn = getConnection($rs['ID_BASE']);
 
-    $result = executeSQL($conn, $query, $params);
+        $query = "SELECT TOP 1 1
+                FROM
+                CI_MIDDLEWAY..MW_RESERVA R
+                INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+                INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+                INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO = R.ID_APRESENTACAO AND AB.IN_ATIVO = 1 AND AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
+                INNER JOIN TABPECA P ON P.CODPECA = E.CODPECA AND P.CODTIPBILHETEBIN = AB.CODTIPBILHETE
+                INNER JOIN CI_MIDDLEWAY..MW_EVENTO_PATROCINADO EP ON EP.CODPECA = E.CODPECA AND EP.ID_BASE = E.ID_BASE AND A.DT_APRESENTACAO BETWEEN EP.DT_INICIO AND EP.DT_FIM
+                INNER JOIN CI_MIDDLEWAY..MW_CARTAO_PATROCINADO CP ON CP.ID_CARTAO_PATROCINADO = EP.ID_CARTAO_PATROCINADO
+                AND CP.CD_BIN = ?
+                WHERE P.IN_BIN_ITAU = 1
+                AND R.ID_RESERVA = ?";
+        $params = array($_POST['bin'], $_POST['reserva']);
 
-    if (hasRows($result)) {
-        $query = "UPDATE MW_RESERVA SET CD_BINITAU = ? WHERE ID_RESERVA = ?";
-        executeSQL($mainConnection, $query, $params);
+        $result = executeSQL($conn, $query, $params);
 
-        echo "true";
-    } else {
-        echo "Este cartão não é participante da promoção vigente para esta apresentação!<br>Informe outro cartão ou indique outro tipo de ingresso não participante da promoção.";
+        if (hasRows($result)) {
+            $query = "UPDATE MW_RESERVA SET CD_BINITAU = ? WHERE ID_RESERVA = ?";
+            executeSQL($mainConnection, $query, $params);
+
+            echo "true";
+        } else {
+            echo "Este cartão não é participante da promoção vigente para esta apresentação!<br>Informe outro cartão ou indique outro tipo de ingresso não participante da promoção.";
+        }
+
+    }
+    // se o bin tiver mais que 6 characters ele nao e bin itau
+    else {
+
+        $query = "SELECT 1 FROM TEMPBINSSESC WHERE MATRICULA = ?";
+
+        $result = executeSQL($mainConnection, $query, array($_POST['bin']));
+
+        if (hasRows($result)) {
+            $query = "UPDATE MW_RESERVA SET NR_BENEFICIO = ? WHERE ID_RESERVA = ?";
+            executeSQL($mainConnection, $query, array($_POST['bin'], $_POST['reserva']));
+
+            echo "true";
+        } else {
+            echo "Este cartão não é participante da promoção vigente para esta apresentação!<br>Informe outro cartão ou indique outro tipo de ingresso não participante da promoção.";
+        }
+
     }
 } else {
 
@@ -51,7 +72,8 @@ if ($_GET['carrinho']) {
     $params = array(session_id());
     $rs = executeSQL($mainConnection, $query, $params, true);
 
-    $conn = getConnection($rs['ID_BASE']);
+    $id_base = $rs['ID_BASE'];
+    $conn = getConnection($id_base);
 
     $query = "SELECT DISTINCT CD_BINITAU
             FROM CI_MIDDLEWAY..MW_RESERVA R
@@ -65,7 +87,20 @@ if ($_GET['carrinho']) {
 
     $numBinsUtilizados = numRows($conn, $query, $params);
 
-    if ($numBinsUtilizados > 1) {
+    if ($id_base == 136 || (IS_TESTE && $id_base == 137)) {
+        $query = "SELECT DISTINCT NR_BENEFICIO
+                FROM CI_MIDDLEWAY..MW_RESERVA R
+                INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+                INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+                INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO = R.ID_APRESENTACAO AND AB.IN_ATIVO = 1 AND AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
+                INNER JOIN TABPECA P ON P.CODPECA = E.CODPECA AND P.CODTIPBILHETEBIN = AB.CODTIPBILHETE
+                WHERE P.IN_BIN_ITAU = 1
+                AND R.ID_SESSION = ?";
+
+        $numBinsUtilizadosSESC = numRows($conn, $query, $params);
+    }
+
+    if ($numBinsUtilizados > 1 || $numBinsUtilizadosSESC > 1) {
         echo "Não é possível utilizar dois ou mais códigos promocionais de cartões diferentes.<br/><br/>Por favor, retorne e valide seu código promocional novamente.";
         die();
     }
@@ -85,7 +120,7 @@ if ($_GET['carrinho']) {
     $cpf = $rs[0];
 
     //lista codapresentacao e id_base a partir da reserva
-    $query = 'SELECT A.ID_APRESENTACAO, A.CODAPRESENTACAO, E.ID_BASE, A.HR_APRESENTACAO, CONVERT(VARCHAR(8), A.DT_APRESENTACAO, 112) DT_APRESENTACAO, E.CODPECA
+    $query = 'SELECT A.ID_APRESENTACAO, A.CODAPRESENTACAO, E.ID_BASE, A.HR_APRESENTACAO, CONVERT(VARCHAR(8), A.DT_APRESENTACAO, 112) DT_APRESENTACAO, E.CODPECA, MAX(R.NR_BENEFICIO) NR_BENEFICIO
              FROM MW_EVENTO E
              INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
              INNER JOIN MW_RESERVA R ON R.ID_APRESENTACAO = A.ID_APRESENTACAO
@@ -140,19 +175,25 @@ if ($_GET['carrinho']) {
         $data = $rs['DT_APRESENTACAO'];
         $hora = str_replace(array('h', 'H'), ':', $rs['HR_APRESENTACAO']);
         $codpeca = $rs['CODPECA'];
+        $nr_beneficio = $rs['NR_BENEFICIO'];
         $result3 = executeSQL($conn, $query2, array($idapresentacao, session_id()));
-
+        
         if (hasRows($result3)) {
             $rs = fetchResult($result3);
             $limite = $rs['QT_BIN_POR_CPF'];
             $comprando = $rs['COMPRANDO'];
 
             if ($limite > 0) {
-                $result2 = executeSQL($conn, $query22, array($numeroDoCartao, $idapresentacao, session_id()));
+                // bin itau ou outro beneficio?
+                if ($nr_beneficio) {
+                    $result2 = executeSQL($mainConnection, "SELECT 1 FROM TEMPBINSSESC WHERE MATRICULA = ?", array($nr_beneficio));
+                } else {
+                    $result2 = executeSQL($conn, $query22, array($numeroDoCartao, $idapresentacao, session_id()));
+                }
 
                 if (hasRows($result2)) {
                     $rs = executeSQL($conn, $query3, array($cpf, $data, $hora, $codpeca), true);
-
+                    
                     if ($rs['TOTAL'] >= $limite) {
                         $erro = 'Você atingiu o limite de ' . $limite . ' ingresso(s) promocional(is) para esse cartão em um ou mais eventos.<br><br>Favor revisar o pedido.';
                     } else if ($rs['TOTAL'] + $comprando > $limite) {

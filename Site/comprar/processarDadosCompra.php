@@ -181,7 +181,7 @@ if ($bilhete_inativo[0]) {
 
 //Dados dos itens de pedido
 $query = "SELECT R.ID_RESERVA, R.ID_APRESENTACAO, R.ID_APRESENTACAO_BILHETE, R.ID_CADEIRA, R.DS_CADEIRA, R.DS_SETOR, E.ID_EVENTO, E.DS_EVENTO, ISNULL(LE.DS_LOCAL_EVENTO, B.DS_NOME_TEATRO) DS_NOME_TEATRO, CONVERT(VARCHAR(10), A.DT_APRESENTACAO, 103) DT_APRESENTACAO, A.HR_APRESENTACAO,
-            AB.VL_LIQUIDO_INGRESSO, AB.DS_TIPO_BILHETE
+            AB.VL_LIQUIDO_INGRESSO, AB.DS_TIPO_BILHETE, R.NR_BENEFICIO
             FROM MW_RESERVA R
             INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO AND A.IN_ATIVO = '1'
             INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO AND E.IN_ATIVO = '1'
@@ -272,8 +272,11 @@ $queryServicos = "SELECT TOP 1 IN_TAXA_POR_PEDIDO
 $rsServicos = executeSQL($mainConnection, $queryServicos, array(session_id()), true);
 
 $itensPedido = 0;
+$nr_beneficio = null;
 while ($itens = fetchResult($result)) {
     $itensPedido++;
+
+    $nr_beneficio = $itens['NR_BENEFICIO'] ? $itens['NR_BENEFICIO'] : $nr_beneficio;
     
     if ($itensPedido == 1) {
         if ($rsServicos['IN_TAXA_POR_PEDIDO'] == 'S') {
@@ -304,10 +307,11 @@ $query = 'UPDATE MW_PEDIDO_VENDA SET
                         ,VL_TOTAL_TAXA_CONVENIENCIA = ?
                         ,ID_IP = ?
                         ,NR_PARCELAS_PGTO = ?
+                        ,NR_BENEFICIO = ?
 			WHERE ID_PEDIDO_VENDA = ?
 				AND ID_CLIENTE = ?';
 
-$params = array(($totalIngressos + $frete + $totalConveniencia), $totalIngressos, $totalConveniencia, $_SERVER["REMOTE_ADDR"], $PaymentDataCollection['NumberOfPayments'], $newMaxId, $_SESSION['user']);
+$params = array(($totalIngressos + $frete + $totalConveniencia), $totalIngressos, $totalConveniencia, $_SERVER["REMOTE_ADDR"], $PaymentDataCollection['NumberOfPayments'], $nr_beneficio, $newMaxId, $_SESSION['user']);
 
 if ($itensPedido > 0) {
     $gravacao = executeSQL($mainConnection, $query, $params);

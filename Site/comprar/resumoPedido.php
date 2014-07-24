@@ -6,7 +6,7 @@ require_once('../settings/settings.php');
 session_start();
 
 $mainConnection = mainConnection();
-$query = 'SELECT R.ID_APRESENTACAO, R.ID_APRESENTACAO_BILHETE, R.ID_CADEIRA, R.DS_CADEIRA, R.DS_SETOR, E.ID_EVENTO, E.DS_EVENTO, B.DS_NOME_TEATRO, A.DT_APRESENTACAO, A.HR_APRESENTACAO, E.IN_ENTREGA_INGRESSO, R.ID_RESERVA, R.CD_BINITAU
+$query = 'SELECT R.ID_APRESENTACAO, R.ID_APRESENTACAO_BILHETE, R.ID_CADEIRA, R.DS_CADEIRA, R.DS_SETOR, E.ID_EVENTO, E.DS_EVENTO, B.DS_NOME_TEATRO, A.DT_APRESENTACAO, A.HR_APRESENTACAO, E.IN_ENTREGA_INGRESSO, R.ID_RESERVA, R.CD_BINITAU, R.NR_BENEFICIO
 				FROM MW_RESERVA R
 				INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO AND A.IN_ATIVO = \'1\'
 				INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO AND E.IN_ATIVO = \'1\'
@@ -26,6 +26,10 @@ while ($rs = fetchResult($result)) {
 	$hora = explode('h', $rs['HR_APRESENTACAO']);
 	$data = explode('/', $rs['DT_APRESENTACAO']->format('d/m/Y'));
 	$tempo = mktime($hora[0], $hora[1], 0, $data[1], $data[0], $data[2]);
+
+	$beneficio_size = $rs['NR_BENEFICIO'] ? '12' : '6';
+	$beneficio_texto = $rs['NR_BENEFICIO'] ? 'número cartão/matrícula SESC' : $beneficio_size . ' primeiros número do seu Itaucard';
+
 	if($_SESSION["dataEvento"] == "" || $tempo < $_SESSION["dataEvento"]) {
 		$_SESSION["dataEvento"] = $tempo;
 	}
@@ -113,15 +117,15 @@ while ($rs = fetchResult($result)) {
 							<img src="">
 						</div>
 						<div class="ajuda">
-							<p class="frase1 <?php echo $rs['CD_BINITAU'] ? 'hidden' : 'notHidden'; ?>">valide o benefício</p>
-							<p class="frase2 <?php echo $rs['CD_BINITAU'] ? 'hidden' : 'notHidden'; ?>">insira o número e clique validar</p>
-							<p class="frase3 <?php echo !$rs['CD_BINITAU'] ? 'hidden' : 'notHidden'; ?>">benefício válido</p>
+							<p class="frase1 <?php echo ($rs['CD_BINITAU'] || $rs['NR_BENEFICIO']) ? 'hidden' : 'notHidden'; ?>">valide o benefício</p>
+							<p class="frase2 <?php echo ($rs['CD_BINITAU'] || $rs['NR_BENEFICIO']) ? 'hidden' : 'notHidden'; ?>">insira o número e clique validar</p>
+							<p class="frase3 <?php echo !($rs['CD_BINITAU'] || $rs['NR_BENEFICIO']) ? 'hidden' : 'notHidden'; ?>">benefício válido</p>
 						</div>
-						<div class="icone_validador <?php echo $rs['CD_BINITAU'] ? 'valido' : ''; ?>"></div>
+						<div class="icone_validador <?php echo ($rs['CD_BINITAU'] || $rs['NR_BENEFICIO']) ? 'valido' : ''; ?>"></div>
 						<div class="container_validador">
-							<input type="text" name="bin[]" class="validador_itau  <?php echo $rs['CD_BINITAU'] ? 'hidden' : 'notHidden'; ?>" placeholder="6 primeiros número do seu Itaucard" maxlength="6" value="<?php echo $rs['CD_BINITAU']; ?>" <?php echo $rs['CD_BINITAU'] ? 'readonly' : ''; ?>>
-							<a class="validarBin <?php echo $rs['CD_BINITAU'] ? 'hidden' : 'notHidden'; ?>" href="#">validar</a>
-							<img class="<?php echo !$rs['CD_BINITAU'] ? 'hidden' : 'notHidden'; ?>" src="">
+							<input type="text" name="bin[]" class="validador_itau  <?php echo ($rs['CD_BINITAU'] || $rs['NR_BENEFICIO']) ? 'hidden' : 'notHidden'; ?>" placeholder="<?php echo $beneficio_texto; ?>" maxlength="<?php echo $beneficio_size; ?>" value="<?php echo $rs['CD_BINITAU'].$rs['NR_BENEFICIO']; ?>" <?php echo ($rs['CD_BINITAU'] || $rs['NR_BENEFICIO']) ? 'readonly' : ''; ?>>
+							<a class="validarBin <?php echo ($rs['CD_BINITAU'] || $rs['NR_BENEFICIO']) ? 'hidden' : 'notHidden'; ?>" href="#">validar</a>
+							<img class="<?php echo !($rs['CD_BINITAU'] || $rs['NR_BENEFICIO']) ? 'hidden' : 'notHidden'; ?>" src="">
 						</div>
 					</div>
 				</td>

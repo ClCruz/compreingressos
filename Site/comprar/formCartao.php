@@ -22,7 +22,12 @@ if ($_POST) {
                   order by ds_meio_pagamento";
 	$result = executeSQL($mainConnection, $query);
 
-	$query = "SELECT top 1 cd_binitau from mw_reserva where cd_binitau is not null and id_session = ?";
+	// que nao sejam eventos utilizando o cartao do sesc
+    $query = "SELECT top 1 cd_binitau from mw_reserva r
+                inner join mw_apresentacao a on a.id_apresentacao = r.id_apresentacao
+                inner join mw_evento e on e.id_evento = a.id_evento
+                where cd_binitau is not null and id_session = ?
+                and not (codpeca in (2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44) and id_base = 136)";
 	$bin = executeSQL($mainConnection, $query, array(session_id()), true);
 	$bin = empty($bin) ? '' : substr($bin['cd_binitau'], 0, 4) . '-' . substr($bin['cd_binitau'], -2);
 

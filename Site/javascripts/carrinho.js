@@ -139,10 +139,15 @@ $(function() {
 							.val($mesmoBinSelecionado.filter(function(){return !$(this).parent().is($this)}).closest('tr.complementar').next('.beneficio').find('[name="bin\\[\\]"]').val());
 						window.validarBin = function(){$this.closest('tr').next('.beneficio').find('.validarBin').trigger('click', [true])};
 					} else {
+						sizeBin = $this.find('option:selected').attr('sizeBin') ? $this.find('option:selected').attr('sizeBin') : 6;
+						placeholder = sizeBin != 6 ? 'número cartão/matrícula SESC' : sizeBin + ' primeiros número do seu Itaucard';
+
 						$this.closest('tr').addClass('complementar')
-							.next('.beneficio').slideDown()
+							.next('.beneficio')
+							.find('input[name=bin\\[\\]]').attr('maxlength', sizeBin).attr('placeholder', placeholder).end()
 							.find('.img_complemento img').attr('src', $this.find('option:selected').attr('img1')).end()
-							.find('.container_validador img').attr('src', $this.find('option:selected').attr('img2'));
+							.find('.container_validador img').attr('src', $this.find('option:selected').attr('img2')).end()
+							.slideDown();
 					}
 				}
 			} else {
@@ -215,7 +220,7 @@ $(function() {
 			$bin = $tr.find('.validador_itau'),
 			reserva = $tr.prev('tr').find('[name="reserva\\[\\]"]').val();
 
-		if ($bin.val().length < 6) {
+		if ($bin.val().length < $bin.attr('maxlength')) {
 			$bin.addClass('erro');
 		} else {
 			$bin.removeClass('erro');

@@ -145,7 +145,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
 
 								<input type="button" class="submit salvar_dados">
 								<div class="erro_help">
-									<p class="help senha hidden">sua senha foi alterada com sucesso</p>
+									<p class="help senha hidden">senha alterada com sucesso</p>
 								</div>
 							</div>
 						</div>

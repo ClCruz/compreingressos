@@ -241,7 +241,7 @@ $(document).ready(function(){
   
   /* Fixa janela de erro */
   if($('div.alert').length > 0){
-  $('div.alert a').on('click',function(){
+  $('div.alert, div.alert a').on('click',function(){
     $('div.alert').slideUp(150);
   });
   var alerttop = $('div.alert').offset().top;

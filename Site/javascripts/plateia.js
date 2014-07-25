@@ -257,10 +257,10 @@ $(function() {
     });
   }
 	
-  //$('#piso').change(function() {
-  $('a.setor').click(function(event) {
-    event.preventDefault();
-    //$(".container_ingressos p.nome").html($(this).text());
-    document.location = 'etapa1.php?apresentacao=' + $(this).attr('id') + '&eventoDS=' + $.getUrlVar('eventoDS') + '#info';
-  });
+  if ($('#setor option').length > 2) {
+    $('.container_locais_select').slideDown();
+    $('#setor').selectbox('detach').find('option:first').remove().end().selectbox('attach').on('change', function(event) {
+      if ($(this).val() != '') document.location = 'etapa1.php?apresentacao=' + $(this).val() + '&eventoDS=' + $.getUrlVar('eventoDS') + '#info';
+    });
+  }
 });

@@ -1027,6 +1027,32 @@ div.container_escolha_ingresso div.container_locais p{
 	margin:0 40px 0 0;
 }
 
+div.container_escolha_ingresso div.container_locais_select{
+  float:left;
+  margin-top:13px;
+}
+
+div.container_escolha_ingresso div.container_locais_select .sbHolder{
+  width:582px;
+  margin-right:14px;
+}
+
+div.container_escolha_ingresso div.container_locais_select .sbOptions{
+  width:594px;
+}
+
+div.container_escolha_ingresso div.container_locais_select .sbSelector{
+  width:594px;
+}
+
+div.container_escolha_ingresso div.container_locais_select a.sbSelector{
+  color:#930606;
+}
+
+div.container_escolha_ingresso div.container_locais_select a.sbSelector:hover{
+  color:#CCC;
+}
+
 div.container_escolha_ingresso div.container_ingressos{
 	float:left;
 	width:596px;
@@ -1052,20 +1078,20 @@ div.container_escolha_ingresso div.ingresso div.descricao{
 	margin-top:-8px;
 }
 
-div.container_escolha_ingresso  div.ingresso div.descricao p.nome{
-	font-size:22px;
+div.container_escolha_ingresso div.ingresso div.descricao p.nome{
+	font-size:21px;
 	font-weight:bold;
 }
 
-div.container_escolha_ingresso  div.ingresso div.descricao p.nome span{
+div.container_escolha_ingresso div.ingresso div.descricao p.nome span{
 	font-weight:300;
 }
 
-div.container_escolha_ingresso  div.ingresso div.descricao p.help{
+div.container_escolha_ingresso div.ingresso div.descricao p.help{
 	font-size:18px;
 }
 
-div.container_escolha_ingresso  div.ingresso div.descricao p.desconto{
+div.container_escolha_ingresso div.ingresso div.descricao p.desconto{
 	font-size:12px;
 	margin-top:1px;
 }
@@ -2097,8 +2123,16 @@ div.erro_help p.help{
 	text-align:right;
 }
 
-div.erro_help p.help.senha{
-	width:250px;
+div.erro_help p.help.senha {
+    width: 250px;
+}
+
+div.erro_help p.help.senha.hidden {
+    color: #000;
+    float: left;
+    font-size: 14px;
+    margin-top: 10px;
+    text-align: left;
 }
 
 div.alert{

@@ -119,3 +119,8 @@ div.tooltip span {
 	font-size: 11px;
 	line-height: 24px;
 }
+
+div.erro_help p.help {
+	float: left;
+	text-align: left;
+}

@@ -446,6 +446,7 @@ function updateValorServico(bilhete, target) {
 				updateValorServicoPorPedido(bilhete, target);
 				target.parent().html(' - <span class="valorConveniencia hidden">0,00</span>');
 			} else {
+				target.parent().html('R$ '+data.valor+'<span class="valorConveniencia hidden">'+data.valor+'</span>');
 				$('#servico_pedido').text('0');
 				$('#servico_por_pedido').slideUp('fast');
 			}

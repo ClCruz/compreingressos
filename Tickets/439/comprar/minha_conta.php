@@ -124,7 +124,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
 						<div class="input_area login troca_de_senha">
 							<div class="icone"></div>
 							<div class="inputs">
-								<p class="titulo">Login</p>
+								<p class="titulo">Trocar a senha</p>
 								<input type="password" name="senha" id="senha" placeholder="digite sua senha atual">
 								<div class="erro_help">
 									<p class="erro">senha atual não confere</p>

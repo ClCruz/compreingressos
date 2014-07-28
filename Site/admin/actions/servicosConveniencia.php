@@ -10,8 +10,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
 
     if (isset($_POST['valor'])) {
         $_POST['valor'] = str_replace(',', '.', $_POST['valor']);
-        $_POST['valor2'] = str_replace(',', '.', $_POST['valor2']);
+        $_POST['valor2'] = $_POST['valor2'] ? str_replace(',', '.', $_POST['valor2']) : $_POST['valor'];
         $_POST['valor3'] = str_replace(',', '.', $_POST['valor3']);
+        $_POST['valor4'] = $_POST['valor4'] ? str_replace(',', '.', $_POST['valor4']) : $_POST['valor3'];
         if (!is_numeric($_POST['valor'])) {
             echo 'Favor informar um valor válido para a taxa normal.';
             exit();
@@ -22,6 +23,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
         }
         if (!is_numeric($_POST['valor3'])) {
             echo 'Favor informar um valor válido para a taxa de um único ingresso.';
+            exit();
+        }
+        if (!is_numeric($_POST['valor4'])) {
+            echo 'Favor informar um valor válido para a taxa de um único ingresso promocional.';
             exit();
         }
         $_POST['cobrarPorPedido'] = $_POST['cobrarPorPedido'] == 'on' ? 'S' : 'N';
@@ -45,8 +50,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                   VL_TAXA_PROMOCIONAL,
                   IN_TAXA_POR_PEDIDO,
                   VL_TAXA_UM_INGRESSO,
+                  VL_TAXA_UM_INGRESSO_PROMOCIONAL,
                   IN_COBRAR_PDV )
-                  VALUES (?, CONVERT(DATETIME, ?, 103), ?, ?, ?, ?, ?, ?)";        
+                  VALUES (?, CONVERT(DATETIME, ?, 103), ?, ?, ?, ?, ?, ?, ?)";        
         $params = array($_POST['idEvento'],
                         $_POST['data'],
                         $_POST['valor'],
@@ -54,6 +60,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                         $_POST['valor2'],
                         $_POST['cobrarPorPedido'],
                         $_POST['valor3'],
+                        $_POST['valor4'],
                         $_POST['cobrarNoPDV']);
 	$queryToLog = $query;
 	$paramsToLog = $params;
@@ -94,6 +101,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                         T.VL_TAXA_PROMOCIONAL = ?,
                         T.IN_TAXA_POR_PEDIDO = ?,
                         T.VL_TAXA_UM_INGRESSO = ?,
+                        T.VL_TAXA_UM_INGRESSO_PROMOCIONAL = ?,
                         T.IN_COBRAR_PDV = ?
                     FROM
                         MW_TAXA_CONVENIENCIA T
@@ -108,6 +116,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                             $_POST['valor2'],
                             $_POST['cobrarPorPedido'],
                             $_POST['valor3'],
+                            $_POST['valor4'],
                             $_POST['cobrarNoPDV'],
                             $_GET['idEvento'],
                             $_GET['data']);
@@ -143,7 +152,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                     T.VL_TAXA_CONVENIENCIA = ?,
                     T.IN_TAXA_CONVENIENCIA = 'V',
                     T.VL_TAXA_PROMOCIONAL = ?,
-                    T.VL_TAXA_UM_INGRESSO = ?
+                    T.VL_TAXA_UM_INGRESSO = ?,
+                    T.VL_TAXA_UM_INGRESSO_PROMOCIONAL = ?
                 FROM
                     MW_TAXA_CONVENIENCIA T
                     INNER JOIN MW_EVENTO R ON R.ID_EVENTO = T.ID_EVENTO
@@ -151,7 +161,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                     R.ID_BASE = ?
                     AND T.IN_TAXA_POR_PEDIDO = 'S'
                     AND CONVERT(CHAR(8), T.DT_INICIO_VIGENCIA, 112) >= CONVERT(CHAR(8), GETDATE(), 112)";
-        $params = array($_POST['valorPorPedido'], $_POST['valorPorPedido'], $_POST['valorPorPedido'], $_POST['teatro']);
+        $params = array($_POST['valorPorPedido'], $_POST['valorPorPedido'], $_POST['valorPorPedido'], $_POST['valorPorPedido'], $_POST['teatro']);
         $queryToLog = $query;
         $paramsToLog = $params;
 

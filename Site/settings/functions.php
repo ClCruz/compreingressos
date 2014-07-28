@@ -139,6 +139,7 @@ function obterValorServico($id_bilhete, $valor_pedido = false, $id_pedido = null
                         VL_TAXA_PROMOCIONAL,
                         IN_TAXA_POR_PEDIDO,
                         VL_TAXA_UM_INGRESSO,
+                        VL_TAXA_UM_INGRESSO_PROMOCIONAL,
                         IN_COBRAR_PDV
                       FROM
                         MW_TAXA_CONVENIENCIA
@@ -153,6 +154,7 @@ function obterValorServico($id_bilhete, $valor_pedido = false, $id_pedido = null
             $normal = $rs['VL_TAXA_CONVENIENCIA'];
             $promo = $rs['VL_TAXA_PROMOCIONAL'];
             $vl_um_ingresso = $rs['VL_TAXA_UM_INGRESSO'];
+            $vl_um_ingresso_promo = $rs['VL_TAXA_UM_INGRESSO_PROMOCIONAL'];
             $taxa_por_pedido = $rs['IN_TAXA_POR_PEDIDO'];
             $is_cobrar_pdv = $rs['IN_COBRAR_PDV'];
 
@@ -183,8 +185,8 @@ function obterValorServico($id_bilhete, $valor_pedido = false, $id_pedido = null
                 }
             } else {
                 $valor = $tipo == 'V'
-                                ? ($quantidade['INGRESSOS'] == 1 ? $vl_um_ingresso : (is_null($rs['CODPECA']) ? $normal : $promo))
-                                : (($quantidade['INGRESSOS'] == 1 ? $vl_um_ingresso : (is_null($rs['CODPECA']) ? $normal : $promo)) / 100) * $rs['VL_LIQUIDO_INGRESSO'];
+                                ? ($quantidade['INGRESSOS'] == 1 ? (is_null($rs['CODPECA']) ? $vl_um_ingresso : $vl_um_ingresso_promo) : (is_null($rs['CODPECA']) ? $normal : $promo))
+                                : (($quantidade['INGRESSOS'] == 1 ? (is_null($rs['CODPECA']) ? $vl_um_ingresso : $vl_um_ingresso_promo) : (is_null($rs['CODPECA']) ? $normal : $promo)) / 100) * $rs['VL_LIQUIDO_INGRESSO'];
             }
 
             if( isset($_SESSION['usuario_pdv']) and $_SESSION['usuario_pdv'] == 1 ){

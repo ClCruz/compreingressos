@@ -1297,6 +1297,7 @@ function comboTipoDocumento($name, $selected) {
     return $combo;
 }
 
+// combo de setor para o cliente na etapa1
 function comboSetor($name, $apresentacao_id) {
 	$mainConnection = mainConnection();
     $result = executeSQL($mainConnection, "SELECT ID_APRESENTACAO, DS_PISO FROM MW_APRESENTACAO
@@ -1306,10 +1307,12 @@ function comboSetor($name, $apresentacao_id) {
 				                          AND IN_ATIVO = '1'
 				                          ORDER BY DS_PISO", array($apresentacao_id, $apresentacao_id, $apresentacao_id));
 
-    $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um setor...</option>';
+    $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">selecione outro setor</option>';
     while ($rs = fetchResult($result)) {
-	$combo .= '<option value="' . $rs['ID_APRESENTACAO'] . '"' .
-		(($apresentacao_id == $rs['ID_APRESENTACAO']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_PISO']) . '</option>';
+    	// esconde setor atual
+    	if ($apresentacao_id != $rs['ID_APRESENTACAO']) {
+			$combo .= '<option value="' . $rs['ID_APRESENTACAO'] . '">' . utf8_encode($rs['DS_PISO']) . '</option>';
+		}
     }
     $combo .= '</select>';
 

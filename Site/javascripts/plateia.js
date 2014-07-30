@@ -259,7 +259,7 @@ $(function() {
 	
   if ($('#setor option').length > 2) {
     $('.container_locais_select').slideDown();
-    $('#setor').selectbox('detach').find('option:first').remove().end().selectbox('attach').on('change', function(event) {
+    $('#setor').on('change', function(event) {
       if ($(this).val() != '') document.location = 'etapa1.php?apresentacao=' + $(this).val() + '&eventoDS=' + $.getUrlVar('eventoDS') + '#info';
     });
   }

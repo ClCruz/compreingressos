@@ -124,3 +124,7 @@ div.erro_help p.help {
 	float: left;
 	text-align: left;
 }
+
+div.resumo_espetaculo div.resumo p.teatro {
+	min-height: 20px;
+}

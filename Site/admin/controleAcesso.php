@@ -41,20 +41,20 @@ if(isset($_GET["gerar"]) && $_GET["gerar"] == "true"){
                         T.TIPBILHETE,
                         COUNT(1) AS QTD
                 FROM
-                        TABCONTROLESEQVENDA	CS
+                        TABCONTROLESEQVENDA CS
                         INNER JOIN
-                        TABAPRESENTACAO		A
-                        ON	A.CODAPRESENTACAO = CS.CODAPRESENTACAO
+                        TABAPRESENTACAO     A
+                        ON  A.CODAPRESENTACAO = CS.CODAPRESENTACAO
                         INNER JOIN
-                        TABPECA				P
-                        ON	P.CODPECA = A.CODPECA
+                        TABPECA             P
+                        ON  P.CODPECA = A.CODPECA
                         INNER JOIN
-                        TABSETOR			S
-                        ON	S.CODSETOR = SUBSTRING(CODBAR, 18,1)
-                        AND	S.CODSALA  = A.CODSALA
+                        TABSETOR            S
+                        ON  S.CODSETOR = SUBSTRING(CODBAR, 6,1)
+                        AND S.CODSALA  = A.CODSALA
                         INNER JOIN
-                        TABTIPBILHETE		T
-                        ON	T.CODTIPBILHETE = SUBSTRING(CODBAR, 19,3)
+                        TABTIPBILHETE       T
+                        ON  T.CODTIPBILHETE = SUBSTRING(CODBAR, 15,3)
                 WHERE
                         STATUSINGRESSO = 'U'
                 AND P.CODPECA = ?
@@ -78,9 +78,9 @@ if(sqlErrors())
 <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
 <script type="text/javascript" language="javascript">
 $(function() {
-	var pagina = '<?php echo $pagina; ?>'
-	$('.button').button();
-	//$(".datepicker").datepicker();
+    var pagina = '<?php echo $pagina; ?>'
+    $('.button').button();
+    //$(".datepicker").datepicker();
         $('input.datepicker').datepicker({
               changeMonth: true,
               changeYear: true,
@@ -90,9 +90,9 @@ $(function() {
                   }
               }
                  }).datepicker('option', $.datepicker.regional['pt-BR']);
-	
-	//Gera relatorio
-	$("#btnRelatorio").click(function(){
+    
+    //Gera relatorio
+    $("#btnRelatorio").click(function(){
             if($("#local").val() == "")
                 $.dialog({title: 'Alerta...', text: 'Selecione o local!'});
             else if($("#evento").val() == "")
@@ -103,7 +103,7 @@ $(function() {
                     '&cod_peca='+ $("#evento").val() +"&gerar=true";
                     document.location = '?p=' + pagina.replace('.php', '') + ''+ url + '';
             }
-	});
+    });
 
         $("#btnExportar").click(function(){
             if($("#local").val() == "")
@@ -119,16 +119,16 @@ $(function() {
         });
 
         $('tr:not(.ui-widget-header)').hover(function() {
-		$(this).addClass('ui-state-hover');
-	}, function() {
-		$(this).removeClass('ui-state-hover');
-	});
+        $(this).addClass('ui-state-hover');
+    }, function() {
+        $(this).removeClass('ui-state-hover');
+    });
 
         $("#local").change(function(){
-		document.location = '?p=' + pagina.replace('.php', '') +
+        document.location = '?p=' + pagina.replace('.php', '') +
                     '&dt_inicial=' + $("#dt_inicial").val() + '&dt_final='+
                     $("#dt_final").val() + '&local=' + $("#local").val()+ '';
-	});
+    });
 
         $("#evento").change(function(){
             if($("#local").val() == "")
@@ -146,9 +146,9 @@ $(function() {
 </script>
 <style type="text/css">
 #paginacao{
-	width: 100%;
-	text-align: center;
-	margin-top: 10px;	
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;   
 }
 .tableData{
     width: 600px !important;
@@ -190,11 +190,11 @@ $(function() {
 <table width="760" class="ui-widget ui-widget-content" >
     <thead>
     <tr class="ui-widget-header">
-        <th	align="left" width="240" class="titulogrid">Data de Apresentação</th>
-        <th	align="center" width="104" class="titulogrid">Sessão</th>
-        <th	align="center" width="104" class="titulogrid">Setor</th>
-        <th	align="center" width="104" class="titulogrid">Tipo</th>
-        <th	align="center" width="104" class="titulogrid">Qtd</th>
+        <th align="left" width="240" class="titulogrid">Data de Apresentação</th>
+        <th align="center" width="104" class="titulogrid">Sessão</th>
+        <th align="center" width="104" class="titulogrid">Setor</th>
+        <th align="center" width="104" class="titulogrid">Tipo</th>
+        <th align="center" width="104" class="titulogrid">Qtd</th>
     </tr>
     </thead>
 
@@ -207,8 +207,8 @@ $(function() {
     <tr>
         <td align="left"  class="texto"><?php echo $dados["DATAPRESENTACAO"]; ?></td>
         <td align="center"  class="texto"><?php echo $dados["HORSESSAO"];  ?></td>
-        <td align="center" class="texto"><?php echo $dados["NOMSETOR"]; ?></td>
-        <td align="center" class="texto"><?php echo $dados["TIPBILHETE"]; ?></td>
+        <td align="center" class="texto"><?php echo utf8_encode($dados["NOMSETOR"]); ?></td>
+        <td align="center" class="texto"><?php echo utf8_encode($dados["TIPBILHETE"]); ?></td>
         <td align="center" class="texto"><?php echo $dados["QTD"]; ?></td>
     </tr>
     <?php

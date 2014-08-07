@@ -176,9 +176,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 330, true)) {
 						</td>
 					</th>
 					<tr class="print_only"><td colspan="4">&nbsp;</td></tr>
-					<tr class="print_only"><td colspan="4">Importante: Este relatório contabiliza apenas as pessoas que efetivamente compareceram ao evento.</td></tr>
-					<tr class="print_only"><td colspan="4">Este relatório não contabiliza as pessoas que não compareceram, isto significa que os valores dos ingressos vendidos apresentados no borderô podem ser diferentes dos valores demonstrados neste relatório.</td></tr>';
-
+					<tr class="print_only"><td colspan="4">Obs. Importante: Este relatório contabiliza apenas as pessoas que efetivamente compareceram ao evento, isto significa que a quantidade de ingressos e valores expressos no borderô podem ser diferentes dos demonstrados neste relatório, por razões de complemento de meia entrada e ausência do expectador ao evento.</td></tr>';
 		echo $header.$html.$footer;
 		die();
 		
@@ -260,8 +258,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 330, true)) {
 										and			  iac.CodPeca = tbAp.CodPeca
 		            where       tbPc.CodPeca = ?
 				            /*AND CONVERT(DATETIME, CONVERT(VARCHAR(8), TBAP.DATAPRESENTACAO, 112) + ' ' + TBAP.HORSESSAO)
-				            	>= CONVERT(DATETIME, CONVERT(VARCHAR(8), DATEADD(DAY, -1, GETDATE()), 112) + ' 22:00')
-				            AND TBAP.DATAPRESENTACAO = CONVERT(DATETIME, ?, 112)*/
+				            	>= CONVERT(DATETIME, CONVERT(VARCHAR(8), DATEADD(DAY, -1, GETDATE()), 112) + ' 22:00')*/
+				            AND TBAP.DATAPRESENTACAO = CONVERT(DATETIME, ?, 112)
 		            group by tbAp.HorSessao
 		            order by tbAp.HorSessao";
 		$params = array($_GET['cboTeatro'], $_SESSION['admin'], $_GET['cboPeca'], $_GET['cboApresentacao']);

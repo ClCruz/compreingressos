@@ -3,49 +3,66 @@ require_once('../settings/functions.php');
 $mainConnection = mainConnection();
 session_start();
 
+if ($_GET['xls']) {
+	header("Content-type: application/vnd.ms-excel");
+	header("Content-type: application/force-download");
+	header("Content-Disposition: attachment; filename=relVendasPontoVendaOperador.xls");
+	?><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><?php
+}
+
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 33, true)) {
 
     require_once('../settings/Paginator.php');
 
     $pagina = basename(__FILE__);
 
-    if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["local"]) && isset($_GET["evento"])
-	    and acessoPermitidoEvento($_GET["local"], $_SESSION['admin'], $_GET["evento"])) {
+    if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["local"]) && isset($_GET["evento"])) {
 
-	$conn = getConnection($_GET["local"]);
+    $id_base = $_GET["local"];
+	$conn = getConnection($id_base);
 
 	//relatório
 	$strSql = " declare @CodTipBilhete	int,
 			    @TipBilhete		varchar(20),
 			    @DatMovimento	datetime,
 			    @NomSetor		varchar(20),
-			    @Indice			int,
-			    @Preco			money,
+			    @Indice		int,
+			    @Preco		money,
 			    @VlrAgregados	money,
 			    @OUTROSVALORES	money,
 			    @ds_canal_venda	varchar(20),
 			    @DtIniApr		varchar(8),
 			    @DtFimApr		varchar(8),
 			    @codPeca		int,
-                            @codApresentacao    int
+			    @descrcaixa		varchar(50),
+			    @nomusuario		varchar(30),
+                @CodApresentacao    int,
+			    @id_base		int,
+			    @id_usuario		int
 
 	    set @codPeca = ?
+	    set @id_base = ?
 	    set @DtIniApr = ?
 	    set @DtFimApr = ?
+	    set @id_usuario = ?
 
 	    set nocount on
 
 	    SELECT
+			ci_middleway..mw_evento.ds_evento,
 		    tabLugSala.CodTipBilhete,
 		    tabTipBilhete.TipBilhete,
+		    tabforpagamento.ForPagto,
 		    tabLancamento.DatMovimento,
 		    tabSetor.NomSetor,
 		    tabforpagamento.tipcaixa,
 		    tabLugSala.Indice,
-                    tabLugSala.CodApresentacao,
+            tabLugSala.CodApresentacao,
 		    tabLancamento.ValPagto as Preco2,
 		    tabLancamento.ValPagto as Preco,
 		    ci_middleway..mw_canal_venda.ds_canal_venda,
+		    tabCaixa.descrcaixa,
+		    tabUsuario.nomusuario,
 		    sum(isnull(tabIngressoAgregados.valor,0))  as VlrAgregados,
 		    0 AS OUTROSVALORES,
 		    1 AS CONTABILIZAR
@@ -69,6 +86,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 33, true)) {
 		    INNER JOIN
 			    tabSala
 			    ON tabApresentacao.CodSala		   = tabSala.CodSala
+			INNER JOIN
+				ci_middleway..mw_evento
+				ON ci_middleway..mw_evento.codpeca	= tabApresentacao.codpeca
+				AND ci_middleway..mw_evento.id_base = @id_base
+			INNER JOIN
+				ci_middleway..mw_acesso_concedido
+				ON ci_middleway..mw_acesso_concedido.codpeca		= ci_middleway..mw_evento.codpeca
+				AND ci_middleway..mw_acesso_concedido.id_base 		= ci_middleway..mw_evento.id_base
+				AND ci_middleway..mw_acesso_concedido.id_usuario	= @id_usuario
 		    INNER JOIN
 		    tabLancamento
 			    ON  tabTipBilhete.CodTipBilhete     = tabLancamento.CodTipBilhete
@@ -101,32 +127,40 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 33, true)) {
 				      and tabLancamento.indice          = bb.indice)
 	    and tabLancamento.ValPagto > 0
 	    GROUP BY
+			ci_middleway..mw_evento.ds_evento,
 		    tabLugSala.CodTipBilhete,
 		    tabTipBilhete.TipBilhete,
+		    tabforpagamento.ForPagto,
 		    tabLancamento.DatMovimento,
 		    tabSetor.NomSetor,
 		    tabLugSala.Indice,
-                    tabLugSala.CodApresentacao,
+            tabLugSala.CodApresentacao,
 		    tabLancamento.ValPagto,
 		    tabforpagamento.tipcaixa,
-		    ci_middleway..mw_canal_venda.ds_canal_venda
-	
-	
-	INSERT INTO #TMP_RESUMO
-	SELECT
+		    ci_middleway..mw_canal_venda.ds_canal_venda,
+		    tabCaixa.descrcaixa,
+		    tabUsuario.nomusuario
+		    
+		INSERT INTO #TMP_RESUMO
+		SELECT
+			ci_middleway..mw_evento.ds_evento,
 		    tabLugSala.CodTipBilheteComplMeia as CodTipBilhete,
 		    tabTipBilhete.TipBilhete,
+		    tabforpagamento.ForPagto,
 		    tabLancamento.DatMovimento,
 		    tabSetor.NomSetor,
 		    tabforpagamento.tipcaixa,
 		    tabLugSala.Indice,
-                    tabLugSala.CodApresentacao,
+            tabLugSala.CodApresentacao,
 		    tabLancamento.ValPagto as Preco2,
 		    tabLancamento.ValPagto as Preco,
 		    ci_middleway..mw_canal_venda.ds_canal_venda,
+		    tabCaixa.descrcaixa,
+		    tabUsuario.nomusuario,
 		    sum(isnull(tabIngressoAgregados.valor,0))  as VlrAgregados,
 		    0 AS OUTROSVALORES,
 		    0 AS CONTABILIZAR
+
 	    FROM
 		    tabLugSala
 		    INNER JOIN
@@ -145,6 +179,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 33, true)) {
 		    INNER JOIN
 			    tabSala
 			    ON tabApresentacao.CodSala		   = tabSala.CodSala
+			INNER JOIN
+				ci_middleway..mw_evento
+				ON ci_middleway..mw_evento.codpeca	= tabApresentacao.codpeca
+				AND ci_middleway..mw_evento.id_base = @id_base
+			INNER JOIN
+				ci_middleway..mw_acesso_concedido
+				ON ci_middleway..mw_acesso_concedido.codpeca		= ci_middleway..mw_evento.codpeca
+				AND ci_middleway..mw_acesso_concedido.id_base 		= ci_middleway..mw_evento.id_base
+				AND ci_middleway..mw_acesso_concedido.id_usuario	= @id_usuario
 		    INNER JOIN
 		    tabLancamento
 			    ON  tabTipBilhete.CodTipBilhete     = tabLancamento.CodTipBilhete
@@ -177,15 +220,19 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 33, true)) {
 				      and tabLancamento.indice          = bb.indice)
 	    and tabLancamento.ValPagto > 0
 	    GROUP BY
+			ci_middleway..mw_evento.ds_evento,
 		    tabLugSala.CodTipBilheteComplMeia,
 		    tabTipBilhete.TipBilhete,
+		    tabforpagamento.ForPagto,
 		    tabLancamento.DatMovimento,
 		    tabSetor.NomSetor,
 		    tabLugSala.Indice,
-                    tabLugSala.CodApresentacao,
+            tabLugSala.CodApresentacao,
 		    tabLancamento.ValPagto,
 		    tabforpagamento.tipcaixa,
-		    ci_middleway..mw_canal_venda.ds_canal_venda
+		    ci_middleway..mw_canal_venda.ds_canal_venda,
+		    tabCaixa.descrcaixa,
+		    tabUsuario.nomusuario
 
 
 	    declare C1 cursor for
@@ -195,11 +242,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 33, true)) {
 			    DatMovimento,
 			    NomSetor,
 			    Indice,
-                            CodApresentacao,
+                CodApresentacao,
 			    Preco,
 			    VlrAgregados,
 			    OUTROSVALORES,
-			    ds_canal_venda
+			    ds_canal_venda,
+			    descrcaixa,
+			    nomusuario
 
 		    from #TMP_RESUMO
 
@@ -212,11 +261,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 33, true)) {
 		    @DatMovimento,
 		    @NomSetor,
 		    @Indice,
-                    @CodApresentacao,
+            @CodApresentacao,
 		    @Preco,
 		    @VlrAgregados,
 		    @OUTROSVALORES,
-		    @ds_canal_venda
+		    @ds_canal_venda,
+		    @descrcaixa,
+		    @nomusuario
 
 
 	    while @@fetch_Status = 0
@@ -287,28 +338,37 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 33, true)) {
 			    @DatMovimento,
 			    @NomSetor,
 			    @Indice,
-                            @CodApresentacao,
+                @CodApresentacao,
 			    @Preco,
 			    @VlrAgregados,
 			    @OUTROSVALORES,
-			    @ds_canal_venda
+			    @ds_canal_venda,
+			    @descrcaixa,
+			    @nomusuario
 	    END
 
 	    Close C1
 	    Deallocate C1
 
 	    Select
+			ds_evento,
 		    isnull(ds_canal_venda, 'Forma n&atilde;o cadastrada') ds_canal_venda,
 		    tipbilhete,
+		    ForPagto,
 		    count(1) as qtd,
 		    sum(preco) as val,
 		    contabilizar
 	    from
 		    #TMP_RESUMO
 	    group by
+			ds_evento,
 		    isnull(ds_canal_venda, 'Forma n&atilde;o cadastrada'),
-		    tipbilhete, contabilizar
-	    order by ds_canal_venda, tipbilhete, qtd, val
+		    isnull(descrcaixa, 'N&atilde;o Informado'),
+		    nomusuario,
+		    tipbilhete,
+		    ForPagto,
+		    contabilizar
+	    order by ds_evento, ds_canal_venda, tipbilhete, ForPagto, qtd, val
 
 	    DROP TABLE #TMP_RESUMO";
 
@@ -317,7 +377,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 33, true)) {
 	$dtFinal = explode('/', $_GET['dt_final']);
 	$dtFinal = $dtFinal[2] . $dtFinal[1] . $dtFinal[0];
 
-	$params = array($_GET['evento'], $dtInicial, $dtFinal);
+	$codPeca = $_GET['evento'] == 'TODOS' ? null : $_GET['evento'];
+
+	$params = array($codPeca, $id_base, $dtInicial, $dtFinal, $_SESSION['admin']);
 	$result = executeSQL($conn, $strSql, $params);
     }
 ?>
@@ -325,78 +387,86 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 33, true)) {
     <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
     <script>
         $(function() {
-    	var pagina = '<?php echo $pagina; ?>'
-    	$('.button').button();
-    	//$(".datepicker").datepicker();
-    	$('input.datepicker').datepicker({
-    	    changeMonth: true,
-    	    changeYear: true,
-    	    onSelect: function(date, e) {
-    		if ($(this).is('#dt_inicial')) {
-    		    $('#dt_final').datepicker('option', 'minDate', $(this).datepicker('getDate'));
-    		}
-    	    }
-    	}).datepicker('option', $.datepicker.regional['pt-BR']);
-    	$('tr:not(.ui-widget-header)').hover(function() {
-    	    $(this).addClass('ui-state-hover');
-    	}, function() {
-    	    $(this).removeClass('ui-state-hover');
-    	});
+	    	var pagina = '<?php echo $pagina; ?>'
+	    	$('.button').button();
+	    	//$(".datepicker").datepicker();
+	    	$('input.datepicker').datepicker({
+	    	    changeMonth: true,
+	    	    changeYear: true,
+	    	    onSelect: function(date, e) {
+		    		if ($(this).is('#dt_inicial')) {
+		    		    $('#dt_final').datepicker('option', 'minDate', $(this).datepicker('getDate'));
+		    		}
+	    	    }
+	    	}).datepicker('option', $.datepicker.regional['pt-BR']);
+	    	$('tr:not(.ui-widget-header)').hover(function() {
+	    	    $(this).addClass('ui-state-hover');
+	    	}, function() {
+	    	    $(this).removeClass('ui-state-hover');
+	    	});
 
-    	$("#btnRelatorio").click(function(){
-    	    var data1 = $('#dt_inicial').val().split('/'),
-    	    data2 = $('#dt_final').val().split('/');
+	    	$("#btnRelatorio").click(function(){
+	    	    var data1 = $('#dt_inicial').val().split('/'),
+	    	    data2 = $('#dt_final').val().split('/');
 
-    	    data1 = Number(data1[2] + data1[1] + data1[0]);
-    	    data2 = Number(data2[2] + data2[1] + data2[0]);
+	    	    data1 = Number(data1[2] + data1[1] + data1[0]);
+	    	    data2 = Number(data2[2] + data2[1] + data2[0]);
 
-    	    if (data1 > data2) {
-    		$.dialog({title:'Alerta...', text:'A data inicial não pode ser maior que a final.'});
-    		return false;
-    	    }
+	    	    if (data1 > data2) {
+		    		$.dialog({title:'Alerta...', text:'A data inicial não pode ser maior que a final.'});
+		    		return false;
+	    	    }
 
-    	    if (($('#local').val() == '' && $('#evento').val() == '')
-    		||
-    		($('#local').val() == '' && $('#evento').val() != '')) {
-    		$.dialog({title:'Alerta...', text:'Você deve selecionar um local e um evento antes de continuar.'});
-    		return false;
-    	    }
+	    	    if (($('#local').val() == '' && $('#evento').val() == '')
+		    		||
+		    		($('#local').val() == '' && $('#evento').val() != '')) {
+		    		$.dialog({title:'Alerta...', text:'Você deve selecionar um local e um evento antes de continuar.'});
+		    		return false;
+	    	    }
 
-    	    if ($('#evento').val() == '') {
-    		document.location = '?p=' + pagina.replace('.php', '') +
-    		    '&dt_inicial=' + $("#dt_inicial").val() +
-    		    '&dt_final='+ $("#dt_final").val() +
-    		    '&local='+ $("#local").val() +
-    		    '&evento='+ $("#evento").val() +
-    		    '&eventoNome='+ $("#evento option:selected").text();
-    	    } else {
-    		document.location = 'esperaProcesso.php?redirect=' + escape('./?p=' + pagina.replace('.php', '') +
-    		    '&dt_inicial=' + $("#dt_inicial").val() +
-    		    '&dt_final='+ $("#dt_final").val() +
-    		    '&local='+ $("#local").val() +
-    		    '&evento='+ $("#evento").val() +
-    		    '&eventoNome='+ $("#evento option:selected").text());
-    	    }
-    	});
+	    	    if ($('#evento').val() == '') {
+		    		document.location = '?p=' + pagina.replace('.php', '') +
+		    		    '&dt_inicial=' + $("#dt_inicial").val() +
+		    		    '&dt_final='+ $("#dt_final").val() +
+		    		    '&local='+ $("#local").val() +
+		    		    '&evento='+ $("#evento").val() +
+		    		    '&eventoNome='+ $("#evento option:selected").text();
+	    	    } else {
+		    		document.location = 'esperaProcesso.php?redirect=' + escape('./?p=' + pagina.replace('.php', '') +
+		    		    '&dt_inicial=' + $("#dt_inicial").val() +
+		    		    '&dt_final='+ $("#dt_final").val() +
+		    		    '&local='+ $("#local").val() +
+		    		    '&evento='+ $("#evento").val() +
+		    		    '&eventoNome='+ $("#evento option:selected").text());
+	    	    }
+	    	});
 
-    	$('#local').change(function() {
-    	    if ($('#evento').val() != '') {
-    		$('#evento').val('');
-    	    }
-    	    $("#btnRelatorio").click();
-    	});
+	    	$('#local').change(function() {
+	    	    if ($('#evento').val() != '') {
+	    			$('#evento').val('');
+	    	    }
+	    	    $("#btnRelatorio").click();
+	    	});
 
-    	$('#evento').change(function() {
-    	    if ($('#local').val() != '') {
-    		$("#btnRelatorio").click();
-    	    }
-    	});
+	    	$('#evento').change(function() {
+	    	    if ($('#local').val() != '') {
+	    			$("#btnRelatorio").click();
+	    	    }
+	    	});
 
-    	$('.excell').click(function(e) {
-    	    e.preventDefault();
+	    	if ($('#evento option').length > 2) {
+	    		$('#evento option:first').after("<option value='TODOS'>&lt; TODOS &gt;</option>");
+	    	}
 
-    	    document.location = 'xls<?php echo ucfirst($pagina); ?>?' + $.serializeUrlVars();
-    	});
+	    	if ($.getUrlVar('evento') == 'TODOS') {
+				$('#evento').val('TODOS');
+	    	}
+
+	    	$('.excell').click(function(e) {
+	    	    e.preventDefault();
+
+	    	    document.location = '<?php echo $pagina; ?>?' + $.serializeUrlVars() + '&xls=1';
+	    	});
         });
     </script>
     <style type="text/css">
@@ -412,17 +482,28 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 33, true)) {
     	font-weight: bold;
         }
     </style>
-    <h2>Relatório Canais de Venda (Por Data de Venda) Resumido</h2>
+    <h2>Relatório Canais de Venda Resumido (Por Data de Venda)</h2>
 
-    <p style="width:1000px;">Data Inicial da Venda <input type="text" value="<?php echo (isset($_GET["dt_inicial"])) ? $_GET["dt_inicial"] : date("d/m/Y") ?>" class="datepicker" id="dt_inicial" name="dt_inicial" />
-        &nbsp;&nbsp;Data Final da Venda <input type="text" class="datepicker" value="<?php echo (isset($_GET["dt_final"])) ? $_GET["dt_final"] : date("d/m/Y") ?>" id="dt_final" name="dt_final" />
-        &nbsp;&nbsp;<?php echo comboTeatroPorUsuario('local', $_SESSION['admin'], $_GET['local']); ?>
-        &nbsp;&nbsp;<?php echo comboEventoPorUsuario('evento', $_GET['local'], $_SESSION['admin'], $_GET['evento']); ?>
-        &nbsp;&nbsp;<input type="submit" class="button" id="btnRelatorio" value="Buscar" />
-    <?php if (isset($result) && hasRows($result)) {
-    ?>
-        &nbsp;&nbsp;<a class="button excell" href="#">Exportar Excel</a>
-    <?php } ?>
+    <?php if ($_GET['xls']) { ?>
+    	<table>
+    		<tr>
+    			<td>Data Inicial da Venda</td>
+    			<td><?php echo $_GET["dt_inicial"]; ?></td>
+	        	<td>Data Final da Venda</td>
+	        	<td><?php echo $_GET["dt_final"]; ?></td>
+    		</tr>
+    	</table>
+	<?php } else { ?>
+	    <p style="width:1000px;">Data Inicial da Venda <input type="text" value="<?php echo (isset($_GET["dt_inicial"])) ? $_GET["dt_inicial"] : date("d/m/Y") ?>" class="datepicker" id="dt_inicial" name="dt_inicial" />
+	        &nbsp;&nbsp;Data Final da Venda <input type="text" class="datepicker" value="<?php echo (isset($_GET["dt_final"])) ? $_GET["dt_final"] : date("d/m/Y") ?>" id="dt_final" name="dt_final" />
+	        &nbsp;&nbsp;<?php echo comboTeatroPorUsuario('local', $_SESSION['admin'], $_GET['local']); ?>
+	        &nbsp;&nbsp;<?php echo comboEventoPorUsuario('evento', $_GET['local'], $_SESSION['admin'], $_GET['evento']); ?>
+	        &nbsp;&nbsp;<input type="submit" class="button" id="btnRelatorio" value="Buscar" />
+	    <?php if (isset($result) && hasRows($result)) {
+	    ?>
+	        &nbsp;&nbsp;<a class="button excell" href="#">Exportar Excel</a>
+	    <?php } ?>
+	<?php } ?>
 </p>
 
 <!-- Tabela de pedidos -->
@@ -431,70 +512,151 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 33, true)) {
 	<tr class="ui-widget-header">
 	    <th>Canal de venda</th>
 	    <th>Tipo de Ingresso</th>
-	    <th>Quantidade de Ingressos</th>
+	    <th>Qtde Ingr</th>
 	    <th>Total das Vendas</th>
 	</tr>
     </thead>
     <tbody>
 	<?php
-	if (isset($result)) {
-	    $lastLocal = '';
+	if (hasRows($result)) {
+
+		//geral
 	    $somaTotal = 0;
 	    $somaQuant = 0;
+	    
+	    //tipo
+		$lastTipo = '';
+	    $somaTotalTipo = 0;
+	    $somaQuantTipo = 0;
+
+	    //canal
+		$lastCanal = '';
 	    $somaTotalCanal = 0;
 	    $somaQuantCanal = 0;
+	    
+	    //evento
+		$lastEvento = '';
+	    $somaTotalEvento = 0;
+	    $somaQuantEvento = 0;
+
 	    while ($rs = fetchResult($result)) {
-		$somaTotal += $rs['val'];
-		$somaQuant += $rs['contabilizar'] ? $rs['qtd'] : 0;
-		if ($lastLocal != $rs['ds_canal_venda'] and $lastLocal != '') {
-	?>
-	    	<tr class="total">
-	    	    <td colspan="2" class="number">Sub-Total (canal)</td>
-	    	    <td class="number"><?php echo $somaQuantCanal; ?></td>
-	    	    <td class="number"><?php echo number_format($somaTotalCanal, 2, ',', '.'); ?></td>
-	    	</tr>
-	<?php
-		    $lastLocal = $rs['ds_canal_venda'];
-		    $somaTotalCanal = $rs['val'];
-		    $somaQuantCanal = $rs['contabilizar'] ? $rs['qtd'] : 0;
-	?>
-	    	<tr>
-	    	    <td><?php echo utf8_encode($rs['ds_canal_venda']); ?></td>
-	    	    <td><?php echo utf8_encode($rs['tipbilhete']); ?></td>
-	    	    <td class="number"><?php echo $rs['qtd']; ?></td>
-	    	    <td class="number"><?php echo number_format($rs['val'], 2, ',', '.'); ?></td>
-	    	</tr>
-	<?php
-		} elseif ($lastLocal != $rs['ds_canal_venda']) {
-	?>
-	    	<tr>
-	    	    <td><?php echo utf8_encode($rs['ds_canal_venda']); ?></td>
-	    	    <td><?php echo utf8_encode($rs['tipbilhete']); ?></td>
-	    	    <td class="number"><?php echo $rs['qtd']; ?></td>
-	    	    <td class="number"><?php echo number_format($rs['val'], 2, ',', '.'); ?></td>
-	    	</tr>
-	<?php
-		    $lastLocal = $rs['ds_canal_venda'];
+
+	    	//quebras de acordo com a hierarquia das quebras, exemplo: se um ponto de venda sofrer quebra o operador e o tipo de ingresso tambem devem sofrer quebra
+	    	if ($lastEvento != $rs['ds_evento'] and $lastEvento != '') {
+	    		$lastCanal = '#quebra#';
+	    	}
+	    	if ($lastCanal != $rs['ds_canal_venda'] and $lastEvento != '') {
+    			$lastTipo = '#quebra#';
+    		}
+
+
+
+			// quebra por tipo de ingresso
+			if ($lastTipo != $rs['tipbilhete'] and $lastTipo != '') {
+				?>
+				<tr class="total">
+					<td colspan="2" class="number">Total do Tipo de Ingresso</td>
+					<td class="number"><?php echo $somaQuantTipo; ?></td>
+					<td class="number"><?php echo number_format($somaTotalTipo, 2, ',', '.'); ?></td>
+				</tr>
+				<?php
+			    $somaTotalTipo = 0;
+			    $somaQuantTipo = 0;
+			}
+
+			// quebra por canal
+			if ($lastCanal != $rs['ds_canal_venda'] and $lastCanal != '') {
+				?>
+				<tr class="total">
+		    	    <td colspan="2" class="number">Sub-Total (canal)</td>
+		    	    <td class="number"><?php echo $somaQuantCanal; ?></td>
+		    	    <td class="number"><?php echo number_format($somaTotalCanal, 2, ',', '.'); ?></td>
+				</tr>
+				<?php
+			    $somaTotalCanal = 0;
+			    $somaQuantCanal = 0;
+			}
+
+			// quebra por evento
+			if ($lastEvento != $rs['ds_evento']) {
+				if ($lastEvento != '') {
+				?>
+		    	<tr class="total">
+		    	    <td colspan="2" class="number">Total geral do evento</td>
+		    	    <td class="number"><?php echo $somaQuantEvento; ?></td>
+		    	    <td class="number"><?php echo number_format($somaTotalEvento, 2, ',', '.'); ?></td>
+		    	</tr>
+		    	<?php } ?>
+
+				<tr><th colspan="4">&nbsp;</td></th>
+				<tr><th colspan="4">Evento: <?php echo utf8_encode($rs['ds_evento']); ?></td></th>
+				<tr><th colspan="4">&nbsp;</td></tr>
+				<?php
+			    $somaTotalEvento = 0;
+			    $somaQuantEvento = 0;
+			}
+
+
+
+
+			// linhas
+		?>
+			<tr>
+				<td><?php echo ($rs['ds_canal_venda'] == $lastCanal ? '&nbsp;' : utf8_encode($rs['ds_canal_venda'])); ?></td>
+
+			<?php if ($rs['tipbilhete'] != $lastTipo) { ?>
+				<td><?php echo utf8_encode($rs['tipbilhete']) ?></td>
+				<td class="number">&nbsp;</td>
+				<td class="number">&nbsp;</td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td align="right"><?php echo utf8_encode($rs['ForPagto']) ?></td>
+				<td class="number"><?php echo $rs['qtd']; ?></td>
+				<td class="number"><?php echo number_format($rs['val'], 2, ',', '.'); ?></td>
+			<?php } else { ?>
+				<td align="right"><?php echo utf8_encode($rs['ForPagto']) ?></td>
+				<td class="number"><?php echo $rs['qtd']; ?></td>
+				<td class="number"><?php echo number_format($rs['val'], 2, ',', '.'); ?></td>
+			<?php } ?>
+			</tr>
+		<?php
+
+			//geral
+			$somaTotal += $rs['val'];
+			$somaQuant += $rs['contabilizar'] ? $rs['qtd'] : 0;
+		    
+		    //tipo
+			$lastTipo = $rs['tipbilhete'];
+		    $somaTotalTipo += $rs['val'];
+		    $somaQuantTipo += $rs['contabilizar'] ? $rs['qtd'] : 0;
+
+		    //canal
+			$lastCanal = $rs['ds_canal_venda'];
 		    $somaTotalCanal += $rs['val'];
 		    $somaQuantCanal += $rs['contabilizar'] ? $rs['qtd'] : 0;
-		} else {
-	?>
-	    	<tr>
-	    	    <td>&nbsp;</td>
-	    	    <td><?php echo utf8_encode($rs['tipbilhete']); ?></td>
-	    	    <td class="number"><?php echo $rs['qtd']; ?></td>
-	    	    <td class="number"><?php echo number_format($rs['val'], 2, ',', '.'); ?></td>
-	    	</tr>
-	<?php
-		    $somaTotalCanal += $rs['val'];
-		    $somaQuantCanal += $rs['contabilizar'] ? $rs['qtd'] : 0;
-		}
+		    
+		    //evento
+			$lastEvento = $rs['ds_evento'];
+		    $somaTotalEvento += $rs['val'];
+		    $somaQuantEvento += $rs['contabilizar'] ? $rs['qtd'] : 0;
+
 	    }
 	?>
+		<tr class="total">
+			<td colspan="2" class="number">Total do Tipo de Ingresso</td>
+			<td class="number"><?php echo $somaQuantTipo; ?></td>
+			<td class="number"><?php echo number_format($somaTotalTipo, 2, ',', '.'); ?></td>
+    	</tr>
     	<tr class="total">
     	    <td colspan="2" class="number">Sub-Total (canal)</td>
     	    <td class="number"><?php echo $somaQuantCanal; ?></td>
     	    <td class="number"><?php echo number_format($somaTotalCanal, 2, ',', '.'); ?></td>
+    	</tr>
+    	<tr class="total">
+    	    <td colspan="2" class="number">Total geral do evento</td>
+    	    <td class="number"><?php echo $somaQuantEvento; ?></td>
+    	    <td class="number"><?php echo number_format($somaTotalEvento, 2, ',', '.'); ?></td>
     	</tr>
     	<tr class="total">
     	    <td colspan="2" class="number">Total geral</td>

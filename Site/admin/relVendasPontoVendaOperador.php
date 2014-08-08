@@ -501,12 +501,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 	        &nbsp;&nbsp;<?php echo comboTeatroPorUsuario('local', $_SESSION['admin'], $_GET['local']); ?>
 	        &nbsp;&nbsp;<?php echo comboEventoPorUsuario('evento', $_GET['local'], $_SESSION['admin'], $_GET['evento']); ?>
 	        &nbsp;&nbsp;<input type="submit" class="button" id="btnRelatorio" value="Buscar" />
-	    <?php if (isset($result) && hasRows($result)) {
-	    ?>
+	    <?php if (isset($result) && hasRows($result)) { ?>
 	        &nbsp;&nbsp;<a class="button excell" href="#">Exportar Excel</a>
 	    <?php } ?>
+	    </p>
 	<?php } ?>
-</p>
 
 <!-- Tabela de pedidos -->
 <table class="ui-widget ui-widget-content" id="tabPedidos">
@@ -522,7 +521,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
     </thead>
     <tbody>
 	<?php
-	if (hasRows($result)) {
+	if ($result and $_GET['evento'] != '') {
 
 		//geral
 	    $somaTotal = 0;

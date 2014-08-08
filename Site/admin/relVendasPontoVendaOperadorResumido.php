@@ -503,8 +503,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 33, true)) {
 	    ?>
 	        &nbsp;&nbsp;<a class="button excell" href="#">Exportar Excel</a>
 	    <?php } ?>
+	    </p>
 	<?php } ?>
-</p>
 
 <!-- Tabela de pedidos -->
 <table class="ui-widget ui-widget-content" id="tabPedidos">
@@ -518,7 +518,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 33, true)) {
     </thead>
     <tbody>
 	<?php
-	if (hasRows($result)) {
+	if ($result and $_GET['evento'] != '') {
 
 		//geral
 	    $somaTotal = 0;

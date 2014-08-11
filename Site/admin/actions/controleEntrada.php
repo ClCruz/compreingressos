@@ -250,7 +250,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 										and			  iac.id_usuario = ?
 										and			  iac.CodPeca = tbAp.CodPeca
 		            where       tbPc.CodPeca = ?
-		            AND CONVERT(DATETIME, CONVERT(VARCHAR(8), TBAP.DATAPRESENTACAO, 112) + ' ' + TBAP.HORSESSAO) >= CONVERT(DATETIME, CONVERT(VARCHAR(8), DATEADD(DAY, -1, GETDATE()), 112) + ' 22:00')
+		            -- comentar para homologacao
+		            --AND CONVERT(DATETIME, CONVERT(VARCHAR(8), TBAP.DATAPRESENTACAO, 112) + ' ' + TBAP.HORSESSAO) >= CONVERT(DATETIME, CONVERT(VARCHAR(8), DATEADD(DAY, -1, GETDATE()), 112) + ' 22:00')
+					----------------------------
 		            AND TBAP.DATAPRESENTACAO = CONVERT(DATETIME, ?, 112)
 		            group by tbAp.HorSessao
 		            order by tbAp.HorSessao";

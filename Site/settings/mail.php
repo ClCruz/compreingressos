@@ -11,7 +11,7 @@ function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copi
 	
 	$mail = new PHPMailer();
 	
-	$mail->SMTPDebug = 1;
+	$mail->SMTPDebug = 0;
 	
 	$mail->SetLanguage('br');
 	

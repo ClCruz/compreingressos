@@ -1319,6 +1319,21 @@ function comboSetor($name, $apresentacao_id) {
     return $combo;
 }
 
+function comboCanalVenda($name, $selected) {
+    $mainConnection = mainConnection();
+    $result = executeSQL($mainConnection, 'SELECT ID_CANAL_VENDA, DS_CANAL_VENDA FROM MW_CANAL_VENDA');
+
+    $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um canal...</option>';
+    while ($rs = fetchResult($result)) {
+	$combo .= '<option value="' . $rs['ID_CANAL_VENDA'] . '"' .
+		(($selected == $rs['ID_CANAL_VENDA']) ? ' selected' : '') .
+		'>' . utf8_encode($rs['DS_CANAL_VENDA']) . '</option>';
+    }
+    $combo .= '</select>';
+
+    return $combo;
+}
+
 /*  OUTROS  */
 
 

@@ -38,13 +38,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 			    @nomusuario		varchar(30),
                 @CodApresentacao    int,
 			    @id_base		int,
-			    @id_usuario		int
+			    @id_usuario		int,
+			    @id_canal_venda	int
 
 	    set @codPeca = ?
 	    set @id_base = ?
 	    set @DtIniApr = ?
 	    set @DtFimApr = ?
 	    set @id_usuario = ?
+	    set @id_canal_venda = ?
 
 	    set nocount on
 
@@ -119,6 +121,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 		    (tabLugSala.CodVenda IS NOT NULL)
 	    AND 	(convert(varchar(8), tabLancamento.DatVenda,112) between @DtIniApr and @DtFimApr)
 	    and	(tabApresentacao.codpeca = convert(varchar(6),@codPeca) or convert(varchar(6),@codPeca) is null)
+	    AND (ci_middleway..mw_canal_venda.id_canal_venda = @id_canal_venda or @id_canal_venda is null)
 	    AND	not exists (Select 1 from tabLancamento bb
 				    where tabLancamento.numlancamento = bb.numlancamento
 				      and tabLancamento.codtipbilhete = bb.codtipbilhete
@@ -212,6 +215,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 		    (tabLugSala.CodVenda IS NOT NULL)
 	    AND 	(convert(varchar(8), tabLancamento.DatVenda,112) between @DtIniApr and @DtFimApr)
 	    and	(tabApresentacao.codpeca = convert(varchar(6),@codPeca) or convert(varchar(6),@codPeca) is null)
+	    AND (ci_middleway..mw_canal_venda.id_canal_venda = @id_canal_venda or @id_canal_venda is null)
 	    AND	not exists (Select 1 from tabLancamento bb
 				    where tabLancamento.numlancamento = bb.numlancamento
 				      and tabLancamento.codtipbilhete = bb.codtipbilhete
@@ -380,8 +384,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 	$dtFinal = $dtFinal[2] . $dtFinal[1] . $dtFinal[0];
 
 	$codPeca = $_GET['evento'] == 'TODOS' ? null : $_GET['evento'];
+	$canal = $_GET['canal'] == 'TODOS' ? null : $_GET['canal'];
 
-	$params = array($codPeca, $id_base, $dtInicial, $dtFinal, $_SESSION['admin']);
+	$params = array($codPeca, $id_base, $dtInicial, $dtFinal, $_SESSION['admin'], $canal);
 	$result = executeSQL($conn, $strSql, $params);
     }
 ?>
@@ -432,6 +437,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 		    		    '&dt_final='+ $("#dt_final").val() +
 		    		    '&local='+ $("#local").val() +
 		    		    '&evento='+ $("#evento").val() +
+		    		    '&canal='+ $("#canal").val() +
 		    		    '&eventoNome='+ $("#evento option:selected").text();
 	    	    } else {
 		    		document.location = 'esperaProcesso.php?redirect=' + escape('./?p=' + pagina.replace('.php', '') +
@@ -439,6 +445,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 		    		    '&dt_final='+ $("#dt_final").val() +
 		    		    '&local='+ $("#local").val() +
 		    		    '&evento='+ $("#evento").val() +
+		    		    '&canal='+ $("#canal").val() +
 		    		    '&eventoNome='+ $("#evento option:selected").text());
 	    	    }
 	    	});
@@ -450,18 +457,20 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 	    	    $("#btnRelatorio").click();
 	    	});
 
-	    	$('#evento').change(function() {
-	    	    if ($('#local').val() != '') {
-	    			$("#btnRelatorio").click();
-	    	    }
-	    	});
-
 	    	if ($('#evento option').length > 2) {
-	    		$('#evento option:first').after("<option value='TODOS'>&lt; TODOS &gt;</option>");
+	    		$('#evento option:first').after("<option value='TODOS'>&lt; TODOS OS EVENTOS &gt;</option>");
 	    	}
 
 	    	if ($.getUrlVar('evento') == 'TODOS') {
 				$('#evento').val('TODOS');
+	    	}
+
+	    	if ($('#canal option').length > 2) {
+	    		$('#canal option:first').after("<option value='TODOS'>&lt; TODOS OS CANAIS DE VENDA &gt;</option>");
+	    	}
+
+	    	if ($.getUrlVar('canal') == 'TODOS') {
+				$('#canal').val('TODOS');
 	    	}
 
 	    	$('.excell').click(function(e) {
@@ -498,8 +507,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 31, true)) {
 	<?php } else { ?>
 	    <p style="width:1000px;">Data Inicial da Venda <input type="text" value="<?php echo (isset($_GET["dt_inicial"])) ? $_GET["dt_inicial"] : date("d/m/Y") ?>" class="datepicker" id="dt_inicial" name="dt_inicial" />
 	        &nbsp;&nbsp;Data Final da Venda <input type="text" class="datepicker" value="<?php echo (isset($_GET["dt_final"])) ? $_GET["dt_final"] : date("d/m/Y") ?>" id="dt_final" name="dt_final" />
-	        &nbsp;&nbsp;<?php echo comboTeatroPorUsuario('local', $_SESSION['admin'], $_GET['local']); ?>
+	        &nbsp;&nbsp;<?php echo comboTeatroPorUsuario('local', $_SESSION['admin'], $_GET['local']); ?><br/>
 	        &nbsp;&nbsp;<?php echo comboEventoPorUsuario('evento', $_GET['local'], $_SESSION['admin'], $_GET['evento']); ?>
+	        &nbsp;&nbsp;<?php echo comboCanalVenda('canal', $_GET['canal']); ?>
 	        &nbsp;&nbsp;<input type="submit" class="button" id="btnRelatorio" value="Buscar" />
 	    <?php if (isset($result) && hasRows($result)) { ?>
 	        &nbsp;&nbsp;<a class="button excell" href="#">Exportar Excel</a>

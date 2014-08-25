@@ -203,6 +203,6 @@
 		$namefrom = utf8_decode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS');
 		$from = 'contato@cc.com.br';
 
-		echo authSendEmail($from, $namefrom, $to, $nameto, $subject, $body) ? 'true' : '<br><br>Se o erro persistir, favor entrar em contato com o suporte.';
+		echo authSendEmail($from, $namefrom, $to, $nameto, $subject, $body) === true ? 'true' : '<br><br>Se o erro persistir, favor entrar em contato com o suporte.';
 	}
 ?>

@@ -1,13 +1,7 @@
 <?php
-/* * * * * * * * * * * * * * SEND EMAIL FUNCTIONS * * * * * * * * * * * * * */
-//Authenticate Send - 21st March 2005
-//This will send an email using auth smtp and output a log array
-//logArray - connection, 
+require("PHPMailer/class.phpmailer.php");
 
 function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copiesTo = array(), $hiddenCopiesTo = array(), $charset = 'utf8', $attachment = array()) {
-	ob_start();
-	
-	require("PHPMailer/class.phpmailer.php");
 	
 	$mail = new PHPMailer();
 	
@@ -25,7 +19,7 @@ function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copi
 	$mail->Username = "gabriel.monteiro@cc.com.br";
 	// $mail->Username = "cecsuporte";
 	$mail->Password = "lembrete0015";
-	$mail->Password = "te14cx";
+	$mail->Password = "te14cx ";
 
 	// somente gmail
 	// $mail->SMTPSecure = "tls";
@@ -88,8 +82,83 @@ function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copi
 		}
 	}
 
-	echo $error = ob_get_clean();
+	$error = $mail->ErrorInfo;
 
-	return empty($error) ? $enviado : false;
+	return $enviado ? $enviado : authSendEmail_alternativo($from, $namefrom, $to, $nameto, $subject, $message, $copiesTo, $hiddenCopiesTo, $charset, $attachment);
+}
+
+function authSendEmail_alternativo($from, $namefrom, $to, $nameto, $subject, $message, $copiesTo = array(), $hiddenCopiesTo = array(), $charset = 'utf8', $attachment = array()) {
+	
+	$mail = new PHPMailer();
+	
+	$mail->SMTPDebug = 0;
+
+	$mail->SetLanguage('br');
+	
+	$mail->IsSMTP();
+	$mail->Host = "smtp.live.com";
+	$mail->Port = 587;
+	$mail->SMTPAuth = true;
+	$mail->Username = "compreingressospedidos@hotmail.com";
+	$mail->Password = "743081clc2";
+
+	$mail->SMTPSecure = "tls";
+	
+	$mail->From = 'compreingressospedidos@hotmail.com';
+	$mail->FromName = $namefrom;
+	
+	$mail->AddAddress($to, $nameto);
+	
+	if (!empty($copiesTo)) {
+		foreach($copiesTo as $address) {
+			$address = explode('=>', $address);
+			
+			$name = trim($address[0]);
+			$email = trim($address[1]);
+			
+			$mail->AddCC($email, $name);
+		}
+	}
+
+	if (!empty($hiddenCopiesTo)) {
+		foreach($hiddenCopiesTo as $address) {
+			$address = explode('=>', $address);
+			
+			$name = trim($address[0]);
+			$email = trim($address[1]);
+			
+			$mail->AddBCC($email, $name);
+		}
+	}
+
+	if (!empty($attachment)) {
+		foreach($attachment as $file) {
+			if ($file['cid']) {
+				$mail->AddEmbeddedImage($file['path'], $file['cid']);
+			} else {
+				$mail->AddAttachment($file['path'], $file['new_name']);  
+			}
+		}
+	}
+	
+	$mail->IsHTML(true);
+	$mail->CharSet = $charset;
+	
+	$mail->Subject  = $subject;
+	$mail->Body = $message;
+	
+	$enviado = $mail->Send();
+
+	$mail->ClearAllRecipients();
+	$mail->ClearAttachments();
+	if (!empty($attachment)) {
+		foreach($attachment as $file) {
+			unlink($file['path']);
+		}
+	}
+
+	$error = $mail->ErrorInfo;
+
+	return $enviado ? $enviado : $error;
 }
 ?>

@@ -53,7 +53,7 @@ if (isset($_GET['email'])) {
 			
 			$mail_sent = authSendEmail($from, $namefrom, $to, $nameto, $subject, $message);
 		}
-		echo ($mail_sent ? 'true' : 'Verifique o endereço informado e tente novamente.<br><br>Se o erro persistir, favor entrar em contato com o suporte.');
+		echo ($mail_sent === true ? 'true' : 'Verifique o endereço informado e tente novamente.<br><br>Se o erro persistir, favor entrar em contato com o suporte.');
 	} else {
 		echo 'Esse e-mail não está cadastrado ainda.<br><br>Clique no botão ao lado para se cadastrar!';
 	}

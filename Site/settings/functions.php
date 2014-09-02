@@ -1334,6 +1334,59 @@ function comboCanalVenda($name, $selected) {
     return $combo;
 }
 
+// INICIO DOS COMBOS PARA O SISTEMA DE ASSINATURA ------------------------------------------
+
+// combo para os eventos que podem ser pacote
+function comboEventoPacotePorUsuario($name, $local, $usuario, $selected) {
+    $mainConnection = mainConnection();
+    $result = executeSQL($mainConnection, "WITH RESULTADO AS (
+												SELECT MIN(ID_APRESENTACAO) AS ID_APRESENTACAO, DT_APRESENTACAO, HR_APRESENTACAO, DS_EVENTO
+												FROM MW_APRESENTACAO A
+												INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+												INNER JOIN MW_ACESSO_CONCEDIDO AC ON AC.ID_BASE = E.ID_BASE AND AC.CODPECA = E.CODPECA AND AC.ID_USUARIO = ?
+												WHERE A.IN_ATIVO = 1 AND E.IN_ATIVO = 1 AND E.ID_BASE = ?
+												AND A.ID_APRESENTACAO NOT IN (SELECT ID_APRESENTACAO FROM MW_ITEM_PEDIDO_VENDA)
+												GROUP BY DS_EVENTO, DT_APRESENTACAO, HR_APRESENTACAO
+											)
+											SELECT MIN(ID_APRESENTACAO) AS ID_APRESENTACAO, DS_EVENTO
+											FROM RESULTADO
+											GROUP BY DS_EVENTO
+											HAVING COUNT(ID_APRESENTACAO) = 1
+											ORDER BY DS_EVENTO",
+		    array($usuario, $local));
+
+    $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um evento/pacote...</option>';
+    while ($rs = fetchResult($result)) {
+	$combo .= '<option value="' . $rs['ID_APRESENTACAO'] . '"' . (($selected == $rs['ID_APRESENTACAO']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_EVENTO']) . '</option>';
+    }
+    $combo .= '</select>';
+
+    return $combo;
+}
+
+function comboPacote($name, $usuario, $selected) {
+    $mainConnection = mainConnection();
+    $result = executeSQL($mainConnection, "SELECT ID_PACOTE, DS_EVENTO
+											FROM MW_PACOTE P
+											INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = P.ID_APRESENTACAO
+											INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+											INNER JOIN MW_ACESSO_CONCEDIDO AC ON AC.ID_BASE = E.ID_BASE AND AC.CODPECA = E.CODPECA AND AC.ID_USUARIO = ?
+											ORDER BY DS_EVENTO",
+		    array($usuario));
+
+    $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um pacote...</option>';
+    while ($rs = fetchResult($result)) {
+	$combo .= '<option value="' . $rs['ID_PACOTE'] . '"' . (($selected == $rs['ID_PACOTE']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_EVENTO']) . '</option>';
+    }
+    $combo .= '</select>';
+
+    return $combo;
+}
+
+// FIM DOS COMBOS PARA O SISTEMA DE ASSINATURA ------------------------------------------
+
+
+
 /*  OUTROS  */
 
 

@@ -5,7 +5,7 @@ $mainConnection = mainConnection();
 
 session_start();
 
-if (acessoPermitido($mainConnection, $_SESSION['admin'], 261, true)) {
+if (acessoPermitido($mainConnection, $_SESSION['admin'], 305, true)) {
 
     $pagina = basename(__FILE__);
 ?>

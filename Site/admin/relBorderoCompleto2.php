@@ -332,7 +332,7 @@ if (isset($err) && $err != "") {
                       }
                     }
 
-                    $strSqlDetTemp = "SP_REL_BORDERO_VENDAS;" . (($codSala == 'TODOS') ? '11' : '5') . " '" . $dataIni . "','" . $dataFim . "'," . $codPeca . "," . $codSala . ",'" . $horSessao . "','" . $_SESSION["NomeBase"] . "'";
+                    $strSqlDetTemp = "SP_REL_BORDERO_VENDAS;" . (($codSala == 'TODOS') ? '11' : '5') . " '" . $dataIni . "','" . $dataFim . "'," . $codPeca . "," . $codSala . ",'" . (($horSessao == "--") ? "" : $horSessao) . "','" . $_SESSION["NomeBase"] . "'";
                     $queryDetTemp = executeSQL($conn, $strSqlDetTemp);
                     while ($pRSDetalhamento = fetchResult($queryDetTemp)) {
                       $nBrutoTot += $pRSDetalhamento["totfat"];

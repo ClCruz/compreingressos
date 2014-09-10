@@ -518,8 +518,8 @@ if (isset($err) && $err != "") {
       ?>
                       <tr>
                         <td	align=left  class=texto><?php echo utf8_encode($desp["nome"]); ?></td>
-                        <td	align=right class=texto><?php echo $desp["tipoValor"]; ?></td>
-                        <td	align=right class=texto><?php echo number_format($desp["valor"], 2, ",", "."); ?></td>
+                        <td	align=right class=texto><?php echo ($desp["tipoValor"] == 0 && $desp["valor"] == 0) ? "" : $desp["tipoValor"]; ?></td>
+                        <td	align=right class=texto><?php echo ($desp["valor"] == 0) ? "" : number_format($desp["valor"], 2, ",", "."); ?></td>
                       </tr>
       <?php
                     }

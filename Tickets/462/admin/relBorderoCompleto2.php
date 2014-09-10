@@ -67,7 +67,7 @@ if (isset($err) && $err != "") {
     <meta name="Content-Language" content="pt-Br" />
     <meta name="Copyright" content="Copyright &copy; 2013" />
 
-    <title>Borderô de Vendas</title>
+    <title>Borderô Completo</title>
     <link rel="stylesheet" type="text/css" href="../stylesheets/estilos_ra.css" />
     <link rel="stylesheet" type="text/css" href="../stylesheets/padraoRelat.CSS" />
     <link rel="stylesheet" type="text/css" href="../stylesheets/relatorio_bordero.css" />
@@ -84,7 +84,7 @@ if (isset($err) && $err != "") {
         <td colspan="1" height="15"></td>
       </tr>
       <tr>
-        <td class="tabela" align="center" bgcolor="LightGrey"><b><font size=2 face="tahoma,verdana,arial">Borderô de Vendas</font><br/>Contabilização dos Ingressos</b></td>
+        <td class="tabela" align="center" bgcolor="LightGrey"><b><font size=2 face="tahoma,verdana,arial">Borderô Completo</font><br/>Contabilização dos Ingressos</b></td>
       </tr>
       <tr>
         <td colspan="2">
@@ -332,7 +332,7 @@ if (isset($err) && $err != "") {
                       }
                     }
 
-                    $strSqlDetTemp = "SP_REL_BORDERO_VENDAS;" . (($codSala == 'TODOS') ? '11' : '5') . " '" . $dataIni . "','" . $dataFim . "'," . $codPeca . "," . $codSala . ",'" . $horSessao . "','" . $_SESSION["NomeBase"] . "'";
+                    $strSqlDetTemp = "SP_REL_BORDERO_VENDAS;" . (($codSala == 'TODOS') ? '11' : '5') . " '" . $dataIni . "','" . $dataFim . "'," . $codPeca . "," . $codSala . ",'" . (($horSessao == "--") ? "" : $horSessao) . "','" . $_SESSION["NomeBase"] . "'";
                     $queryDetTemp = executeSQL($conn, $strSqlDetTemp);
                     while ($pRSDetalhamento = fetchResult($queryDetTemp)) {
                       $nBrutoTot += $pRSDetalhamento["totfat"];
@@ -343,7 +343,7 @@ if (isset($err) && $err != "") {
 
                     
                     // verificar se existe algum registro na tabForPagamento com StaTaxaCartoes = S
-                    $qtdeRegistros = numRows($connBase, "select 1 from tabForPagamento where StaTaxaCartoes = 'S' and staforpagto = 'A'");
+                    $qtdeRegistros = numRows($connGeral, "select 1 from tabForPagamento where StaTaxaCartoes = 'S' and staforpagto = 'A'");
 
                     // caso positivo calcular e exibir a taxa dos cartoes
                     if ($qtdeRegistros > 0) {

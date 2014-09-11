@@ -24,7 +24,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 310, true)) {
 						PV.DS_BAIRRO_ENTREGA,
 						PV.DS_CIDADE_ENTREGA,
 						PV.CD_CEP_ENTREGA,
-						PV.IN_RETIRA_ENTREGA
+						PV.IN_RETIRA_ENTREGA,
+						C.CD_EMAIL_LOGIN,
+						PV.NR_PARCELAS_PGTO
 					FROM MW_PEDIDO_VENDA PV
 					INNER JOIN MW_CLIENTE C ON PV.ID_CLIENTE = C.ID_CLIENTE
 					LEFT JOIN MW_MEIO_PAGAMENTO MP ON PV.ID_MEIO_PAGAMENTO = MP.ID_MEIO_PAGAMENTO
@@ -45,8 +47,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 310, true)) {
 		$PaymentDataCollection['Amount'] = $rsDados['VL_TOTAL_PEDIDO_VENDA'] * 100;
 		$PaymentDataCollection['PaymentMethod'] = $rsDados['CD_MEIO_PAGAMENTO'];
 		$parametros['CustomerData']['CustomerIdentity'] = $rsDados['CD_CPF'];
-		$parametros['CustomerData']['CustomerEmail'] = $_POST['emailInformado'];
+		$parametros['CustomerData']['CustomerEmail'] = $rsDados['CD_EMAIL_LOGIN'];
 		$dadosExtrasEmail['cpf_cnpj_cliente'] = $parametros['CustomerData']['CustomerIdentity'];
+		$PaymentDataCollection['NumberOfPayments'] = $rsDados['NR_PARCELAS_PGTO'];
 
 		$dadosExtrasEmail['ddd_telefone1'] = $rsDados['DS_DDD_TELEFONE'];
 		$dadosExtrasEmail['numero_telefone1'] = $rsDados['DS_TELEFONE'];

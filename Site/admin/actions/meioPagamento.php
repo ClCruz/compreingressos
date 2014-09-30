@@ -3,7 +3,7 @@
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 260, true)) {
 
   $_POST['in_ativo'] = $_POST['in_ativo'] == 'on' ? 1 : 0;
-  $nomeCartaoSite = substr(trim($_POST["nm_cartao_site"]), 0, 25);
+  $nomeCartaoSite = substr(trim(utf8_decode($_POST["nm_cartao_site"])), 0, 25);
 
   if ($_GET['action'] == 'update' and isset($_GET['idMeioPagamento'])) { /* ------------ UPDATE ------------ */
 

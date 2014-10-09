@@ -1385,6 +1385,20 @@ function comboPacote($name, $usuario, $selected) {
 
 // FIM DOS COMBOS PARA O SISTEMA DE ASSINATURA ------------------------------------------
 
+function is_pacote($id_apresentacao) {
+    $mainConnection = mainConnection();
+
+    $result = executeSQL($mainConnection,
+    					"SELECT TOP 1 1
+						FROM MW_PACOTE P
+						INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = P.ID_APRESENTACAO
+						INNER JOIN MW_APRESENTACAO A2 ON A2.ID_EVENTO = A.ID_EVENTO AND A2.DT_APRESENTACAO = A.DT_APRESENTACAO AND A2.HR_APRESENTACAO = A.HR_APRESENTACAO
+						WHERE A2.ID_APRESENTACAO = ?",
+		    			array($id_apresentacao));
+
+    return hasRows($result);
+}
+
 
 
 /*  OUTROS  */
@@ -1801,6 +1815,22 @@ function getEnderecoCliente($id_cliente, $id_endereco) {
 	}
 
 	return $retorno;
+}
+
+function limparImagesTemp() {
+	$dir_name = '../images/temp/';
+
+	$files = array_diff(scandir($dir_name), array('..', '.'));
+
+	foreach ($files as $key => $value) {
+		// todos os gif
+		if (pathinfo($dir_name.$value, PATHINFO_EXTENSION) == 'gif') {
+			// hora anterior ou mais velhos
+			if (filemtime($dir_name.$value) < strtotime('-1 hour')) {
+				unlink($dir_name.$value);
+			}
+		}
+	}
 }
 
 

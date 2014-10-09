@@ -80,6 +80,7 @@ function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copi
 		foreach($attachment as $file) {
 			unlink($file['path']);
 		}
+		limparImagesTemp();
 	}
 
 	$error = $mail->ErrorInfo;
@@ -155,6 +156,7 @@ function authSendEmail_alternativo($from, $namefrom, $to, $nameto, $subject, $me
 		foreach($attachment as $file) {
 			unlink($file['path']);
 		}
+		limparImagesTemp();
 	}
 
 	$error = $mail->ErrorInfo;

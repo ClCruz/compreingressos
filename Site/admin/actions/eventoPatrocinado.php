@@ -34,7 +34,15 @@ if ($_GET['action'] == 'add' or ($_GET['action'] == 'update' and $_POST['idCarta
 			
 			$errors = sqlErrors();
 			
-			if (!empty($errors)) break;
+			if (!empty($errors)) {
+				break;
+			} else {
+                $log = new Log($_SESSION['admin']);
+                $log->__set('funcionalidade', 'Eventos Patrocinados');
+                $log->__set('parametros', $params);
+                $log->__set('log', $query);
+                $log->save($mainConnection);
+			};
 		}
 	} else {
 		$query = "INSERT INTO MW_EVENTO_PATROCINADO
@@ -47,6 +55,12 @@ if ($_GET['action'] == 'add' or ($_GET['action'] == 'update' and $_POST['idCarta
 	$errors = sqlErrors();
 	
 	if (empty($errors)) {
+	    $log = new Log($_SESSION['admin']);
+	    $log->__set('funcionalidade', 'Eventos Patrocinados');
+	    $log->__set('parametros', $params);
+	    $log->__set('log', $query);
+	    $log->save($mainConnection);
+
 		$retorno = 'true?idCartaoPatrocinado='.$_POST['idCartaoPatrocinado'].'&teatro='.$_POST['teatro'].'&codpeca='.$_POST['codpeca'].'&idPatrocinador='.$_POST['idPatrocinador'];
 	} else {
 		$retorno = sqlErrors();
@@ -66,6 +80,12 @@ if ($_GET['action'] == 'add' or ($_GET['action'] == 'update' and $_POST['idCarta
 					$_GET['idCartaoPatrocinado'], $_GET['teatro'], $_GET['codpeca']);
 	
 	if (executeSQL($mainConnection, $query, $params)) {
+        $log = new Log($_SESSION['admin']);
+        $log->__set('funcionalidade', 'Eventos Patrocinados');
+        $log->__set('parametros', $params);
+        $log->__set('log', $query);
+        $log->save($mainConnection);
+
 		$retorno = 'true?idCartaoPatrocinado='.$_POST['idCartaoPatrocinado'].'&teatro='.$_POST['teatro'].'&codpeca='.$_POST['codpeca'].'&idPatrocinador='.$_POST['idPatrocinador'];
 	} else {
 		$retorno = sqlErrors();
@@ -77,6 +97,12 @@ if ($_GET['action'] == 'add' or ($_GET['action'] == 'update' and $_POST['idCarta
 	$params = array($_GET['idCartaoPatrocinado'], $_GET['teatro'], $_GET['codpeca']);
 	
 	if (executeSQL($mainConnection, $query, $params)) {
+        $log = new Log($_SESSION['admin']);
+        $log->__set('funcionalidade', 'Eventos Patrocinados');
+        $log->__set('parametros', $params);
+        $log->__set('log', $query);
+        $log->save($mainConnection);
+        
 		$retorno = 'true';
 	} else {
 		$retorno = sqlErrors();

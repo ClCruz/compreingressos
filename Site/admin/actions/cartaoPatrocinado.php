@@ -9,6 +9,12 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 	$params = array($_POST['idPatrocinador'], utf8_decode($_POST['nome']), $_POST['bin']);
 	
 	if (executeSQL($mainConnection, $query, $params)) {
+        $log = new Log($_SESSION['admin']);
+        $log->__set('funcionalidade', 'Cartões Patrocinados');
+        $log->__set('parametros', $params);
+        $log->__set('log', $query);
+        $log->save($mainConnection);
+
 		$query = 'SELECT ID_CARTAO_PATROCINADO FROM MW_PATROCINADOR WHERE ID_PATROCINADOR = ? AND DS_CARTAO_PATROCINADO = ? AND CD_BIN = ?';
 		$params = array($_POST['idPatrocinador'], $_POST['nome'], $_POST['bin']);
 		
@@ -30,6 +36,12 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 	$params = array($_POST['idPatrocinador'], utf8_decode($_POST['nome']), $_POST['bin'], $_GET['idCartaoPatrocinado']);
 	
 	if (executeSQL($mainConnection, $query, $params)) {
+        $log = new Log($_SESSION['admin']);
+        $log->__set('funcionalidade', 'Cartões Patrocinados');
+        $log->__set('parametros', $params);
+        $log->__set('log', $query);
+        $log->save($mainConnection);
+
 		$retorno = 'true?idCartaoPatrocinado='.$_GET['idCartaoPatrocinado'];
 	} else {
 		$retorno = sqlErrors();
@@ -41,6 +53,13 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 	$params = array($_GET['idCartaoPatrocinado']);
 	
 	if (executeSQL($mainConnection, $query, $params)) {
+	    $log = new Log($_SESSION['admin']);
+	    $log->__set('funcionalidade', 'Cartões Patrocinados');
+	    $log->__set('parametros', $params);
+	    $log->__set('log', $query);
+	    $log->save($mainConnection);
+
+	    
 		$retorno = 'true';
 	} else {
 		$retorno = sqlErrors();

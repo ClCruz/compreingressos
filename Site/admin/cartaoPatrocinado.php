@@ -1,5 +1,6 @@
 <?php
 require_once('../settings/functions.php');
+include('../settings/Log.class.php');
 $mainConnection = mainConnection();
 session_start();
 

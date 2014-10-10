@@ -9,6 +9,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 19, true)) {
     $params = array($_POST['in_ativo'], $_POST['codevento']);
 
     if (executeSQL($mainConnection, $query, $params)) {
+      $log = new Log($_SESSION['admin']);
+      $log->__set('funcionalidade', 'Eventos Ativos e Inativos');
+      $log->__set('parametros', $params);
+      $log->__set('log', $query);
+      $log->save($mainConnection);
+
       $queryApresentacao = "SELECT B.DS_NOME_BASE_SQL, I.CODAPRESENTACAO
 	FROM MW_APRESENTACAO I
 	INNER JOIN MW_EVENTO E ON E.ID_EVENTO = I.ID_EVENTO
@@ -20,6 +26,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 19, true)) {
 			WHERE CODAPRESENTACAO = " . $apresentacao["CODAPRESENTACAO"];
       $result = executeSQL($mainConnection, $queryTabApresentacao, array());
       if($result == true){
+        $log = new Log($_SESSION['admin']);
+        $log->__set('funcionalidade', 'Eventos Ativos e Inativos');
+        $log->__set('log', $queryTabApresentacao);
+        $log->save($mainConnection);
+
         $retorno = 'true?codevento=' . $_GET['codevento'];
       }else{
         $retorno = "Houve um erro ao replicar a atualização na Bilheteria!";

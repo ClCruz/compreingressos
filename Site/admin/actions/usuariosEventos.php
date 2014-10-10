@@ -89,6 +89,11 @@
 				if(!checarEvento($idUsuario, $idBase, $value, $conn)){
 					$sql = "INSERT INTO MW_ACESSO_CONCEDIDO (ID_USUARIO, ID_BASE, CODPECA) VALUES(". $idUsuario .",". $idBase .",". $value .")";
 					executeSQL($conn, $sql);
+				
+		            $log = new Log($_SESSION['admin']);
+		            $log->__set('funcionalidade', 'Liberar Permissões x Bases');
+		            $log->__set('log', $sql);
+		            $log->save($conn);
 				}
 			}
 		}
@@ -96,12 +101,24 @@
 			$result = recuperarEventos($idUsuario, $nomeBase, $idBase, 0, 0, false, $conn);
 			if($result){
 				while($idEvento = fetchResult($result)){
-					executeSQL($conn, "INSERT INTO MW_ACESSO_CONCEDIDO (ID_USUARIO, ID_BASE, CODPECA) VALUES(". $idUsuario .",". $idBase .",". $idEvento["CODPECA"] .")");	
+					$sql = "INSERT INTO MW_ACESSO_CONCEDIDO (ID_USUARIO, ID_BASE, CODPECA) VALUES(". $idUsuario .",". $idBase .",". $idEvento["CODPECA"] .")";
+					executeSQL($conn, $sql);	
+				
+		            $log = new Log($_SESSION['admin']);
+		            $log->__set('funcionalidade', 'Liberar Permissões x Bases');
+		            $log->__set('log', $sql);
+		            $log->save($conn);
 				}
 			}
 		}		
 		else{
-			executeSQL($conn, "INSERT INTO MW_ACESSO_CONCEDIDO (ID_USUARIO, ID_BASE, CODPECA) VALUES(". $idUsuario .",". $idBase .",". $evento .")");	
+			$sql = "INSERT INTO MW_ACESSO_CONCEDIDO (ID_USUARIO, ID_BASE, CODPECA) VALUES(". $idUsuario .",". $idBase .",". $evento .")";
+			executeSQL($conn, $sql);	
+				
+            $log = new Log($_SESSION['admin']);
+            $log->__set('funcionalidade', 'Liberar Permissões x Bases');
+            $log->__set('log', $sql);
+            $log->save($conn);
 		}
 		
 		if(!sqlErrors()){
@@ -127,15 +144,35 @@
 				$params = array($idUsuario, $idBase, $value);
 				$sql = "DELETE FROM MW_ACESSO_CONCEDIDO WHERE ID_USUARIO = ? AND ID_BASE = ? AND CODPECA = ?";	
 				executeSQL($conn, $sql, $params);
+
+                $log = new Log($_SESSION['admin']);
+                $log->__set('funcionalidade', 'Liberar Permissões x Bases');
+                $log->__set('parametros', $params);
+                $log->__set('log', $sql);
+                $log->save($conn);
 			}
 		}
 		else if($evento == "geral"){
 			$sql = "DELETE FROM MW_ACESSO_CONCEDIDO WHERE ID_USUARIO = ? AND ID_BASE = ?";
 			$params = array($idUsuario, $idBase);
 			executeSQL($conn, $sql, $params);
+				
+            $log = new Log($_SESSION['admin']);
+            $log->__set('funcionalidade', 'Liberar Permissões x Bases');
+            $log->__set('parametros', $params);
+            $log->__set('log', $sql);
+            $log->save($conn);
 		}
 		else{
-			executeSQL($conn, "DELETE FROM MW_ACESSO_CONCEDIDO WHERE ID_USUARIO = ". $idUsuario ." AND ID_BASE = ". $idBase ." AND CODPECA = ". $evento); 	
+			$sql = "DELETE FROM MW_ACESSO_CONCEDIDO WHERE ID_USUARIO = ? AND ID_BASE = ? AND CODPECA = ?";
+			$params = array($idUsuario, $idBase, $evento);
+			executeSQL($conn, $sql, $params);
+				
+            $log = new Log($_SESSION['admin']);
+            $log->__set('funcionalidade', 'Liberar Permissões x Bases');
+            $log->__set('parametros', $params);
+            $log->__set('log', $sql);
+            $log->save($conn);
 		}
 		if(!sqlErrors()){
 			return "OK";

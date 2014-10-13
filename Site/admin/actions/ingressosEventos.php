@@ -8,6 +8,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 217, true)) {
         $params = array($_POST['ativo'] , $_GET['codevento']);
 
         if (executeSQL($mainConnection, $query, $params)) {
+            $log = new Log($_SESSION['admin']);
+            $log->__set('funcionalidade', 'Habilitar o Serviço de Entrega por Evento');
+            $log->__set('parametros', $params);
+            $log->__set('log', $query);
+            $log->save($mainConnection);
+            
             $retorno = 'true?codevento=' . $_GET['codevento'];
         } else {
             $retorno = sqlErrors();

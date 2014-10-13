@@ -14,11 +14,23 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
                     $_POST['idFormaPagamento'],
                     $_POST['ds_forpagto']);
     if (executeSQL($mainConnection, $query, $params)) {
+        $log = new Log($_SESSION['admin']);
+        $log->__set('funcionalidade', 'Formas de Pagamento');
+        $log->__set('parametros', $params);
+        $log->__set('log', $query);
+        $log->save($mainConnection);
+
         $query = "UPDATE MW_MEIO_PAGAMENTO
                   SET IN_TRANSACAO_PDV = ?
                   WHERE ID_MEIO_PAGAMENTO = ?";
         $params = array($_POST['in_transacao_pdv'], $_POST['idMeioPagamento']);
         if (executeSQL($mainConnection, $query, $params)) {
+            $log = new Log($_SESSION['admin']);
+            $log->__set('funcionalidade', 'Formas de Pagamento');
+            $log->__set('parametros', $params);
+            $log->__set('log', $query);
+            $log->save($mainConnection);
+
             $retorno = 'true?idMeioPagamento='.$_POST['idMeioPagamento'].'&idBase='.$_POST['teatro'];
         }else{
             $retorno = sqlErrors();
@@ -38,11 +50,23 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
                     $_GET['idBase'],
                     $_GET['idMeioPagamento']);
     if (executeSQL($mainConnection, $query, $params)) {
+        $log = new Log($_SESSION['admin']);
+        $log->__set('funcionalidade', 'Formas de Pagamento');
+        $log->__set('parametros', $params);
+        $log->__set('log', $query);
+        $log->save($mainConnection);
+
         $query ="UPDATE MW_MEIO_PAGAMENTO
                  SET IN_TRANSACAO_PDV = ?
                  WHERE ID_MEIO_PAGAMENTO = ?";
         $params = array($_POST['in_transacao_pdv'], $_POST['idMeioPagamento']);
         if (executeSQL($mainConnection, $query, $params)) {
+            $log = new Log($_SESSION['admin']);
+            $log->__set('funcionalidade', 'Formas de Pagamento');
+            $log->__set('parametros', $params);
+            $log->__set('log', $query);
+            $log->save($mainConnection);
+
             $retorno = 'true?idMeioPagamento='.$_POST['idMeioPagamento'].'&idBase='.$_POST['teatro'];
         }else{
             $retorno = sqlErrors();
@@ -55,6 +79,12 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
     $params = array($_GET['idBase'], $_GET['idMeioPagamento']);
 
     if (executeSQL($mainConnection, $query, $params)) {
+            $log = new Log($_SESSION['admin']);
+            $log->__set('funcionalidade', 'Formas de Pagamento');
+            $log->__set('parametros', $params);
+            $log->__set('log', $query);
+            $log->save($mainConnection);
+            
             $retorno = 'true';
     } else {
             $retorno = sqlErrors();

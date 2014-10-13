@@ -1,5 +1,6 @@
 <?php
 require_once('../settings/functions.php');
+include('../settings/Log.class.php');
 $mainConnection = mainConnection();
 session_start();
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 7, true)) {
@@ -58,9 +59,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 7, true)) {
                         });
 
                         tr.find('td:not(.button):eq(0)').html('<?php echo comboMeioPagamento('idMeioPagamento'); ?>');
-                        $('#idMeioPagamento').find('option[text=' + values[0] + ']').attr('selected', 'selected');
+                        $('#idMeioPagamento').find('option[text="' + values[0] + '"]').attr('selected', 'selected');
                         tr.find('td:not(.button):eq(1)').html('<?php echo comboFormaPagamento('idFormaPagamento', $_GET['teatro']); ?>');
-                        $('#idFormaPagamento').find('option[text=' + values[1] + ']').attr('selected', 'selected');
+                        $('#idFormaPagamento').find('option[text="' + values[1] + '"]').attr('selected', 'selected');
                         tr.find('td:not(.button):eq(2)').html('<input name="in_transacao_pdv" type="checkbox" class="inputStyle" id="in_transacao_pdv" ' + (values[2] == 'sim' ? 'checked' : ''  )+ ' />');
 
                         $this.text('Salvar').attr('href', pagina + '?action=update&' + id);

@@ -17,6 +17,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 22, true)) {
         $params = array(utf8_decode($_POST['nome']));
 
         if (executeSQL($mainConnection, $query, $params)) {
+            $log = new Log($_SESSION['admin']);
+            $log->__set('funcionalidade', 'Patrocinadores');
+            $log->__set('parametros', $params);
+            $log->__set('log', $query);
+            $log->save($mainConnection);
+
             $query = 'SELECT ID_PATROCINADOR FROM MW_PATROCINADOR WHERE DS_NOMPATROCINADOR = ?';
             $params = array($_POST['nome']);
             $rs = executeSQL($mainConnection, $query, $params, true);
@@ -33,6 +39,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 22, true)) {
         $params = array(utf8_decode($_POST['nome']), $_GET['id']);
 
         if (executeSQL($mainConnection, $query, $params)) {
+            $log = new Log($_SESSION['admin']);
+            $log->__set('funcionalidade', 'Patrocinadores');
+            $log->__set('parametros', $params);
+            $log->__set('log', $query);
+            $log->save($mainConnection);
+
             $retorno = 'true?id=' . $_GET['id'];
         } else {
             $retorno = sqlErrors();
@@ -42,6 +54,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 22, true)) {
         $params = array($_GET['id']);
 
         if (executeSQL($mainConnection, $query, $params)) {
+            $log = new Log($_SESSION['admin']);
+            $log->__set('funcionalidade', 'Patrocinadores');
+            $log->__set('parametros', $params);
+            $log->__set('log', $query);
+            $log->save($mainConnection);
+            
             $retorno = 'true';
         } else {
             $retorno = sqlErrors();

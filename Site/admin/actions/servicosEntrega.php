@@ -17,6 +17,12 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 	$params = array($_POST['regiao'], $_POST['data'], $_POST['valor']);
 	
 	if (executeSQL($mainConnection, $query, $params)) {
+        $log = new Log($_SESSION['admin']);
+        $log->__set('funcionalidade', 'Serviços de Entrega');
+        $log->__set('parametros', $params);
+        $log->__set('log', $query);
+        $log->save($mainConnection);
+
 		$query = 'SELECT DS_REGIAO_GEOGRAFICA FROM MW_REGIAO_GEOGRAFICA WHERE ID_REGIAO_GEOGRAFICA = ?';
 		$params = array($_POST['regiao']);
 		
@@ -46,6 +52,12 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 		$params = array($_POST['regiao'], $_POST['data'], $_POST['valor'], $_GET['regiao'], $_GET['data']);
 		
 		if (executeSQL($mainConnection, $query, $params)) {
+            $log = new Log($_SESSION['admin']);
+            $log->__set('funcionalidade', 'Serviços de Entrega');
+            $log->__set('parametros', $params);
+            $log->__set('log', $query);
+            $log->save($mainConnection);
+
 			$query = 'SELECT DS_REGIAO_GEOGRAFICA FROM MW_REGIAO_GEOGRAFICA WHERE ID_REGIAO_GEOGRAFICA = ?';
 			$params = array($_POST['regiao']);
 			
@@ -70,6 +82,12 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 		$params = array($_GET['regiao'], $_GET['data']);
 		
 		if (executeSQL($mainConnection, $query, $params)) {
+            $log = new Log($_SESSION['admin']);
+            $log->__set('funcionalidade', 'Serviços de Entrega');
+            $log->__set('parametros', $params);
+            $log->__set('log', $query);
+            $log->save($mainConnection);
+            
 			echo 'true';
 		} else {
 			$retorno = sqlErrors();

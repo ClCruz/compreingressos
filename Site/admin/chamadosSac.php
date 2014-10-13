@@ -1,5 +1,6 @@
 <?php
 require_once('../settings/functions.php');
+include('../settings/Log.class.php');
 $mainConnection = mainConnection();
 $conn = getConnectionDw();
 session_start();
@@ -49,7 +50,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 213, true)) {
 			    type: 'post',
 			    data: $('#dados').serialize(),
 			    success: function(data) {
-                                alert(data);
 				if (trim(data).substr(0, 4) == 'true') {
 				    var id = $.serializeUrlVars(data);
 				    

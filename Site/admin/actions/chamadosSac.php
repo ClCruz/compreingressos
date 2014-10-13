@@ -16,6 +16,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 32, true)) {
 	$params = array($_POST['dia'], $_POST['origem'], $_POST['tipo'], $_POST['resolucao'], $_POST['diaResolucao'], $_POST['obs']);
 
 	if (executeSQL($conn, $query, $params)) {
+        $log = new Log($_SESSION['admin']);
+        $log->__set('funcionalidade', 'SAC-Chamados');
+        $log->__set('parametros', $params);
+        $log->__set('log', $query);
+        $log->save($mainConnection);
+
 	    $query = "SELECT MAX(ID_NR_CHAMADO) ID_NR_CHAMADO FROM FATO_SAC
 		    WHERE ID_DIA = ? AND ID_ORIGEM_CHAMADO = ? AND ID_TIPO_CHAMADO = ?
 		    AND ID_TIPO_RESOLUCAO = ? AND ID_DIA_RESOLUCAO = ? AND DS_OBSERVACAO = ?";
@@ -38,6 +44,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 32, true)) {
 	$params = array($_POST['dia'], $_POST['origem'], $_POST['tipo'], $_POST['resolucao'], $_POST['diaResolucao'], $_POST['obs'], $_GET['id']);
 
 	if (executeSQL($conn, $query, $params)) {
+        $log = new Log($_SESSION['admin']);
+        $log->__set('funcionalidade', 'SAC-Chamados');
+        $log->__set('parametros', $params);
+        $log->__set('log', $query);
+        $log->save($mainConnection);
+
 	    $retorno = 'true?id=' . $_GET['id'];
 	} else {
 	    $retorno = sqlErrors();
@@ -48,6 +60,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 32, true)) {
 	$params = array($_GET['id']);
 
 	if (executeSQL($conn, $query, $params)) {
+	    $log = new Log($_SESSION['admin']);
+	    $log->__set('funcionalidade', 'SAC-Chamados');
+	    $log->__set('parametros', $params);
+	    $log->__set('log', $query);
+	    $log->save($mainConnection);
+	    
 	    $retorno = 'true';
 	} else {
 	    $retorno = sqlErrors();

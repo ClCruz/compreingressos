@@ -74,18 +74,41 @@
 					$sql = "INSERT INTO MW_USUARIO_ITAU_EVENTO (ID_USUARIO, ID_EVENTO) VALUES (?, ?)";
 					$params = array($idUsuario, $value);
 					executeSQL($conn, $sql, $params);
+
+	                $log = new Log($_SESSION['admin']);
+	                $log->__set('funcionalidade', 'SISBIN x Permissões x Bases x Eventos');
+	                $log->__set('parametros', $params);
+	                $log->__set('log', $sql);
+	                $log->save($conn);
 				}
 			}
 		} else if ($idEvento == "geral") {
 			$result = recuperarEventos($idUsuario, $idBase, 0, 0, false, $conn);
 			if($result){
 				while ($idEvento = fetchResult($result)) {
-					if (!$idEvento['CHECKED'])
-						executeSQL($conn, "INSERT INTO MW_USUARIO_ITAU_EVENTO (ID_USUARIO, ID_EVENTO) VALUES (?, ?)", array($idUsuario, $idEvento['ID_EVENTO']));	
+					if (!$idEvento['CHECKED']) {
+						$query = "INSERT INTO MW_USUARIO_ITAU_EVENTO (ID_USUARIO, ID_EVENTO) VALUES (?, ?)";
+						$params = array($idUsuario, $idEvento['ID_EVENTO']);
+						executeSQL($conn, $query, $params);	
+
+		                $log = new Log($_SESSION['admin']);
+		                $log->__set('funcionalidade', 'SISBIN x Permissões x Bases x Eventos');
+		                $log->__set('parametros', $params);
+		                $log->__set('log', $query);
+		                $log->save($conn);
+					}
 				}
 			}
 		} else {
-			executeSQL($conn, "INSERT INTO MW_USUARIO_ITAU_EVENTO (ID_USUARIO, ID_EVENTO) VALUES (?, ?)", array($idUsuario, $idEvento));	
+			$query = "INSERT INTO MW_USUARIO_ITAU_EVENTO (ID_USUARIO, ID_EVENTO) VALUES (?, ?)";
+			$params = array($idUsuario, $idEvento);
+			executeSQL($conn, $query, $params);
+
+            $log = new Log($_SESSION['admin']);
+            $log->__set('funcionalidade', 'SISBIN x Permissões x Bases x Eventos');
+            $log->__set('parametros', $params);
+            $log->__set('log', $query);
+            $log->save($conn);
 		}
 		
 		if (!sqlErrors()) {
@@ -103,6 +126,12 @@
 				$sql = "DELETE FROM MW_USUARIO_ITAU_EVENTO WHERE ID_USUARIO = ? AND ID_EVENTO = ?";	
 				$params = array($idUsuario, $value);
 				executeSQL($conn, $sql, $params);
+
+                $log = new Log($_SESSION['admin']);
+                $log->__set('funcionalidade', 'SISBIN x Permissões x Bases x Eventos');
+                $log->__set('parametros', $params);
+                $log->__set('log', $sql);
+                $log->save($conn);
 			}
 		} else if ($idEvento == "geral") {
 			$sql = "DELETE U
@@ -111,8 +140,22 @@
 					WHERE U.ID_USUARIO = ? AND E.ID_BASE = ?";
 			$params = array($idUsuario, $idBase);
 			executeSQL($conn, $sql, $params);
+
+            $log = new Log($_SESSION['admin']);
+            $log->__set('funcionalidade', 'SISBIN x Permissões x Bases x Eventos');
+            $log->__set('parametros', $params);
+            $log->__set('log', $sql);
+            $log->save($conn);
 		} else {
-			executeSQL($conn, "DELETE FROM MW_USUARIO_ITAU_EVENTO WHERE ID_USUARIO = ? AND ID_EVENTO = ?", array($idUsuario, $idEvento));
+			$query = "DELETE FROM MW_USUARIO_ITAU_EVENTO WHERE ID_USUARIO = ? AND ID_EVENTO = ?";
+			$params = array($idUsuario, $idEvento);
+			executeSQL($conn, $query, $params);
+
+            $log = new Log($_SESSION['admin']);
+            $log->__set('funcionalidade', 'SISBIN x Permissões x Bases x Eventos');
+            $log->__set('parametros', $params);
+            $log->__set('log', $query);
+            $log->save($conn);
 		}
 		
 		if (!sqlErrors()) {

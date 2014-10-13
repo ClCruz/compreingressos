@@ -1,6 +1,7 @@
 <?php
 require_once('../settings/functions.php');
 require_once('../settings/Paginator.php');
+include('../settings/Log.class.php');
 
 $mainConnection = mainConnection();
 session_start();

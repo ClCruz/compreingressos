@@ -28,6 +28,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
         $params = array($data , $_GET['id']);
 
         if (executeSQL($mainConnection, $query, $params)) {
+            $log = new Log($_SESSION['admin']);
+            $log->__set('funcionalidade', 'Entrega de Ingressos');
+            $log->__set('parametros', $params);
+            $log->__set('log', $query);
+            $log->save($mainConnection);
+            
             $retorno = 'true?id=' . $_GET['id'];
         } else {
             $retorno = sqlErrors();

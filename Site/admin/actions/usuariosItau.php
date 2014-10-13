@@ -1,7 +1,7 @@
 <?php
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 9, true)) {
 
-if ($_GET['action'] != 'delete') {
+if ($_GET['action'] != 'delete' and $_GET['action'] != 'reset') {
 	if (!verificaCPF($_POST['cpf'])) {
 		echo 'O CPF informado não é válido.';
 		exit();
@@ -33,6 +33,12 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 	$params = array($_POST['login'], $_POST['nome'], $_POST['email'], $_POST['ativo'], $_POST['admin'], $_POST['cpf'], $_POST['ddd'], $_POST['celular']);
 	
 	if (executeSQL($mainConnection, $query, $params)) {
+	    $log = new Log($_SESSION['admin']);
+	    $log->__set('funcionalidade', 'SISBIN x Usuários');
+	    $log->__set('parametros', $params);
+	    $log->__set('log', $query);
+	    $log->save($mainConnection);
+
 		$query = 'SELECT ID_USUARIO FROM MW_USUARIO_ITAU WHERE CD_LOGIN = ?';
 		$params = array($_POST['login']);
 		
@@ -66,6 +72,12 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 	$params = array($_POST['nome'], $_POST['email'], $_POST['ativo'], $_POST['admin'], $_POST['cpf'], $_POST['ddd'], $_POST['celular'], $_GET['codusuario']);
 	
 	if (executeSQL($mainConnection, $query, $params)) {
+        $log = new Log($_SESSION['admin']);
+        $log->__set('funcionalidade', 'SISBIN x Usuários');
+        $log->__set('parametros', $params);
+        $log->__set('log', $query);
+        $log->save($mainConnection);
+
 		$retorno = 'true?codusuario='.$_GET['codusuario'];
 	} else {
 		$retorno = sqlErrors();
@@ -77,6 +89,12 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 	$params = array($_GET['codusuario']);
 	
 	if (executeSQL($mainConnection, $query, $params)) {
+        $log = new Log($_SESSION['admin']);
+        $log->__set('funcionalidade', 'SISBIN x Usuários');
+        $log->__set('parametros', $params);
+        $log->__set('log', $query);
+        $log->save($mainConnection);
+
 		$retorno = 'true';
 	} else {
 		$retorno = sqlErrors();
@@ -91,6 +109,12 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 	$params = array($_GET['codusuario']);
 	
 	if (executeSQL($mainConnection, $query, $params)) {
+	    $log = new Log($_SESSION['admin']);
+	    $log->__set('funcionalidade', 'SISBIN x Usuários');
+	    $log->__set('parametros', $params);
+	    $log->__set('log', $query);
+	    $log->save($mainConnection);
+
 		$retorno = 'true';
 	} else {
 		$retorno = sqlErrors();

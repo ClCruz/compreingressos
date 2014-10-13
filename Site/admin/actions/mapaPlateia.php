@@ -87,6 +87,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
         $_POST['sala']
     );
     executeSQL($conn, $query, $params);
+    
+    $log = new Log($_SESSION['admin']);
+    $log->__set('funcionalidade', 'Layout das Salas');
+    $log->__set('parametros', $params);
+    $log->__set('log', $query);
+    $log->save($mainConnection);
 
     $query = 'UPDATE TABSALDETALHE SET
               POSXSITE = ?,

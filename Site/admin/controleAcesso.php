@@ -39,7 +39,8 @@ if(isset($_GET["gerar"]) && $_GET["gerar"] == "true"){
                         A.HORSESSAO,
                         S.NOMSETOR,
                         T.TIPBILHETE,
-                        COUNT(1) AS QTD
+                        COUNT(1) AS QTD,
+                        T.STATIPBILHMEIA
                 FROM
                         TABCONTROLESEQVENDA CS
                         INNER JOIN
@@ -64,7 +65,8 @@ if(isset($_GET["gerar"]) && $_GET["gerar"] == "true"){
                         CONVERT(CHAR(10), A.DATAPRESENTACAO,103),
                         A.HORSESSAO,
                         S.NOMSETOR,
-                        T.TIPBILHETE
+                        T.TIPBILHETE,
+                        T.STATIPBILHMEIA
                 ORDER BY
                         P.NOMPECA,A.DATAPRESENTACAO
                 ";
@@ -164,10 +166,10 @@ $(function() {
         $params = array($_SESSION["admin"], $_GET["local"]);
         $name = "evento";
         $selected = $_GET["cod_peca"];
-        $resultEventos = executeSQL($mainConnection, 'SELECT E.ID_EVENTO, E.DS_EVENTO
+        $resultEventos = executeSQL($mainConnection, "SELECT E.ID_EVENTO, E.DS_EVENTO
         FROM MW_EVENTO E
         INNER JOIN MW_ACESSO_CONCEDIDO AC ON AC.ID_USUARIO = ? AND AC.ID_BASE = E.ID_BASE AND AC.CODPECA = E.CODPECA
-        WHERE E.ID_BASE = ? AND E.IN_ATIVO = \'1\'', $params);
+        WHERE E.ID_BASE = ? AND E.IN_ATIVO = '1' ORDER BY DS_EVENTO", $params);
         $combo = '<select name="'.$name.'" class="inputStyle" id="'.$name.'"><option value="">Selecione um evento...</option>';
 
         while ($rs = fetchResult($resultEventos)) {
@@ -212,7 +214,7 @@ $(function() {
         <td align="center" class="texto"><?php echo $dados["QTD"]; ?></td>
     </tr>
     <?php
-            $totQuantidade += $dados["QTD"];
+            $totQuantidade += $dados['STATIPBILHMEIA'] != 'S' ? $dados["QTD"] : 0;
         }
     ?>
     <tr>

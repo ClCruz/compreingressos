@@ -40,7 +40,7 @@ div#mapa_de_plateia_geral{
 	background-color: #060709;
 }
 
-.minha_conta table.select_endereco tr td.input input[type=radio].radio + label.radio {
+.minha_conta table.select_endereco tr td.input input[type=radio].radio + label.radio{
 	display: none;
 }
 
@@ -127,4 +127,13 @@ div.erro_help p.help {
 
 div.resumo_espetaculo div.resumo p.teatro {
 	min-height: 20px;
+}
+
+.sbOptions .sbDisabled{
+	color:#999;
+	height:20px;
+	line-height:20px;
+	padding:6px 7px;
+        display: block;
+        border-bottom: solid 1px #CCC;
 }

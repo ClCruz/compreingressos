@@ -1949,6 +1949,11 @@ a.botao.logout{
 
 a.botao.enderecos{
 	background-image:url('../images/bot_enderecos.png');
+        margin-right:0;
+}
+
+a.botao.assinaturas{
+	background-image:url('../images/bot_assinaturas.png');
 	margin-right:0;
 }
 

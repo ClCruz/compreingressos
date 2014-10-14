@@ -2,6 +2,7 @@
 
 require_once('../settings/Template.class.php');
 require_once('../settings/functions.php');
+include('../settings/Log.class.php');
 
 $tpl = new Template('alterarStatusAssinatura.html');
 $tpl->titulo = "Alteração do Status das Assinaturas";

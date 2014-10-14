@@ -17,6 +17,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 356, true)) {
         if ($result == false) {
             rollbackTransaction($mainConnection);
             print_r(sqlErrors());
+        } else {
+            $log = new Log($_SESSION['admin']);
+            $log->__set('funcionalidade', 'Alteração do Status das Assinaturas');
+            $log->__set('parametros', $params);
+            $log->__set('log', $query);
+            $log->save($mainConnection);
         }
 
         $query = "UPDATE MW_PACOTE_RESERVA
@@ -29,6 +35,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 356, true)) {
         if ($result == false) {
             rollbackTransaction($mainConnection);
             print_r(sqlErrors());
+        } else {
+            $log = new Log($_SESSION['admin']);
+            $log->__set('funcionalidade', 'Alteração do Status das Assinaturas');
+            $log->__set('parametros', $params);
+            $log->__set('log', $query);
+            $log->save($mainConnection);
         }
         commitTransaction($mainConnection);
 

@@ -40,7 +40,7 @@ require_once('../settings/functions.php');
 			<div class="centraliza">
 				<div class="descricao_pag">
 					<div class="img">
-						<img src="">
+						<img src="../images/ico_black_passo3.png">
 					</div>
 					<div class="descricao">
 						<p class="nome">Identificação</p>

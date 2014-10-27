@@ -139,7 +139,7 @@ foreach ($itensPedido as $item) {
                                                                         '.$item['descricao_item']['data'].' '.$item['descricao_item']['hora'].'<br>
                                                                         '.$item['descricao_item']['setor'].' '.$item['descricao_item']['cadeira'].'
                                                                     </p>
-                                                                    <p style="font-family:Arial,Verdana;font-size:10px;font-weight:normal;color:#000000;line-height:12px;margin:0;padding:0;text-transform:uppercase;float:right;margin-top:-10px;">
+                                                                    <p style="font-family:Arial,Verdana;font-size:10px;font-weight:normal;color:#000000;line-height:12px;margin:0;padding:0;text-transform:uppercase;float:right;">
                                                                         urna
                                                                     </p>
                                                                 </td>
@@ -203,7 +203,7 @@ ob_start(); //Turn on output buffering
                 <tr>
                     <td>
                         <p style="font-family:Arial,Verdana;font-size:12px;font-weight:normal;color:#000000;line-height:16px;margin:0;padding:0;">
-                            Olá <span style="font-size:15px;font-weight:bold;">##nome_cliente##</span>, obrigado por preferia a <b>compreingressos.com</b> para adquirir seus ingressos.<br>
+                            Olá <span style="font-size:15px;font-weight:bold;">##nome_cliente##</span>, obrigado por preferir a <b>compreingressos.com</b> para adquirir seus ingressos.<br>
                             <b>Confira abaixo as informações</b> sobre o espetáculo/evento, data, hora, setor e lugares escolhidos.
                         </p>                  
                 </td></tr><tr>

@@ -295,7 +295,7 @@ while ($itens = fetchResult($result)) {
     $totalIngressos += $itens['VL_LIQUIDO_INGRESSO'];
     $totalConveniencia += $valorConveniencia + $valorConvenienciaAUX;
 
-    $params2[$itensPedido] = array($newMaxId, $itens['ID_RESERVA'], $itens['ID_APRESENTACAO'], $itens['ID_APRESENTACAO_BILHETE'], $itens['DS_CADEIRA'], $itens['DS_SETOR'], 1, $itens['VL_LIQUIDO_INGRESSO'], $valorConveniencia + $valorConvenienciaAUX, 'XXXXXXXXXX');
+    $params2[$itensPedido] = array($newMaxId, $itens['ID_RESERVA'], $itens['ID_APRESENTACAO'], $itens['ID_APRESENTACAO_BILHETE'], $itens['DS_CADEIRA'], $itens['DS_SETOR'], 1, $itens['VL_LIQUIDO_INGRESSO'], $valorConveniencia + $valorConvenienciaAUX, 'XXXXXXXXXX', $itens['ID_CADEIRA']);
 }
 
 $PaymentDataCollection['Amount'] = ($totalIngressos + $frete + $totalConveniencia) * 100;
@@ -331,10 +331,11 @@ $query = 'INSERT INTO MW_ITEM_PEDIDO_VENDA (
                          QT_INGRESSOS,
                          VL_UNITARIO,
                          VL_TAXA_CONVENIENCIA,
-                         CODVENDA
+                         CODVENDA,
+                         INDICE
                          )
                          VALUES
-                         (?, ?, ?, ?, ?, ?, ?, ?, ISNULL(?, 0), ?)';
+                         (?, ?, ?, ?, ?, ?, ?, ?, ISNULL(?, 0), ?, ?)';
 if ($itensPedido > 0) {
     foreach($params2 as $params) {
         $result2 = executeSQL($mainConnection, $query, $params);
@@ -429,8 +430,11 @@ if ($PaymentDataCollection['Amount'] > 0 and ($errors and empty($sqlErrors))) {
 
         if(isset($_SESSION['usuario_pdv']) and $_SESSION['usuario_pdv'] == 1){
             require('concretizarCompra.php');
-            echo "redirect.php?redirect=".urlencode("pagamento_ok.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : ''));
-            die();
+
+            // se necessario, replica os dados de assinatura e imprime url de redirecionamento
+            require('concretizarAssinatura.php');
+
+            die("redirect.php?redirect=".urlencode("pagamento_ok.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : '')));
         }else{
             if ($result->AuthorizeTransactionResult->CorrelationId == $ri
                 &&
@@ -438,8 +442,10 @@ if ($PaymentDataCollection['Amount'] > 0 and ($errors and empty($sqlErrors))) {
 
                 require('concretizarCompra.php');
 
-                echo "redirect.php?redirect=".urlencode("pagamento_ok.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : ''));
-                die();
+                // se necessario, replica os dados de assinatura e imprime url de redirecionamento
+                require('concretizarAssinatura.php');
+
+                die("redirect.php?redirect=".urlencode("pagamento_ok.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : '')));
             } else {
                 $descricao_erro = "Transação não autorizada.";
             }

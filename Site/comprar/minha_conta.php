@@ -22,7 +22,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                 CONVERT(VARCHAR(10), PV.DT_PEDIDO_VENDA, 103) DT_PEDIDO_VENDA, 
                 PV.VL_TOTAL_PEDIDO_VENDA,
                 PV.IN_SITUACAO,
-                E.DS_EVENTO + ' ref. pedido ' + CAST(PV.ID_PEDIDO_PAI AS VARCHAR) AS DS_ASSINATURA
+                PV.ID_PEDIDO_PAI
             FROM MW_PEDIDO_VENDA PV
             LEFT JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_PAI
             LEFT JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO
@@ -86,12 +86,6 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
             div.descricao_pag div.descricao{ float:left; width:840px; }            
             a.botao{ margin-right: 10px; }
             a.botao.enderecos{ margin-right: 10px; }
-            table#assinaturas{
-                float:left;
-                width:100%;
-                border-collapse:collapse;
-                margin-top: 15px;
-            }
             table#meus_pedidos{
                 float:left;
                 width:100%;
@@ -99,29 +93,39 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                 margin-top: 15px;
                 margin-left: 0px;
             }
-            table#assinaturas tbody td{
-                padding:8px 8px 8px 0;
-                font-size:18px;
+
+            span#detalhes_historico span.pedido_resumo table {
+                margin: 15px 0 30px 120px;
             }
-            .checkbox-normal{width: 13px;}
+
+            span#detalhes_historico span.pedido_resumo table tr td {
+                padding-left: 15px;
+                padding-bottom: 10px;
+            }
         </style>
         <script>
             $(function() {
                 $('#assinaturas tbody').on('change', 'input[name*=pacote]', function(){
-                    $(this).next('input').prop('checked', $(this).prop('checked'));
+                    $(this).next('label').next('input').prop('checked', $(this).prop('checked'));
                     var status = $(this).attr('status');
+
                     if($(this).is(':checked')){
                         $('input[name*=pacote]').filter(function(){ return $(this).attr('status') != status }).prop('disabled', true)
-                        .next('input').prop('disabled', true);
-                        $('#acao').selectbox('detach');
-                        $('#acao option').filter(function(){ return $(this).attr('status') == status }).prop('disabled', true);
-                        $('#acao').selectbox('attach');
+                        .next('label').next('input').prop('disabled', true);
                     }else{
-                        $('input[name*=pacote]').prop('disabled', false).next('input').prop('disabled', false);
-                        $('#acao').selectbox('detach');
-                        $('#acao option').prop('disabled', false);
-                        $('#acao').selectbox('attach');
+                        $('input[name*=pacote]').prop('disabled', false).next('label').next('input').prop('disabled', false);
                     }
+
+                    $('#acao').selectbox('detach');
+                    $('#acao option').prop('disabled', false);
+
+                    $('input[name*=pacote]:checked').each(function(i, e){
+                        var status = $(e).attr('status');
+
+                        $('#acao option').filter(function(){ return $(this).attr('status') == status }).prop('disabled', true);
+                    });
+
+                    $('#acao').selectbox('attach');
                 });                              
             });                                              
         </script>        
@@ -161,7 +165,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                                 <?php } ?>
                                 <a href="#enderecos" class="botao enderecos ativo">endereços</a>
                                 <?php if ($isAssinante) { ?>
-                                    <a href="#assinaturas" class="botao assinaturas">assinaturas</a>
+                                    <a href="#frmAssinatura" class="botao assinaturas">assinaturas</a>
                                 <?php } ?>
                             </div>
                         </div>
@@ -193,7 +197,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                                         <td>R$ <?php echo number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, ',', ''); ?></td>
                                         <td><?php echo comboSituacao('situacao', $rs['IN_SITUACAO'], false); ?></td>
                                         <?php if ($isAssinante) { ?>
-                                        <td><?php echo $rs['DS_ASSINATURA']; ?></td>
+                                        <td><?php echo $rs['ID_PEDIDO_PAI'] ? 'ref. assinatura '.$rs['ID_PEDIDO_PAI'] : ''; ?></td>
                                         <?php } ?>                                        
                                     </tr>
                             <?php
@@ -247,42 +251,45 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                             <form name="frmAssinatura" id="frmAssinatura" method="post">
                                 <input name="dtInicio" type="hidden" value="<?php echo $arrAcoes["dtInicio"]; ?>" />
                                 <input name="dtFim" type="hidden" value="<?php echo $arrAcoes["dtFim"]; ?>" />
-                                
+
+                                <div class="acoes">
+                                        <p class="titulo">Assinaturas Theatro Municipal de São Paulo</p>
+                                        <p>Selecione as séries de apresentações<br>abaixo e escolha a ação desejada</p>
+                                        <select name="acao" id="acao">
+                                            <option value="-" selected>ações possíveis nesta fase</option>
                                 <?php
                                 if($visible == 0){
-                                ?>                                
-                                <select name="acao" id="acao">
-                                    <option value="-" selected>Ações - Selecione uma assinatura.</option>
-                            <?php foreach ($arrAcoes as $key => $val) {
-                            ?>
-                            <?php
-                                    if ($val == 1) {
-                                        $status = array("renovar" => "R",
-                                            "solicitar Troca" => "S",
-                                            "efetuar Troca" => "T",
-                                            "cancelar" => "C");
-                            ?>
-                                        <option status="<?php echo $status[$key]; ?>" value="<?php echo str_replace(" ", "", $key); ?>"><?php echo ucfirst($key); ?></option>
-                            <?php
+                                ?>
+                                    <?php foreach ($arrAcoes as $key => $val) {
+                                    ?>
+                                    <?php
+                                            if ($val == 1) {
+                                                $status = array("renovar" => "R",
+                                                    "solicitar Troca" => "S",
+                                                    "efetuar Troca" => "T",
+                                                    "cancelar" => "C");
+                                    ?>
+                                                <option status="<?php echo $status[$key]; ?>" value="<?php echo str_replace(" ", "", $key); ?>"><?php echo ucfirst($key); ?></option>
+                                    <?php
+                                            }
+                                        }
+                                    ?>
+                                <?php
                                     }
-                                }
-                            ?>
-                            </select>
-                            <?php
-                                }
-                            ?>
+                                ?>
+                                    </select>
+                                </div>
 
                             <table id="assinaturas">
                                 <thead>
                                     <tr>
-                                        <td></td>
-                                        <td width="240">Assinatura</td>
-                                        <td width="80">Temporada</td>
-                                        <td width="180">Setor</td>
+                                        <td width="200" colspan="2">Pacotes</td>
+                                        <td width="100">Temporada</td>
+                                        <td width="190">Setor</td>
                                         <td width="80">Lugar</td>
-                                        <td width="130">Valor da Assinatura</td>
-                                        <td width="250">Situação</td>
-                                    </tr>
+                                        <td width="110">Preço</td>
+                                        <td width="190">Situação</td>
+                                      </tr>
                                 </thead>
                                 <tbody>
                                 </tbody>

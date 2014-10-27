@@ -207,51 +207,29 @@ $(function() {
         }
       });
     }
-
-    function tratarResposta(data) {
-      if (data == 'Não é possível comprar ingressos para apresentações diferentes no mesmo pedido, podemos cancelar a reserva efetuada para que você possa continuar sua compra nesta apresentação. Deseja cancelar suas reservas anteriores?') {
-        $.confirmDialog({
-          text: data,
-          uiOptions: {
-            buttons: {
-              'Não': ['Quero manter minha reserva anterior e finalizar aquele pedido.', function() {
-                $.ajax({
-                  url: 'atualizarPedido.php?action=apresentacaoAtual',
-                  success: function(data){document.location = data;}
-                });
-              }],
-              'Sim': ['Quero cancelar minha reserva anterior e fazer uma nova reserva.', function() {
-                $.ajax({
-                  url: 'pagamento_cancelado.php?tempoExpirado',
-                  success: function(){fecharOverlay();}
-                });
-              }]
-            }
-          }
-        });
-      } else {
-        $.confirmDialog({
-          text: data,
-          uiOptions: {
-            buttons: {
-              'Ok, entendi': ['Leve-me de volta para a <br> seleção de ingressos', function() {
-                fecharOverlay();
-              }]
-            }
-          }
-        });
-      }
-    }
 		
     $('.botao_avancar').click(function(event) {
       event.preventDefault();
+
+      var href = $(this).attr('href');
 			
       if ($('#mapa_de_plateia span.standby').length > 0) {
-        document.location = $(this).attr('href');
+        document.location = href;
       } else {
-        $.dialog({
-          title:'Aviso',
-          text:'Selecione um lugar/quantidade de ingressos antes de avançar.'
+        $.ajax({
+          url: 'atualizarPedido.php',
+          data: 'action=add&checking=1',
+          type: 'get',
+          success: function(data) {
+            if (data == 'true') {
+              document.location = href;
+            } else {
+              $.dialog({
+                title:'Aviso',
+                text:'Selecione um lugar/quantidade de ingressos antes de avançar.'
+              });
+            }
+          }
         });
       }
     });

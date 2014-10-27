@@ -17,11 +17,31 @@ if (isset($_GET['action'])) {
 		$params = array(session_id());
 		$rs2 = executeSQL($mainConnection, $query, $params, true);
 
+		$query = "SELECT 1 FROM MW_PACOTE R
+					INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+					INNER JOIN MW_APRESENTACAO A2 ON A2.ID_EVENTO = A.ID_EVENTO AND A2.DT_APRESENTACAO = A2.DT_APRESENTACAO AND A2.HR_APRESENTACAO = A.HR_APRESENTACAO
+					WHERE A2.ID_APRESENTACAO = ?";
+		$params = array($_POST['apresentacao']);
+		$rs3 = executeSQL($mainConnection, $query, $params, true);
+
 		// verifica se a selecao atual pertence ao mesmo evento, data e hora ou se ainda nao fez reserva
 		if ($rs2 === NULL or ($rs['ID_EVENTO'] == $rs2['ID_EVENTO'] and $rs['DT_APRESENTACAO'] == $rs2['DT_APRESENTACAO'] and $rs['HR_APRESENTACAO'] == $rs2['HR_APRESENTACAO'])) {
+			
+			// iniciou uma troca de assinatura e foi para um evento comum?
+			if (isset($_SESSION['assinatura']) and $rs3 === NULL) {
+				echo 'Já existe uma reserva em andamento.<br />Você deseja continuar com a seleção existente<br />ou iniciar uma nova reserva?';
+				die();
+			}
+
 		} else {
-			echo 'Não é possível comprar ingressos para apresentações diferentes no mesmo pedido, podemos cancelar a reserva efetuada para que você possa continuar sua compra nesta apresentação. Deseja cancelar suas reservas anteriores?';
-			die();
+			// ##123##
+			// echo 'Não é possível comprar ingressos para apresentações diferentes no mesmo pedido, podemos cancelar a reserva efetuada para que você possa continuar sua compra nesta apresentação. Deseja cancelar suas reservas anteriores?';
+			// die();
+
+			// checagem para permitir que uma pessoa continue da etapa 1 para a 2 sem selecionar um lugar (atingiu limite de ingressos)
+			if ($_REQUEST['checking']) {
+				die('true');
+			}
 		}
 	}
 	
@@ -30,14 +50,25 @@ if (isset($_GET['action'])) {
 		$query = 'SELECT SUM(1) FROM MW_RESERVA WHERE ID_SESSION = ?';
 		$params = array(session_id());
 		$rs = executeSQL($mainConnection, $query, $params, true);
+
+		if ($_SESSION['assinatura']['tipo'] == 'troca' and $rs[0] == count($_SESSION['assinatura']['cadeira'])) {
+			die('Você atingiu o limite para essa troca:<br/>' . count($_SESSION['assinatura']['cadeira']) . ' ingresso(s) selecionado(s).');
+		}
 		
 		if ($rs[0] < $maxIngressos) {
 			// não existe na mw_reserva?
 			$query = 'SELECT 1 FROM MW_RESERVA WHERE ID_APRESENTACAO = ? AND ID_CADEIRA = ?';
 			$params = array($_POST['apresentacao'], $_REQUEST['id']);
 			$rs = executeSQL($mainConnection, $query, $params, true);
+
+			// não existe na mw_pacote_reserva?
+			$query = "SELECT 1 FROM MW_PACOTE_RESERVA PR
+						INNER JOIN MW_PACOTE_APRESENTACAO PA ON PA.ID_PACOTE = PR.ID_PACOTE
+						WHERE PA.ID_APRESENTACAO = ? AND PR.ID_CADEIRA = ? AND PR.IN_STATUS_RESERVA IN ('A', 'S') AND PR.ID_CLIENTE <> ?";
+			$params = array($_POST['apresentacao'], $_REQUEST['id'], $_SESSION['user']);
+			$rs2 = executeSQL($mainConnection, $query, $params, true);
 			
-			if (empty($rs)) {
+			if (empty($rs) and empty($rs2)) {
 				// não existe na tablugsala?
 				$query = 'SELECT A.CODAPRESENTACAO, E.ID_BASE FROM MW_EVENTO E INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO AND A.IN_ATIVO = \'1\' WHERE A.ID_APRESENTACAO = ? AND E.IN_ATIVO = \'1\'';
 				$params = array($_POST['apresentacao']);
@@ -176,6 +207,13 @@ if (isset($_GET['action'])) {
 
 		$retorno = '';
 		$result = true;
+
+		// nao checar quantidade de ingressos na tela de enderecos
+		if (!($_POST['entrega'] or $_POST['estado'])) {
+			if ($_SESSION['assinatura']['tipo'] == 'troca' and count($_SESSION['assinatura']['cadeira']) != count($_POST['cadeira'])) {
+				die('Você selecionou ' . count($_SESSION['assinatura']['cadeira']) . ' ingresso(s) para troca. Favor retornar e selecionar apenas a quantidade informada.');
+			}
+		}
 
 		$selectInfoVB = 'SELECT E.ID_BASE, AB.CODTIPBILHETE, A.CODAPRESENTACAO
 					 FROM MW_APRESENTACAO_BILHETE AB
@@ -478,7 +516,7 @@ if (isset($_GET['action'])) {
 				echo 'Neste momento esta(ão) disponível(is) apenas ' . $ingressosDisponiveis . ' ingresso(s)!';
 			}
 		} else {
-			echo 'Você já selecionou o máximo <br> de ingressos permitidos. Para  <br> selecionar mais ingressos  <br> finalize a compra atual.';
+			echo 'Você ainda tem ' . ($maxIngressos - $rs[0]) . ' ingresso(s) <br/> para atingir a quantidade limite do pedido. <br/> Por favor, altere a quantidade <br/> selecionada antes de continuar.';
 		}
 
 	} else if ($_GET['action'] == 'atualizarCaixaMeiaEntrada' and isset($_REQUEST['id'])) {

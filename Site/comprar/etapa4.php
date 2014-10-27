@@ -9,6 +9,7 @@ require('verificarBilhetes.php');
 require('verificarServicosPedido.php');
 require('verificarLimitePorCPF.php');
 require('verificarEntrega.php');
+require('verificarAssinatura.php');
 
 if (isset($_COOKIE['entrega'])) {
     $action = "verificatempo";
@@ -42,7 +43,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	<script type="text/javascript" src="../javascripts/contagemRegressiva.js?until=<?php echo tempoRestante(); ?>"></script>
 	<script type="text/javascript" src="../javascripts/carrinho.js"></script>
 	<script type="text/javascript" src="../javascripts/dadosEntrega.js"></script>
-	<?php echo $scriptBilheteInvalido.$scriptTempoLimiteFrete.$scriptLlimitePorCPF.$scriptEntrega.$scriptServicosPorPedido; ?>
+	<?php echo $scriptBilheteInvalido.$scriptTempoLimiteFrete.$scriptLlimitePorCPF.$scriptEntrega.$scriptServicosPorPedido.$scriptAssinatura; ?>
 
 	<?php echo $campanha['script']; ?>
 

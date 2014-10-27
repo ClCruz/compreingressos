@@ -140,7 +140,7 @@ $(function() {
 						window.validarBin = function(){$this.closest('tr').next('.beneficio').find('.validarBin').trigger('click', [true])};
 					} else {
 						sizeBin = $this.find('option:selected').attr('sizeBin') ? $this.find('option:selected').attr('sizeBin') : 6;
-						placeholder = sizeBin != 6 ? 'número cartão/matrícula SESC' : sizeBin + ' primeiros número do seu Itaucard';
+						placeholder = sizeBin != 6 ? 'número cartão/matrícula SESC' : sizeBin + ' primeiros números do seu cartão';
 
 						$this.closest('tr').addClass('complementar')
 							.next('.beneficio')

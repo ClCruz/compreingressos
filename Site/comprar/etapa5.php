@@ -8,6 +8,7 @@ require('verificarBilhetes.php');
 require('verificarServicosPedido.php');
 require('verificarLimitePorCPF.php');
 require('verificarEntrega.php');
+require('verificarAssinatura.php');
 
 if (isset($_COOKIE['entrega'])) {
     $action = "verificatempo";

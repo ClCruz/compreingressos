@@ -17,12 +17,12 @@
 				<p class="erro"></p>
 				<p class="help"></p>
 			</div>
+			<a id="esqueci" href="#esqueci" class="esqueci_senha">esqueci minha senha</a>
 			<input type="button" class="submit avancar passo4" id="logar" href="etapa4.php">
 			<div class="erro_help">
 				<p class="erro" style="width:200px">Combinação de E-mail/senha inválida<br>Por favor tente novamente.</p>
 				<p class="help"></p>
 			</div>
-			<a id="esqueci" href="#esqueci" class="esqueci_senha">esqueci minha senha</a>
 			<div id="esqueciForm" class="container_esqueci_senha">
 				<input type="text" name="email_esqueci_senha" placeholder="digite seu e-mail cadastrado" id="recupera_por_email" maxlength="100">
 				<div class="erro_help">

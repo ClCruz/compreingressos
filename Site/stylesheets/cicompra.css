@@ -292,7 +292,7 @@ div.descricao_pag div.img{
 
 div.descricao_pag div.descricao{
 	float:left;
-	width:680px;
+	width:840px;
 }
 
 div.descricao_pag div.descricao.final{
@@ -546,6 +546,26 @@ table thead td{
 	text-transform:uppercase;
 	text-align:left;
 	padding:0;
+}
+
+table#assinaturas{
+	float:left;
+	width:840px;
+	margin-left:120px;
+	border-collapse:collapse;
+}
+
+table#assinaturas tbody td{
+	padding:8px 8px 8px 0;
+	font-size:16px;
+}
+
+table#assinaturas tbody td.pacotes, table#assinaturas tbody td.lugar, table#assinaturas tbody td.preco, table#assinaturas tbody td.situacao{
+	font-size:18px;
+}
+
+table#assinaturas tbody td.setor{
+	text-transform:uppercase;
 }
 
 div.imprima_ingressos, div.euvou{
@@ -1420,10 +1440,12 @@ div.container_endereco{
 div.container_endereco p.titulo{
   font-size:28px;
   line-height:1em;
+  font-weight:300;
 }
 
 div.container_endereco p.endereco{
   font-size:20px;
+  font-weight:300;
 }
 
 a.add_endereco{
@@ -1459,6 +1481,65 @@ a.end_apagar{
 a.end_editar{
   font-size:18px;
   margin-left:30px;
+}
+
+div.acoes{
+  float:left;
+  margin:-20px 0 30px 120px;
+}
+
+div.acoes p.titulo{
+  font-size:26px;
+  font-weight:300;
+  margin-bottom:0;
+}
+
+div.acoes p{
+  font-size:18px;
+  font-weight:300;
+  margin-bottom:10px;
+  margin-left:2px;
+}
+
+div.pacotes{
+  float:left;
+  margin-left:120px;
+  margin-top:-20px;
+}
+
+div.pacotes p.titulo{
+  font-size:26px;
+  font-weight:300;
+  margin-bottom:0;
+}
+
+div.pacotes p.mini_titulo{
+  font-size:14px;
+  font-weight:bold;
+  margin:20px 0;
+  text-transform:uppercase;
+}
+
+div.pacotes table{
+  margin:10px 0 0;
+}
+
+div.pacotes table tr td.titulo a{
+  font-size:20px;
+  font-style:normal;
+}
+
+div.pacotes table tr td.titulo{
+  font-size:14px;
+  font-style:italic;
+  width:250px;
+}
+
+div.pacotes table div.desc_peca{
+  display:none;
+  float:left;
+  width:100%;
+  font-size:14px;
 }
 
 div.tooltip{
@@ -1800,6 +1881,17 @@ input[type=checkbox].checkbox:checked + label.checkbox{
 	background-image:url('../images/bt_checkbox.png');
 }
 
+input[type=checkbox].checkbox.independente + label.checkbox{
+  margin:0;
+  padding-left:32px;
+  height:32px;
+  background-position:0 -173px;
+}
+
+input[type=checkbox].checkbox.independente:checked + label.checkbox{
+	background-position:0 0;
+}
+
 input[type=radio].radio{
 	position: absolute; 
 	overflow: hidden; 
@@ -1910,7 +2002,7 @@ a.botao{
 	height:56px;
 	text-indent:-99999px;
 	display:block;
-	margin:0 13px 0 0;
+	margin:0 10px 0 0;
 	background-position:0 0;
 	background-color:transparent;
 	background-repeat:none;
@@ -1949,7 +2041,6 @@ a.botao.logout{
 
 a.botao.enderecos{
 	background-image:url('../images/bot_enderecos.png');
-        margin-right:0;
 }
 
 a.botao.assinaturas{
@@ -2146,6 +2237,7 @@ div.alert{
 	margin:0 0 0;
 	position:absolute;
 	z-index:10;
+  cursor:pointer;
 	background:transparent url('../images/bg_overlay.png') 0 0 repeat;
 }
 

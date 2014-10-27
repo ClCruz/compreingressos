@@ -32,9 +32,12 @@ if($origem=="PACOTE"){
 }
 $params = array($idHistorico);
 $result = executeSQL($mainConnection, $query, $params);
+?>
+<span class="pedido_resumo">
+<?php
 if(hasRows($result)){
 ?>
-<table id="pedido_resumo">
+<table>
     <thead>
         <tr>
             <td width="208">Apresentação</td>
@@ -61,3 +64,4 @@ if(hasRows($result)){
 <?php
 }
 ?>
+</span>

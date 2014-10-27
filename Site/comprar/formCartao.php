@@ -6,6 +6,7 @@ session_start();
 
 if ($_POST) {    
     require('validarBin.php');
+    require('verificarAssinatura.php');
     require('processarDadosCompra.php');
 } else {
 	$mainConnection = mainConnection();

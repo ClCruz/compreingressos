@@ -10,16 +10,8 @@ $(function() {
 
         $('#detalhes_pedido').hide();
         $('#detalhes_historico').hide();
-        var sb = $('#acao').attr('sb');
-        $('#sbHolder_'+sb).hide();
         $('#meus_pedidos tbody tr').show();
         $('#assinaturas tbody tr').show();
-
-        if(target_href == '#assinaturas'){
-            $('#sbHolder_'+sb).show();
-        }else{
-            $('#sbHolder_'+sb).hide();
-        }
 
         $('.menu_conta a').each(function() {
             var $this = $(this),
@@ -69,7 +61,7 @@ $(function() {
 
 
     $.ajax({
-        url: 'atualizarAssinatura.php?action=load',
+        url: 'atualizarAssinatura.php?action=load&local=139',
         success: function(data) {
             $('#assinaturas tbody').html(data).show();
             if($('#acao').length === 0){
@@ -92,24 +84,24 @@ $(function() {
 
         if ($(this).val() !== "-") {           
             if (qtdSelecionado > 0) {
-                if ($(this).val() === "renovar") {                    
-                    for (i = 0; i < qtdSelecionado; i++) {
-                        if (pacoteAux === null) {
-                            pacoteAux = qtdCheck.eq(i).val();
-                        } else {
-                            if (pacoteAux != qtdCheck.eq(i).val()) {
-                                $.dialog({
-                                    title: 'Aviso',
-                                    text: "Não é possível renovar Assinaturas diferentes no mesmo pedido, por favor, selecione apenas Assinaturas iguais para dar continuidade no processo de Renovação"
-                                });
-                                return false;
-                            } else {
-                                pacoteAux = qtdCheck.eq(i).val();
-                            }
-                        }
-                    }
-                    mensagem = "";
-                }
+                // if ($(this).val() === "renovar") {                    
+                //     for (i = 0; i < qtdSelecionado; i++) {
+                //         if (pacoteAux === null) {
+                //             pacoteAux = qtdCheck.eq(i).val();
+                //         } else {
+                //             if (pacoteAux != qtdCheck.eq(i).val()) {
+                //                 $.dialog({
+                //                     title: 'Aviso',
+                //                     text: "Não é possível renovar Assinaturas diferentes no mesmo pedido, por favor, selecione apenas Assinaturas iguais para dar continuidade no processo de Renovação"
+                //                 });
+                //                 return false;
+                //             } else {
+                //                 pacoteAux = qtdCheck.eq(i).val();
+                //             }
+                //         }
+                //     }
+                //     mensagem = "";
+                // }
                 if ($(this).val() === "solicitarTroca") {
                     mensagem = "Você está solicitando a troca da(s) assinatura(s) selecionada(s). Você deverá finalizar a(s) troca(s), selecionando outro(s) lugar(es) ou confirmando o(s) lugar(es) atual(is), no período de " + dtInicio + " à " + dtFim;
                 }
@@ -143,7 +135,7 @@ $(function() {
                                     success: function(data) {
                                         if ($this.val() === "solicitarTroca" || $this.val() === "cancelar") {
                                             $.ajax({
-                                                url: 'atualizarAssinatura.php?action=load',
+                                                url: 'atualizarAssinatura.php?action=load&local=139',
                                                 success: function(data) {
                                                     $('#assinaturas tbody').html(data).show();
                                                 }
@@ -156,11 +148,14 @@ $(function() {
                                         }
 
                                         if (data !== 'true') {
-                                            $.dialog({
-                                                title: 'Aviso',
-                                                text: data
+                                            tratarResposta(data, function(){
+                                                $.dialog({
+                                                    title: 'Aviso',
+                                                    text: data
+                                                });
+                                                fecharOverlay();
                                             });
-                                            fecharOverlay();
+                                            
                                         } else {
                                             fecharOverlay();
                                         }                                        
@@ -185,6 +180,6 @@ $(function() {
     }
 
     if($.getUrlVar('assinaturas') != undefined){
-        $('.menu_conta a[href*="#assinaturas"]').click();
+        $('.menu_conta a[href*="#frmAssinatura"]').click();
     }
 });

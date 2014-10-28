@@ -31,42 +31,6 @@ $(function(){
 	    });
 	});
 	// -- ajax loading --
-
-	if (document.location.pathname.match(/\/etapa.*\.php/)) {
-		// $(window).bind("beforeunload",function(event) {
-		// 	return "You have unsaved changes";
-		// });
-
-		$('a').filter(function(){
-			return this.host != document.location.host && this.host != '' && this.target != '_blank';
-		}).on('click', function(e){
-			e.preventDefault();
-
-			var url = $(this).attr('href');
-
-			$.confirmDialog({
-				text: 'Oooops... se escolher<br>'+
-						'sair agora, seu pedido será<br>'+
-						'cancelado e os ingressos liberados.',
-				detail: 'Tem certeza que deseja sair?',
-				uiOptions: {
-					buttons: {
-						'Não': ['Quero continuar<br>e concluir minha compra', function() {
-							fecharOverlay();
-					    }],
-					    'Sim': ['Desejo sair e<br>cancelar meu pedido', function() {
-					    	$.ajax({
-								url: 'pagamento_cancelado.php?tempoExpirado',
-								success: function(){
-									document.location = url;
-								}
-							});
-					    }]
-					}
-				}
-			});
-		});
-	}
 });
 
 function tratarResposta(data, func) {

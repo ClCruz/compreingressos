@@ -1119,7 +1119,7 @@ div.container_escolha_ingresso div.ingresso div.descricao p.desconto{
 div.container_cartoes{
 	float:left;
 	width:890px;
-	margin-left:70px;
+	margin-left:120px;
 }
 
 div.container_cartoes p.frase, div.container_dados p.frase{
@@ -1196,7 +1196,7 @@ div.container_dados{
 	display:none;
 	float:left;
 	width:890px;
-	margin-left:70px;
+	margin-left:120px;
 }
 
 div.container_dados div.linha{

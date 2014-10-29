@@ -64,28 +64,6 @@ $mainConnection = mainConnection();
 			    }
 		    }
 	    });
-
-		$('form#dados').on('click', '.selecionar a', function(event) {
-	        event.preventDefault();
-	        var $this = $(this);
-
-	        $.ajax({
-	            url: $this.attr('href'),
-	            data: $('#dados').serialize(),
-	            success: function(data) {
-	                if (data.substring(0,4) == 'redi') {
-	                	document.location = data;
-	                } else {
-	                	tratarResposta(data, function(){
-	                		$.dialog({
-				                title: 'Aviso...',
-				                text: data
-			                });
-	                	});
-	                }
-	            }
-	        });
-	    });
 	});
 	</script>
 
@@ -133,19 +111,10 @@ $mainConnection = mainConnection();
 				</div>
 
 				<div class="pacotes">
-		            <p class="titulo">Você solicitou a troca de <b><?php echo count($_REQUEST['cadeira']); ?></b> lugar(es).</p>
+		            <p class="titulo">Você solicitou a troca de <b><?php echo count($_SESSION['assinatura']['cadeira']); ?></b> lugar(es).</p>
 		            <p class="mini_titulo">Pacotes</p>
 
 					<form name="dados" id="dados">
-						<?php
-						foreach ($_REQUEST['pacote'] as $i => $pacote) {
-							?>
-							<input type="hidden" name="pacote[]" value="<?php echo $pacote; ?>" />
-							<input type="hidden" name="cadeira[]" value="<?php echo $_REQUEST['cadeira'][$i]; ?>" />
-							<?php
-						}
-						?>
-						
 					<!-- <p>
 						Selecione uma das assinaturas abaixo para continuar o processo de troca de lugares.<br/>
 						Ao clicar sobre o título das assinaturas, serão exibidas as apresentações que compõem cada assinatura.
@@ -162,7 +131,7 @@ $mainConnection = mainConnection();
 	                                ?>
 	                                <tr>
 	                                    <td class="pacote titulo"><a href="<?php echo "detalhes_historico.php?origem=PACOTE&historico=" . $rs['ID_PACOTE']; ?>"><?php echo utf8_encode($rs['DS_EVENTO']); ?></a></td>
-	                                    <td class="selecionar"><a href="<?php echo "atualizarAssinatura.php?action=trocar&apresentacao=" . $rs['ID_APRESENTACAO']; ?>">Selecionar lugares para troca</a></td>
+	                                    <td class="selecionar"><a href="<?php echo 'etapa1.php?apresentacao=' . $rs['ID_APRESENTACAO'] . '&eventoDS=' . utf8_encode($rs['DS_EVENTO']); ?>">Selecionar lugares para troca</a></td>
 	                                </tr>
 	                                <tr><td colspan="2" class="hidden"></td></tr>
 	                                <?php

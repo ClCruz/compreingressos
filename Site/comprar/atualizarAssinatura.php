@@ -69,7 +69,7 @@ if (isset($_GET['action'])) {
         echo $table;
     }
 
-    if ($_GET['action'] == 'renovar' or $_GET['action'] == 'trocar') {
+    if ($_GET['action'] == 'renovar' or $_GET['action'] == 'efetuarTroca') {
 
         // checar se o usuario tem algum registro na mw_reserva
         $query = "SELECT 1 FROM MW_RESERVA WHERE ID_SESSION = ?";
@@ -208,20 +208,24 @@ if (isset($_GET['action'])) {
             }
         }
         echo ($mensagem == "") ? "true" : $mensagem;
-    } else if ($_GET['action'] == 'trocar' and isset($_REQUEST['pacote'])) {
-        $query = "SELECT DS_EVENTO
-                 FROM MW_APRESENTACAO A
-                 INNER JOIN MW_EVENTO E on E.ID_EVENTO = A.ID_EVENTO
-                 WHERE ID_APRESENTACAO = ? AND A.IN_ATIVO = 1 AND E.IN_ATIVO = 1";
-        $rs = executeSQL($mainConnection, $query, array($_GET['apresentacao']), true);
-        if (empty($rs))
-            die('Apresentação não disponível.');
+    } else if ($_GET['action'] == 'efetuarTroca' and isset($_REQUEST['pacote'])) {
+
+        foreach ($_REQUEST['pacote'] as $i => $pacote) {
+            $query = "SELECT 1 FROM MW_PACOTE_RESERVA WHERE ID_PACOTE = ? AND ID_CLIENTE = ? AND ID_CADEIRA = ? AND IN_STATUS_RESERVA = 'S'";
+            $result = executeSQL($mainConnection, $query, array($pacote, $_SESSION['user'], $_REQUEST['cadeira'][$i]));
+
+            if (!hasRows($result)) {
+                echo "Não é possível efetuar a troca de uma assinatura que não foi solicitada dentro do prazo estipulado.";
+                die();
+            }
+        }
 
         $_SESSION['assinatura']['tipo'] = 'troca';
         $_SESSION['assinatura']['pacote'] = $_REQUEST['pacote'];
         $_SESSION['assinatura']['cadeira'] = $_REQUEST['cadeira'];
 
-        echo 'redirect.php?redirect=' . urlencode('etapa1.php?apresentacao=' . $_REQUEST['apresentacao'] . '&eventoDS=' . $rs['DS_EVENTO']);
+        echo 'redirect.php?redirect='.urlencode('selecionarTroca.php');
+
     } else if ($_GET['action'] == 'cancelar' and isset($_REQUEST['pacote'])) {
         $mensagem = "";
         foreach ($_REQUEST['pacote'] as $i => $pacote) {

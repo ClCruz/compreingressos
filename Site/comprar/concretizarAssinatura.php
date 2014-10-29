@@ -334,6 +334,8 @@ if (!empty($dadosPedido)) {
 
 	unset($_SESSION['assinatura']);
 
+	limparCookies();
+
 	die("redirect.php?redirect=".urlencode("minha_conta.php?assinaturas=1"));
 
 }

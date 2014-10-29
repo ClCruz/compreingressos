@@ -240,9 +240,9 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
               <p class="nome"><?php echo utf8_encode($rs['DS_EVENTO']); ?></p>
               <p class="endereco"><?php echo utf8_encode($evento_info['endereco'] . ' - ' . $evento_info['bairro'] . ' - ' . $evento_info['cidade'] . ', ' . $evento_info['sigla_estado']); ?></p>
               <p class="teatro"><?php echo utf8_encode($evento_info['nome_teatro']); ?></p>
-              <p class="horario"><?php echo $rs['HR_APRESENTACAO']; ?></p>
+              <p class="horario<?php echo is_pacote($_GET['apresentacao']) ? ' hidden' : ''; ?>"><?php echo $rs['HR_APRESENTACAO']; ?></p>
             </div>
-            <div class="outras_datas">
+            <div class="outras_datas<?php echo is_pacote($_GET['apresentacao']) ? ' hidden' : ''; ?>">
               <div class="icone"></div>
               <p>ver outras datas</p>
             </div>
@@ -284,6 +284,9 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
               <?php require_once("mapaPlateia.php"); ?>              
             </div>
             <?php } ?>
+            <?php } ?>
+            <?php if ($_SESSION['assinatura']['tipo'] == 'troca') { ?>
+            <a href="selecionarTroca.php" class="botao voltar passo1">voltar</a>
             <?php } ?>
             <a href="etapa2.php?eventoDS=<?php echo $_GET['eventoDS']; ?><?php echo $campanha['tag_avancar']; ?>" class="botao avancar passo2 botao_avancar" id="botao_avancar">outros pedidos</a>
             </div>

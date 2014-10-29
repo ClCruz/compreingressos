@@ -113,13 +113,7 @@ if ($_COOKIE['mc_eid'] and $_COOKIE['mc_cid']) {
 	$mcap->campaignEcommOrderAdd($dados_pedido);
 }
 
-setcookie('pedido', '', -1);
-setcookie('id_braspag', '', -1);
-setcookie('entrega', '', -1);
-setcookie('binItau', '', -1);
-
-setcookie('mc_eid', '', -1);
-setcookie('mc_cid', '', -1);
+limparCookies();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>

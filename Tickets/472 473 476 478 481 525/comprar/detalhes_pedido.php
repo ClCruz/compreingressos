@@ -118,7 +118,7 @@ while ($rs = fetchResult($result)) {
 		<p class="nome"><?php echo utf8_encode($rs['DS_EVENTO']); ?></p>
 		<p class="endereco"><?php echo utf8_encode($evento_info['endereco'] . ' - ' . $evento_info['bairro'] . ' - ' . $evento_info['cidade'] . ', ' . $evento_info['sigla_estado']); ?></p>
 		<p class="teatro"><?php echo utf8_encode($evento_info['nome_teatro']); ?></p>
-		<p class="horario"><?php echo $rs['HR_APRESENTACAO']; ?></p>
+		<p class="horario<?php echo is_pacote($rs['ID_APRESENTACAO']) ? ' hidden' : ''; ?>"><?php echo $rs['HR_APRESENTACAO']; ?></p>
 	</div>
 	<table id="pedido_resumo">
 		<thead>

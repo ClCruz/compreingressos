@@ -123,11 +123,6 @@ $(function() {
                                 fecharOverlay();
                             }],
                             'Sim': [" ", function() {
-                                if ($this.val() === "efetuarTroca") {
-                                    $('#frmAssinatura').attr('action', 'selecionarTroca.php').submit();
-                                    return false;
-                                }    
-
                                 $.ajax({
                                     url: 'atualizarAssinatura.php?action=' + $this.val(),
                                     data: $('#frmAssinatura').serialize(),

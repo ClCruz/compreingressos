@@ -90,7 +90,7 @@ if (hasRows($assinatura_na_reserva)) {
                     INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
                     INNER JOIN MW_APRESENTACAO A2 ON A2.ID_EVENTO = A.ID_EVENTO AND A2.DT_APRESENTACAO = A.DT_APRESENTACAO AND A2.HR_APRESENTACAO = A.HR_APRESENTACAO
                     INNER JOIN MW_PACOTE P ON P.ID_APRESENTACAO = A2.ID_APRESENTACAO
-                    WHERE R.ID_SESSION = ? AND GETDATE() BETWEEN P.DT_INICIO_FASE3 AND P.DT_FIM_FASE3";
+                    WHERE R.ID_SESSION = ? AND CONVERT(VARCHAR(10), GETDATE(), 112) BETWEEN P.DT_INICIO_FASE3 AND P.DT_FIM_FASE3";
         $params = array(session_id());
         $assinatura_na_fase3 = executeSQL($mainConnection, $query, $params);
 

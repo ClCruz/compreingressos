@@ -1833,6 +1833,16 @@ function limparImagesTemp() {
 	}
 }
 
+function limparCookies() {
+	setcookie('pedido', '', -1);
+	setcookie('id_braspag', '', -1);
+	setcookie('entrega', '', -1);
+	setcookie('binItau', '', -1);
+
+	setcookie('mc_eid', '', -1);
+	setcookie('mc_cid', '', -1);
+}
+
 
 
 function pre() {

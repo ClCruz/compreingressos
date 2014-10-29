@@ -126,7 +126,10 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                     });
 
                     $('#acao').selectbox('attach');
-                });                              
+                });
+                <?php if ($isAssinante) { ?>
+                    $('.menu_conta a[href*="#frmAssinatura"]').click();
+                <?php } ?>
             });                                              
         </script>        
     </head>

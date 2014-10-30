@@ -71,9 +71,17 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
               INNER JOIN MW_PACOTE P ON P.ID_PACOTE = A.ID_PACOTE
               WHERE A.ID_APRESENTACAO = ? AND DT_FIM_FASE3 >= GETDATE()';
     $params = array($_GET['apresentacao']);
+    $apresentacao_filha_pacote = executeSQL($mainConnection, $query, $params);
+
+    // verifica se a apresentacao atual é um pacote de assinatura e se esta dentro do periodo de assinatura
+    $query = 'SELECT 1 FROM MW_PACOTE P
+              INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = P.ID_APRESENTACAO
+              INNER JOIN MW_APRESENTACAO A2 ON A2.ID_EVENTO = A.ID_EVENTO AND A2.DT_APRESENTACAO = A.DT_APRESENTACAO AND A2.HR_APRESENTACAO = A.HR_APRESENTACAO AND A2.IN_ATIVO = 1
+              WHERE A2.ID_APRESENTACAO = ? AND DT_FIM_FASE3 >= GETDATE()';
+    $params = array($_GET['apresentacao']);
     $assinatura = executeSQL($mainConnection, $query, $params);
 
-    if (hasRows($assinatura)) {
+    if (hasRows($apresentacao_filha_pacote) or hasRows($assinatura)) {
       $pacoteNaoLiberado = true;
       $vendaNaoLiberada = true;
     }

@@ -29,46 +29,46 @@ $DataFim   = (isset($_GET["dt_final"]) && !empty($_GET["dt_final"])) ? tratarDat
 $CodPeca   = (isset($_GET["cod_peca"]) && !empty($_GET["cod_peca"])) ? $_GET["cod_peca"] : "null";
 $var_url   = "relControleAcesso.php?dt_inicial=". tratarData($DataIni) ."&dt_final=". tratarData($DataFim) ."&local=". $_GET["local"] ."&cod_peca=". $CodPeca;
 
-$strIdEvento = "SELECT CODPECA  FROM CI_MIDDLEWAY..MW_EVENTO WHERE ID_EVENTO = ?";
+$strIdEvento = "SELECT CODPECA, DS_EVENTO, B.DS_NOME_TEATRO FROM CI_MIDDLEWAY..MW_EVENTO E INNER JOIN CI_MIDDLEWAY..MW_BASE B ON B.ID_BASE = E.ID_BASE WHERE ID_EVENTO = ?";
 $pRSIdEVento = executeSQL($connGeral, $strIdEvento, array($CodPeca), true);
 
 // Monta e executa query principal do relatório
 $strGeral = "SELECT
-				P.NOMPECA,
-				CONVERT(CHAR(10), A.DATAPRESENTACAO,103) AS DATAPRESENTACAO,
-				A.HORSESSAO,
-				S.NOMSETOR,
-				T.TIPBILHETE,
-				COUNT(1) AS QTD,
-				T.STATIPBILHMEIA
-			FROM
-				TABCONTROLESEQVENDA CS
-				INNER JOIN
-				TABAPRESENTACAO     A
-				ON  A.CODAPRESENTACAO = CS.CODAPRESENTACAO
-				INNER JOIN
-				TABPECA             P
-				ON  P.CODPECA = A.CODPECA
-				INNER JOIN
-				TABSETOR            S
-				ON  S.CODSETOR = SUBSTRING(CODBAR, 6,1)
-				AND S.CODSALA  = A.CODSALA
-				INNER JOIN
-				TABTIPBILHETE       T
-				ON  T.CODTIPBILHETE = SUBSTRING(CODBAR, 15,3)
-			WHERE
-				STATUSINGRESSO = 'U'
-			AND P.CODPECA = ?
-			AND A.DATAPRESENTACAO BETWEEN ? AND ?
-			GROUP BY
-				P.NOMPECA,
-				CONVERT(CHAR(10), A.DATAPRESENTACAO,103),
-				A.HORSESSAO,
-				S.NOMSETOR,
-				T.TIPBILHETE,
-				T.STATIPBILHMEIA
-			ORDER BY
-				P.NOMPECA,A.DATAPRESENTACAO";
+                P.NOMPECA,
+                CONVERT(CHAR(10), A.DATAPRESENTACAO,103) AS DATAPRESENTACAO,
+                A.HORSESSAO,
+                S.NOMSETOR,
+                T.TIPBILHETE,
+                COUNT(1) AS QTD,
+                T.STATIPBILHMEIA
+            FROM
+                TABCONTROLESEQVENDA CS
+                INNER JOIN
+                TABAPRESENTACAO     A
+                ON  A.CODAPRESENTACAO = CS.CODAPRESENTACAO
+                INNER JOIN
+                TABPECA             P
+                ON  P.CODPECA = A.CODPECA
+                INNER JOIN
+                TABSETOR            S
+                ON  S.CODSETOR = SUBSTRING(CODBAR, 6,1)
+                AND S.CODSALA  = A.CODSALA
+                INNER JOIN
+                TABTIPBILHETE       T
+                ON  T.CODTIPBILHETE = SUBSTRING(CODBAR, 15,3)
+            WHERE
+                STATUSINGRESSO = 'U'
+            AND P.CODPECA = ?
+            AND A.DATAPRESENTACAO BETWEEN ? AND ?
+            GROUP BY
+                P.NOMPECA,
+                CONVERT(CHAR(10), A.DATAPRESENTACAO,103),
+                A.HORSESSAO,
+                S.NOMSETOR,
+                T.TIPBILHETE,
+                T.STATIPBILHMEIA
+            ORDER BY
+                P.NOMPECA,A.DATAPRESENTACAO";
 $paramsGeral = array($pRSIdEVento["CODPECA"], $DataIni, $DataFim);
 $pRSGeral = executeSQL($connGeral, $strGeral, $paramsGeral);
 
@@ -98,7 +98,11 @@ if(hasRows($pRSGeral)){
 <link rel="stylesheet" type="text/css" href="../stylesheets/padraoRelat.CSS">
 <body>
     <?php
+        $visible = true;
         if(!isset($_GET["exportar"])){
+            $bgColor = "bgcolor=\"LightGrey\"";
+            $visible = false;
+        }
     ?>
     <table width="770" class="tabela" border="0">
         <tr>
@@ -109,10 +113,14 @@ if(hasRows($pRSGeral)){
             <td class="tabela" align="center" bgcolor="LightGrey"><font size=4 face="tahoma,verdana,arial"><b>Controle de Acesso</b></font></td>
         </tr>
         <tr><td colspan="2"></td></tr>
+        <tr><td colspan="2"><b>Local:</b> <?php echo utf8_encode($pRSIdEVento["DS_NOME_TEATRO"]); ?></td></tr>
+        <tr><td colspan="2"><b>Evento:</b> <?php echo utf8_encode($pRSIdEVento["DS_EVENTO"]); ?></td></tr>        
+        <tr><td colspan="2"><b>Período:</b> <?php echo $_GET["dt_inicial"] ." à ". $_GET["dt_final"];?></td></tr>
+        <tr><td colspan="2"></td></tr>
     </table><br><br>
     <?php
-            $bgColor = "bgcolor=\"LightGrey\"";
-        }
+    //        $bgColor = "bgcolor=\"LightGrey\"";
+    //    }
     ?>
 
     <table width="760" class="tabela" border="0" <?php echo $bgColor; ?>>

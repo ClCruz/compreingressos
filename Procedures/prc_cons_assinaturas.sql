@@ -13,7 +13,7 @@ BEGIN
 	
 	SET NOCOUNT ON;
 	
-	SET @SQL = 'SELECT DISTINCT	C.DS_NOME +'' ''+ C.DS_SOBRENOME AS Assinante, C.CD_EMAIL_LOGIN AS Email'
+	SET @SQL = 'SELECT C.DS_NOME +'' ''+ C.DS_SOBRENOME AS Assinante, C.CD_EMAIL_LOGIN AS Email'
 			  +',E.DS_EVENTO COLLATE SQL_Latin1_General_CP1_CI_AS AS Assinatura, C.DS_DDD_TELEFONE +'' ''+ C.DS_TELEFONE AS Telefone '
 			  +',C.DS_DDD_CELULAR +'' ''+ C.DS_CELULAR AS Celular, ISNULL(PR.IN_ANO_TEMPORADA,0) AS Temporada '
 			  +',TS.NOMSETOR COLLATE SQL_Latin1_General_CP1_CI_AS AS Setor, TA.VALPECA AS ''Valor da Assinatura'' '

@@ -269,7 +269,7 @@ if (isset($_GET['action'])) {
                     print_r(sqlErrors());
                 }
 
-                $query = "INSERT INTO MW_PACOTE_RESERVA
+                $query = "INSERT INTO MW_PACOTE_RESERVA (ID_CLIENTE, ID_PACOTE, ID_CADEIRA, IN_STATUS_RESERVA, DT_HR_TRANSACAO, IN_ANO_TEMPORADA, DS_LOCALIZACAO)
                         SELECT 184000, ID_PACOTE, ID_CADEIRA, 'A', GETDATE(), IN_ANO_TEMPORADA, DS_LOCALIZACAO
                         FROM MW_PACOTE_RESERVA
                         WHERE ID_PACOTE = ? AND ID_CLIENTE = ? AND ID_CADEIRA = ?";

@@ -1,6 +1,22 @@
 <?php
 require_once('../settings/functions.php');
 require_once('../settings/settings.php');
+
+
+// checa se o pedido é um "pedido pai" (assinatura)
+$query = "SELECT TOP 1 1
+            FROM MW_PEDIDO_VENDA PV
+            INNER JOIN MW_ITEM_PEDIDO_VENDA I ON I.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
+            INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = I.ID_APRESENTACAO
+            INNER JOIN MW_APRESENTACAO A2 ON A2.ID_EVENTO = A.ID_EVENTO AND A2.DT_APRESENTACAO = A.DT_APRESENTACAO AND A2.HR_APRESENTACAO = A.HR_APRESENTACAO
+            INNER JOIN MW_PACOTE P ON P.ID_APRESENTACAO = A2.ID_APRESENTACAO
+            WHERE PV.ID_PEDIDO_VENDA = ?";
+$params = array($parametros['OrderData']['OrderId']);
+$result = executeSQL($mainConnection, $query, $params);
+
+$is_assinatura = hasRows($result);
+
+
 $subject = 'Pedido ' . $parametros['OrderData']['OrderId'] . ' - Pago';
 
 $namefrom = utf8_decode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS');
@@ -107,8 +123,8 @@ foreach ($itensPedido as $item) {
                                                                     <b>'.$item['descricao_item']['evento'].'</b><br>
                                                                     '.$item['descricao_item']['teatro'].'<br>
                                                                     '.$item['descricao_item']['bilhete'].' - R$ ' . number_format($item['valor_item'], 2, ',', '') . '<br>
-                                                                    Plateia - 09<br>
-                                                                    <span style="font-size:16px;line-height:16px;">'.$item['descricao_item']['data'].'</span> INÍCIO: <span style="font-size:18px">'.$item['descricao_item']['hora'].'</span>
+                                                                    '.$item['descricao_item']['setor'].' - '.$item['descricao_item']['cadeira'].'<br>
+                                                                    '.($is_assinatura ? '' : '<span style="font-size:16px;line-height:16px;">'.$item['descricao_item']['data'].'</span> INÍCIO: <span style="font-size:18px">'.$item['descricao_item']['hora'].'</span>').'
                                                                 </p>
                                                             </td>
                                                             <td width="100" align="center" valign="middle">
@@ -136,7 +152,7 @@ foreach ($itensPedido as $item) {
                                                                         '.$item['descricao_item']['evento'].'<br>
                                                                         '.$item['descricao_item']['teatro'].'<br>
                                                                         '.$item['descricao_item']['bilhete'].' - R$ ' . number_format($item['valor_item'], 2, ',', '') . '<br>
-                                                                        '.$item['descricao_item']['data'].' '.$item['descricao_item']['hora'].'<br>
+                                                                        '.($is_assinatura ? '' : $item['descricao_item']['data'].' '.$item['descricao_item']['hora'].'<br>').'
                                                                         '.$item['descricao_item']['setor'].' '.$item['descricao_item']['cadeira'].'
                                                                     </p>
                                                                     <p style="font-family:Arial,Verdana;font-size:10px;font-weight:normal;color:#000000;line-height:12px;margin:0;padding:0;text-transform:uppercase;float:right;">

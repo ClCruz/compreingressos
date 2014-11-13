@@ -28,7 +28,7 @@ $query = "SELECT TOP 1
 			INNER JOIN MW_BASE B ON B.ID_BASE = E.ID_BASE
 			INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE
 			INNER JOIN MW_MEIO_PAGAMENTO MP ON MP.ID_MEIO_PAGAMENTO = PV.ID_MEIO_PAGAMENTO
-			WHERE PV.ID_PEDIDO_VENDA = ?";
+			WHERE PV.ID_PEDIDO_VENDA = ? and PV.IN_SITUACAO = 'F'";
 $params = array($id_pedido);
 $dadosPedido = executeSQL($mainConnection, $query, $params, true);
 
@@ -36,6 +36,9 @@ $dadosPedido = executeSQL($mainConnection, $query, $params, true);
 if (!empty($dadosPedido)) {
 
 	$dadosPedido['VL_FRETE'] = 0;
+
+	// limpar reserva (evita que os itens do pai que sobraram na reserva sejam incluidos no primeiro filho)
+	executeSQL($mainConnection, 'DELETE MW_RESERVA WHERE ID_SESSION = ?', array(session_id()));
 
 	// marcar como um pedido de pacote
 	executeSQL($mainConnection, "UPDATE MW_PEDIDO_VENDA SET IN_PACOTE = 'S' WHERE ID_PEDIDO_VENDA = ?", array($id_pedido));
@@ -70,7 +73,7 @@ if (!empty($dadosPedido)) {
 					PA.ID_APRESENTACAO,
 					I.INDICE AS ID_CADEIRA,
 					I.DS_LOCALIZACAO AS DS_CADEIRA,
-					A3.DS_PISO AS DS_SETOR,
+					SE.NOMSETOR AS DS_SETOR,
 					GETDATE()+1 AS DT_VALIDADE,
 					AB2.ID_APRESENTACAO_BILHETE,
 					PV.CD_BIN_CARTAO AS CD_BINITAU,
@@ -85,8 +88,11 @@ if (!empty($dadosPedido)) {
 				INNER JOIN MW_PACOTE_APRESENTACAO PA ON PA.ID_PACOTE = P.ID_PACOTE
 				INNER JOIN MW_APRESENTACAO A3 ON A3.ID_APRESENTACAO = PA.ID_APRESENTACAO AND A3.DS_PISO = A.DS_PISO AND A3.IN_ATIVO = 1
 				INNER JOIN MW_APRESENTACAO_BILHETE AB2 ON AB2.ID_APRESENTACAO = A3.ID_APRESENTACAO AND AB2.CODTIPBILHETE = AB.CODTIPBILHETE AND AB2.IN_ATIVO = 1
+				INNER JOIN CI_THEATRO_MUNICIPAL..TABAPRESENTACAO TA ON TA.CODAPRESENTACAO = A3.CODAPRESENTACAO
+				INNER JOIN CI_THEATRO_MUNICIPAL..TABSALDETALHE TSD ON TSD.CODSALA = TA.CODSALA AND TSD.INDICE = I.INDICE
+				INNER JOIN CI_THEATRO_MUNICIPAL..TABSETOR SE ON SE.CODSALA = TSD.CODSALA AND SE.CODSETOR = TSD.CODSETOR
 				WHERE PV.ID_PEDIDO_VENDA = ?
-				ORDER BY PA.ID_APRESENTACAO, A3.DS_PISO, I.DS_LOCALIZACAO";
+				ORDER BY PA.ID_APRESENTACAO,SE.NOMSETOR, I.DS_LOCALIZACAO";
 	$result = executeSQL($mainConnection, $query, $params);
 
 	$apresentacoes = array();
@@ -182,7 +188,7 @@ if (!empty($dadosPedido)) {
 		    $totalIngressos += $itens['VL_LIQUIDO_INGRESSO'];
 		    $totalConveniencia += $valorConveniencia + $valorConvenienciaAUX;
 
-		    $params2[$itensPedido] = array($newMaxId, $itens['ID_RESERVA'], $itens['ID_APRESENTACAO'], $itens['ID_APRESENTACAO_BILHETE'], $itens['DS_CADEIRA'], $itens['DS_SETOR'], 1, $itens['VL_LIQUIDO_INGRESSO'], $valorConveniencia + $valorConvenienciaAUX, 'XXXXXXXXXX');
+		    $params2[$itensPedido] = array($newMaxId, $itens['ID_RESERVA'], $itens['ID_APRESENTACAO'], $itens['ID_APRESENTACAO_BILHETE'], $itens['DS_CADEIRA'], $itens['DS_SETOR'], 1, $itens['VL_LIQUIDO_INGRESSO'], $valorConveniencia + $valorConvenienciaAUX, 'XXXXXXXXXX', $itens['ID_CADEIRA']);
 		}
 
         foreach($params2 as $params) {
@@ -196,8 +202,9 @@ if (!empty($dadosPedido)) {
 						                    QT_INGRESSOS,
 						                    VL_UNITARIO,
 						                    VL_TAXA_CONVENIENCIA,
-						                    CODVENDA
-						                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ISNULL(?, 0), ?)', $params);
+						                    CODVENDA,
+                         					INDICE
+						                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ISNULL(?, 0), ?, ?)', $params);
 	    }
 
 
@@ -246,18 +253,14 @@ if (!empty($dadosPedido)) {
 										 $dadosPedido['CD_CPF'], $dadosPedido['CD_RG'], $newMaxId, $dadosPedido['ID_PEDIDO_IPAGARE'],
 										 $dadosPedido['CD_NUMERO_AUTORIZACAO'], $dadosPedido['CD_NUMERO_TRANSACAO'], $dadosPedido['CD_BIN_CARTAO'],
 										 $caixa);
+
+		executeSQL($mainConnection, 'INSERT INTO tab_log_gabriel (data, passo, parametros) VALUES (GETDATE(), ?, ?)', array('ANTES SP_VEN_INS001_WEB FILHO', json_encode($params_proc_assinatura)));
+
 		$retornoProcedure = executeSQL($mainConnection, $proc_assinatura, $params_proc_assinatura, true);
 
+		executeSQL($mainConnection, 'INSERT INTO tab_log_gabriel (data, passo, parametros) VALUES (GETDATE(), ?, ?)', array('DEPOIS SP_VEN_INS001_WEB FILHO', json_encode($retornoProcedure)));
 
 
-
-
-		$sqlErrors = sqlErrors();
-		if (!empty($sqlErrors)) {
-			$erro_processo_assinatura = "erro no processo de assinatura";
-
-			include('errorMail.php');
-		}
 
 
 

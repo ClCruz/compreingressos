@@ -53,8 +53,8 @@ if (isset($_GET['action'])) {
             $table .= "<tr>";
             $table .= "<td width='32'>";
             if ($rs["IN_ORIGEM"] == "PACOTE" && !in_array($rs["IN_STATUS_RESERVA"], array('C','R','T'))) {
-                $table .="<input type='checkbox' name='pacote[]' id='cb_" . $rs["ID_CADEIRA"] . "'  status='" . $rs["IN_STATUS_RESERVA"] . "' class='checkbox independente' value='" . $rs["ID_HISTORICO"] . "' />";
-                $table .='<label class="checkbox" for="cb_' . $rs["ID_CADEIRA"] . '"></label>';
+                $table .="<input type='checkbox' name='pacote[]' id='cb_" . $rs["ID_HISTORICO"] . $rs["ID_CADEIRA"] . "'  status='" . $rs["IN_STATUS_RESERVA"] . "' class='checkbox independente' value='" . $rs["ID_HISTORICO"] . "' />";
+                $table .='<label class="checkbox" for="cb_' . $rs["ID_HISTORICO"] . $rs["ID_CADEIRA"] . '"></label>';
                 $table .="<input type='checkbox' name='cadeira[]' status='" . $rs["IN_STATUS_RESERVA"] . "' class='checkbox-normal hidden' value='" . $rs["ID_CADEIRA"] . "' />";
                 
             }

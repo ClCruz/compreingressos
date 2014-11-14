@@ -507,8 +507,8 @@ function executeSQL($conn, $strSql, $params = array(), $returnRs = false) {
     }
 }
 
-function fetchResult($result) {
-    return sqlsrv_fetch_array($result);
+function fetchResult($result, $fetchType = SQLSRV_FETCH_BOTH) {
+    return sqlsrv_fetch_array($result, $fetchType);
 }
 
 function numRows($conn, $strSql, $params = array()) {

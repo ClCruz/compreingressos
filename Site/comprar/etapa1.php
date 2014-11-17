@@ -77,13 +77,23 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
     $query = 'SELECT 1 FROM MW_PACOTE P
               INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = P.ID_APRESENTACAO
               INNER JOIN MW_APRESENTACAO A2 ON A2.ID_EVENTO = A.ID_EVENTO AND A2.DT_APRESENTACAO = A.DT_APRESENTACAO AND A2.HR_APRESENTACAO = A.HR_APRESENTACAO AND A2.IN_ATIVO = 1
-              WHERE A2.ID_APRESENTACAO = ? AND DT_FIM_FASE3 >= GETDATE()';
+              WHERE A2.ID_APRESENTACAO = ? AND 
+              (
+                CONVERT(VARCHAR, GETDATE(), 112) <= DATEADD(DAY, -1, DT_INICIO_FASE3)
+                OR
+                CONVERT(VARCHAR, GETDATE(), 112) > DT_FIM_FASE3
+              )';
     $params = array($_GET['apresentacao']);
     $assinatura = executeSQL($mainConnection, $query, $params);
 
-    if (hasRows($apresentacao_filha_pacote) or hasRows($assinatura)) {
+    if (hasRows($apresentacao_filha_pacote)) {
       $pacoteNaoLiberado = true;
       $vendaNaoLiberada = true;
+    } else if (hasRows($assinatura)) {
+      if ($_SESSION['assinatura']['tipo'] != 'troca') {
+        $pacoteNaoLiberado = true;
+        $vendaNaoLiberada = true;
+      }
     }
 
 

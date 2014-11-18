@@ -103,12 +103,17 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
 
             // echo "chamada para o braspag: \n"; var_dump($parametros); var_dump($result); var_dump($descricao_erro); echo "\n\n";
 
+            // se der a msg de erro "Refund is not enabled for this merchant" fazer o estorno pelo sistema do mesmo jeito
+            if ($response->ErrorReportDataCollection->ErrorReportDataResponse->ErrorCode === "139") {
+                $force_system_refund = true;
+            }
+            
             if ($descricao_erro == '') {
                 //setcookie('id_braspag', $response->OrderData->BraspagOrderId);
 
-                if (($response->CorrelationId == $ri) OR (!$is_estorno_brasbag)) {
+                if (($response->CorrelationId == $ri) OR (!$is_estorno_brasbag) OR $force_system_refund) {
 
-                    if (($response->TransactionDataCollection->TransactionDataResponse->Status == '0') OR (!$is_estorno_brasbag)) {
+                    if (($response->TransactionDataCollection->TransactionDataResponse->Status == '0') OR (!$is_estorno_brasbag) OR $force_system_refund) {
 
                         //lista de eventos e codvenda
                         $query1 = "SELECT DISTINCT E.DS_EVENTO, A.CODAPRESENTACAO, B.ID_BASE, B.DS_NOME_BASE_SQL, I.CODVENDA
@@ -264,7 +269,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
             if ($retorno != 'ok') break;
         }
 
-        if ($pedido_principal['IN_PACOTE'] == 'S' and $retorno = 'ok') {
+        if ($pedido_principal['IN_PACOTE'] == 'S' and $retorno == 'ok') {
             $query = "UPDATE PR
                         SET PR.IN_STATUS_RESERVA = CASE WHEN CONVERT(VARCHAR, GETDATE(), 112) BETWEEN DT_INICIO_FASE1 AND DT_FIM_FASE1 THEN 'A' ELSE 'C' END
                         FROM MW_PEDIDO_VENDA PV
@@ -282,6 +287,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
     if (is_array($retorno)) {
         echo $retorno[0]['message'];
     } else {
-        echo $retorno;
+        if ($retorno == 'ok' and $force_system_refund) {
+            echo "<b>Não foi possível efetuar o estorno junto à Operadora</b>, por favor, efetue o procedimento de cancelamento junto a operadora manualmente.<br/><br/>
+                    Os dados do sistema do Middleway foram atualizados com sucesso.";
+        } else echo $retorno;
     }
 }

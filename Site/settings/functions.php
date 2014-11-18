@@ -937,7 +937,7 @@ function comboSituacao($name, $situacao = null, $isCombo = true) {
 }
 
 function comboFormaEntrega($forma = null) {
-    $dados = array("R" => "Retirar no Local");
+    $dados = array("R" => "E-ticket");
 
     foreach ($dados as $key => $valor) {
 	if ($key == $forma) {

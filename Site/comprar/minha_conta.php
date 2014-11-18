@@ -4,6 +4,11 @@ require 'acessoLogado.php';
 if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
     require_once('../settings/functions.php');
 
+    if ($is_manutencao === true) {
+        header("Location: manutencao.php");
+        die();
+    }
+
     $mainConnection = mainConnection();  
         
     $query = "SELECT DS_NOME, DS_SOBRENOME, CONVERT(VARCHAR(10), DT_NASCIMENTO, 103) DT_NASCIMENTO, DS_TELEFONE, DS_CELULAR, DS_DDD_TELEFONE, DS_DDD_CELULAR, CD_CPF, CD_RG, ID_ESTADO, DS_CIDADE, DS_BAIRRO, DS_ENDERECO, DS_COMPL_ENDERECO, CD_CEP, CD_EMAIL_LOGIN, IN_RECEBE_INFO, IN_RECEBE_SMS, IN_SEXO, ID_DOC_ESTRANGEIRO, ISNULL(IN_ASSINANTE, 'N') AS IN_ASSINANTE FROM MW_CLIENTE WHERE ID_CLIENTE = ?";

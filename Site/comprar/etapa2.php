@@ -116,7 +116,7 @@ require('verificarServicosPedido.php');
 				<p>Confira o(s) assento(s) escolhido(s), o preço, a forma de entrega e clique em avançar para continuar com o processo de compra.</p>
 
 				<p>Formas de entrega:</p>
-				<p>1. Retirar no local</p>
+				<p>1. E-ticket</p>
 				<p>No dia da atração escolhida, os ingressos estarão disponíveis na bilheteria, balcão ou guichê determinados pelo local onde se realizará o evento.</p>
 				<p>- Seus ingressos só poderão ser retirados no dia da apresentação sendo obrigatório apresentar o cartão utilizado na compra e um documento de identificação pessoal.</p>
 				<p>- No caso de meia entrada ou de promoções é obrigatório a apresentação do documento que comprove o benefício no momento da retirada dos ingressos e na entrada no local.</p>

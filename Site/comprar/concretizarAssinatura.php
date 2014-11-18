@@ -247,20 +247,33 @@ if (!empty($dadosPedido)) {
 				$caixa = 255;
 		}
 
-		$proc_assinatura = 'EXEC '.strtoupper($dadosPedido['DS_NOME_BASE_SQL']).'..SP_VEN_INS001_WEB ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?';
+		$return_code = -1;
+
+		$proc_assinatura = 'EXEC '.strtoupper($dadosPedido['DS_NOME_BASE_SQL']).'..SP_VEN_INS001_WEB ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?';
 		$params_proc_assinatura = array(session_id(), $dadosPedido['ID_BASE'], $dadosPedido['CD_MEIO_PAGAMENTO'], $codApresentacao,
 										 $dadosPedido['DS_DDD_TELEFONE'], $dadosPedido['DS_TELEFONE'], ($dadosPedido['DS_NOME'].' '.$dadosPedido['DS_SOBRENOME']),
 										 $dadosPedido['CD_CPF'], $dadosPedido['CD_RG'], $newMaxId, $dadosPedido['ID_PEDIDO_IPAGARE'],
 										 $dadosPedido['CD_NUMERO_AUTORIZACAO'], $dadosPedido['CD_NUMERO_TRANSACAO'], $dadosPedido['CD_BIN_CARTAO'],
-										 $caixa);
+										 $caixa, array(&$return_code, SQLSRV_PARAM_OUT));
 
 		executeSQL($mainConnection, 'INSERT INTO tab_log_gabriel (data, passo, parametros) VALUES (GETDATE(), ?, ?)', array('ANTES SP_VEN_INS001_WEB FILHO', json_encode($params_proc_assinatura)));
 
-		$retornoProcedure = executeSQL($mainConnection, $proc_assinatura, $params_proc_assinatura, true);
+		$retornoProcedure = executeSQL($mainConnection, $proc_assinatura, $params_proc_assinatura);
+		// make sure all result sets are stepped through, since the output params may not be set until this happens
+		while ($rsDebug = sqlsrv_next_result($retornoProcedure)) {}
 
-		executeSQL($mainConnection, 'INSERT INTO tab_log_gabriel (data, passo, parametros) VALUES (GETDATE(), ?, ?)', array('DEPOIS SP_VEN_INS001_WEB FILHO', json_encode($retornoProcedure)));
+		executeSQL($mainConnection, 'INSERT INTO tab_log_gabriel (data, passo, parametros) VALUES (GETDATE(), ?, ?)', array('DEPOIS SP_VEN_INS001_WEB FILHO', json_encode($return_code)));
 
 
+
+
+		
+
+		if ($return_code === 0) {
+			$erro_processo_assinatura = "erro no processo de assinatura";
+
+			include('errorMail.php');
+		}
 
 
 
@@ -310,6 +323,21 @@ if (!empty($dadosPedido)) {
 	// atualizar assinatura se o usuario estiver na fase 2 ou 3
 	if (!isset($_SESSION['assinatura']) or $_SESSION['assinatura']['tipo'] == 'troca') {
 
+		//update para o caso de um usuario comprar novamente algo que ele cancelou/estornou
+		executeSQL($mainConnection,
+					"UPDATE PR
+						SET PR.IN_STATUS_RESERVA = 'R',
+							PR.DT_HR_TRANSACAO = GETDATE()
+						FROM MW_PEDIDO_VENDA PV
+						INNER JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
+						INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO
+						INNER JOIN MW_APRESENTACAO A2 ON A2.ID_EVENTO = A.ID_EVENTO AND A2.DT_APRESENTACAO = A.DT_APRESENTACAO AND A2.HR_APRESENTACAO = A.HR_APRESENTACAO
+						INNER JOIN MW_PACOTE P ON P.ID_APRESENTACAO = A2.ID_APRESENTACAO
+						INNER JOIN MW_PACOTE_RESERVA PR ON PR.ID_CLIENTE = PV.ID_CLIENTE AND PR.ID_PACOTE = P.ID_PACOTE AND PR.ID_CADEIRA = IPV.INDICE
+						WHERE PV.ID_PEDIDO_VENDA = ?",
+					array($id_pedido));
+
+		//insert nos registros que ainda nao existem para esse usuario
 		executeSQL($mainConnection,
 					"INSERT INTO MW_PACOTE_RESERVA (ID_CLIENTE,ID_PACOTE,ID_CADEIRA,IN_STATUS_RESERVA,DT_HR_TRANSACAO,IN_ANO_TEMPORADA,DS_LOCALIZACAO)
 						SELECT
@@ -328,7 +356,7 @@ if (!empty($dadosPedido)) {
 						INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO
 						INNER JOIN MW_APRESENTACAO A2 ON A2.ID_EVENTO = A.ID_EVENTO AND A2.DT_APRESENTACAO = A.DT_APRESENTACAO AND A2.HR_APRESENTACAO = A.HR_APRESENTACAO
 						INNER JOIN MW_PACOTE P ON P.ID_APRESENTACAO = A2.ID_APRESENTACAO
-						WHERE PV.ID_PEDIDO_VENDA = ?",
+						WHERE PV.ID_PEDIDO_VENDA = ? AND NOT EXISTS (SELECT 1 FROM MW_PACOTE_RESERVA PR WHERE PR.ID_CLIENTE = PV.ID_CLIENTE AND PR.ID_PACOTE = P.ID_PACOTE AND PR.ID_CADEIRA = IPV.INDICE)",
 					array($id_pedido));
 
 	}

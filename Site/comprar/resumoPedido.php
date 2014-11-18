@@ -156,7 +156,7 @@ function finalizar($qtdIngressos, $totalIngressos, $formaEntrega, $valorEntrega,
 		<div class="descricao">forma de entrega</div>
 		<div class="tipo">
 			<select id="cmb_entrega" <?php echo $edicao ? '' : 'disabled'; ?>>
-				<option value="retirada">retirar no local</option>
+				<option value="retirada">e-ticket</option>
 				<?php if ($habilitar_entrega) { ?>
 				<option value="entrega" <?php echo $_COOKIE['entrega'] ? 'selected' : ''; ?>>no endere&ccedil;o</option>
 				<?php } ?>

@@ -43,9 +43,9 @@ if (isset($_COOKIE['ipagareError'])) {
 	
 	if (isset($_COOKIE['pedido']) and is_numeric($_COOKIE['pedido'])) {
 		$query = "UPDATE MW_PEDIDO_VENDA SET
-					 IN_SITUACAO = ?
+					 IN_SITUACAO = 'C', CD_BIN_CARTAO = LEFT(CD_BIN_CARTAO, 6) + '******' + RIGHT(CD_BIN_CARTAO, 4)
 					 WHERE ID_PEDIDO_VENDA = ? AND ID_CLIENTE = ? AND IN_SITUACAO <> 'F'";
-		$params = array('C', $_COOKIE['pedido'], $_SESSION['user']);
+		$params = array($_COOKIE['pedido'], $_SESSION['user']);
 		executeSQL($mainConnection, $query, $params);
 		
 		$sqlErrors = sqlErrors();

@@ -40,7 +40,7 @@ END
 -- delete from mw_item_pedido_venda where id_pedido_venda in (select id_pedido_venda from #TMP)
 
 update mw_pedido_venda
-set in_situacao = 'E'
+set in_situacao = 'E', cd_bin_cartao = left(cd_bin_cartao, 6) + '******' + right(cd_bin_cartao, 4)
 where id_pedido_venda in (select id_pedido_venda from #TMP)
 and in_situacao = 'P'
 

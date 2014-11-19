@@ -107,6 +107,12 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                 padding-left: 15px;
                 padding-bottom: 10px;
             }
+
+            div.acoes div.sbHolder.destaque a.sbSelector,
+            div.acoes div.sbHolder ul.sbOptions li:first-child a {
+                color: #930606;
+                text-transform: uppercase;
+            }
         </style>
         <script>
             $(function() {

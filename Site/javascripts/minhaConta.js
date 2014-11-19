@@ -82,7 +82,9 @@ $(function() {
         var qtdCheck = $("input[name*='pacote']:checked");
         var qtdSelecionado = qtdCheck.length;
 
-        if ($(this).val() !== "-") {           
+        if ($(this).val() !== "-") {
+            $this.next('div.sbHolder').removeClass('destaque');
+
             if (qtdSelecionado > 0) {
                 // if ($(this).val() === "renovar") {                    
                 //     for (i = 0; i < qtdSelecionado; i++) {
@@ -166,8 +168,10 @@ $(function() {
                     text: "Selecione alguma assinatura para executar uma ação."
                 });
             }
+        } else {
+            $this.next('div.sbHolder').addClass('destaque');
         }
-    });    
+    }).change();    
 
     if ($.getUrlVar('pedido') != undefined && $.getUrlVar('pedido') != '') {
         $('.menu_conta a[href*="#meus_pedidos"]').click();

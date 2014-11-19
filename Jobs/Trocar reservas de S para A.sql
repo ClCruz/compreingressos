@@ -36,7 +36,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'UPDATE',
 		@retry_attempts=0, 
 		@retry_interval=0, 
 		@os_run_priority=0, @subsystem=N'TSQL', 
-		@command=N'UPDATE MW_PACOTE_RESERVA SET IN_STATUS_RESERVA = ''S'' WHERE ID_CLIENTE <> 184000 AND IN_STATUS_RESERVA = ''A''', 
+		@command=N'UPDATE MW_PACOTE_RESERVA SET IN_STATUS_RESERVA = ''S'', DT_HR_TRANSACAO = GETDATE() WHERE ID_CLIENTE <> 184000 AND IN_STATUS_RESERVA = ''A''', 
 		@database_name=N'ci_middleway', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback

@@ -52,7 +52,7 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
 			<?php
 			while ($rs = fetchResult($result)) {
 			?>
-				<a href="autenticacao.php?id=<?php echo $rs['ID_CLIENTE']; ?>&redirect=<?php echo $_COOKIE['entrega'] ? 'etapa3_entrega.php' : 'etapa4.php'?>" class="cliente">
+				<a href="autenticacao.php?id=<?php echo $rs['ID_CLIENTE']; ?>&redirect=<?php echo isset($_GET['redirect']) ? $_GET['redirect'] : ($_COOKIE['entrega'] ? 'etapa3_entrega.php' : 'etapa4.php'); ?>" class="cliente">
 					<li>
 						<p>
 							Nome: <?php echo utf8_encode($rs['DS_NOME'] . ' ' . $rs['DS_SOBRENOME']); ?><br>

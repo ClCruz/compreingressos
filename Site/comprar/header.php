@@ -24,6 +24,10 @@ $stmt = $pdo->prepare($query_mysql);
 $stmt->execute();
 
 $dados_genero = $stmt->fetchAll();
+
+
+$rows = numRows($mainConnection, "SELECT 1 FROM MW_RESERVA WHERE ID_SESSION = ?", array(session_id()));
+
 ?>
 <div id="top">
 	<div id="menu_topo">
@@ -34,6 +38,9 @@ $dados_genero = $stmt->fetchAll();
 					<a href="http://compreingressos.com/espetaculos">Todos os espetáculos</a>
 					<a href="http://compreingressos.com/teatros">Teatros e casas de show</a>
 					<a href="minha_conta.php">Minha conta</a>
+					<?php if (isset($_SESSION['operador']) and $rows == 0) { ?>
+					<a href="pesquisa_usuario.php">(assinaturas - cliente)</a>
+					<?php } ?>
 				</div>
 			</div>
 			<div class="bottom">

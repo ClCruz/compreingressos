@@ -1364,15 +1364,19 @@ function comboEventoPacotePorUsuario($name, $local, $usuario, $selected) {
     return $combo;
 }
 
-function comboPacote($name, $usuario, $selected) {
+function comboPacote($name, $usuario, $selected, $id_base = null, $fase = null) {
     $mainConnection = mainConnection();
+
+    $filtro_fase = $fase ? "AND DT_FIM_FASE".$fase." >= getdate()" : "";
+
     $result = executeSQL($mainConnection, "SELECT ID_PACOTE, DS_EVENTO
 											FROM MW_PACOTE P
 											INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = P.ID_APRESENTACAO
 											INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
 											INNER JOIN MW_ACESSO_CONCEDIDO AC ON AC.ID_BASE = E.ID_BASE AND AC.CODPECA = E.CODPECA AND AC.ID_USUARIO = ?
+											WHERE (E.ID_BASE = ? or ? is null) $filtro_fase
 											ORDER BY DS_EVENTO",
-		    array($usuario));
+		    array($usuario, $id_base, $id_base));
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um pacote...</option>';
     while ($rs = fetchResult($result)) {

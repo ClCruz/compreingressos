@@ -23,9 +23,12 @@
         }
         return true;
     }
+	$(function(){
+		$("#PARAM_DTTRAN").datepicker();
+	});
 </script>
 <h2>{titulo}</h2>
-<form action="http://{host}/compreingressos2/admin/relStatusAssinaturas.php"
+<form action="https://{host}/admin/relStatusAssinaturas.php"
       name="fPeca"  id="fPeca" method="POST" onsubmit="return validarLocal();"
       enctype="multipart/form-data" target="_blank">
   <input type="hidden" name="rs:Command" value="Render"/>
@@ -61,6 +64,12 @@
       </td>
     </tr>    
     <tr>
+      <td class="coluna-header"><strong>Alteração do Status desde:</strong></td>
+      <td>
+          <input type="text" id="PARAM_DTTRAN" name="PARAM_DTTRAN" />
+      </td>
+    </tr>    
+	<tr>
       <td align="center" colspan="2">
         <br />
         <input type="submit" value="Visualizar" class="button" />&nbsp;

@@ -6,7 +6,8 @@ GO
 ALTER PROCEDURE prc_cons_assinaturas
 	@STATUS_RESERVA VARCHAR(2), 
 	@ANO_TEMPORADA INT,
-	@BASE VARCHAR(100)
+	@BASE VARCHAR(100),
+	@PARAM_DTTRAN VARCHAR(10)
 AS
 BEGIN
 	DECLARE @SQL VARCHAR(5000)
@@ -17,6 +18,7 @@ BEGIN
 			  +',E.DS_EVENTO COLLATE SQL_Latin1_General_CP1_CI_AS AS Assinatura, C.DS_DDD_TELEFONE +'' ''+ C.DS_TELEFONE AS Telefone '
 			  +',C.DS_DDD_CELULAR +'' ''+ C.DS_CELULAR AS Celular, ISNULL(PR.IN_ANO_TEMPORADA,0) AS Temporada '
 			  +',TS.NOMSETOR COLLATE SQL_Latin1_General_CP1_CI_AS AS Setor, TA.VALPECA AS ''Valor da Assinatura'' '
+			  +',ISNULL(PR.DT_HR_TRANSACAO,'''') AS ''Data Transação'''
 			  +',ISNULL(PR.DS_LOCALIZACAO,'''') AS DS_LOCALIZACAO, '
 			  +'CASE PR.IN_STATUS_RESERVA '
               +'WHEN ''A'' THEN ''Aguardando ação do Assinante'' '
@@ -39,13 +41,15 @@ BEGIN
 			  BEGIN
 			  SET @SQL = @SQL +' PR.IN_STATUS_RESERVA = '''+ @STATUS_RESERVA +''' AND '
 			  END			  
-			  SET @SQL = @SQL +' PR.IN_ANO_TEMPORADA = '+ CONVERT(VARCHAR, @ANO_TEMPORADA)
+			  SET @SQL = @SQL +' PR.IN_ANO_TEMPORADA = '+ CONVERT(VARCHAR, @ANO_TEMPORADA) +' AND '
+			  SET @SQL = @SQL +' PR.DT_HR_TRANSACAO >= '''+ @PARAM_DTTRAN + ''''
 			  
-	SET @SQL = @SQL + 'UNION ALL '
+	SET @SQL = @SQL + ' UNION ALL '
 			  +'SELECT C.DS_NOME +'' ''+ C.DS_SOBRENOME AS Assinante, C.CD_EMAIL_LOGIN AS Email'
 			  +',HA.DS_PACOTE AS Assinatura ,C.DS_DDD_TELEFONE +'' ''+ C.DS_TELEFONE AS Telefone'
 			  +',C.DS_DDD_CELULAR + C.DS_CELULAR AS Celular,HA.ID_ANO_TEMPORADA AS Temporada'
 			  +',HA.DS_SETOR AS Setor,HA.VL_PACOTE  AS ''Valor da Assinatura'' '
+			  +', '''' AS ''Data Transação'''
 			  +',HA.DS_CADEIRA AS DS_LOCALIZACAO, '' '' AS IN_STATUS_RESERVA '
 			  +'FROM MW_HIST_ASSINATURA HA '
 			  +'INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = HA.ID_CLIENTE '

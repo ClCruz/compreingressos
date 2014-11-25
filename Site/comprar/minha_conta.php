@@ -137,6 +137,10 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                     });
 
                     $('#acao').selectbox('attach');
+
+                    if ($('#acao').is('.destaque')) {
+                        $('#acao').next('div.sbHolder').addClass('destaque')
+                    }
                 });
                 <?php if ($isAssinante) { ?>
                     $('.menu_conta a[href*="#frmAssinatura"]').click();

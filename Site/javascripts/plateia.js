@@ -233,6 +233,11 @@ $(function() {
         });
       }
     });
+
+    $mapa_de_plateia.on('click', function(e){
+      $('div.links a:last').remove();
+      $mapa_de_plateia.off(e);
+    });
   }
 	
   if ($('#setor option').length > 1) {

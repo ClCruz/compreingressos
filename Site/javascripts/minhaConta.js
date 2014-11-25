@@ -83,7 +83,7 @@ $(function() {
         var qtdSelecionado = qtdCheck.length;
 
         if ($(this).val() !== "-") {
-            $this.next('div.sbHolder').removeClass('destaque');
+            $this.removeClass('destaque').next('div.sbHolder').removeClass('destaque');
 
             if (qtdSelecionado > 0) {
                 // if ($(this).val() === "renovar") {                    
@@ -169,7 +169,8 @@ $(function() {
                 });
             }
         } else {
-            $this.next('div.sbHolder').addClass('destaque');
+            $this.addClass('destaque').next('div.sbHolder').addClass('destaque');
+            console.log($this);
         }
     }).change();    
 

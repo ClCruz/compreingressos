@@ -3,7 +3,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 370, true)) {
 
     if ($_GET['action'] == 'liberar') {
 
-        $query = "DELETE MW_PACOTE_RESERVA WHERE ID_PACOTE = ? AND ID_CLIENTE = ? AND ID_CADEIRA = ?";
+        $query = "UPDATE MW_PACOTE_RESERVA SET IN_STATUS_RESERVA = 'C', DT_HR_TRANSACAO = GETDATE() WHERE ID_PACOTE = ? AND ID_CLIENTE = ? AND ID_CADEIRA = ?";
 
         foreach ($_POST['pacote'] as $i => $pacote) {
             $params = array($pacote, $_POST['cliente'][$i], $_POST['cadeira'][$i]);

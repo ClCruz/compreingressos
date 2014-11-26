@@ -27,12 +27,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 370, true)) {
                         ,TS.NOMSETOR COLLATE SQL_Latin1_General_CP1_CI_AS AS DS_SETOR
                         ,PR.IN_STATUS_RESERVA
                         ,PR.ID_CLIENTE
+                        ,C.DS_NOME + ' ' + C.DS_SOBRENOME AS DS_NOME_SOBRENOME
                     FROM CI_MIDDLEWAY..MW_PACOTE_RESERVA PR
                     INNER JOIN CI_MIDDLEWAY..MW_PACOTE P ON P.ID_PACOTE = PR.ID_PACOTE
                     INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.ID_APRESENTACAO = P.ID_APRESENTACAO
                     INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A2 ON A2.ID_EVENTO = A.ID_EVENTO AND A2.DT_APRESENTACAO = A.DT_APRESENTACAO AND A2.HR_APRESENTACAO = A.HR_APRESENTACAO
                     INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
-                    INNER JOIN CI_MIDDLEWAY..MW_cliente c ON c.ID_cliente  = pr.id_cliente
+                    INNER JOIN CI_MIDDLEWAY..MW_CLIENTE C ON C.ID_CLIENTE  = PR.ID_CLIENTE
                     INNER JOIN TABSALDETALHE TSD ON TSD.INDICE = PR.ID_CADEIRA
                     INNER JOIN TABSETOR TS ON TS.CODSALA = TSD.CODSALA AND TS.CODSETOR = TSD.CODSETOR
                     INNER JOIN TABAPRESENTACAO TA ON TA.CODAPRESENTACAO = A2.CODAPRESENTACAO AND TA.CODSALA= TS.CODSALA
@@ -57,6 +58,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 370, true)) {
     .coluna-header{width: 200px;}
     .tb-form{margin-left: 40px; width: 609px; padding: 0px;}
     form select{min-width: 200px;}
+    tr.ui-state-hover {border: none !important; font-weight: normal !important;}
+    table.ui-widget tbody tr td input {width: 100%;}
 </style>
 <script type="text/javascript">
     var pagina = '<?php echo $pagina; ?>';
@@ -65,38 +68,60 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 370, true)) {
         $('#cpf').onlyNumbers();
 
         $('#liberar').button().on('click', function(e){
-            $.ajax({
-                url: pagina + '?action=liberar',
-                type: 'post',
-                data: $('#dados').serialize(),
-                success: function(data) {
-                    if (data == 'ok') {
-                        $.dialog({
-                            title: 'Sucesso',
-                            text: 'Lugares liberados com sucesso.',
-                            uiOptions: {
-                                buttons: {
-                                    'Ok': function() {
-                                        $('#enviar').trigger('click');
+            if ($('input[type=checkbox]:checked').length > 0) {
+                var msg = 'Tem certeza que deseja liberar o(s) ' + 
+                            $('table.ui-widget tbody input[type=checkbox]:checked').parent('td').parent('tr').length +
+                            ' lugar(es) selecionado(s)?<br/><br/>Atenção: essa operação não poderá ser desfeita.'
+
+                $.dialog({
+                    title: 'Confirmação...',
+                    text: msg,
+                    uiOptions: {
+                        buttons: {
+                            'Ok': function() {
+                                $.ajax({
+                                    url: pagina + '?action=liberar',
+                                    type: 'post',
+                                    data: $('#dados').serialize(),
+                                    success: function(data) {
+                                        if (data == 'ok') {
+                                            $.dialog({
+                                                title: 'Sucesso',
+                                                text: 'Lugares liberados com sucesso.',
+                                                uiOptions: {
+                                                    buttons: {
+                                                        'Ok': function() {
+                                                            $('#enviar').trigger('click');
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                        } else {
+                                            $.dialog({
+                                                title: 'Aviso...',
+                                                text: data,
+                                                uiOptions: {
+                                                    buttons: {
+                                                        'Ok': function() {
+                                                            $('#enviar').trigger('click');
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                        }
                                     }
-                                }
+                                });
+                                $(this).dialog('close');
+                            },
+                            'Cancelar': function() {
+                                $(this).dialog('close');
                             }
-                        });
-                    } else {
-                        $.dialog({
-                            title: 'Aviso...',
-                            text: data,
-                            uiOptions: {
-                                buttons: {
-                                    'Ok': function() {
-                                        $('#enviar').trigger('click');
-                                    }
-                                }
-                            }
-                        });
+                        }
                     }
-                }
-            });
+                });
+            } else {
+                $.dialog({text: 'Nenhum lugar selecionado.'});
+            }
         });
 
         $('#local').on('change', function(){
@@ -149,6 +174,14 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 370, true)) {
             } else {
                 $('input[type=checkbox]:first').prop('checked', true)
             }
+        });
+
+        $('table.ui-widget tr:not(.ui-widget-header, .estorno)').hover(function() {
+            $(this).addClass('ui-state-hover').next('.estorno').addClass('ui-state-hover');
+        }, function() {
+            $(this).removeClass('ui-state-hover').next('.estorno').removeClass('ui-state-hover');
+        }).find('td:not(:first)').on('click', function(){
+            $(this).parent().find('input[type=checkbox]:last').trigger('click');
         });
     });
 </script>
@@ -204,6 +237,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 370, true)) {
                 <th>Lugar</th>
                 <th>Preço</th>
                 <th>Situação</th>
+                <th>Cliente</th>
             </tr>
         </thead>
         <tbody>
@@ -222,6 +256,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 370, true)) {
                 <td><?php echo utf8_encode($rs['DS_CADEIRA']); ?></td>
                 <td><?php echo number_format($rs['VL_PACOTE'], 2, ',', ''); ?></td>
                 <td><?php echo $situacao[$rs['IN_STATUS_RESERVA']]; ?></td>
+                <td><?php echo utf8_encode($rs['DS_NOME_SOBRENOME']); ?></td>
             </tr>
             <?php
                 }

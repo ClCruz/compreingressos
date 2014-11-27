@@ -248,3 +248,27 @@
 	margin-right: 20px;
 	padding-top: 5px;
 }
+
+.custom-combobox {
+	position: relative;
+	display: inline-block;
+}
+.custom-combobox-toggle {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	margin-left: -1px;
+	padding: 0;
+}
+.custom-combobox-input {
+	font-size: inherit;
+	font-weight: inherit;
+	margin: 0;
+	padding: 5px 10px;
+}
+
+tr.ui-state-hover {
+	border: none !important;
+	font-weight: normal !important;
+	outline: 1px solid #D3D3D3;
+}

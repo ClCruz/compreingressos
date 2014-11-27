@@ -9,9 +9,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
 
     $pagina = basename(__FILE__);
 
-    if ($_GET['action'] == 'reemail') {
+    if (isset($_GET['action'])) {
       require('actions/' . $pagina);
-      exit();
+      die();
     }
 
     if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situacao"]) && isset($_GET["nm_cliente"]) && isset($_GET["nm_operador"]) && isset($_GET["cd_cpf"]) && isset($_GET["num_pedido"])) {
@@ -277,6 +277,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
     }
 ?>
     <script type="text/javascript" src="../javascripts/jquery.ui.datepicker-pt-BR.js"></script>
+    <script type="text/javascript" src="../javascripts/jquery.combobox-autocomplete.js"></script>
     <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
     <script>
         $(function() {
@@ -304,13 +305,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                     }}
             });
 
-            $('tr:not(.ui-widget-header, .estorno)').hover(function() {
+            $('#tabPedidos tr:not(.ui-widget-header, .estorno)').hover(function() {
                 $(this).addClass('ui-state-hover').next('.estorno').addClass('ui-state-hover');
             }, function() {
                 $(this).removeClass('ui-state-hover').next('.estorno').removeClass('ui-state-hover');
             });
 
-            $('tr:not(.ui-widget-header, .total, .estorno)').click(function() {
+            $('#tabPedidos tr:not(.ui-widget-header, .total, .estorno)').click(function() {
                 $('loadingIcon').fadeIn('fast');
                 var $this = $(this),
                 url = $this.find('a').attr('destino');
@@ -382,6 +383,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                     }
                 }
             });
+
+            $.ajax({
+              url: pagina + '?action=load_evento_combo&nm_evento=<?php echo $_GET['nm_evento']; ?>',
+              success: function(data) {
+                $('#evento').html(data).combobox();
+              }
+            });
         });    
     </script>
     <style type="text/css">
@@ -395,44 +403,41 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
 <?php
     $mes = date("m") - 1;
 ?>
-    <p>
-        Pedido nº&nbsp;&nbsp;&nbsp; <input size="10" type="text" value="<?php echo (isset($_GET["num_pedido"])) ? $_GET["num_pedido"] : "" ?>" id="num_pedido" name="num_pedido" /> &nbsp;&nbsp;&nbsp;
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        CPF <input type="text" value="<?php echo (isset($_GET["cd_cpf"])) ? $_GET["cd_cpf"] : "" ?>" id="cd_cpf" name="cd_cpf" maxlength="13" /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        Nome do Cliente <input size="40" type="text" value="<?php echo (isset($_GET["nm_cliente"])) ? $_GET["nm_cliente"] : "" ?>" id="nm_cliente" name="nm_cliente" /><br/>
-    </p><br/>
-    <p>
-        Data Inicial <input type="text" value="<?php echo (isset($_GET["dt_inicial"])) ? $_GET["dt_inicial"] : date("d/m/Y") ?>" class="datepicker" id="dt_inicial" readonly name="dt_inicial" />&nbsp;&nbsp;&nbsp;
-        Data Final <input type="text" class="datepicker" value="<?php echo (isset($_GET["dt_final"])) ? $_GET["dt_final"] : date("d/m/Y") ?>" id="dt_final" name="dt_final" readonly/> &nbsp;&nbsp;&nbsp;
-        Nome do Operador <input size="40" type="text" value="<?php echo (isset($_GET["nm_operador"])) ? $_GET["nm_operador"] : "" ?>" id="nm_operador" name="nm_operador" />
-    </p><br/>
-    <p>
-        Situação &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo combosituacao('situacao', $_GET["situacao"]); ?>&nbsp;&nbsp;
-    <?php
-    $name = "evento";
-    $queryEvento = 'SELECT E.ID_EVENTO, E.DS_EVENTO FROM MW_EVENTO E WHERE IN_ATIVO = 1 ORDER BY DS_EVENTO ASC';
-    $resultEventos = executeSQL($mainConnection, $queryEvento, null);
-    $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um evento...</option>';
-
-    while ($rs = fetchResult($resultEventos)) {
-        $combo .= '<option value="' . $rs['ID_EVENTO'] . '"' .
-                (($_GET["nm_evento"] == $rs['ID_EVENTO']) ? ' selected' : '' ) .
-                '>' . utf8_encode($rs['DS_EVENTO']) . '</option>';
-    }
-    $combo .= '</select>';
-    ?>
-    Nome do Evento <?php echo $combo; ?> &nbsp;&nbsp;&nbsp;
-    <input type="submit" class="button" id="btnRelatorio" value="Buscar" />
-    <?php if (isset($result) && hasRows($result)) {
-    ?>
-        &nbsp;&nbsp;<a class="button" href="gerarExcel.php?dt_inicial=<?php echo $_GET["dt_inicial"]; ?>&dt_final=<?php echo $_GET["dt_final"]; ?>&situacao=<?php echo $_GET["situacao"]; ?>&num_pedido=<?php
-        if (isset($_GET["num_pedido"])) {
-            echo $_GET["num_pedido"];
-        } else {
-            echo "";
-        } ?>&nm_cliente=<?php echo $_GET["nm_cliente"]; ?>&nm_operador=<?php echo $_GET["nm_operador"] ?>&cd_cpf=<?php echo $_GET["cd_cpf"]; ?>&nm_evento=<?php echo $_GET["nm_evento"]; ?>&ds_evento=<?php echo $dsEvento; ?>">Exportar Excel</a>
-<?php } ?>
-</p><br>
+    <table>
+      <tr>
+        <td>Pedido nº</td>
+        <td><input size="10" type="text" value="<?php echo (isset($_GET["num_pedido"])) ? $_GET["num_pedido"] : "" ?>" id="num_pedido" name="num_pedido" /></td>
+        <td>CPF</td>
+        <td><input type="text" value="<?php echo (isset($_GET["cd_cpf"])) ? $_GET["cd_cpf"] : "" ?>" id="cd_cpf" name="cd_cpf" maxlength="13" /></td>
+        <td>Nome do Cliente</td>
+        <td><input size="40" type="text" value="<?php echo (isset($_GET["nm_cliente"])) ? $_GET["nm_cliente"] : "" ?>" id="nm_cliente" name="nm_cliente" /></td>
+      </tr>
+      <tr>
+        <td>Data Inicial</td>
+        <td><input type="text" value="<?php echo (isset($_GET["dt_inicial"])) ? $_GET["dt_inicial"] : date("d/m/Y") ?>" class="datepicker" id="dt_inicial" readonly name="dt_inicial" /></td>
+        <td>Data Final</td>
+        <td><input type="text" class="datepicker" value="<?php echo (isset($_GET["dt_final"])) ? $_GET["dt_final"] : date("d/m/Y") ?>" id="dt_final" name="dt_final" readonly/></td>
+        <td>Nome do Operador</td>
+        <td><input size="40" type="text" value="<?php echo (isset($_GET["nm_operador"])) ? $_GET["nm_operador"] : "" ?>" id="nm_operador" name="nm_operador" /></td>
+      </tr>
+      <tr>
+        <td>Situação</td>
+        <td><?php echo combosituacao('situacao', $_GET["situacao"]); ?></td>
+        <td>Nome do Evento</td>
+        <td><select name="evento" class="inputStyle" id="evento"><option value="">Carregando combo...</option></select></td>
+        <td align="center"><input type="submit" class="button" id="btnRelatorio" value="Buscar" /></td>
+        <td align="center">
+          <?php if (isset($result) && hasRows($result)) { ?>
+              <a class="button" href="gerarExcel.php?dt_inicial=<?php echo $_GET["dt_inicial"]; ?>&dt_final=<?php echo $_GET["dt_final"]; ?>&situacao=<?php echo $_GET["situacao"]; ?>&num_pedido=<?php
+              if (isset($_GET["num_pedido"])) {
+                  echo $_GET["num_pedido"];
+              } else {
+                  echo "";
+              } ?>&nm_cliente=<?php echo $_GET["nm_cliente"]; ?>&nm_operador=<?php echo $_GET["nm_operador"] ?>&cd_cpf=<?php echo $_GET["cd_cpf"]; ?>&nm_evento=<?php echo $_GET["nm_evento"]; ?>&ds_evento=<?php echo $dsEvento; ?>">Exportar Excel</a>
+          <?php } ?>
+        </td>
+      </tr>
+    </table><br/>
 
 <!-- Tabela de pedidos -->
 <table class="ui-widget ui-widget-content" id="tabPedidos">

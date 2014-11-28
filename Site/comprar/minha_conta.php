@@ -306,6 +306,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                                         <td width="190">Setor</td>
                                         <td width="80">Lugar</td>
                                         <td width="110">Preço</td>
+                                        <td width="110">Valor Pago</td>
                                         <td width="190">Situação</td>
                                       </tr>
                                 </thead>

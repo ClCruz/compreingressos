@@ -209,12 +209,17 @@ if (isset($err) && $err != "") {
                           <td	align=left  class=texto><?php echo formatarConteudoVazio(utf8_encode($pRSBilhete["TipBilhete"])); ?></td>
                           <td	align=right  class=texto><?php echo formatarConteudoVazio($pRSBilhete["QtdeEstornados"]); ?></td>
                           <td	align=right  class=texto><?php echo formatarConteudoVazio($pRSBilhete["QtdeVendidos"]); ?></td>
-                          <td	align=right class=texto><?php echo $pRSBilhete["QtdeAcessos"] == 0 ? '' : $pRSBilhete["QtdeAcessos"]; ?></td>
+                          <td	align=right class=texto><?php echo ($pRSBilhete["QtdeAcessos"] == 0 or $pRSBilhete["StaTipBilhMeia"] == 'S') ? '' : $pRSBilhete["QtdeAcessos"]; ?></td>
                           <td	align=right class=texto>R$&nbsp;<?php echo number_format($pRSBilhete["Preco"], 2, ",", "."); ?></td>
                           <td	align=right class=texto >R$&nbsp;<?php echo number_format($pRSBilhete["Total"], 2, ",", "."); ?></td>
                         </tr>
       <?php
                       }
+                      
+                      $nTotalEstornados += $pRSBilhete['QtdeEstornados'];
+                      $nTotalVendidos += $pRSBilhete['QtdeVendidos'];
+                      $nTotalAcessados += $pRSBilhete["StaTipBilhMeia"] == 'S' ? 0 : $pRSBilhete["QtdeAcessos"];
+
                       $nTotalVendas = $nTotalVendas + $pRSBilhete["Total"];
                       $totTransacoes += $pRSBilhete["QtdeVendidos"];
                       $ingressosExcedentes[] = $pRSBilhete["CodTipBilhete"];
@@ -223,10 +228,15 @@ if (isset($err) && $err != "") {
                     if ($resumido == "0") {
       ?>
                       <tr>
-                        <td colspan="5" bgcolor="#FFFFFF" rowspan="2" align="center" class="tabela"><font size=2 face="tahoma,verdana,arial"><b>Taxa de Ocupação:</b>&nbsp;&nbsp;  <?php echo number_format((($totPublico / $lotacao) * 100), 2, ",", "."); ?> %</font></td>
-                        <td bgcolor="LightGrey" colspan="3" align="center" class="label"><b>TOTAL DE VENDAS</b></td>
+                        <td colspan="2" bgcolor="#FFFFFF" rowspan="2" align="center" class="tabela"><font size=2 face="tahoma,verdana,arial"><b>Taxa de Ocupação:</b>&nbsp;&nbsp;  <?php echo number_format((($totPublico / $lotacao) * 100), 2, ",", "."); ?> %</font></td>
+                        <td bgcolor="LightGrey" colspan="3" align="center" class="label"><b>TOTAIS</b></td>
+                        <td bgcolor="LightGrey" colspan="2" align="center" class="label"><b>TOTAL DE VENDAS</b></td>
                       </tr>
                       <tr>
+                        <td bgcolor="LightGrey" align="right" class="label"><b><?php echo $nTotalEstornados; ?></b></td>
+                        <td bgcolor="LightGrey" align="right" class="label"><b><?php echo $nTotalVendidos; ?></b></td>
+                        <td bgcolor="LightGrey" align="right" class="label"><b><?php echo $nTotalAcessados; ?></b></td>
+
                         <td bgcolor="LightGrey" colspan="2" align="right" class="label"><b>R$&nbsp;&nbsp;<?php echo number_format($nTotalVendas, 2, ",", "."); ?></b></td>
                       </tr>
                     </table>

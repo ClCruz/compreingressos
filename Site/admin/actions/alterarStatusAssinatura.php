@@ -7,42 +7,43 @@ $base = $_POST["cboTeatro"];
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 356, true)) {
 
     if ($_GET['action'] == 'update') {
-        $query = "INSERT INTO MW_PACOTE_RESERVA
-                SELECT 184000, ID_PACOTE, ID_CADEIRA, 'A', GETDATE(), IN_ANO_TEMPORADA, DS_LOCALIZACAO
+        $query = "INSERT INTO MW_PACOTE_RESERVA (ID_CLIENTE, ID_PACOTE, ID_CADEIRA, IN_STATUS_RESERVA, IN_ANO_TEMPORADA, DS_LOCALIZACAO, DT_HR_TRANSACAO)
+                SELECT 184000, ID_PACOTE, ID_CADEIRA, 'A', IN_ANO_TEMPORADA, DS_LOCALIZACAO, GETDATE()
                 FROM MW_PACOTE_RESERVA
                 WHERE IN_STATUS_RESERVA = ? AND IN_ANO_TEMPORADA = ? AND ID_CLIENTE <> 184000";
         $params = array($status, $temporada);
         beginTransaction($mainConnection);
         $result = executeSQL($mainConnection, $query, $params);
         if ($result == false) {
-            rollbackTransaction($mainConnection);
             print_r(sqlErrors());
+            rollbackTransaction($mainConnection);
         } else {
             $log = new Log($_SESSION['admin']);
             $log->__set('funcionalidade', 'Alteração do Status das Assinaturas');
             $log->__set('parametros', $params);
             $log->__set('log', $query);
             $log->save($mainConnection);
-        }
 
-        $query = "UPDATE MW_PACOTE_RESERVA
-                  SET IN_STATUS_RESERVA = 'C', DT_HR_TRANSACAO = GETDATE()
-                  WHERE
-                    IN_STATUS_RESERVA = ?
-                    AND IN_ANO_TEMPORADA = ?
-                    AND ID_CLIENTE <> 184000";
-        $result = executeSQL($mainConnection, $query, $params);
-        if ($result == false) {
-            rollbackTransaction($mainConnection);
-            print_r(sqlErrors());
-        } else {
-            $log = new Log($_SESSION['admin']);
-            $log->__set('funcionalidade', 'Alteração do Status das Assinaturas');
-            $log->__set('parametros', $params);
-            $log->__set('log', $query);
-            $log->save($mainConnection);
+            $query = "UPDATE MW_PACOTE_RESERVA
+                      SET IN_STATUS_RESERVA = 'C', DT_HR_TRANSACAO = GETDATE()
+                      WHERE
+                        IN_STATUS_RESERVA = ?
+                        AND IN_ANO_TEMPORADA = ?
+                        AND ID_CLIENTE <> 184000";
+            $result = executeSQL($mainConnection, $query, $params);
+            if ($result == false) {
+                print_r(sqlErrors());
+                rollbackTransaction($mainConnection);
+            } else {
+                $log = new Log($_SESSION['admin']);
+                $log->__set('funcionalidade', 'Alteração do Status das Assinaturas');
+                $log->__set('parametros', $params);
+                $log->__set('log', $query);
+                $log->save($mainConnection);
+
+                commitTransaction($mainConnection);
+            }
         }
-        commitTransaction($mainConnection);
 
         echo "true";
     } else if ($_GET['action'] == 'loadStatus') {

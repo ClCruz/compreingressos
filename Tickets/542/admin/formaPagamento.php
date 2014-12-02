@@ -8,7 +8,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 7, true)) {
     if (isset($_GET['action'])) {
         require('actions/' . $pagina);
     } else {
-        $result = executeSQL($mainConnection, 'SELECT MPF.ID_MEIO_PAGAMENTO, CODFORPAGTO, DS_FORPAGTO, IN_TRANSACAO_PDV, IN_EXIBE_WEB FROM MW_MEIO_PAGAMENTO_FORMA_PAGAMENTO MPF INNER JOIN MW_MEIO_PAGAMENTO MP ON MP.ID_MEIO_PAGAMENTO = MPF.ID_MEIO_PAGAMENTO WHERE ID_BASE = ? ORDER BY MP.DS_MEIO_PAGAMENTO ASC', array($_GET['teatro']));
+        $result = executeSQL($mainConnection, 'SELECT MPF.ID_MEIO_PAGAMENTO, CODFORPAGTO, DS_FORPAGTO, IN_TRANSACAO_PDV FROM MW_MEIO_PAGAMENTO_FORMA_PAGAMENTO MPF INNER JOIN MW_MEIO_PAGAMENTO MP ON MP.ID_MEIO_PAGAMENTO = MPF.ID_MEIO_PAGAMENTO WHERE ID_BASE = ? ORDER BY MP.DS_MEIO_PAGAMENTO ASC', array($_GET['teatro']));
         $resultTeatros = executeSQL($mainConnection, 'SELECT ID_BASE, DS_NOME_TEATRO FROM MW_BASE WHERE IN_ATIVO = \'1\'');
 ?>
         <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
@@ -38,7 +38,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 7, true)) {
                                     tr.find('td:not(.button):eq(0)').html($('#idMeioPagamento option:selected').text());
                                     tr.find('td:not(.button):eq(1)').html($('#idFormaPagamento option:selected').text());
                                     tr.find('td:not(.button):eq(2)').html($('#in_transacao_pdv').is(':checked') ? 'Sim' : 'N&atilde;o');
-                                    tr.find('td:not(.button):eq(3)').html($('#in_exibe_web').is(':checked') ? 'Sim' : 'N&atilde;o');
 
                                     $this.text('Editar').attr('href', pagina + '?action=edit&' + id);
                                     tr.find('td.button a:last').attr('href', pagina + '?action=delete&' + id);
@@ -64,7 +63,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 7, true)) {
                         tr.find('td:not(.button):eq(1)').html('<?php echo comboFormaPagamento('idFormaPagamento', $_GET['teatro']); ?>');
                         $('#idFormaPagamento option').filter(function(){return $(this).text() == values[1]}).attr('selected', 'selected');
                         tr.find('td:not(.button):eq(2)').html('<input name="in_transacao_pdv" type="checkbox" class="inputStyle" id="in_transacao_pdv" ' + (values[2] == 'Sim' ? 'checked' : ''  )+ ' />');
-                        tr.find('td:not(.button):eq(3)').html('<input name="in_exibe_web" type="checkbox" class="inputStyle" id="in_exibe_web" ' + (values[3] == 'Sim' ? 'checked' : ''  )+ ' />');
 
                         $this.text('Salvar').attr('href', pagina + '?action=update&' + id);
 
@@ -105,7 +103,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 7, true)) {
                         '<?php echo comboFormaPagamento('idFormaPagamento', $_GET['teatro']); ?>' +
                         '</td>' +
                         '<td class="center"><input name="in_transacao_pdv" type="checkbox" class="inputStyle" id="in_transacao_pdv" /></td>' +
-                        '<td class="center"><input name="in_exibe_web" type="checkbox" class="inputStyle" id="in_exibe_web" /></td>' +
                         '<td class="button"><a href="' + pagina + '?action=add">Salvar</a></td>' +
                         '<td class="button"><a href="#delete">Apagar</a></td>' +
                         '</tr>';
@@ -149,7 +146,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 7, true)) {
                         <th>Meio de Pagamento</th>
                         <th>Forma de Pagamento</th>
                         <th>Transação PDV</th>
-                        <th>Exibir WEB</th>
                         <th colspan="2">A&ccedil;&otilde;es</th>
                     </tr>
                 </thead>
@@ -164,7 +160,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 7, true)) {
                     <td><?php echo comboMeioPagamento('idMeioPagamento', $idMeioPagamento, false); ?></td>
                     <td><?php echo comboFormaPagamento('idFormaPagamento', $_GET['teatro'], $idFormaPagamento, false); ?></td>
                     <td class="center"><?php echo $rs['IN_TRANSACAO_PDV'] ? 'Sim' : 'N&atilde;o'; ?></td>
-                    <td class="center"><?php echo $rs['IN_EXIBE_WEB'] ? 'Sim' : 'N&atilde;o'; ?></td>
                     <td class="button"><a href="<?php echo $pagina; ?>?action=edit&idMeioPagamento=<?php echo $idMeioPagamento; ?>&idBase=<?php echo $_GET['teatro']; ?>">Editar</a></td>
                     <td class="button"><a href="<?php echo $pagina; ?>?action=delete&idMeioPagamento=<?php echo $idMeioPagamento; ?>&idBase=<?php echo $_GET['teatro']; ?>">Apagar</a></td>
                 </tr>

@@ -3,31 +3,9 @@ require_once('../settings/functions.php');
 $mainConnection = mainConnection();
 session_start();
 
-if (acessoPermitido($mainConnection, $_SESSION['admin'], 340, true)) {
+if (acessoPermitido($mainConnection, $_SESSION['admin'], 380, true)) {
 
 $pagina = basename(__FILE__);
-
-if ($_GET['action'] == 'combo_eventos') {
-	$result = executeSQL($mainConnection, "SELECT E.ID_EVENTO, E.DS_EVENTO
-											FROM MW_EVENTO E
-											INNER JOIN MW_ACESSO_CONCEDIDO AC ON E.ID_BASE = AC.ID_BASE
-											AND AC.ID_USUARIO = ? AND AC.CODPECA = E.CODPECA
-											WHERE E.ID_BASE = ?
-											AND E.IN_ATIVO = '1'
-											ORDER BY DS_EVENTO",
-		    array($_SESSION['admin'], $_GET["local"]));
-
-    $combo = '<select name="evento" class="inputStyle" id="evento"><option value="TODOS">TODOS</option>';
-    while ($rs = fetchResult($result)) {
-	$combo .= '<option value="' . $rs['ID_EVENTO'] . '"' .
-		(($_GET["evento"] == $rs['ID_EVENTO']) ? ' selected' : '') .
-		'>' . str_replace("'", "\'", utf8_encode($rs['DS_EVENTO'])) . '</option>';
-    }
-    $combo .= '</select>';
-
-    echo $combo;
-	die();
-}
 
 if(isset($_GET["dt_inicial"]) && isset($_GET["dt_final"])){
 		
@@ -47,15 +25,12 @@ if(isset($_GET["dt_inicial"]) && isset($_GET["dt_final"])){
 					INNER JOIN MW_ITEM_PEDIDO_VENDA IPV
 					ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
 
-					INNER JOIN MW_APRESENTACAO A
+					LEFT JOIN MW_APRESENTACAO A
 					ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO
 					
-					INNER JOIN MW_EVENTO E
+					LEFT JOIN MW_EVENTO E
 					ON E.ID_EVENTO = A.ID_EVENTO
-
-					INNER JOIN MW_ACESSO_CONCEDIDO AC ON E.ID_BASE = AC.ID_BASE
-					AND AC.ID_USUARIO = ? AND AC.CODPECA = E.CODPECA
-
+					
 					LEFT JOIN MW_LOCAL_EVENTO LE
 					ON LE.ID_LOCAL_EVENTO = E.ID_LOCAL_EVENTO
 					
@@ -65,15 +40,14 @@ if(isset($_GET["dt_inicial"]) && isset($_GET["dt_final"])){
 				WHERE DT_HORA_CANCELAMENTO IS NULL
 				AND DT_PEDIDO_VENDA BETWEEN CONVERT(DATETIME, ? + ' 00:00:00', 103) AND CONVERT(DATETIME, ? + ' 23:59:59', 103)
 				AND PV.IN_SITUACAO = 'F'
-				AND E.ID_BASE = ?
-				AND (CONVERT(VARCHAR, E.ID_EVENTO) = ? OR CONVERT(VARCHAR, ?) = 'TODOS')
+				AND PV.ID_USUARIO_CALLCENTER = ?
 				GROUP BY 
 					UI.DS_NOME,
 					LE.DS_LOCAL_EVENTO,
 					E.DS_EVENTO,
 					MP.DS_MEIO_PAGAMENTO
 				ORDER BY LE.DS_LOCAL_EVENTO, UI.DS_NOME, E.DS_EVENTO, TOTAL_VENDA DESC";
-	$params = array($_SESSION['admin'], $_GET["dt_inicial"], $_GET["dt_final"], $_GET["local"], $_GET["evento"], $_GET["evento"]);
+	$params = array($_GET["dt_inicial"], $_GET["dt_final"], $_SESSION['admin']);
 	$result = executeSQL($mainConnection, $strSql, $params);
 	
 	$query = "SELECT
@@ -87,15 +61,6 @@ if(isset($_GET["dt_inicial"]) && isset($_GET["dt_final"])){
 
 					INNER JOIN MW_ITEM_PEDIDO_VENDA IPV
 					ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
-
-					INNER JOIN MW_APRESENTACAO A
-					ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO
-					
-					INNER JOIN MW_EVENTO E
-					ON E.ID_EVENTO = A.ID_EVENTO
-
-					INNER JOIN MW_ACESSO_CONCEDIDO AC ON E.ID_BASE = AC.ID_BASE
-					AND AC.ID_USUARIO = ? AND AC.CODPECA = E.CODPECA
 					
 					INNER JOIN MW_MEIO_PAGAMENTO MP
 					ON MP.ID_MEIO_PAGAMENTO = PV.ID_MEIO_PAGAMENTO AND MP.IN_TRANSACAO_PDV = 1
@@ -103,8 +68,7 @@ if(isset($_GET["dt_inicial"]) && isset($_GET["dt_final"])){
 				WHERE PV.DT_HORA_CANCELAMENTO IS NULL
 				AND PV.DT_PEDIDO_VENDA BETWEEN CONVERT(DATETIME, ? + ' 00:00:00', 103) AND CONVERT(DATETIME, ? + ' 23:59:59', 103)
 				AND PV.IN_SITUACAO = 'F'
-				AND E.ID_BASE = ?
-				AND (CONVERT(VARCHAR, E.ID_EVENTO) = ? OR CONVERT(VARCHAR, ?) = 'TODOS')";
+				AND PV.ID_USUARIO_CALLCENTER = ?";
 	$rs = executeSQL($mainConnection, $query, $params, true);
 	$total['TOTAL_PEDIDO'] = $rs['TOTAL_VENDA'];
 	$total['QUANTIDADE'] = $rs['QT_INGRESSOS'];
@@ -120,17 +84,16 @@ $(function() {
 	var pagina = '<?php echo $pagina; ?>'
 	$('.button').button();
 	//$(".datepicker").datepicker();
-    $('input.datepicker').datepicker({
-          changeMonth: true,
-          changeYear: true,
-          onSelect: function(date, e) {
-              if ($(this).is('#dt_inicial')) {
-           $('#dt_final').datepicker('option', 'minDate', $(this).datepicker('getDate'));
+        $('input.datepicker').datepicker({
+              changeMonth: true,
+              changeYear: true,
+              onSelect: function(date, e) {
+                  if ($(this).is('#dt_inicial')) {
+               $('#dt_final').datepicker('option', 'minDate', $(this).datepicker('getDate'));
+                  }
               }
-          }
-    }).datepicker('option', $.datepicker.regional['pt-BR']);
-	
-	$('table.ui-widget  tr:not(.ui-widget-header)').hover(function() {
+                 }).datepicker('option', $.datepicker.regional['pt-BR']);
+		$('tr:not(.ui-widget-header)').hover(function() {
 		$(this).addClass('ui-state-hover');
 	}, function() {
 		$(this).removeClass('ui-state-hover');
@@ -147,20 +110,9 @@ $(function() {
 			$.dialog({title:'Alerta...', text:'A data inicial não pode ser maior que a final.'});
 			return false;
 		}
-
-		document.location = '?p=' + pagina.replace('.php', '') + '&' + $('form').serialize();
+		
+		document.location = '?p=' + pagina.replace('.php', '') + '&dt_inicial=' + $("#dt_inicial").val() + '&dt_final='+ $("#dt_final").val();
 	});
-
-	$('#local').on('change', function(){
-		if ($(this).val() != '') {
-			$.ajax({
-	          url: pagina + '?action=combo_eventos&local=' + $('#local').val() + '&evento=<?php echo $_GET["evento"]; ?>',
-	          success: function(data) {
-	            $('#evento').parent().html(data);
-	          }
-	        });
-		}
-	}).trigger('change');
 	
 	$('.excell').click(function(e) {
 		e.preventDefault();
@@ -177,30 +129,15 @@ $(function() {
 	font-weight: bold;
 }
 </style>
-<h2>PDV - Vendas</h2>
-<form>
-<table>
-	<tr>
-		<td>Local</td>
-		<td><?php echo comboTeatroPorUsuario('local', $_SESSION['admin'], $_GET['local']); ?></td>
-		<td>Evento</td>
-		<td><select name="evento" class="inputStyle" id="evento"><option>Selecione um Local...</option></select></td>
-	</tr>
-	<tr>
-		<td>Data Inicial</td>
-		<td><input type="text" value="<?php echo (isset($_GET["dt_inicial"])) ? $_GET["dt_inicial"] : date("d/m/Y") ?>" class="datepicker" id="dt_inicial" name="dt_inicial" /></td>
-		<td>Data Final</td>
-		<td><input type="text" class="datepicker" value="<?php echo (isset($_GET["dt_final"])) ? $_GET["dt_final"] : date("d/m/Y") ?>" id="dt_final" name="dt_final" /></td>
-	</tr>
-	<tr>
-		<td colspan="4" align="center">
-			<input type="button" class="button" id="btnRelatorio" value="Buscar" />
-			<?php if(isset($result) && hasRows($result)) { ?>&nbsp;&nbsp;<a class="button excell" href="#">Exportar Excel</a><?php } ?>
-		</td>
-	</tr>
-</table>
-</form>
-<br/>
+<h2>PDV - Vendas do Usuário Logado</h2>
+
+<p style="width:1000px;">Data Inicial <input type="text" value="<?php echo (isset($_GET["dt_inicial"])) ? $_GET["dt_inicial"] : date("d/m/Y") ?>" class="datepicker" id="dt_inicial" name="dt_inicial" />
+&nbsp;&nbsp;Data Final <input type="text" class="datepicker" value="<?php echo (isset($_GET["dt_final"])) ? $_GET["dt_final"] : date("d/m/Y") ?>" id="dt_final" name="dt_final" />
+&nbsp;&nbsp;<input type="submit" class="button" id="btnRelatorio" value="Buscar" />
+<?php if(isset($result) && hasRows($result)) { ?>
+&nbsp;&nbsp;<a class="button excell" href="#">Exportar Excel</a>
+<?php } ?>
+</p><br/>
 <?php
 } else {
 	header("Content-type: application/vnd.ms-excel");
@@ -219,27 +156,12 @@ $(function() {
 	font-weight: bold;
 }
 </style>
-<h2>PDV - Vendas</h2>
+<h2>PDV - Vendas do Usuário Logado</h2>
 <?php } ?>
 <!-- Tabela de pedidos -->
 <table class="ui-widget ui-widget-content" id="tabPedidos">
 	<thead>
-		<?php if ($_GET['xls']) {
-
-			$rs = executeSQL($mainConnection, 'SELECT DS_NOME_TEATRO FROM MW_BASE WHERE ID_BASE = ?', array($_GET["local"]), true);
-			$_GET["local"] = utf8_encode($rs['DS_NOME_TEATRO']);
-
-			if ($_GET["evento"] != 'TODOS') {
-				$rs = executeSQL($mainConnection, 'SELECT DS_EVENTO FROM MW_EVENTO WHERE ID_EVENTO = ?', array($_GET["evento"]), true);
-				$_GET["evento"] = utf8_encode($rs['DS_EVENTO']);
-			}
-		?>
-		<tr class="ui-widget-header">
-			<th>Local:</th>
-            <th><?php echo $_GET["local"]; ?></th>
-			<th>Evento:</th>
-			<th><?php echo $_GET["evento"]; ?></th>
-		</tr>
+		<?php if ($_GET['xls']) { ?>
 		<tr class="ui-widget-header">
 			<th>Data Inicial:</th>
             <th><?php echo $_GET["dt_inicial"]; ?></th>
@@ -248,17 +170,19 @@ $(function() {
 		</tr>
 		<?php } ?>
 		<tr class="ui-widget-header">
+			<th>Local</th>
             <th>Usuário</th>
             <th>Evento</th>
             <th>Forma de Pagamento.</th>
-			<th>Quantidade de Ingressos</th>
-			<th>Total dos Ingressos</th>
-			<th>Valor de Serviço</th>
+			<th class="number">Quantidade de Ingressos</th>
+			<th class="number">Total dos Ingressos</th>
+			<th class="number">Valor de Serviço</th>
 		</tr>
 	</thead>
 	<tbody>
 		<?php 
 			if(isset($result) ){
+				$lastLocal = '';
 				$lastUsuario = '';
 				$lastEvento = '';
 				$somaTotal = $somaTotalUsuario = 0;
@@ -269,7 +193,7 @@ $(function() {
 					if ($lastUsuario != $rs['DS_NOME'] and $lastUsuario != '') {
 						?>
 						<tr class="total">
-							<td colspan="3" class="number">Sub-Total (usuário)</td>
+							<td colspan="4" class="number">Sub-Total (usuário)</td>
 							<td class="number"><?php echo $somaQuantUsuario; ?></td>
 							<td class="number"><?php echo number_format($somaTotalUsuario, 2, ',', '.'); ?></td>
 							<td class="number"><?php echo number_format($somaServicoUsuario, 2, ',', '.'); ?></td>
@@ -279,8 +203,23 @@ $(function() {
 						$somaQuantUsuario = 0;
 						$somaServicoUsuario = 0;
 					}
+					// quebra por local
+					if ($lastLocal != $rs['DS_LOCAL_EVENTO'] and $lastLocal != '') {
+						?>
+						<tr class="total">
+							<td colspan="4" class="number">Sub-Total (local)</td>
+							<td class="number"><?php echo $somaQuant; ?></td>
+							<td class="number"><?php echo number_format($somaTotal, 2, ',', '.'); ?></td>
+							<td class="number"><?php echo number_format($somaServico, 2, ',', '.'); ?></td>
+						</tr>
+						<?php
+						$somaTotal = $somaTotalUsuario = 0;
+						$somaQuant = $somaQuantUsuario = 0;
+						$somaServico = $somaServicoUsuario = 0;
+					}
 					?>
 					<tr>
+						<td><?php echo ($rs['DS_LOCAL_EVENTO'] == $lastLocal ? '&nbsp;' : utf8_encode($rs['DS_LOCAL_EVENTO'])); ?></td>
 						<td><?php echo ($rs['DS_NOME'] == $lastUsuario ? '&nbsp;' : $rs['DS_NOME']); ?></td>
 						<td><?php echo ($rs['DS_EVENTO'] == $lastEvento ? '&nbsp;' : utf8_encode($rs['DS_EVENTO'])); ?></td>
 						<td><?php echo utf8_encode($rs['DS_MEIO_PAGAMENTO']) ?></td>
@@ -289,6 +228,7 @@ $(function() {
 						<td class="number"><?php echo number_format($rs['TOTAL_CONVENIENCIA'], 2, ',', '.'); ?></td>
 					</tr>
 					<?php
+					$lastLocal = $rs['DS_LOCAL_EVENTO'];
 					$lastUsuario = $rs['DS_NOME'];
 					$lastEvento = $rs['DS_EVENTO'];
 
@@ -302,13 +242,19 @@ $(function() {
 				}
 		?>
 		<tr class="total">
-			<td colspan="3" class="number">Sub-Total (usuário)</td>
+			<td colspan="4" class="number">Sub-Total (usuário)</td>
 			<td class="number"><?php echo $somaQuantUsuario; ?></td>
 			<td class="number"><?php echo number_format($somaTotalUsuario, 2, ',', '.'); ?></td>
 			<td class="number"><?php echo number_format($somaServicoUsuario, 2, ',', '.'); ?></td>
 		</tr>
 		<tr class="total">
-			<td colspan="3" class="number">Total geral</td>
+			<td colspan="4" class="number">Sub-Total (local)</td>
+			<td class="number"><?php echo $somaQuant; ?></td>
+			<td class="number"><?php echo number_format($somaTotal, 2, ',', '.'); ?></td>
+			<td class="number"><?php echo number_format($somaServico, 2, ',', '.'); ?></td>
+		</tr>
+		<tr class="total">
+			<td colspan="4" class="number">Total geral</td>
 			<td class="number"><?php echo $total['QUANTIDADE']; ?></td>
 			<td class="number"><?php echo number_format($total['TOTAL_PEDIDO'], 2, ',', '.'); ?></td>
 			<td class="number"><?php echo number_format($total['TOTAL_CONVENIENCIA'], 2, ',', '.'); ?></td>

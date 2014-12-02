@@ -3,6 +3,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 7, true)) {
 
 if ($_GET['action'] != 'delete') {
     $_POST['in_transacao_pdv'] = $_POST['in_transacao_pdv'] == 'on' ? 1 : 0;
+    $_POST['in_exibe_web'] = $_POST['in_exibe_web'] == 'on' ? 1 : 0;
 }
 
 if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/	
@@ -21,9 +22,10 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
         $log->save($mainConnection);
 
         $query = "UPDATE MW_MEIO_PAGAMENTO
-                  SET IN_TRANSACAO_PDV = ?
+                  SET IN_TRANSACAO_PDV = ?,
+                  IN_EXIBE_WEB = ?
                   WHERE ID_MEIO_PAGAMENTO = ?";
-        $params = array($_POST['in_transacao_pdv'], $_POST['idMeioPagamento']);
+        $params = array($_POST['in_transacao_pdv'], $_POST['in_exibe_web'], $_POST['idMeioPagamento']);
         if (executeSQL($mainConnection, $query, $params)) {
             $log = new Log($_SESSION['admin']);
             $log->__set('funcionalidade', 'Formas de Pagamento');
@@ -57,9 +59,10 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
         $log->save($mainConnection);
 
         $query ="UPDATE MW_MEIO_PAGAMENTO
-                 SET IN_TRANSACAO_PDV = ?
+                 SET IN_TRANSACAO_PDV = ?,
+                 IN_EXIBE_WEB = ?
                  WHERE ID_MEIO_PAGAMENTO = ?";
-        $params = array($_POST['in_transacao_pdv'], $_POST['idMeioPagamento']);
+        $params = array($_POST['in_transacao_pdv'], $_POST['in_exibe_web'], $_POST['idMeioPagamento']);
         if (executeSQL($mainConnection, $query, $params)) {
             $log = new Log($_SESSION['admin']);
             $log->__set('funcionalidade', 'Formas de Pagamento');

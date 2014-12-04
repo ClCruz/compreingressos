@@ -229,11 +229,11 @@ if (isset($err) && $err != "") {
       ?>
                       <tr>
                         <td colspan="2" bgcolor="#FFFFFF" rowspan="2" align="center" class="tabela"><font size=2 face="tahoma,verdana,arial"><b>Taxa de Ocupação:</b>&nbsp;&nbsp;  <?php echo number_format((($totPublico / $lotacao) * 100), 2, ",", "."); ?> %</font></td>
-                        <td bgcolor="LightGrey" colspan="3" align="center" class="label"><b>TOTAIS</b></td>
+                        <td bgcolor="LightGrey" colspan="3" align="left" class="label"></td>
                         <td bgcolor="LightGrey" colspan="2" align="center" class="label"><b>TOTAL DE VENDAS</b></td>
                       </tr>
                       <tr>
-                        <td bgcolor="LightGrey" align="right" class="label"><b><?php echo $nTotalEstornados; ?></b></td>
+                        <td bgcolor="LightGrey" align="right" class="label"><b style="float: left">TOTAIS</b><b><?php echo $nTotalEstornados; ?></b></td>
                         <td bgcolor="LightGrey" align="right" class="label"><b><?php echo $nTotalVendidos; ?></b></td>
                         <td bgcolor="LightGrey" align="right" class="label"><b><?php echo $nTotalAcessados; ?></b></td>
 

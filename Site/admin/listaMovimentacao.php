@@ -151,7 +151,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
             $paramsTotal[] = $_GET["nm_evento"];
         }
 
-        $selectTr = "SELECT PV.ID_PEDIDO_VENDA FROM MW_PEDIDO_VENDA PV ";
+        $selectTr = "SELECT COUNT(PV.ID_PEDIDO_VENDA) QTD_PEDIDOS, COUNT(PV2.ID_PEDIDO_VENDA) QTD_PEDIDOS_PAIS FROM MW_PEDIDO_VENDA PV
+                      LEFT JOIN MW_PEDIDO_VENDA PV2 ON PV2.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA AND PV2.IN_PACOTE = 'S' ";
         if (isset($join)) {
             $selectTr .= " INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE ";
         }
@@ -164,14 +165,26 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                             LEFT JOIN MW_USUARIO U ON U.ID_USUARIO=PV.ID_USUARIO_CALLCENTER ";
         }
         if (isset($join4)) {
-            $selectTr = " SELECT DISTINCT PV.ID_PEDIDO_VENDA FROM MW_PEDIDO_VENDA PV
+            $selectTr = " SELECT DISTINCT PV.ID_PEDIDO_VENDA QTD_PEDIDOS FROM MW_PEDIDO_VENDA PV
                         LEFT JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
                         LEFT JOIN MW_APRESENTACAO A ON IPV.ID_APRESENTACAO = A.ID_APRESENTACAO
                         INNER JOIN MW_EVENTO E ON E.ID_EVENTO=A.ID_EVENTO ";
-        }
-        $queryTr = $selectTr . $where;
+            $trAux = executeSQL($mainConnection, $selectTr . $where, $params, true);
 
-        $tr = numRows($mainConnection, $queryTr, $params);
+            $tr['QTD_PEDIDOS'] = $trAux['QTD_PEDIDOS'];
+
+            $selectTr = " SELECT DISTINCT PV.ID_PEDIDO_VENDA QTD_PEDIDOS_PAIS FROM MW_PEDIDO_VENDA PV
+                        LEFT JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
+                        LEFT JOIN MW_APRESENTACAO A ON IPV.ID_APRESENTACAO = A.ID_APRESENTACAO
+                        INNER JOIN MW_EVENTO E ON E.ID_EVENTO=A.ID_EVENTO ";
+            $trAux = executeSQL($mainConnection, $selectTr . $where . " PV.IN_PACOTE = 'S' ", $params, true);
+
+            $tr['QTD_PEDIDOS_PAIS'] = $trAux['QTD_PEDIDOS_PAIS'];
+        }
+        
+        if (!$tr) {
+          $tr = executeSQL($mainConnection, $selectTr . $where, $params, true);
+        }
         $total_reg = (!isset($_GET["controle"])) ? 10 : $_GET["controle"];
         $offset = (isset($_GET["offset"])) ? $_GET["offset"] : 1;
         $final = ($offset + $total_reg) - 1;
@@ -195,35 +208,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
         // EXECUTA QUERY PRINCIPAL PARA CONSULTAR PEDIDOS VENDIDOS
         $result = executeSQL($mainConnection, $strSql, $params);
 
-        $query = "SELECT
-                          SUM (IPV.VL_UNITARIO) AS TOTAL_PEDIDO
-                  FROM
-                          MW_PEDIDO_VENDA PV
-                          LEFT JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA ";
-        if (isset($join)) {
-            $query .= "INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE ";
-        }
-        if (isset($join2)) {
-            $query .= "INNER JOIN MW_CLIENTE CL ON CL.ID_CLIENTE = PV.ID_CLIENTE AND PV.ID_USUARIO_CALLCENTER IS NULL ";
-        }
-        if (isset($join3)) {
-            $query .= "LEFT JOIN MW_USUARIO U ON U.ID_USUARIO=PV.ID_USUARIO_CALLCENTER ";
-        }
-        if (isset($join4)) {
-            $query .= "   LEFT JOIN MW_APRESENTACAO A ON IPV.ID_APRESENTACAO = A.ID_APRESENTACAO
-                          INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO ";
-        }
-        $query .= $where;
 
-        // Executa query para somar total de ingressos
-        $rs = executeSQL($mainConnection, $query, $paramsTotal, true);
-        $total['TOTAL_PEDIDO'] = $rs['TOTAL_PEDIDO'];
 
-        $paramsTotal = array_merge($paramsTotal, $paramsTotal);
-
+        $paramsTotal = array_merge($paramsTotal, $paramsTotal, $paramsTotal, $paramsTotal);
+        // ignora pedidos pais (assinaturas)
         $query = "SELECT
                       COUNT(1) AS QUANTIDADE,
-                                          SUM(IPV.VL_TAXA_CONVENIENCIA) AS TOTALSERVICO
+                      SUM(IPV.VL_TAXA_CONVENIENCIA) AS TOTAL_SERVICO,
+                      SUM (IPV.VL_UNITARIO) AS TOTAL_PEDIDO,
+                      0 AS PEDIDO_PAI
                   FROM 
                       MW_PEDIDO_VENDA PV
                                           LEFT JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA ";
@@ -241,12 +234,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
             $query .= "   LEFT JOIN MW_APRESENTACAO A ON IPV.ID_APRESENTACAO = A.ID_APRESENTACAO
                           LEFT JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO ";
         }
-        $query .= $where . "
+        $query .= $where . " AND (PV.IN_PACOTE <> 'S' OR PV.IN_PACOTE IS NULL)
+
                           UNION ALL
 
                           SELECT
                                   COUNT(1) AS QUANTIDADE,
-                                  SUM(IPV.VL_TAXA_CONVENIENCIA) AS TOTALSERVICO
+                                  SUM(IPV.VL_TAXA_CONVENIENCIA) AS TOTAL_SERVICO,
+                                  SUM (IPV.VL_UNITARIO) AS TOTAL_PEDIDO,
+                                  0 AS PEDIDO_PAI
                           FROM
                                   MW_PEDIDO_VENDA PV
                                   INNER JOIN MW_ITEM_PEDIDO_VENDA_HIST IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA ";
@@ -263,16 +259,71 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
             $query .= "   LEFT JOIN MW_APRESENTACAO A ON IPV.ID_APRESENTACAO = A.ID_APRESENTACAO
                           LEFT JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO ";
         }
-        $query .= $where;
+        $query .= $where . " AND (PV.IN_PACOTE <> 'S' OR PV.IN_PACOTE IS NULL)";
+
+        // apenas pedidos pais (assinaturas)
+        $query .= " UNION ALL
+
+                      SELECT
+                              COUNT(1) AS QUANTIDADE,
+                              SUM(IPV.VL_TAXA_CONVENIENCIA) AS TOTAL_SERVICO,
+                              SUM (IPV.VL_UNITARIO) AS TOTAL_PEDIDO,
+                              1 AS PEDIDO_PAI
+                      FROM 
+                              MW_PEDIDO_VENDA PV
+                              LEFT JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA ";
+
+        if (isset($join)) {
+            $query .= "INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE ";
+        }
+        if (isset($join2)) {
+            $query .= "INNER JOIN MW_CLIENTE CL ON CL.ID_CLIENTE = PV.ID_CLIENTE AND PV.ID_USUARIO_CALLCENTER IS NULL ";
+        }
+        if (isset($join3)) {
+            $query .= "LEFT JOIN MW_USUARIO U ON U.ID_USUARIO=PV.ID_USUARIO_CALLCENTER ";
+        }
+        if (isset($join4)) {
+            $query .= "   LEFT JOIN MW_APRESENTACAO A ON IPV.ID_APRESENTACAO = A.ID_APRESENTACAO
+                          LEFT JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO ";
+        }
+        $query .= $where . " AND PV.IN_PACOTE = 'S'
+
+                          UNION ALL
+
+                          SELECT
+                                  COUNT(1) AS QUANTIDADE,
+                                  SUM(IPV.VL_TAXA_CONVENIENCIA) AS TOTAL_SERVICO,
+                                  SUM (IPV.VL_UNITARIO) AS TOTAL_PEDIDO,
+                                  1 AS PEDIDO_PAI
+                          FROM
+                                  MW_PEDIDO_VENDA PV
+                                  INNER JOIN MW_ITEM_PEDIDO_VENDA_HIST IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA ";
+        if (isset($join)) {
+            $query .= "INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE ";
+        }
+        if (isset($join2)) {
+            $query .= "INNER JOIN MW_CLIENTE CL ON CL.ID_CLIENTE = PV.ID_CLIENTE AND PV.ID_USUARIO_CALLCENTER IS NULL ";
+        }
+        if (isset($join3)) {
+            $query .= "LEFT JOIN MW_USUARIO U ON U.ID_USUARIO=PV.ID_USUARIO_CALLCENTER ";
+        }
+        if (isset($join4)) {
+            $query .= "   LEFT JOIN MW_APRESENTACAO A ON IPV.ID_APRESENTACAO = A.ID_APRESENTACAO
+                          LEFT JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO ";
+        }
+        $query .= $where . " AND PV.IN_PACOTE = 'S'";
+
 
         //Executa query para somar total de ingressos e calcular valor total dos serviços
         $result2 = executeSQL($mainConnection, $query, $paramsTotal);
 
         $total['QUANTIDADE'] = 0;
-        $total['SERVICO'] = 0;
+        $total['TOTAL_SERVICO'] = 0;
+        $total['TOTAL_PEDIDO'] = 0;
         while ($rs = fetchResult($result2)) {
-            $total['QUANTIDADE'] += $rs['QUANTIDADE'];
-            $total['SERVICO'] += $rs["TOTALSERVICO"];
+            $total['QUANTIDADE'] += $rs['PEDIDO_PAI'] ? 0 : $rs['QUANTIDADE'];
+            $total['TOTAL_SERVICO'] += $rs['TOTAL_SERVICO'];
+            $total['TOTAL_PEDIDO'] += $rs['PEDIDO_PAI'] ? 0 : $rs['TOTAL_PEDIDO'];
         }
     }
 ?>
@@ -499,14 +550,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
         ?>
                    <tr class="total">
                        <td><strong>Qtd. Pedidos</strong></td>
-                       <td><?php echo $tr; ?></td>
+                       <td><?php echo $tr['QTD_PEDIDOS'] - $tr['QTD_PEDIDOS_PAIS']; ?></td>
                        <td></td>
                        <td align="right"><strong>Total Geral</strong></td>
-                       <td><?php echo number_format($total['TOTAL_PEDIDO'] + $total['SERVICO'], 2, ",", "."); ?></td>
+                       <td><?php echo number_format($total['TOTAL_PEDIDO'] + $total['TOTAL_SERVICO'], 2, ",", "."); ?></td>
                        <td align="right"><strong>Ingressos</strong></td>
                        <td><?php echo number_format($total['TOTAL_PEDIDO'], 2, ",", "."); ?></td>
                        <td><?php echo $total['QUANTIDADE']; ?></td>
-                       <td colspan="2"><strong>Taxa de Serviço</strong> <?php echo number_format($total['SERVICO'], 2, ",", "."); ?></td>
+                       <td colspan="2"><strong>Taxa de Serviço</strong></td>
+                       <td><?php echo number_format($total['TOTAL_SERVICO'], 2, ",", "."); ?></td>
                    </tr>
         <?php
                }
@@ -515,11 +567,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
        </table>
        <div id="paginacao">
     <?php
-           if ($tr) {
+           if ($tr['QTD_PEDIDOS']) {
                //paginacao($pc, $intervalo, $tp, true);
                $link = "?p=" . basename($pagina, '.php') . "&dt_inicial=" . $_GET["dt_inicial"] . "&dt_final=" . $_GET["dt_final"] . "&situacao=" . $_GET["situacao"] . "&num_pedido=" . $_GET["num_pedido"] . "&nm_cliente=" . $_GET["nm_cliente"] . "&nm_operador=" . $_GET["nm_operador"] . "&cd_cpf=" . $_GET["cd_cpf"] . "&nm_evento=" . $_GET["nm_evento"] . "&controle=" . $total_reg . "&bar=2&baz=3&offset=";
                //$link = "?p=listaMovimentacao&dt_inicial=" . $_GET["dt_inicial"] . "&dt_final=" . $_GET["dt_final"] . "&situacao=" . $_GET["situacao"] . "&controle=" . $total_reg . "&bar=2&baz=3&offset=";
-               Paginator::paginate($offset, $tr, $total_reg, $link, true);
+               Paginator::paginate($offset, $tr['QTD_PEDIDOS'], $total_reg, $link, true);
            }
 ?>
        </div>

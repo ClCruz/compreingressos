@@ -42,15 +42,19 @@ function getConnectionDw() {
 }
 
 function getConnectionHome() {
-    $host = '192.168.13.4';//186.237.201.155
+    $host = '177.153.8.59';
 	$port = '3306';
-	$dbname = 'compreingressos_development';
-	$user = 'middleway';
-	$pass = 'MVeLbtKSQQauuzxN';
+	$dbname = 'compreingressos_production';
+	$user = 'ccmenu';
+	$pass = 'GQMfwbGLnyuQ2Wur';
 
-	$conn = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
-	$conn->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-	$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	try {
+		$conn = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
+		$conn->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	} catch (Exception $e) {
+		$conn = false;
+	}
 
 	return $conn;
 }

@@ -168,7 +168,7 @@ if (isset($result)) {
         if ($rs['Justificativa']) { ?>
              <tr>
                   <td colspan="2" align="right">Justificativa: </td>
-                  <td colspan="10"><?php echo utf8_encode($rs['Justificativa']) ?></td>
+                  <td colspan="10"><?php echo $rs['Justificativa'] ?></td>
               </tr>
         <?php }
     }

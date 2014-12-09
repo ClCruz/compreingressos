@@ -6,6 +6,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
+--exec prc_reserva_manual_theatro_municipal 'MISTA IV', 'SETOR 1 FOYER','C-17'
 
 ALTER procedure [dbo].[prc_reserva_manual_theatro_municipal] 
 (

@@ -38,19 +38,6 @@ function getTotal($conn, $params) {
     }
 }
 
-function getResponsavel($conn, $name, $value) {
-    $query = "SELECT CODUSUARIO, NOMUSUARIO FROM TABUSUARIO WHERE STAUSUARIO = 1";
-    $result = executeSQL($conn, $query);
-    $html = "<select id=\"$name\" name=\"$name\">";
-    $html .= "<option value=\"-1\">Selecione...</option>";
-    while ($rs = fetchResult($result)) {
-        $selected = ($value == $rs['CODUSUARIO']) ? "selected=\"selected\"" : "";
-        $html .= "<option ". $selected ." value=" . $rs['CODUSUARIO'] . ">" . $rs['NOMUSUARIO'] . "</option>";
-    }
-    $html .= "</select>";
-    return $html;
-}
-
 function getCliente($conn) {
     $query = "SELECT CODIGO, NOME FROM TABCLIENTE WHERE STACLIENTE = 'A' AND ASSINATURA = 1";
     $cliente = executeSQL($conn, $query, array(), true);
@@ -67,7 +54,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 381, true)) {
 
     $pagina = basename(__FILE__);
 
-    if (isset($_GET['action'])) {        
+    if (isset($_GET['action'])) {
         require('actions/' . $pagina);
     } else {
         $conn = getConnection($_GET['local']);
@@ -134,9 +121,26 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 381, true)) {
         </style>
         <script type="text/javascript">
             var pagina = '<?php echo $pagina; ?>';
+
+            function disparar(){
+                var link = "?p="+pagina.replace(".php","")+"&"+$('#dados').serialize();
+                document.location.href=link;
+            }
+
+            $(document).ajaxStart(function () {
+                $("#dados").find(':input:not(:disabled)').prop('disabled',true);
+                $.busyCursor();
+                $("#loadingIcon").fadeIn('fast');
+            });
+
+            $(document).ajaxComplete(function () {
+                $("#dados").find(':input:disabled').prop('disabled',false);
+                $('#loadingIcon').fadeOut('slow');
+            });
+
             $(document).ready(function(){
                 $('#enviar').button();
-                //$('#cpf').onlyNumbers();
+                $('#ano').onlyNumbers();
 
                 $('#enviar').button().on('click', function(e){
                     if(validar() == true){
@@ -146,7 +150,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 381, true)) {
                 });
 
                 $("#controle").change(function(){
-                    document.location = '?p=' + pagina.replace('.php', '') + '&controle=' + $("#controle").val() + '&local=' + $("#local").val() + '&ano=' + $("#ano").val() + '&pacote_combo='+ $("#pacote_combo").val() +'';
+                    document.location = '?p=' + pagina.replace('.php', '') + '&controle=' + $("#controle").val() + '&local=' + $("#local").val() + '&ano=' + $("#ano").val() + '&pacote_combo='+ $("#pacote_combo").val() +'&usuario='+ $('#usuario').val() +'';
                 });
 
                 $('#efetivar').button().on('click', function(e){
@@ -158,13 +162,14 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 381, true)) {
                         var msg = 'Tem certeza que deseja efetivar o(s) ' +
                             $('table.ui-widget tbody input[type=checkbox]:checked').parent('td').parent('tr').length +
                             ' lugar(es) selecionado(s)?<br/><br/>Atenção: essa operação não poderá ser desfeita.'
-                        
+
                         $.dialog({
                             title: 'Confirmação...',
                             text: msg,
                             uiOptions: {
                                 buttons: {
                                     'Ok': function() {
+
                                         $.ajax({
                                             url: pagina + '?action=efetivar',
                                             type: 'post',
@@ -217,6 +222,26 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 381, true)) {
                         data: $('#dados').serialize()+'&pacote_combo=<?php echo $_GET['pacote_combo']; ?>',
                         success: function(data) {
                             $('#container_pacotes').html(data);
+                        }
+                    });
+
+                    $.ajax({
+                        url: pagina + '?action=load_usuario',
+                        type: 'post',
+                        data: $('#dados').serialize()+'&local='+$('#local').val()+'&usuario=<?php echo $_GET['usuario']; ?>',
+                        success: function(data) {
+                            $('#coluna-usuario').html(data);
+                        }
+                    });
+
+                    $.ajax({
+                        url: pagina + '?action=load_cliente',
+                        type: 'post',
+                        data: $('#dados').serialize()+'&local='+$('#local').val(),
+                        success: function(data) {
+                            cliente = data.split(";");
+                            $('#codcliente').val(cliente[1]);
+                            $('#cliente').val(cliente[0]);
                         }
                     });
                 }).trigger('change');
@@ -273,7 +298,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 381, true)) {
         </script>
         <h2>Efetivar a reserva nas apresentações dos pacotes</h2>
         <form id="dados" name="dados">
-            <input type="hidden" name="codcliente" value="<?php echo $cliente["CODIGO"]; ?>" />
+            <input type="hidden" name="codcliente" id="codcliente" value="<?php echo $cliente["CODIGO"]; ?>" />
             <table class="tb-form">
                 <tr>
                     <td class="coluna-header"><strong>Local:</strong></td>
@@ -286,16 +311,18 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 381, true)) {
         <tr>
             <td class="coluna-header"><strong>Pacote:</strong></td>
             <td id="container_pacotes">
-                <select><option>Selecione um local...</option></select>
+                <select id="pacote_combo"><option>Selecione um local...</option></select>
             </td>
             <td class="coluna-header"><strong>Temporada (Ano):</strong></td>
             <td>
-                <input type="text" id="ano"  name="ano" value="<?php echo $_GET['ano']; ?>" />
+                <input type="text" id="ano"  name="ano" maxlength="4" value="<?php echo $_GET['ano']; ?>" />
             </td>
         </tr>
         <tr>
-            <td class="coluna-header"><strong>Usuário responsável pela reserva</strong></td>
-            <td colspan="3"><?php echo getResponsavel($conn, "usuario", $_GET["usuario"]); ?></td>
+            <td class="coluna-header"><strong>Usuário responsável pela reserva:</strong></td>
+            <td colspan="3" id="coluna-usuario">
+                <select id="usuario" name="usuario"><option>Selecione um usuário...</option></select>
+            </td>
         </tr>
         <tr>
             <td></td>
@@ -351,7 +378,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 381, true)) {
     <div id="paginacao">
     <?php
                 if ($hasRows) {
-                    $link = "?p=" . basename($pagina, '.php') . "&local=" . $_GET["local"] . "&ano=" . $_GET["ano"] . "&pacote_combo=" . $_GET["pacote_combo"] . "&cpf=" . $_GET["cpf"] . "&controle=" . $total_reg . "&bar=2&baz=3&offset=";
+                    $link = "?p=" . basename($pagina, '.php') . "&local=" . $_GET["local"] . "&ano=" . $_GET["ano"] . "&pacote_combo=" . $_GET["pacote_combo"] . "&usuario=" . $_GET["usuario"] . "&controle=" . $total_reg . "&bar=2&baz=3&offset=";
                     Paginator::paginate($offset, $total, $total_reg, $link, true);
                 }
     ?>

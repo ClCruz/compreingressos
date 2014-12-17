@@ -98,6 +98,28 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 381, true)) {
     } else if ($_GET['action'] == 'load_pacotes') {
         $retorno = comboPacote('pacote_combo', $_SESSION['admin'],
                     $_POST['pacote_combo'], $_POST['local'], 3);
+        
+    } else if ($_GET['action'] == 'load_usuario') {
+        $conn = getConnection($_POST['local']);
+        $query = "SELECT CODUSUARIO, NOMUSUARIO FROM TABUSUARIO WHERE STAUSUARIO = 0 AND CODUSUARIO > 0";
+        $result = executeSQL($conn, $query);
+        $html = "<select id=\"usuario\" name=\"usuario\">";
+        $html .= "<option value=\"-1\">Selecione...</option>";
+        while ($rs = fetchResult($result)) {
+            $selected = ($_POST['usuario'] == $rs['CODUSUARIO']) ? "selected=\"selected\"" : "";
+            $html .= "<option ". $selected ." value=" . $rs['CODUSUARIO'] . ">" . utf8_encode($rs['NOMUSUARIO']) . "</option>";
+        }
+        $html .= "</select>";
+        $retorno = $html;
+
+    } else if ($_GET['action'] == 'load_cliente') {
+        $conn = getConnection($_POST['local']);
+        $cliente = getCliente($conn);
+        if ($cliente == "") {
+            setCliente($conn);
+            $cliente = getCliente($conn);
+        }
+        $retorno = $cliente["NOME"].";".$cliente["CODIGO"];
     }
 
     if (is_array($retorno)) {

@@ -101,7 +101,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 381, true)) {
         
     } else if ($_GET['action'] == 'load_usuario') {
         $conn = getConnection($_POST['local']);
-        $query = "SELECT CODUSUARIO, NOMUSUARIO FROM TABUSUARIO WHERE STAUSUARIO = 0 AND CODUSUARIO > 0";
+        $query = "SELECT CODUSUARIO, LTRIM(RTRIM(NOMUSUARIO)) AS NOMUSUARIO FROM TABUSUARIO
+                  WHERE STAUSUARIO = 0 AND (CODUSUARIO > 0 AND
+                  CODUSUARIO < 200) ORDER BY LTRIM(RTRIM(NOMUSUARIO))";
         $result = executeSQL($conn, $query);
         $html = "<select id=\"usuario\" name=\"usuario\">";
         $html .= "<option value=\"-1\">Selecione...</option>";

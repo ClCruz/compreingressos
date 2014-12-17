@@ -296,7 +296,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 381, true)) {
                 });
             });
         </script>
-        <h2>Efetivar a reserva nas apresentações dos pacotes</h2>
+        <h2>Efetivar a reserva nas apresentações dos pacotes na bilheteria</h2>
         <form id="dados" name="dados">
             <input type="hidden" name="codcliente" id="codcliente" value="<?php echo $cliente["CODIGO"]; ?>" />
             <table class="tb-form">

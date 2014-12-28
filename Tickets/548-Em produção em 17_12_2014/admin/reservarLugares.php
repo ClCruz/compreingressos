@@ -122,11 +122,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 381, true)) {
         <script type="text/javascript">
             var pagina = '<?php echo $pagina; ?>';
 
-            function disparar(){
-                var link = "?p="+pagina.replace(".php","")+"&"+$('#dados').serialize();
-                document.location.href=link;
-            }
-
             $(document).ajaxStart(function () {
                 $("#dados").find(':input:not(:disabled)').prop('disabled',true);
                 $.busyCursor();
@@ -141,6 +136,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 381, true)) {
             $(document).ready(function(){
                 $('#enviar').button();
                 $('#ano').onlyNumbers();
+
+                $('#container_pacotes').delegate('select', 'change', function(){
+                    var link = "?p="+pagina.replace(".php","")+"&"+$('#dados').serialize();
+                    document.location.href=link;
+                });
 
                 $('#enviar').button().on('click', function(e){
                     if(validar() == true){

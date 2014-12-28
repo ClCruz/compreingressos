@@ -1378,7 +1378,7 @@ function comboPacote($name, $usuario, $selected, $id_base = null, $fase = null) 
 											ORDER BY DS_EVENTO",
 		    array($usuario, $id_base, $id_base));
 
-    $combo = '<select onChange="disparar();" name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um pacote...</option>';
+    $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um pacote...</option>';
     while ($rs = fetchResult($result)) {
 	$combo .= '<option value="' . $rs['ID_PACOTE'] . '"' . (($selected == $rs['ID_PACOTE']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_EVENTO']) . '</option>';
     }

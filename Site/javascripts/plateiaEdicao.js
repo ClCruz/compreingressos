@@ -114,6 +114,10 @@ $(function() {
   $('#celSala').delegate('select', 'change', function() {
     $('#carregaEvento').click();
   });
+
+  $('#coluna-setor').delegate('select', 'change', function() {
+    loadAnnotations('');
+  });
 	
   $('#salvarEvento').click(function() {
     if ($('#teatroID').val() != '' && $('#salaID').val() != '') {
@@ -452,4 +456,5 @@ $(function() {
         }
     });
   }
+  
 });

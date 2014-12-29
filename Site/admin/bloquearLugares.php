@@ -117,7 +117,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 382, true)) {
                 $mapa_de_plateia = $('#mapa_de_plateia');
 
                 defaultImage = '../images/palco.png',
-                uploadPath = '';
+                uploadPath = '../images/uploads/';
 
                 $("#exibir").click(function(){
                     if(validar()){

@@ -40,7 +40,8 @@ inner join mw_evento e on e.id_evento = a.id_evento
 inner join mw_local_evento le on le.id_local_evento = e.id_local_evento
 WHERE CODVENDA = ?
 	AND PV.IN_RETIRA_ENTREGA = 'E'
-	AND PV.IN_SITUACAO_DESPACHO != 'E'";
+	AND PV.IN_SITUACAO_DESPACHO != 'E'
+        AND PV.ID_PEDIDO_PAI IS NULL";
 
 //Consultar itens do pedido
 $sqlItens = "SELECT

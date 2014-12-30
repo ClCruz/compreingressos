@@ -72,7 +72,7 @@ $sql = "SELECT
 		 on le.id_local_evento = e.id_local_evento
             inner join mw_estado es
                 on es.id_estado = pv.id_estado
-	    where " . $where ."
+	    where PV.ID_PEDIDO_PAI IS NULL AND PV.IN_SITUACAO = 'F' AND " . $where ."
             GROUP BY
                 pv.id_pedido_venda,
                 c.ds_nome + ' ' + ds_sobrenome,
@@ -91,9 +91,9 @@ $arquivo = fopen($nome_arq,"w",0);
 while ($comprovante = fetchResult($result)) {
      $id_pedido = $comprovante["id_pedido_venda"];
      $nome = $comprovante["nome"];
-     $endereco = $comprovante["endereco"];
-     $complemento = $comprovante["complemento"];
-     $cidade = $comprovante["ds_cidade_entrega"];
+     $endereco = utf8_decode($comprovante["endereco"]);
+     $complemento = utf8_decode($comprovante["complemento"]);
+     $cidade = utf8_decode($comprovante["ds_cidade_entrega"]);
      $cep = $comprovante["cd_cep_entrega"];
      $sigla_estado = $comprovante["sg_estado"];
      if($complemento != ""){

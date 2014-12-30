@@ -108,7 +108,7 @@ if (!sqlErrors()) {
                 $resultInterno = executeSQL($mainConnection, $strQuery, $paramsInterno);
                 while ($ingressos = fetchResult($resultInterno)) {
                     $lugares .= $ingressos["DS_LOCALIZACAO"] . ", ";
-                    $tpl->setor = $ingressos["ds_setor"];
+                    $tpl->setor = utf8_encode($ingressos["ds_setor"]);
                     $tpl->evento = utf8_encode($ingressos["ds_evento"]);
                     $tpl->dataApresentacao = substr($ingressos["apresentacao"], 0, -6);
                     $tpl->horaApresentacao = $ingressos["hr_apresentacao"];

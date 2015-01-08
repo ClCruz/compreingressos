@@ -136,12 +136,17 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 382, true)) {
         $params = array($_POST['apresentacao'], $_REQUEST['id']);
         $rs = executeSQL($mainConnection, $query, $params, true);
 
+
+        $id_usuario_teatro = executeSQL($mainConnection, "SELECT ID_CLIENTE FROM MW_BASE WHERE ID_BASE = ?", array($_POST['local']), true);
+        $id_usuario_teatro = $id_usuario_teatro['ID_CLIENTE'];
+
+
         // não existe na mw_pacote_reserva?
         $query = "SELECT 1 FROM MW_PACOTE_RESERVA PR
                 INNER JOIN MW_PACOTE_APRESENTACAO PA ON PA.ID_PACOTE = PR.ID_PACOTE
                 WHERE PA.ID_APRESENTACAO = ? AND PR.ID_CADEIRA = ?
-                AND PR.IN_STATUS_RESERVA IN ('A', 'S') AND PR.ID_CLIENTE <> 184000";
-        $params = array($_POST['apresentacao'], $_REQUEST['id']);
+                AND PR.IN_STATUS_RESERVA IN ('A', 'S') AND PR.ID_CLIENTE <> ?";
+        $params = array($_POST['apresentacao'], $_REQUEST['id'], $id_usuario_teatro);
         $rs2 = executeSQL($mainConnection, $query, $params, true);
 
         if (empty($rs) and empty($rs2)) {
@@ -261,26 +266,32 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 382, true)) {
             echo 'true?Nenhum lugar selecionado.';
         }
 
+
+        $id_usuario_teatro = executeSQL($mainConnection, "SELECT ID_CLIENTE FROM MW_BASE WHERE ID_BASE = ?", array($_POST['local']), true);
+        $id_usuario_teatro = $id_usuario_teatro['ID_CLIENTE'];
+
+
         beginTransaction($mainConnection);
 
         while($reserva = fetchResult($result)){
             $query = "SELECT 1 FROM MW_PACOTE_RESERVA 
                       WHERE ID_CLIENTE = ? AND ID_PACOTE = ? AND ID_CADEIRA = ?
                       AND IN_STATUS_RESERVA NOT IN ('A','R')";
-            $params = array('184000', $_REQUEST['pacote'], $reserva['ID_CADEIRA']);
+            $params = array($id_usuario_teatro, $_REQUEST['pacote'], $reserva['ID_CADEIRA']);
             $rs = executeSQL($mainConnection, $query, $params);
             if(hasRows($rs)){
                 $query = "UPDATE MW_PACOTE_RESERVA SET IN_STATUS_RESERVA = 'A',
                          DT_HR_TRANSACAO = GETDATE()
                          WHERE ID_CLIENTE = ? AND ID_PACOTE = ? AND ID_CADEIRA = ?
                          AND IN_STATUS_RESERVA NOT IN ('A','R')";
-                $params = array('184000', $_REQUEST['pacote'], $reserva['ID_CADEIRA']);
+                $params = array($id_usuario_teatro, $_REQUEST['pacote'], $reserva['ID_CADEIRA']);
                 executeSQL($mainConnection, $query, $params);
             }else{
                 $query = "INSERT INTO MW_PACOTE_RESERVA (ID_CLIENTE, ID_PACOTE, ID_CADEIRA,
                          IN_STATUS_RESERVA, IN_ANO_TEMPORADA, DS_LOCALIZACAO, DT_HR_TRANSACAO)
-                         VALUES(184000, ?, ?, 'A', ?, ?, GETDATE())";
-                $params = array($_REQUEST['pacote'], $reserva['ID_CADEIRA'],
+                         VALUES(?, ?, ?, 'A', ?, ?, GETDATE())";
+                $params = array($id_usuario_teatro,
+                                $_REQUEST['pacote'], $reserva['ID_CADEIRA'],
                                 $_REQUEST['ano'], $reserva['DS_CADEIRA']);
                 executeSQL($mainConnection, $query, $params);
             }

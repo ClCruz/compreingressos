@@ -129,7 +129,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 382, true)) {
                 $("#bloquear").click(function(){
                     $.ajax({
                         url: pagina + '?action=bloquear',
-                        data: 'apresentacao='+$('#setor').val() +'&pacote='+$('#pacote_combo').val()+'&ano='+$('#ano').val(),
+                        data: 'apresentacao='+$('#setor').val() +'&pacote='+$('#pacote_combo').val()+'&ano='+$('#ano').val()+'&local='+$('#local').val(),
                         type: 'post',
                         success: function(data) {
                             if (data.substr(0, 4) != 'true') {

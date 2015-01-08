@@ -37,6 +37,24 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
     $params = array($_SESSION['user']);
     $result = executeSQL($mainConnection, $query, $params);
 
+
+    $queryTeatros = "SELECT DISTINCT
+                        B.ID_BASE,
+                        B.DS_NOME_TEATRO
+                    FROM MW_PACOTE_RESERVA PR
+                    INNER JOIN MW_PACOTE P ON P.ID_PACOTE = PR.ID_PACOTE
+                    INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = P.ID_APRESENTACAO
+                    INNER JOIN MW_APRESENTACAO A2 ON A2.ID_EVENTO = A.ID_EVENTO AND A2.DT_APRESENTACAO = A.DT_APRESENTACAO AND A2.HR_APRESENTACAO = A.HR_APRESENTACAO
+                    INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+                    INNER JOIN MW_BASE B ON B.ID_BASE  = E.ID_BASE
+                    where PR.ID_CLIENTE = ?";
+    $rsTeatros = executeSQL($mainConnection, $queryTeatros, array($_SESSION['user']));
+    $options = '';
+    while ($rs = fetchResult($rsTeatros)) {
+        $options .= '<option value="'.$rs['ID_BASE'].'">'.utf8_encode($rs['DS_NOME_TEATRO']).'</option>';
+    }
+
+
     $queryAcao = "SELECT DISTINCT
                     CASE WHEN CAST(CONVERT(VARCHAR(10), GETDATE(), 120) AS SMALLDATETIME) BETWEEN P.DT_INICIO_FASE1 AND P.DT_FIM_FASE2 THEN 1 ELSE 0 END IN_RENOVAR
                     ,CASE WHEN CAST(CONVERT(VARCHAR(10), GETDATE(), 120) AS SMALLDATETIME) BETWEEN P.DT_INICIO_FASE1 AND P.DT_FIM_FASE1 THEN 1 ELSE 0 END IN_SOLICITAR
@@ -109,9 +127,21 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
             }
 
             div.acoes div.sbHolder.destaque a.sbSelector,
-            div.acoes div.sbHolder ul.sbOptions li:first-child a {
+            div.acoes div.sbHolder.destaque ul.sbOptions li:first-child a {
                 color: #930606;
                 text-transform: uppercase;
+            }
+
+            div.acoes div.sbHolder.teatros {
+                width: 500px;
+            }
+            
+            div.acoes div.sbHolder.teatros ul.sbOptions {
+                width: 512px;
+            }
+
+            div.acoes div.sbHolder.teatros a.sbSelector {
+                width: 472px;
             }
         </style>
         <script>
@@ -271,7 +301,13 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                                 <input name="dtFim" type="hidden" value="<?php echo $arrAcoes["dtFim"]; ?>" />
 
                                 <div class="acoes">
-                                        <p class="titulo">Assinaturas Theatro Municipal de São Paulo</p>
+
+                                    <p class="titulo">Assinaturas do:</p>
+                                    <select name="local" id="comboTeatroAssinaturas">
+                                        <?php echo $options; ?>
+                                    </select><br/><br/><br/>
+
+                                        
                                         <p>Selecione as séries de apresentações<br>abaixo e escolha a ação desejada</p>
                                         <select name="acao" id="acao">
                                             <option value="-" selected>ações possíveis nesta fase</option>

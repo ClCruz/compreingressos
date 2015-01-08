@@ -60,15 +60,19 @@ $(function() {
     });
 
 
-    $.ajax({
-        url: 'atualizarAssinatura.php?action=load&local=139',
-        success: function(data) {
-            $('#assinaturas tbody').html(data).show();
-            if($('#acao').length === 0){
-                $('input[name*=pacote]').hide();
+    $('#comboTeatroAssinaturas').on('change', function(){
+        $(this).next('div.sbHolder').addClass('teatros');
+
+        $.ajax({
+            url: 'atualizarAssinatura.php?action=load&local='+$(this).val(),
+            success: function(data) {
+                $('#assinaturas tbody').html(data).show();
+                if($('#acao').length === 0){
+                    $('input[name*=pacote]').hide();
+                }
             }
-        }
-    });    
+        });
+    }).trigger('change');
 
     $('#acao').change(function(event) {
         event.preventDefault();
@@ -132,7 +136,7 @@ $(function() {
                                     success: function(data) {
                                         if ($this.val() === "solicitarTroca" || $this.val() === "cancelar") {
                                             $.ajax({
-                                                url: 'atualizarAssinatura.php?action=load&local=139',
+                                                url: 'atualizarAssinatura.php?action=load&local='+$('#comboTeatroAssinaturas').val(),
                                                 success: function(data) {
                                                     $('#assinaturas tbody').html(data).show();
                                                 }

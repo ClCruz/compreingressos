@@ -1,14 +1,14 @@
 <?php
-// para testes
-/*
 require_once('../settings/functions.php');
 require_once('../settings/settings.php');
 session_start();
 $mainConnection = mainConnection();
-$parametros['OrderData']['OrderId'] = 357350;
-//*/
 
-$id_pedido = $parametros['OrderData']['OrderId'];
+if (!isset($_GET['pedido'])) die('...');
+
+$id_pedido = $_GET['pedido'];
+
+echo "venda dos filhos para o pedido $id_pedido <br/><br/>";
 
 $query = "SELECT TOP 1
 			E.ID_BASE, B.DS_NOME_BASE_SQL, PV.ID_CLIENTE, PV.ID_USUARIO_CALLCENTER, PV.DT_PEDIDO_VENDA, PV.VL_TOTAL_PEDIDO_VENDA,
@@ -34,6 +34,8 @@ $dadosPedido = executeSQL($mainConnection, $query, $params, true);
 
 // se algm item do pedido é de um pacote de assinatura
 if (!empty($dadosPedido)) {
+
+	echo "assinatura detectada <br/><br/>";
 
 	$dadosPedido['VL_FRETE'] = 0;
 
@@ -68,6 +70,12 @@ if (!empty($dadosPedido)) {
 				INNER JOIN TABSALDETALHE TSD ON TSD.CODSALA = TA.CODSALA AND TSD.INDICE = I.INDICE
 				INNER JOIN TABSETOR SE ON SE.CODSALA = TSD.CODSALA AND SE.CODSETOR = TSD.CODSETOR
 				WHERE PV.ID_PEDIDO_VENDA = ?
+				AND A3.ID_APRESENTACAO NOT IN (
+					SELECT I2.ID_APRESENTACAO
+					FROM MW_ITEM_PEDIDO_VENDA I2
+					INNER JOIN MW_PEDIDO_VENDA PV2 ON PV2.ID_PEDIDO_VENDA = I2.ID_PEDIDO_VENDA
+					WHERE PV2.ID_PEDIDO_PAI = PV.ID_PEDIDO_VENDA
+				)
 				ORDER BY PA.ID_APRESENTACAO,SE.NOMSETOR, I.DS_LOCALIZACAO";
 	$result = executeSQL($conn, $query, $params);
 
@@ -87,7 +95,12 @@ if (!empty($dadosPedido)) {
 		);
 	}
 
+	if (!empty($apresentacoes)) echo "itens encontrados <br/><br/>";
+
 	foreach ($apresentacoes as $codApresentacao => $arrayParams) {
+		echo "inserindo itens para o codapresentacao $codApresentacao <br/><br/>";
+
+
 		// gera mw_reserva
 		foreach ($arrayParams as $params) {
 			executeSQL($mainConnection,
@@ -235,16 +248,25 @@ if (!empty($dadosPedido)) {
 		executeSQL($mainConnection, 'INSERT INTO tab_log_gabriel (data, passo, parametros) VALUES (GETDATE(), ?, ?)', array('ANTES SP_VEN_INS001_WEB FILHO', json_encode($params_proc_assinatura)));
 
 		$retornoProcedure = executeSQL($mainConnection, $proc_assinatura, $params_proc_assinatura);
-		// make sure all result sets are stepped through, since the output params may not be set until this happens
-		while ($rsDebug = sqlsrv_next_result($retornoProcedure)) {}
 
-		executeSQL($mainConnection, 'INSERT INTO tab_log_gabriel (data, passo, parametros) VALUES (GETDATE(), ?, ?)', array('DEPOIS SP_VEN_INS001_WEB FILHO', json_encode($return_code)));
+		executeSQL($mainConnection, 'INSERT INTO tab_log_gabriel (data, passo, parametros) VALUES (GETDATE(), ?, ?)', array('DEPOIS SP_VEN_INS001_WEB FILHO', json_encode($retornoProcedure)));
+
+
+
+
+
+		echo "resultado da procedure do vb: <br/>";
+		var_dump($retornoProcedure); echo "<br/>";
+		// make sure all result sets are stepped through, since the output params may not be set until this happens
+		while($rsDebug = sqlsrv_next_result($retornoProcedure)) {var_dump($rsDebug); echo "<br/>";}
+		var_dump($return_code); echo "<br/>";
+		var_dump(sqlErrors()); echo "<br/>";
+		echo "<br/>";
 
 
 
 
 		
-
 		if ($return_code === 0) {
 			$erro_processo_assinatura = "erro no processo de assinatura";
 
@@ -260,99 +282,31 @@ if (!empty($dadosPedido)) {
 	}
 
 
-	// atualizar assinatura se o usuario estiver na fase 1 ou 2
-	if ($_SESSION['assinatura']['tipo'] == 'troca') {
+	
+	$query = "SELECT P.ID_PACOTE, IPV.INDICE
+				FROM MW_APRESENTACAO A
+				INNER JOIN MW_APRESENTACAO A2 ON A2.ID_EVENTO = A.ID_EVENTO AND A2.DT_APRESENTACAO = A.DT_APRESENTACAO AND A2.HR_APRESENTACAO = A.HR_APRESENTACAO
+				INNER JOIN MW_PACOTE P ON P.ID_APRESENTACAO = A.ID_APRESENTACAO
+				INNER JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_APRESENTACAO = A2.ID_APRESENTACAO
+				WHERE IPV.ID_PEDIDO_VENDA = ?";
+	$params = array($id_pedido);
+	$result = executeSQL($mainConnection, $query, $params);
 
-		foreach ($_SESSION['assinatura']['cadeira'] as $key => $cadeira) {
+	while ($rs = fetchResult($result)) {
 
-			executeSQL($mainConnection,
-						"UPDATE MW_PACOTE_RESERVA SET
-							IN_STATUS_RESERVA = 'T',
-							DT_HR_TRANSACAO = GETDATE()
-						WHERE ID_CLIENTE = ? AND ID_PACOTE = ? AND ID_CADEIRA = ?",
-						array($dadosPedido['ID_CLIENTE'], $_SESSION['assinatura']['pacote'][$key], $cadeira));
-
-			$id_usuario_teatro = executeSQL($mainConnection,
-											"SELECT B.ID_CLIENTE
-											FROM MW_PACOTE P
-											INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = P.ID_APRESENTACAO
-											INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
-											INNER JOIN MW_BASE B ON B.ID_BASE = E.ID_BASE
-											WHERE P.ID_PACOTE = ?",
-											array($_SESSION['assinatura']['pacote'][$key]), true);
-			$id_usuario_teatro = $id_usuario_teatro['ID_CLIENTE'];
-
-			executeSQL($mainConnection,
-						"INSERT INTO MW_PACOTE_RESERVA (ID_CLIENTE,ID_PACOTE,ID_CADEIRA,IN_STATUS_RESERVA,DT_HR_TRANSACAO,IN_ANO_TEMPORADA,DS_LOCALIZACAO)
-							SELECT ?, ID_PACOTE, ID_CADEIRA, 'A', GETDATE(), IN_ANO_TEMPORADA, DS_LOCALIZACAO
-							FROM MW_PACOTE_RESERVA
-							WHERE ID_CLIENTE = ? AND ID_PACOTE = ? AND ID_CADEIRA = ? AND IN_STATUS_RESERVA = 'T'",
-						array($id_usuario_teatro, $dadosPedido['ID_CLIENTE'], $_SESSION['assinatura']['pacote'][$key], $cadeira));
-
-		}
-
-	} else if ($_SESSION['assinatura']['tipo'] == 'renovacao') {
-
-		foreach ($_SESSION['assinatura']['lugares'] as $dados) {
-
-			executeSQL($mainConnection,
-						"UPDATE MW_PACOTE_RESERVA SET
-							IN_STATUS_RESERVA = 'R',
-							DT_HR_TRANSACAO = GETDATE()
-						WHERE ID_CLIENTE = ? AND ID_PACOTE = ? AND ID_CADEIRA = ? AND IN_STATUS_RESERVA IN ('A', 'S')",
-						array($dadosPedido['ID_CLIENTE'], $dados['pacote'], $dados['cadeira']));
-
-        }
-
-	}
-
-	// atualizar assinatura se o usuario estiver na fase 2 ou 3
-	if (!isset($_SESSION['assinatura']) or $_SESSION['assinatura']['tipo'] == 'troca') {
-
-		//update para o caso de um usuario comprar novamente algo que ele cancelou/estornou
 		executeSQL($mainConnection,
-					"UPDATE PR
-						SET PR.IN_STATUS_RESERVA = 'R',
-							PR.DT_HR_TRANSACAO = GETDATE()
-						FROM MW_PEDIDO_VENDA PV
-						INNER JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
-						INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO
-						INNER JOIN MW_APRESENTACAO A2 ON A2.ID_EVENTO = A.ID_EVENTO AND A2.DT_APRESENTACAO = A.DT_APRESENTACAO AND A2.HR_APRESENTACAO = A.HR_APRESENTACAO
-						INNER JOIN MW_PACOTE P ON P.ID_APRESENTACAO = A2.ID_APRESENTACAO
-						INNER JOIN MW_PACOTE_RESERVA PR ON PR.ID_CLIENTE = PV.ID_CLIENTE AND PR.ID_PACOTE = P.ID_PACOTE AND PR.ID_CADEIRA = IPV.INDICE
-						WHERE PV.ID_PEDIDO_VENDA = ?",
-					array($id_pedido));
+					"UPDATE MW_PACOTE_RESERVA SET
+						IN_STATUS_RESERVA = 'R',
+						DT_HR_TRANSACAO = GETDATE()
+					WHERE ID_CLIENTE = ? AND ID_PACOTE = ? AND ID_CADEIRA = ? AND IN_STATUS_RESERVA IN ('A', 'S')",
+					array($dadosPedido['ID_CLIENTE'], $rs['ID_PACOTE'], $rs['INDICE']));
 
-		//insert nos registros que ainda nao existem para esse usuario
-		executeSQL($mainConnection,
-					"INSERT INTO MW_PACOTE_RESERVA (ID_CLIENTE,ID_PACOTE,ID_CADEIRA,IN_STATUS_RESERVA,DT_HR_TRANSACAO,IN_ANO_TEMPORADA,DS_LOCALIZACAO)
-						SELECT
-							PV.ID_CLIENTE,
-							P.ID_PACOTE,
-							IPV.INDICE,
-							'R',
-							GETDATE(),
-							(SELECT TOP 1 YEAR(A.DT_APRESENTACAO)
-								FROM MW_PACOTE_APRESENTACAO PA
-								INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = PA.ID_APRESENTACAO
-								WHERE PA.ID_PACOTE = P.ID_PACOTE),
-							IPV.DS_LOCALIZACAO
-						FROM MW_PEDIDO_VENDA PV
-						INNER JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
-						INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO
-						INNER JOIN MW_APRESENTACAO A2 ON A2.ID_EVENTO = A.ID_EVENTO AND A2.DT_APRESENTACAO = A.DT_APRESENTACAO AND A2.HR_APRESENTACAO = A.HR_APRESENTACAO
-						INNER JOIN MW_PACOTE P ON P.ID_APRESENTACAO = A2.ID_APRESENTACAO
-						WHERE PV.ID_PEDIDO_VENDA = ? AND NOT EXISTS (SELECT 1 FROM MW_PACOTE_RESERVA PR WHERE PR.ID_CLIENTE = PV.ID_CLIENTE AND PR.ID_PACOTE = P.ID_PACOTE AND PR.ID_CADEIRA = IPV.INDICE)",
-					array($id_pedido));
-
-	}
+    }
 
 	executeSQL($mainConnection, "UPDATE MW_CLIENTE SET IN_ASSINANTE = 'S' WHERE ID_CLIENTE = ?", array($dadosPedido['ID_CLIENTE']));
 
-	unset($_SESSION['assinatura']);
-
 	limparCookies();
 
-	die("redirect.php?redirect=".urlencode("minha_conta.php?assinaturas=1"));
+	die("<h1>finalizado</h1>");
 
 }

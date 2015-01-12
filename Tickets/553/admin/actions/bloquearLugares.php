@@ -46,7 +46,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 382, true)) {
                     INNER JOIN CI_MIDDLEWAY..MW_PACOTE_APRESENTACAO PA ON PA.ID_PACOTE = PR.ID_PACOTE
                     INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.ID_APRESENTACAO = PA.ID_APRESENTACAO
                     INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
-                    WHERE E.ID_BASE = " . $idBase . " AND A.CODAPRESENTACAO = " . $idApresentacao . " AND PR.IN_STATUS_RESERVA IN ('A', 'S')
+                    WHERE E.ID_BASE = " . $idBase . " AND A.CODAPRESENTACAO = " . $idApresentacao . " AND PR.IN_STATUS_RESERVA IN ('A', 'S', 'R')
 
                     UNION ALL
 
@@ -55,7 +55,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 382, true)) {
                     INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A2 ON A2.ID_APRESENTACAO = P.ID_APRESENTACAO
                     INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.ID_EVENTO = A2.ID_EVENTO AND A.DT_APRESENTACAO = A2.DT_APRESENTACAO AND A.HR_APRESENTACAO = A2.HR_APRESENTACAO AND A2.IN_ATIVO = 1
                     INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO AND E.IN_ATIVO = 1
-                    WHERE E.ID_BASE = " . $idBase . " AND A.CODAPRESENTACAO = " . $idApresentacao . " AND PR.IN_STATUS_RESERVA IN ('A', 'S')
+                    WHERE E.ID_BASE = " . $idBase . " AND A.CODAPRESENTACAO = " . $idApresentacao . " AND PR.IN_STATUS_RESERVA IN ('A', 'S', 'R')
                 )
             SELECT CASE WHEN (L.STACADEIRA IS NULL AND R.ID_CADEIRA IS NULL)
                             THEN 'O' ELSE 'C' END STATUS,

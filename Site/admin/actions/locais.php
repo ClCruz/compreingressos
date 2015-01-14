@@ -38,8 +38,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
 
             beginTransaction($mainConnection);
             $query = "INSERT INTO mw_cliente ([id_cliente], [ds_nome],[ds_sobrenome],
-                      [in_recebe_info],[in_recebe_sms],[in_concorda_termos],[dt_inclusao], in_assinante)
-                      VALUES (?, ?, ?, 1, 1, 1, GETDATE(), 'S')";
+                      [in_recebe_info],[in_recebe_sms],[in_concorda_termos],[dt_inclusao], in_assinante, cd_cpf)
+                      VALUES (?, ?, ?, 1, 1, 1, GETDATE(), 'S', '-1')";
             $params = array($idCliente, utf8_decode($_POST['nomeSql']), utf8_decode($_POST['nomeSql']));
             $rsCliente = executeSQL($mainConnection, $query, $params);
             $retorno = sqlErrors();
@@ -133,8 +133,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
 
             beginTransaction($mainConnection);
             $query = "INSERT INTO mw_cliente ([id_cliente], [ds_nome],[ds_sobrenome],
-                      [in_recebe_info],[in_recebe_sms],[in_concorda_termos],[dt_inclusao], in_assinante)
-                      VALUES (?, ?, ?, 1, 1, 1, GETDATE(), 'S')";
+                      [in_recebe_info],[in_recebe_sms],[in_concorda_termos],[dt_inclusao], in_assinante, cd_cpf)
+                      VALUES (?, ?, ?, 1, 1, 1, GETDATE(), 'S', '-1')";
             $params = array($idCliente, utf8_decode($_POST['nomeSql']), utf8_decode($_POST['nomeSql']));
             $rsCliente = executeSQL($mainConnection, $query, $params);
             $retorno = sqlErrors();

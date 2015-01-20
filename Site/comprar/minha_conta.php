@@ -48,10 +48,10 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                     INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
                     INNER JOIN MW_BASE B ON B.ID_BASE  = E.ID_BASE
                     where PR.ID_CLIENTE = ?";
-    $rsTeatros = executeSQL($mainConnection, $queryTeatros, array($_SESSION['user']));
+    $resultTeatros = executeSQL($mainConnection, $queryTeatros, array($_SESSION['user']));
     $options = '';
-    while ($rs = fetchResult($rsTeatros)) {
-        $options .= '<option value="'.$rs['ID_BASE'].'">'.utf8_encode($rs['DS_NOME_TEATRO']).'</option>';
+    while ($rsTeatros = fetchResult($resultTeatros)) {
+        $options .= '<option value="'.$rsTeatros['ID_BASE'].'">'.utf8_encode($rs['DS_NOME_TEATRO']).'</option>';
     }
 
 

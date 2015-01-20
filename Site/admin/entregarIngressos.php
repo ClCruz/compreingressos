@@ -17,7 +17,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
 
         if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situacao"]) && isset($_GET["nm_cliente"]) && isset($_GET["cd_cpf"]) && isset($_GET["num_pedido"])) {
 
-            $where = "WHERE CONVERT(DATETIME,CONVERT(CHAR(8), PV.DT_PEDIDO_VENDA, 112)) BETWEEN CONVERT(DATETIME, ?, 103) AND CONVERT(DATETIME, ?, 103)";
+            $where = "WHERE CONVERT(DATETIME,CONVERT(CHAR(8), PV.DT_PEDIDO_VENDA, 112)) BETWEEN CONVERT(DATETIME, ?, 103) AND CONVERT(DATETIME, ?, 103) 
+                        AND PV.IN_SITUACAO = 'F' AND PV.IN_RETIRA_ENTREGA = 'E'";
 
             $params = array($_GET["dt_inicial"], $_GET["dt_final"]);
 
@@ -140,7 +141,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
                     $from2 .
                     $where .
                     $group . ")
-				  SELECT * FROM RESULTADO WHERE LINHA BETWEEN " . $offset . " AND " . $final . " ORDER BY ID_PEDIDO_VENDA DESC";
+				  SELECT * FROM RESULTADO WHERE LINHA BETWEEN " . $offset . " AND " . $final . " ORDER BY ID_PEDIDO_VENDA ";
             $result = executeSQL($mainConnection, $strSql, $params);
 
             $query = "SELECT

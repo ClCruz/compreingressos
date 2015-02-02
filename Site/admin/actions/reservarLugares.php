@@ -35,6 +35,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 381, true)) {
                     WHERE PA.ID_PACOTE = ?";
             $params = array($_POST['cadeira'][$i], $pacote);
             $result = executeSQL($connLocal, $query, $params);
+            //executar 2 vezes (solucao temporaria emergencial)
+            $result2 = executeSQL($connLocal, $query, $params);
             $errors = sqlErrors();
 
             while($rs = fetchResult($result)){
@@ -76,20 +78,30 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 381, true)) {
                 break;
             }
 
-            //Marcar lugar como reservado
-            $query = "SP_LUG_UPD002 255, ".$_POST["usuario"].", '".$codReserva ."'";
-            executeSQL($connLocal, $query);
-            $errors = sqlErrors();
-            if (empty($errors)) {
-                $log = new Log($_SESSION['admin']);
-                $log->__set('funcionalidade', 'Efetivar a reserva nas apresentações dos pacotes');
-                $log->__set('parametros', $params);
-                $log->__set('log', $query);
-                $log->save($mainConnection);
-                $retorno = 'ok';
-            } else {
-                $retorno = $errors;
-                break;
+            while($rs = fetchResult($result2)){
+                //Marcar lugar como reservado
+                $query = "UPDATE tabLugSala 
+                            SET StaCadeira = 'R', 
+                                CodUsuario = ?,
+                                CodReserva = ?
+                           WHERE CodCaixa = 255 AND StaCadeira = 'M'
+                                AND CodApresentacao = ?
+                                AND Indice = ?";
+                $params = array($_POST["usuario"], $codReserva, $rs["CODAPRESENTACAO"], $rs["INDICE"]);
+                executeSQL($connLocal, $query, $params);
+                $errors = sqlErrors();
+                
+                if (empty($errors)) {
+                    $log = new Log($_SESSION['admin']);
+                    $log->__set('funcionalidade', 'Efetivar a reserva nas apresentações dos pacotes');
+                    $log->__set('parametros', $params);
+                    $log->__set('log', $query);
+                    $log->save($mainConnection);
+                    $retorno = 'ok';
+                } else {
+                    $retorno = $errors;
+                    break;
+                }
             }
             
             usleep(1000000);

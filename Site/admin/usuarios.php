@@ -12,8 +12,12 @@ if (isset($_GET['action'])) {
 	require('actions/'.$pagina);
 	
 } else {
+
+	$_GET['ativo'] = !isset($_GET['ativo']) ? 1 : $_GET['ativo'];
 	
-	$result = executeSQL($mainConnection, 'SELECT ID_USUARIO, CD_LOGIN, DS_NOME, DS_EMAIL, IN_ATIVO, IN_ADMIN, IN_TELEMARKETING, IN_PDV FROM MW_USUARIO ORDER BY DS_NOME ASC');
+	$result = executeSQL($mainConnection,
+						"SELECT ID_USUARIO, CD_LOGIN, DS_NOME, DS_EMAIL, IN_ATIVO, IN_ADMIN, IN_TELEMARKETING, IN_PDV FROM MW_USUARIO WHERE IN_ATIVO = ? OR ? = 2 ORDER BY DS_NOME ASC",
+						array($_GET['ativo'], $_GET['ativo']));
 	
 ?>
 
@@ -182,6 +186,10 @@ $(function() {
 		$(newLine).appendTo('#app table tbody');
 		setDatePickers();
 	});
+
+	$('#ativo').change(function() {
+		document.location = '?p=' + pagina.replace('.php', '') + '&ativo=' + $(this).val();
+	});
 	
 	function validateFields() {
 		var campos = $(':text'),
@@ -208,6 +216,13 @@ $(function() {
 });
 </script>
 <h2>Usu&aacute;rios</h2>
+<p style="width:200px;">
+	Situação do usuário: <select id="ativo" name="ativo">
+		<option value="1"<?php echo ($_GET['ativo'] == 1 ? ' selected' : ''); ?>>Ativo</option>
+		<option value="0"<?php echo ($_GET['ativo'] == 0 ? ' selected' : ''); ?>>Inativo</option>
+		<option value="2"<?php echo ($_GET['ativo'] == 2 ? ' selected' : ''); ?>>Todos</option>
+	</select>
+</p><br/>
 <form id="dados" name="dados" method="post">
 	<table class="ui-widget ui-widget-content">
 		<thead>

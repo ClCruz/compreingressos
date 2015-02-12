@@ -957,11 +957,11 @@ function comboLocal($name, $selected = '-1', $isCombo = true) {
     while ($rs = fetchResult($result)) {
 	if (($selected == $rs['ID_BASE'])) {
 	    $isSelected = 'selected';
-	    $text = '<span name="' . $name . '" class="inputStyle">' . $rs["DS_NOME_TEATRO"] . '</span>';
+	    $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode($rs["DS_NOME_TEATRO"]) . '</span>';
 	} else {
 	    $isSelected = '';
 	}
-	$combo .= '<option value="' . $rs['ID_BASE'] . '"' . $isSelected . '>' . $rs["DS_NOME_TEATRO"] . '</option>';
+	$combo .= '<option value="' . $rs['ID_BASE'] . '"' . $isSelected . '>' . utf8_encode($rs["DS_NOME_TEATRO"]) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1241,11 +1241,11 @@ function comboAdmins($name, $selected = '-1', $isCombo = true) {
     while ($rs = fetchResult($result)) {
 	if ($selected == $rs['ID_USUARIO']) {
 	    $isSelected = 'selected';
-	    $text = utf8_encode($rs['DS_NOME']);
+	    $text = $rs['DS_NOME'];
 	} else {
 	    $isSelected = '';
 	}
-	$combo .= '<option value="' . $rs['ID_USUARIO'] . '"' . $isSelected . '>' . utf8_encode($rs['DS_NOME']) . '</option>';
+	$combo .= '<option value="' . $rs['ID_USUARIO'] . '"' . $isSelected . '>' . addslashes($rs['DS_NOME']) . '</option>';
     }
     $combo .= '</select>';
 

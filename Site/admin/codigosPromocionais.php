@@ -302,12 +302,14 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 384, true)) {
             <table class="ui-widget ui-widget-content">
                 <thead>
                     <tr class="ui-widget-header">
-                        <th>Descrição da Promoção</th>
-                        <th>Código Promocional</th>
-                        <th>Sessão</th>
-                        <th>Nº Pedido</th>
-                        <th>CPF</th>
+                        <th align="left">Descrição da Promoção</th>
+                        <th align="left">Código Promocional</th>
+                        <th align="left">Sessão</th>
+                        <th align="left">Nº Pedido</th>
+                        <th align="left">CPF</th>
+                        <?php if (!$_GET['excel']) { ?>
                         <th>A&ccedil;&otilde;es</th>
+                        <?php } ?>
                     </tr>
                 </thead>
                 <tbody id="registros">

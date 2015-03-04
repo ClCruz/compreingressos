@@ -20,7 +20,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 384, true)) {
         }
 
         $result = executeSQL($mainConnection,
-                            "SELECT ID_PROMOCAO, DS_PROMOCAO, CD_PROMOCIONAL, ID_PEDIDO_VENDA, ID_SESSION, CD_CPF_PROMOCIONAL FROM MW_PROMOCAO WHERE ID_EVENTO = ? AND CODTIPPROMOCAO = ?",
+                            "SELECT ID_PROMOCAO, DS_PROMOCAO, CD_PROMOCIONAL, ID_PEDIDO_VENDA, ID_SESSION, CD_CPF_PROMOCIONAL FROM MW_PROMOCAO WHERE ID_EVENTO = ? AND CODTIPPROMOCAO = ? ORDER BY DS_PROMOCAO, CD_PROMOCIONAL",
                             array($_GET['cboPeca'], $_GET['cboPromocao']));
 
         ob_start();
@@ -34,11 +34,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 384, true)) {
                 <td><?php echo $rs['ID_SESSION']; ?></td>
                 <td><?php echo $rs['ID_PEDIDO_VENDA']; ?></td>
                 <td><?php echo $rs['CD_CPF_PROMOCIONAL'] ? mask($rs['CD_CPF_PROMOCIONAL'],'###.###.###-##') : ' - '; ?></td>
+                <?php if (!$_GET['excel']) { ?>
                 <td class="button">
                     <?php if (empty($rs['ID_SESSION']) and empty($rs['ID_PEDIDO_VENDA'])) { ?>
                     <a href="<?php echo $pagina; ?>?action=delete&id=<?php echo $id; ?>">Apagar</a>
                     <?php } ?>
                 </td>
+                <?php } ?>
             </tr>
         <?php
         }
@@ -105,7 +107,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 384, true)) {
         $combo = '<option value="">Selecione...</option>';
         while ($rs = fetchResult($result)) {
             $combo .= '<option value="' . $rs['ID_BASE'] . '"' . (($_GET['cboTeatro'] == $rs['ID_BASE']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_NOME_TEATRO']) . '</option>';
-            $text = ($_GET['cboTeatro'] == $rs['ID_BASE'] ? utf8_encode($rs['DS_NOME_TEATRO']) : '');
+            if ($_GET['excel'] and $_GET['cboTeatro'] == $rs['ID_BASE']) {
+                $text = utf8_encode($rs['DS_NOME_TEATRO']);
+                break;
+            }
         }
 
         $retorno = $_GET['excel'] ? $text : $combo;
@@ -118,7 +123,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 384, true)) {
                     FROM CI_MIDDLEWAY..MW_EVENTO E
                     INNER JOIN CI_MIDDLEWAY..MW_ACESSO_CONCEDIDO A ON A.CODPECA = E.CODPECA AND A.ID_BASE = E.ID_BASE
                     INNER JOIN TABPROMOCAOPECA P ON P.CODPECA = A.CODPECA
-                    WHERE A.ID_USUARIO = ? AND A.ID_BASE = ?";
+                    WHERE A.ID_USUARIO = ? AND A.ID_BASE = ?
+                    ORDER BY E.DS_EVENTO";
         $params = array($_SESSION['admin'], $_GET['cboTeatro']);
         $result = executeSQL($conn, $query, $params);
 
@@ -126,7 +132,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 384, true)) {
 
         while($rs = fetchResult($result)){
             $combo .= '<option value="'. $rs["ID_EVENTO"] .'"' . (($_GET['cboPeca'] == $rs['ID_EVENTO']) ? ' selected' : '') . '>'. utf8_encode($rs["DS_EVENTO"]) .'</option>'; 
-            $text = ($_GET['cboPeca'] == $rs['ID_EVENTO'] ? utf8_encode($rs['DS_EVENTO']) : '');
+            if ($_GET['excel'] and $_GET['cboPeca'] == $rs['ID_EVENTO']) {
+                $text = utf8_encode($rs['DS_EVENTO']);
+                break;
+            }
         }
 
         $retorno = $_GET['excel'] ? $text : $combo;
@@ -140,7 +149,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 384, true)) {
                     INNER JOIN CI_MIDDLEWAY..MW_ACESSO_CONCEDIDO A ON A.CODPECA = E.CODPECA AND A.ID_BASE = E.ID_BASE
                     INNER JOIN TABPROMOCAOPECA P ON P.CODPECA = A.CODPECA
                     INNER JOIN TABTIPPROMOCAO T ON T.CODTIPPROMOCAO = P.CODTIPPROMOCAO
-                    WHERE A.ID_USUARIO = ? AND A.ID_BASE = ? AND E.ID_EVENTO = ?";
+                    WHERE A.ID_USUARIO = ? AND A.ID_BASE = ? AND E.ID_EVENTO = ?
+                    ORDER BY T.NOMPROMOCAO";
         $params = array($_SESSION['admin'], $_GET['cboTeatro'], $_GET['cboPeca']);
         $result = executeSQL($conn, $query, $params);
 
@@ -148,7 +158,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 384, true)) {
 
         while($rs = fetchResult($result)){
             $combo .= '<option value="'. $rs["CODTIPPROMOCAO"] .'"' . (($_GET['cboPromocao'] == $rs['CODTIPPROMOCAO']) ? ' selected' : '') . '>'. utf8_encode($rs["NOMPROMOCAO"]) .'</option>';
-            $text = ($_GET['cboPromocao'] == $rs['CODTIPPROMOCAO'] ? utf8_encode($rs['NOMPROMOCAO']) : '');
+            if ($_GET['excel'] and $_GET['cboPromocao'] == $rs['CODTIPPROMOCAO']) {
+                $text = utf8_encode($rs['NOMPROMOCAO']);
+                break;
+            }
         }
 
         $retorno = $_GET['excel'] ? $text : $combo;

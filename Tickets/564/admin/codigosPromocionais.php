@@ -28,6 +28,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 384, true)) {
                 $('.button').button({disabled: true});
                 $('#limpar').button({disabled: false});
 
+                $('.numbersOnly').onlyNumbers();
+
                 $('#app table').on('click', 'a', function(event) {
                     event.preventDefault();
 
@@ -79,6 +81,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 384, true)) {
                     } else if (href.indexOf('?action=limpar') != -1) {
 
                         $('#dados :input:not(button)').val('');
+                        $cboPeca.find('option:not(:first)').remove();
+                        $cboPromocao.find('option:not(:first)').remove();
                         $cboPromocao.trigger('change');
 
                     } else if (href.indexOf('?action=exportar') != -1) {
@@ -123,6 +127,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 384, true)) {
                 $cboPromocao.on('change', function(){
                     $('.ui-state-error').removeClass('ui-state-error');
 
+                    $('a.button').button({disabled: true});
+
                     $.ajax({
                         url: pagina + '?action=busca&' + $('#dados').serialize()
                     }).done(function(html){
@@ -160,6 +166,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 384, true)) {
                         if ($('#registros tr').length > 0) {
                             $('#exportar').button({disabled: false});
                         }
+
+                        $('#limpar').button({disabled: false});
                     });
                 });
 
@@ -273,7 +281,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 384, true)) {
                     </td>
                     <td>
                         <b>Código Fixo:</b><br/>
-                        <input size="40" maxlength="30" type="text" id="txtCodigo" name="txtCodigo" />
+                        <input size="40" maxlength="32" type="text" id="txtCodigo" name="txtCodigo" />
                     </td>
                     <td>
                         <b>Qtde. de Códigos para gerar:</b><br/>

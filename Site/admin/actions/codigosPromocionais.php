@@ -55,7 +55,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 384, true)) {
             if ($_POST['cboPromocao'] == 1) {
                 $codigo = $_POST['txtCodigo'];
             } elseif ($_POST['cboPromocao'] == 2) {
-                $codigo = substr(preg_replace('/[\{\-\}]/', '', com_create_guid()), 2);
+                // $codigo = md5(microtime());
+                $codigo = preg_replace('/[\{\-\}]/', '', com_create_guid());
             }
 
             $params = array($_POST['cboPeca'], $_POST['cboPromocao'], $_POST['txtDescricao'], $codigo);

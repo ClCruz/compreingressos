@@ -51,12 +51,27 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 384, true)) {
 
         $query = 'INSERT INTO MW_PROMOCAO (ID_EVENTO, CODTIPPROMOCAO, DS_PROMOCAO, CD_PROMOCIONAL) VALUES (?,?,?,?)';
 
+        if ($_POST['cboPromocao'] == 2) {
+            $codigo_array = array();
+
+            for ($i=1; $i <= $_POST['qtdCodigos']; $i++) {
+                $codigo = substr(preg_replace('/[\{\-\}]/', '', com_create_guid()), 24);
+                $codigo_array[] = $codigo;
+                $codigo_array = array_unique($codigo_array);
+
+                if (count($codigo_array) < $i) {
+                    $i--;
+                }
+            }
+
+            $codigo_array = array_values($codigo_array);
+        }
+
         for ($i=0; $i < $_POST['qtdCodigos']; $i++) {
             if ($_POST['cboPromocao'] == 1) {
                 $codigo = $_POST['txtCodigo'];
             } elseif ($_POST['cboPromocao'] == 2) {
-                // $codigo = md5(microtime());
-                $codigo = preg_replace('/[\{\-\}]/', '', com_create_guid());
+                $codigo = $codigo_array[$i];
             }
 
             $params = array($_POST['cboPeca'], $_POST['cboPromocao'], $_POST['txtDescricao'], $codigo);

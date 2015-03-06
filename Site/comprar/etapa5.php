@@ -35,6 +35,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	<link href="../images/favicon.ico" rel="shortcut icon"/>
 	<link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
+    <?php require("desktopMobileVersion.php"); ?>
 	<link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
 
 	<script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
@@ -114,10 +115,11 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 						<?php require('formCartao.php'); ?>
 
 					</div>
-
+					
+					<div class="container_botoes_etapas">
 					<a href="etapa4.php?eventoDS=<?php echo $_GET['eventoDS']; ?><?php echo $campanha['tag_voltar']; ?>" class="botao voltar passo4">confirmação</a>
 					<a href="etapa5.php?eventoDS=<?php echo $_GET['eventoDS']; ?><?php echo $campanha['tag_avancar']; ?>" class="botao avancar passo6 botao_pagamento">pagamento</a>
-
+					</div>
 					<div class="img_cod_cartao"><img src=""><p></p></div>
 
 					<div class="compra_captcha">

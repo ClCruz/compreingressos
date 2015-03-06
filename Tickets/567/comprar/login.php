@@ -1,6 +1,5 @@
 <?php
-  require_once('../settings/settings.php');
-  require_once('../settings/functions.php');
+require_once('../settings/functions.php');
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -22,6 +21,9 @@
 	<script src="../javascripts/jquery.cookie.js" type="text/javascript"></script>
 	<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
 	<script src="../javascripts/common.js" type="text/javascript"></script>
+
+	<script src="../javascripts/identificacao_cadastro.js" type="text/javascript"></script>
+
 	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
 </head>
 <body>
@@ -39,12 +41,12 @@
 			<div class="centraliza">
 				<div class="descricao_pag">
 					<div class="img">
-						<img src="../images/ico_black_passo2.png">
+						<img src="../images/ico_black_passo3.png">
 					</div>
 					<div class="descricao">
-						<p class="nome">Site em Manutenção</p>
+						<p class="nome">Identificação</p>
 						<p class="descricao">
-							desculpem-nos pelo transtorno.
+							identifique-se ou cadastre-se
 						</p>
 						<div class="sessao">
 							<p class="tempo" id="tempoRestante"></p>
@@ -53,19 +55,24 @@
 					</div>
 				</div>
 
+				<?php include "div_identificacao.php"; ?>
+				<?php include "div_cadastro.php"; ?>
+
 			</div>
 		</div>
 
 		<div id="texts">
 			<div class="centraliza">
-				<span id="cme"></span>
-				<p>...</p>
 			</div>
 		</div>
 
 		<?php include "footer.php"; ?>
 
 		<?php include "selos.php"; ?>
+
+		<div id="overlay">
+			<?php require 'termosUso.php'; ?>
+		</div>
 	</div>
 </body>
 </html>

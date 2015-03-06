@@ -15,7 +15,7 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
 	} else {
 		$userSelected = false;
 	}
-} else header("Location: loginOperador.php?redirect=pesquisa_operador.php");
+} else header("Location: loginOperador.php?redirect=etapa3_2.php");
 
 $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 ?>
@@ -27,8 +27,8 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	<link href="../images/favicon.ico" rel="shortcut icon"/>
 	<link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
-    <?php require("desktopMobileVersion.php"); ?>
 	<link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
+    <?php require("desktopMobileVersion.php"); ?>
 
 	<script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
 	<script src="../javascripts/jquery.placeholder.js" type="text/javascript"></script>
@@ -41,38 +41,10 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	<script src="../javascripts/common.js" type="text/javascript"></script>
 
 	<script type="text/javascript" src="../javascripts/identificacao_cadastro_operador.js"></script>
+	<script type="text/javascript" src="../javascripts/contagemRegressiva.js?until=<?php echo tempoRestante(); ?>"></script>
 	
 	<script>
 	$(function() {
-		$('#buscar').off('click').click(function(event) {
-			event.preventDefault();
-			
-			var form = $('#identificacaoForm'),
-				 valido = true;
-
-			form.find(':input').each(function() {
-				if ($(this).val().length < 3 && $(this).val() != '') valido = false;
-			});
-			
-			if (!valido) {
-				$('#resultadoBusca').slideUp('fast', function() {
-					$(this).html('<p>Os campos preenchidos devem ter, pelo menos, 3 caractéres para efetuar a busca.</p>');
-				}).slideDown('fast');
-				return false;
-			}
-			
-			$.ajax({
-				url: form.attr('action') + '?redirect=' + encodeURI('minha_conta.php?assinatura=1') + $.serializeUrlVars(),
-				data: form.serialize(),
-				type: form.attr('method'),
-				success: function(data) {
-					$('#resultadoBusca').slideUp('fast', function() {
-						$(this).html(data);
-					}).slideDown('fast');
-				}
-			});
-		});
-
 		$('#limpar').click();
 		
 		<?php if ($userSelected) { ?>
@@ -121,7 +93,17 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 						<img src="../images/ico_black_passo3.png">
 					</div>
 					<div class="descricao">
-						<p class="nome">Identificação</p>
+						<p class="nome">3. Identificação</p>
+						<p class="descricao">
+							passo <b>3 de 5</b> identifique-se ou cadastre-se
+						</p>
+						<div class="sessao">
+							<p class="tempo" id="tempoRestante">00:11:30</p>
+							<p class="mensagem">
+								Após essse prazo seu pedido será cancelado<br>
+								automaticamente e os lugares liberados
+							</p>
+						</div>
 					</div>
 				</div>
 

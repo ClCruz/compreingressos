@@ -69,7 +69,7 @@ $(function() {
           }
 
           if (Modernizr.touch) {
-            setup_with_touch();
+            // setup_with_touch();
           } else {
             $mapa_de_plateia.find('span').tooltip({
               track: true,
@@ -87,8 +87,10 @@ $(function() {
                         '</div>';
               }
             });
-            setup_without_touch();
           }
+          setup_without_touch();
+
+          mapaDePlateia();
         }
       });
 			

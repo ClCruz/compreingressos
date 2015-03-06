@@ -28,6 +28,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	<link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
 	<link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
+    <?php require("desktopMobileVersion.php"); ?>
 
 	<script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
 	<script src="../javascripts/jquery.placeholder.js" type="text/javascript"></script>

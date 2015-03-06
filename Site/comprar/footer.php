@@ -37,12 +37,16 @@
             </li>
             <li><a href="http://www.compreingressos.com/privacidade">Privacidade</a>
             </li>
-        </ul>
-        <ul>
-            <li class="title">Mídias Sociais</li>
-            <li><a href="http://www.facebook.com/compreingressos" target="_blank" class="facebook">Seja nosso fã<br /> no facebook</a>
+            <li><a target="_blank" rel="publisher" href="https://plus.google.com/102012893885744932251">Google+</a>
             </li>
-            <li><a href="http://twitter.com/compreingressos" target="_blank" class="twitter">Siga-nos<br /> no twitter</a>
+            <li><a href="https://compra.compreingressos.com/comprar/minha_conta.php" class="minha_conta_mobile">Minha conta</a>
+            </li>
+        </ul>
+        <ul class="midias_sociais">
+            <li class="title">Mídias Sociais</li>
+            <li class="midia"><a href="http://www.facebook.com/compreingressos" target="_blank" class="facebook">Seja nosso fã<br /> no facebook</a>
+            </li>
+            <li class="midia"><a href="http://twitter.com/compreingressos" target="_blank" class="twitter">Siga-nos<br /> no twitter</a>
             </li>
         </ul>
     </div>

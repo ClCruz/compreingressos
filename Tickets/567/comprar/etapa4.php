@@ -1,21 +1,22 @@
 <?php
+$edicao = false;
 session_start();
 
-if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
-	require_once('../settings/functions.php');
-	
-	if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
-		$mainConnection = mainConnection();
-		
-		$query = 'SELECT ID_CLIENTE, DS_NOME, DS_SOBRENOME, DS_DDD_TELEFONE, DS_TELEFONE, CD_CPF
-					 FROM MW_CLIENTE
-					 WHERE ID_CLIENTE = ?';
-		$rs = executeSQL($mainConnection, $query, array($_SESSION['user']), true);
-		$userSelected = true;
-	} else {
-		$userSelected = false;
-	}
-} else header("Location: loginOperador.php?redirect=pesquisa_operador.php");
+require_once('../settings/functions.php');
+
+require('acessoLogado.php');
+require('verificarBilhetes.php');
+require('verificarServicosPedido.php');
+require('verificarLimitePorCPF.php');
+require('verificarEntrega.php');
+require('verificarAssinatura.php');
+
+if (isset($_COOKIE['entrega'])) {
+    $action = "verificatempo";
+    $etapa = 4;
+    $idestado = $_COOKIE['entrega'];
+    require('calculaFrete.php');
+}
 
 $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 ?>
@@ -40,51 +41,10 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
 	<script src="../javascripts/common.js" type="text/javascript"></script>
 
-	<script type="text/javascript" src="../javascripts/identificacao_cadastro_operador.js"></script>
-	
-	<script>
-	$(function() {
-		$('#buscar').off('click').click(function(event) {
-			event.preventDefault();
-			
-			var form = $('#identificacaoForm'),
-				 valido = true;
-
-			form.find(':input').each(function() {
-				if ($(this).val().length < 3 && $(this).val() != '') valido = false;
-			});
-			
-			if (!valido) {
-				$('#resultadoBusca').slideUp('fast', function() {
-					$(this).html('<p>Os campos preenchidos devem ter, pelo menos, 3 caractéres para efetuar a busca.</p>');
-				}).slideDown('fast');
-				return false;
-			}
-			
-			$.ajax({
-				url: form.attr('action') + '?redirect=' + encodeURI('minha_conta.php?assinatura=1') + $.serializeUrlVars(),
-				data: form.serialize(),
-				type: form.attr('method'),
-				success: function(data) {
-					$('#resultadoBusca').slideUp('fast', function() {
-						$(this).html(data);
-					}).slideDown('fast');
-				}
-			});
-		});
-
-		$('#limpar').click();
-		
-		<?php if ($userSelected) { ?>
-		$('#nomeBusca').val('<?php echo utf8_encode($rs['DS_NOME']); ?>');
-		$('#sobrenomeBusca').val('<?php echo utf8_encode($rs['DS_SOBRENOME']); ?>');
-		$('#telefoneBusca').val('<?php echo $rs['DS_TELEFONE']; ?>');
-		$('#cpfBusca').val('<?php echo $rs['CD_CPF']; ?>');
-		
-		$('#buscar').click();
-		<?php } ?>
-	})
-	</script>
+	<script type="text/javascript" src="../javascripts/contagemRegressiva.js?until=<?php echo tempoRestante(); ?>"></script>
+	<script type="text/javascript" src="../javascripts/carrinho.js"></script>
+	<script type="text/javascript" src="../javascripts/dadosEntrega.js"></script>
+	<?php echo $scriptBilheteInvalido.$scriptTempoLimiteFrete.$scriptLlimitePorCPF.$scriptEntrega.$scriptServicosPorPedido.$scriptAssinatura; ?>
 
 	<?php echo $campanha['script']; ?>
 
@@ -101,6 +61,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 	  })();
 	</script>
+
 	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
 </head>
 <body>
@@ -118,33 +79,44 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 			<div class="centraliza">
 				<div class="descricao_pag">
 					<div class="img">
-						<img src="../images/ico_black_passo3.png">
+						<img src="../images/ico_black_passo4.png">
 					</div>
 					<div class="descricao">
-						<p class="nome">Identificação</p>
+						<p class="nome">4. Confirmação</p>
+						<p class="descricao">
+							passo <b>4 de 5</b> revise e confirme seus ingressos
+						</p>
+						<div class="sessao">
+							<p class="tempo" id="tempoRestante"></p>
+							<p class="mensagem">
+								Após essse prazo seu pedido será cancelado<br>
+								automaticamente e os lugares liberados
+							</p>
+						</div>
 					</div>
+					<a href="etapa5.php?eventoDS=<?php echo $_GET['eventoDS']; ?><?php echo $campanha['tag_avancar']; ?>" class="botao passo5 avancar">pagamento</a>
 				</div>
 
-				<?php require "div_identificacao_operador.php"; ?>
-				<div id="resultadoBusca" class="identificacao"></div>
-				<?php require "div_cadastro.php"; ?>
+				<?php require 'resumoPedido.php';?>
+				<div class="container_botoes_etapas">
+				<a href="etapa2.php?<?php echo $_COOKIE['lastEvent']; ?><?php echo $campanha['tag_voltar']; ?>" class="botao voltar passo3">identificação</a>
+				<a href="etapa5.php?eventoDS=<?php echo $_GET['eventoDS']; ?><?php echo $campanha['tag_avancar']; ?>" class="botao avancar passo5 botao_pagamento">pagamento</a>
+				</div>
 
 			</div>
 		</div>
 
 		<div id="texts">
 			<div class="centraliza">
-				<p></p>
+				<p>Confira atentamente os dados do seu pedido e as condições e endereço de entrega se for o caso.</p>
+
+				<p>Clique em avançar para efetuar o pagamento.</p>
 			</div>
 		</div>
 
 		<?php include "footer.php"; ?>
 
 		<?php include "selos.php"; ?>
-
-		<div id="overlay">
-			<?php require 'termosUso.php'; ?>
-		</div>
 	</div>
 </body>
 </html>

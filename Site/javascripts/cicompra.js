@@ -1,4 +1,4 @@
-﻿function posicionaCursor(obj){
+function posicionaCursor(obj){
   var obj = obj[0];
   if (obj.createTextRange) {
     var range = obj.createTextRange();
@@ -149,6 +149,7 @@ function abreLoading(){
   $("#pai").css('margin-top','-'+sctop+'px');
   
   $('#loading').css('display','block');
+  
   $('#loading img').css('margin-top',($(window).height()/2)-10+'px');
   
   // Desabilitar a rolagem via touchscreen para nao rolar a pagina de baixo quando o conteudo do overlay é menor que a tela.
@@ -186,7 +187,86 @@ function toFixed(value, precision) {
 }
 
 
+function mapaDePlateia(){
+  function plateia(){
+    if($('div#mapa_de_plateia').length > 0 && mobileversion == 1){
+      if (window.innerWidth<=640 && $('div#mapa_de_plateia').data('width') != 320){
+        $('div#mapa_de_plateia span').each(function(){
+          var l = $(this).data('left').replace('px', '')/3+'px';
+          var t = $(this).data('top').replace('px', '')/3+'px';
+          $(this).css({'left':l, 'top':t});
+        });
+        $('p.aviso_zoom').show();
+      } else {
+        if ($('div#mapa_de_plateia').data('width') == 960 || ($('div#mapa_de_plateia').data('width') == 320 && window.innerWidth<=640)) {
+          $('div#mapa_de_plateia span').each(function(){
+            var l = $(this).data('left');
+            var t = $(this).data('top');
+            $(this).css({'left':l, 'top':t});
+          });
+          $('p.aviso_zoom').hide();
+        } else if ($('div#mapa_de_plateia').data('width') == 320 && window.innerWidth>640) {
+          $('div#mapa_de_plateia span').each(function(){
+            var l = $(this).data('left').replace('px', '')*3+'px';
+            var t = $(this).data('top').replace('px', '')*3+'px';
+            $(this).css({'left':l, 'top':t});
+          });
+          $('p.aviso_zoom').hide();
+        }
+      }
+    }
+  }
+  
+  if($('div#mapa_de_plateia').length > 0){
+    $('div#mapa_de_plateia').data('width', $('div#mapa_de_plateia').width());
+    $('div#mapa_de_plateia span').each(function(){
+      $(this).data('left',$(this).css('left'));
+      $(this).data('top',$(this).css('top'));
+    });
+    $( "<p style='font-size:12px;text-align:center;width:100%;margin-bottom:5px;' class='aviso_zoom'>Use o zoom do seu dispositivo para escolher o assento</p>" ).insertBefore( "div#mapa_de_plateia_geral" );
+  }
+  plateia();
+  $(window).resize(function(){
+    plateia();
+  });
+}
+
+function desktopVersion(){
+  function desktop(){
+    var href = $('a.link_adptativo').attr('href').split('desktop=');
+    if(location.search === "") {
+      href = location.href+"?desktop=";
+    } else {
+      if (location.href.indexOf("desktop=") != -1) {
+        href = location.href.replace(/(\&|\?)(desktop=)[01]/, "$1$2");
+      } else {
+        href = location.href+"&desktop=";
+      }
+    }
+    if (window.innerWidth<=640 && mobileversion==1){
+      $('a.link_adptativo').attr('href',href+"1");
+      $('a.link_adptativo').html('visualizar na versão desktop');
+      $('a.link_adptativo').show();
+    } else if (mobileversion==0){
+      $('p.creditos').css('margin-bottom','5px');
+      $('a.link_adptativo').attr('href',href+"0");
+      $('a.link_adptativo').html('visualizar na versão celular');
+      $('a.link_adptativo').show();
+    } else {
+      $('a.link_adptativo').hide();
+    }
+  }
+  
+  desktop();
+  $(window).resize(function(){
+    desktop();
+  });
+}
+
+
 $(document).ready(function(){
+  desktopVersion();
+
   /* MENU CIDADES E GENEROS */
   $(".container.cidade").click(function(){
     if($('.menu_busca.cidade').css('display')=='block'){

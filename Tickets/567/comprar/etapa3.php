@@ -1,6 +1,23 @@
 <?php
-  require_once('../settings/settings.php');
-  require_once('../settings/functions.php');
+session_start();
+
+if (isset($_SESSION['operador'])) {
+	header("Location: etapa3_2.php");
+} else if (isset($_SESSION['user'])) {
+	if (isset($_GET['redirect'])) {
+		header("Location: " . urldecode($_GET['redirect']));
+	} else {
+		if ($_COOKIE['entrega']) {
+			header("Location: etapa3_entrega.php");
+		} else {
+			header("Location: etapa4.php");
+		}
+	}
+}
+
+require_once('../settings/functions.php');
+
+$campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -22,6 +39,23 @@
 	<script src="../javascripts/jquery.cookie.js" type="text/javascript"></script>
 	<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
 	<script src="../javascripts/common.js" type="text/javascript"></script>
+
+	<script src="../javascripts/identificacao_cadastro.js" type="text/javascript"></script>
+	<script src="../javascripts/contagemRegressiva.js?until=<?php echo tempoRestante(); ?>" type="text/javascript"></script>
+
+	<script type="text/javascript">
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-16656615-1']);
+	  _gaq.push(['_setDomainName', 'compreingressos.com']);
+	  _gaq.push(['_setAllowLinker', true]);
+	  _gaq.push(['_trackPageview']);
+
+	  (function() {
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+	</script>
 	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
 </head>
 <body>
@@ -39,33 +73,42 @@
 			<div class="centraliza">
 				<div class="descricao_pag">
 					<div class="img">
-						<img src="../images/ico_black_passo2.png">
+						<img src="../images/ico_black_passo3.png">
 					</div>
 					<div class="descricao">
-						<p class="nome">Site em Manutenção</p>
+						<p class="nome">3. Identificação</p>
 						<p class="descricao">
-							desculpem-nos pelo transtorno.
+							passo <b>3 de 5</b> identifique-se ou cadastre-se
 						</p>
 						<div class="sessao">
 							<p class="tempo" id="tempoRestante"></p>
-							<p class="mensagem"></p>
+							<p class="mensagem">
+								Após essse prazo seu pedido será cancelado<br>
+								automaticamente e os lugares liberados
+							</p>
 						</div>
 					</div>
 				</div>
+
+				<?php require "div_identificacao.php"; ?>
+				<?php require "div_cadastro.php"; ?>
 
 			</div>
 		</div>
 
 		<div id="texts">
 			<div class="centraliza">
-				<span id="cme"></span>
-				<p>...</p>
+				<p>Identifique-se com seu e-mail e senha de acesso ou cadastre-se e crie sua conta.</p>
 			</div>
 		</div>
 
 		<?php include "footer.php"; ?>
 
 		<?php include "selos.php"; ?>
+
+		<div id="overlay">
+			<?php require 'termosUso.php'; ?>
+		</div>
 	</div>
 </body>
 </html>

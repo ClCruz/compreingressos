@@ -1,6 +1,5 @@
 <?php
-  require_once('../settings/settings.php');
-  require_once('../settings/functions.php');
+require_once('../settings/functions.php');
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -22,6 +21,44 @@
 	<script src="../javascripts/jquery.cookie.js" type="text/javascript"></script>
 	<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
 	<script src="../javascripts/common.js" type="text/javascript"></script>
+	<script>
+		$(function() {
+			$('p.erro').hide();
+			
+			$('#logar').click(function(event) {
+				event.preventDefault();
+				var $this = $(this),
+					 form = $('#identificacaoForm'),
+					 senha = $('#senha'),
+					 senha_txt = senha.val(),
+					 valido = true;
+				
+				if (senha_txt.length < 6) {
+					senha.findNextMsg().slideDown('fast');
+					valido = false;
+				} else senha.findNextMsg().slideUp('slow');
+				
+				if (valido) {
+					$.ajax({
+						url: form.attr('action') + '?' + $.serializeUrlVars(),
+						data: form.serialize(),
+						type: form.attr('method'),
+						success: function(data) {
+							if (data.substr(0, 4) == 'redi') {
+								$this.findNextMsg().slideUp('slow');
+								document.location = data;
+							} else {
+								$this.findNextMsg().slideUp('fast', function() {
+									$(this).html(data).slideDown('fast')
+								});
+							}
+						}
+					});
+				}
+			});
+		});
+	</script>
+
 	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
 </head>
 <body>
@@ -39,12 +76,12 @@
 			<div class="centraliza">
 				<div class="descricao_pag">
 					<div class="img">
-						<img src="../images/ico_black_passo2.png">
+						<img src="">
 					</div>
 					<div class="descricao">
-						<p class="nome">Site em Manutenção</p>
+						<p class="nome">SGV</p>
 						<p class="descricao">
-							desculpem-nos pelo transtorno.
+							Sistema de Gestão e Venda de Ingressos
 						</p>
 						<div class="sessao">
 							<p class="tempo" id="tempoRestante"></p>
@@ -53,14 +90,32 @@
 					</div>
 				</div>
 
+				<form id="identificacaoForm" name="identificacao" method="post" action="../admin/autenticacao.php">
+					<div class="identificacao">
+						<p class="site" style="font-size:28px;">Acesse aqui as informações do seu evento</p>
+						<input name="usuario" type="text" id="login" size="30" maxlength="100" placeholder="Login"/>
+						<div class="erro_help">
+							<p class="erro">insira seu login</p>
+							<p class="help"></p>
+						</div>
+						<input type="password" name="senha" placeholder="digite sua senha" id="senha" maxlength="30">
+						<div class="erro_help">
+							<p class="erro">senha inválida</p>
+							<p class="help"></p>
+						</div>
+						<input type="button" class="submit avancar passo4" id="logar" href="etapa4.php">
+						<div class="erro_help" style="height:25px">
+							<p class="erro">Combinação de login/senha inválida<br>Por favor tente novamente.</p>
+							<p class="help"></p>
+						</div>
+					</div>
+				</form>
+
 			</div>
 		</div>
 
 		<div id="texts">
-			<div class="centraliza">
-				<span id="cme"></span>
-				<p>...</p>
-			</div>
+			<div class="centraliza"></div>
 		</div>
 
 		<?php include "footer.php"; ?>

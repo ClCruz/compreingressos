@@ -123,6 +123,7 @@ limparCookies();
 	<link href="../images/favicon.ico" rel="shortcut icon"/>
 	<link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
+    <?php require("desktopMobileVersion.php"); ?>
 	<link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
 
 	<script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
@@ -134,6 +135,12 @@ limparCookies();
 	<script src="../javascripts/jquery.cookie.js" type="text/javascript"></script>
 	<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
 	<script src="../javascripts/common.js" type="text/javascript"></script>
+	
+	<style type="text/css">
+	#selos {
+		margin-bottom: 0;
+	}
+	</style>
 
 	<script type="text/javascript">
 	function popup(url, width, height) {

@@ -1,21 +1,14 @@
 <?php
 session_start();
 
-if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
-	require_once('../settings/functions.php');
-	
-	if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
-		$mainConnection = mainConnection();
-		
-		$query = 'SELECT ID_CLIENTE, DS_NOME, DS_SOBRENOME, DS_DDD_TELEFONE, DS_TELEFONE, CD_CPF
-					 FROM MW_CLIENTE
-					 WHERE ID_CLIENTE = ?';
-		$rs = executeSQL($mainConnection, $query, array($_SESSION['user']), true);
-		$userSelected = true;
-	} else {
-		$userSelected = false;
-	}
-} else header("Location: loginOperador.php?redirect=pesquisa_operador.php");
+require_once('../settings/functions.php');
+
+require('acessoLogado.php');
+
+$mainConnection = mainConnection();
+$query = 'SELECT DS_NOME FROM MW_CLIENTE WHERE ID_CLIENTE = ?';
+$params = array($_SESSION['user']);
+$rs = executeSQL($mainConnection, $query, $params, true);
 
 $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 ?>
@@ -40,53 +33,8 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
 	<script src="../javascripts/common.js" type="text/javascript"></script>
 
-	<script type="text/javascript" src="../javascripts/identificacao_cadastro_operador.js"></script>
-	
-	<script>
-	$(function() {
-		$('#buscar').off('click').click(function(event) {
-			event.preventDefault();
-			
-			var form = $('#identificacaoForm'),
-				 valido = true;
-
-			form.find(':input').each(function() {
-				if ($(this).val().length < 3 && $(this).val() != '') valido = false;
-			});
-			
-			if (!valido) {
-				$('#resultadoBusca').slideUp('fast', function() {
-					$(this).html('<p>Os campos preenchidos devem ter, pelo menos, 3 caractéres para efetuar a busca.</p>');
-				}).slideDown('fast');
-				return false;
-			}
-			
-			$.ajax({
-				url: form.attr('action') + '?redirect=' + encodeURI('minha_conta.php?assinatura=1') + $.serializeUrlVars(),
-				data: form.serialize(),
-				type: form.attr('method'),
-				success: function(data) {
-					$('#resultadoBusca').slideUp('fast', function() {
-						$(this).html(data);
-					}).slideDown('fast');
-				}
-			});
-		});
-
-		$('#limpar').click();
-		
-		<?php if ($userSelected) { ?>
-		$('#nomeBusca').val('<?php echo utf8_encode($rs['DS_NOME']); ?>');
-		$('#sobrenomeBusca').val('<?php echo utf8_encode($rs['DS_SOBRENOME']); ?>');
-		$('#telefoneBusca').val('<?php echo $rs['DS_TELEFONE']; ?>');
-		$('#cpfBusca').val('<?php echo $rs['CD_CPF']; ?>');
-		
-		$('#buscar').click();
-		<?php } ?>
-	})
-	</script>
-
-	<?php echo $campanha['script']; ?>
+	<script src="../javascripts/dadosEntrega.js" type="text/javascript"></script>
+	<script src="../javascripts/contagemRegressiva.js?until=<?php echo tempoRestante(); ?>" type="text/javascript"></script>
 
 	<script type="text/javascript">
 	  var _gaq = _gaq || [];
@@ -104,7 +52,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
 </head>
 <body>
-	<div id="pai">
+	<div id="pai" class="etapa3">
 		<?php require "header.php"; ?>
 		<div id="content">
 			<div class="alert">
@@ -121,30 +69,43 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 						<img src="../images/ico_black_passo3.png">
 					</div>
 					<div class="descricao">
-						<p class="nome">Identificação</p>
+						<p class="nome">3. Identificação</p>
+						<p class="descricao">
+							passo <b>3 de 5</b> escolha ou cadastre um endereço
+						</p>
+						<div class="sessao">
+							<p class="tempo" id="tempoRestante"></p>
+							<p class="mensagem">
+								Após essse prazo seu pedido será cancelado<br>
+								automaticamente e os lugares liberados
+							</p>
+						</div>
+						<p class="descricao endereco">
+							Olá <b><?php echo utf8_encode($rs['DS_NOME']); ?>,</b> você escolheu receber seus ingressos em um endereço<br>
+							cadastrado. Selecione o endereço desejado ou inclua um novo
+						</p>
 					</div>
+					<a href="etapa4.php?<?php echo $campanha['tag_avancar']; ?>" class="botao avancar passo4 botao_avancar">outros pedidos</a>
 				</div>
 
-				<?php require "div_identificacao_operador.php"; ?>
-				<div id="resultadoBusca" class="identificacao"></div>
-				<?php require "div_cadastro.php"; ?>
+				<?php require "dadosEntrega.php"; ?>
 
+				<div class="container_botoes container_botoes_etapas">
+					<a href="etapa2.php?<?php echo $campanha['tag_voltar']; ?>" class="botao voltar passo2">outros pedidos</a>
+					<a href="etapa4.php?<?php echo $campanha['tag_avancar']; ?>" class="botao avancar passo4 botao_avancar">outros pedidos</a>
+				</div>
 			</div>
 		</div>
 
 		<div id="texts">
 			<div class="centraliza">
-				<p></p>
+				<p>Escolha o endereço onde deseja receber seu(s) ingresso(s) e clique em Avançar. Para alterar a forma de entrega de ingresso(s) clique em Voltar.</p>
 			</div>
 		</div>
 
 		<?php include "footer.php"; ?>
 
 		<?php include "selos.php"; ?>
-
-		<div id="overlay">
-			<?php require 'termosUso.php'; ?>
-		</div>
 	</div>
 </body>
 </html>

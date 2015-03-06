@@ -89,6 +89,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
         <link href="../images/favicon.ico" rel="shortcut icon"/>
         <link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'/>
         <link rel="stylesheet" href="../stylesheets/cicompra.css"/>
+        <?php require("desktopMobileVersion.php"); ?>
         <link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
 
         <script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
@@ -142,6 +143,9 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
 
             div.acoes div.sbHolder.teatros a.sbSelector {
                 width: 472px;
+            }
+            #selos {
+                margin-bottom: 0;
             }
         </style>
         <script>

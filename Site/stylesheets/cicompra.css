@@ -2583,3 +2583,17 @@ div.input div.ano .sbOptions{
 div.input div.ano .sbSelector{
 	width:112px;
 }
+
+#selos p.creditos, a.link_adptativo {
+    color: #000;
+    float: left;
+    font-size: 13px;
+    margin: 0 0 20px;
+    text-align: center;
+    width: 100%;
+}
+
+a.link_adptativo {
+    color: #930606;
+    display: none;
+}

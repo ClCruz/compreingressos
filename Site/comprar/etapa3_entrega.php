@@ -20,6 +20,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	<link href="../images/favicon.ico" rel="shortcut icon"/>
 	<link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
+    <?php require("desktopMobileVersion.php"); ?>
 	<link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
 
 	<script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
@@ -89,7 +90,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 
 				<?php require "dadosEntrega.php"; ?>
 
-				<div class="container_botoes">
+				<div class="container_botoes container_botoes_etapas">
 					<a href="etapa2.php?<?php echo $campanha['tag_voltar']; ?>" class="botao voltar passo2">outros pedidos</a>
 					<a href="etapa4.php?<?php echo $campanha['tag_avancar']; ?>" class="botao avancar passo4 botao_avancar">outros pedidos</a>
 				</div>

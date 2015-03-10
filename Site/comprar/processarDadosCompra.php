@@ -395,27 +395,29 @@ if ($PaymentDataCollection['Amount'] > 0 and ($errors and empty($sqlErrors))) {
     // echo "</pre>";
     // die(''.time());
     
-	try {
-        executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
-            array($_SESSION['user'], json_encode(array('descricao' => '3. inicialização do pedido ' . $parametros['OrderData']['OrderId'], 'url' => $url_braspag)))
-        );
+    if ($_SESSION['usuario_pdv'] !== 1) {
+    	try {
+            executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+                array($_SESSION['user'], json_encode(array('descricao' => '3. inicialização do pedido ' . $parametros['OrderData']['OrderId'], 'url' => $url_braspag)))
+            );
 
-        $client = @new SoapClient($url_braspag, $options);
+            $client = @new SoapClient($url_braspag, $options);
 
-        executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
-            array($_SESSION['user'], json_encode(array('descricao' => '4. envio do pedido=' . $parametros['OrderData']['OrderId'], 'post' => $parametrosLOG)))
-        );
-        
-        $result = $client->AuthorizeTransaction(array('request' => $parametros));
+            executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+                array($_SESSION['user'], json_encode(array('descricao' => '4. envio do pedido=' . $parametros['OrderData']['OrderId'], 'post' => $parametrosLOG)))
+            );
+            
+            $result = $client->AuthorizeTransaction(array('request' => $parametros));
 
-        executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
-            array($_SESSION['user'], json_encode(array('descricao' => '5. retorno do pedido=' . $parametros['OrderData']['OrderId'], 'post' => $result)))
-        );
-        
-    } catch (SoapFault $e) {
-        $descricao_erro = $e->getMessage();
-    } catch (Exception $e) {
-        var_dump($e);
+            executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+                array($_SESSION['user'], json_encode(array('descricao' => '5. retorno do pedido=' . $parametros['OrderData']['OrderId'], 'post' => $result)))
+            );
+            
+        } catch (SoapFault $e) {
+            $descricao_erro = $e->getMessage();
+        } catch (Exception $e) {
+            var_dump($e);
+        }
     }
 
     // echo "<pre>";

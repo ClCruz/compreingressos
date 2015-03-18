@@ -283,7 +283,8 @@ if (isset($_GET['action'])) {
 
 				$result = (executeSQL($conn, $updateVB, array($rs['CODTIPBILHETE'], $rs['CODAPRESENTACAO'], $_POST['cadeira'][$i], session_id())) and $result);
 
-				$query = 'SELECT 1 AS USA_BIN
+				// verifica se a selecao atual do bilhete utiliza a promocao do itau
+				$query = 'SELECT TOP 1 1 AS USA_BIN
 							FROM CI_MIDDLEWAY..MW_RESERVA R 
 							INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
 							INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
@@ -291,12 +292,60 @@ if (isset($_GET['action'])) {
 							INNER JOIN TABPECA P ON P.CODPECA = E.CODPECA AND P.CODTIPBILHETEBIN = AB.CODTIPBILHETE
 							WHERE P.IN_BIN_ITAU = 1
 							AND R.ID_APRESENTACAO_BILHETE = ? AND R.ID_APRESENTACAO = ? AND R.ID_CADEIRA = ? AND R.ID_SESSION = ?';
-				$ticket = executeSQL($conn, $query, array($_POST['valorIngresso'][$i],
-						$_POST['apresentacao'][$i],
-						$_POST['cadeira'][$i],
-						session_id()), true);
+
+				$params = array($_POST['valorIngresso'][$i], $_POST['apresentacao'][$i], $_POST['cadeira'][$i], session_id());
+
+				$ticket = executeSQL($conn, $query, $params, true);
 				
-				if ($ticket['USA_BIN']){
+				// verifica se a selecao atual utiliza codigo promocional
+				$query = 'SELECT TOP 1 1 AS USA_COD_PROMOCIONAL
+							FROM CI_MIDDLEWAY..MW_RESERVA R 
+							INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+							INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO = A.ID_APRESENTACAO AND AB.IN_ATIVO = 1 AND AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
+							INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+							INNER JOIN TABPROMOCAOPECA TPP ON TPP.CODPECA = E.CODPECA AND TPP.CODTIPBILHETE = AB.CODTIPBILHETE
+							WHERE R.ID_APRESENTACAO_BILHETE = ? AND R.ID_APRESENTACAO = ? AND R.ID_CADEIRA = ? AND R.ID_SESSION = ?';
+
+				$ticket2 = executeSQL($conn, $query, $params, true);
+
+
+				// ---- apaga a sessao da mw_promocao de acordo com os bilhetes na reserva
+				$query = "SELECT COUNT(1) AS QTD, CD_PROMOCIONAL FROM MW_PROMOCAO WHERE ID_SESSION = ? GROUP BY CD_PROMOCIONAL";
+				$resultPromocao = executeSQL($mainConnection, $query, array(session_id()));
+
+				while ($rs = fetchResult($resultPromocao)) {
+					$qtdCarimbado = $rs['QTD'];
+					$cdPromocional = $rs['CD_PROMOCIONAL'];
+
+					$query = "SELECT COUNT(1) AS QTD FROM MW_RESERVA WHERE NR_BENEFICIO = ? AND ID_SESSION = ?";
+
+					$rs = executeSQL($mainConnection, $query, array($cdPromocional, session_id()), true);
+
+					$qtdReserva = $rs['QTD'];
+
+					if ($qtdReserva == 0) {
+						$query = "UPDATE MW_PROMOCAO SET ID_SESSION = NULL WHERE CD_PROMOCIONAL = ? and ID_SESSION = ?";
+						executeSQL($mainConnection, $query, array($cdPromocional, session_id()));
+
+					} else if ($qtdReserva != $qtdCarimbado) {
+						$qtdApagar = $qtdCarimbado - $qtdReserva;
+
+						$query = "UPDATE P
+									SET ID_SESSION = NULL
+									FROM MW_PROMOCAO P
+									WHERE P.ID_PROMOCAO IN (
+										SELECT TOP $qtdApagar P2.ID_PROMOCAO
+										FROM MW_PROMOCAO P2
+										INNER JOIN MW_RESERVA R ON R.ID_SESSION = P2.ID_SESSION AND R.NR_BENEFICIO = P2.CD_PROMOCIONAL
+										WHERE R.ID_APRESENTACAO = ? AND R.ID_CADEIRA = ? AND R.ID_SESSION = ?
+									)";
+						executeSQL($mainConnection, $query, array($_POST['apresentacao'][$i], $_POST['cadeira'][$i], session_id()));
+					}
+				}
+				// ----
+
+				// use bin ou codigo promocional? (se sim nao pode apagar o codigo ja gravado na tabela)
+				if ($ticket['USA_BIN'] || $ticket2['USA_COD_PROMOCIONAL']){
 					$query = 'UPDATE MW_RESERVA SET
 							ID_APRESENTACAO_BILHETE = ?
 							WHERE ID_APRESENTACAO = ? AND ID_CADEIRA = ? AND ID_SESSION = ?';
@@ -378,6 +427,19 @@ if (isset($_GET['action'])) {
 			
 			while ($rs = fetchResult($registros)) {
 				$idsCadeiras .= $rs['INDICE'] . '|';
+
+				// remove o id_session de um codigo promocional se o mesmo estiver em uso no momento do delete
+				$query = 'UPDATE P
+							SET ID_SESSION = NULL
+							FROM MW_PROMOCAO P
+							WHERE P.ID_PROMOCAO IN (
+								SELECT TOP 1 P2.ID_PROMOCAO
+								FROM MW_PROMOCAO P2
+								INNER JOIN MW_RESERVA R ON R.ID_SESSION = P2.ID_SESSION AND R.NR_BENEFICIO = P2.CD_PROMOCIONAL
+								WHERE R.ID_APRESENTACAO = ? AND R.ID_CADEIRA = ? AND R.ID_SESSION = ?
+							)';
+				$params = array($_REQUEST['apresentacao'], $rs['INDICE'], session_id());
+				$result = executeSQL($mainConnection, $query, $params);
 				
 				$query = 'DELETE FROM MW_RESERVA
 							 WHERE ID_APRESENTACAO = ? AND ID_CADEIRA = ?
@@ -393,6 +455,20 @@ if (isset($_GET['action'])) {
 			}
 		} else {
 			beginTransaction($mainConnection);
+
+			// remove o id_session de um codigo promocional se o mesmo estiver em uso no momento do delete
+			$query = 'UPDATE P
+						SET ID_SESSION = NULL
+						FROM MW_PROMOCAO P
+						WHERE P.ID_PROMOCAO IN (
+							SELECT TOP 1 P2.ID_PROMOCAO
+							FROM MW_PROMOCAO P2
+							INNER JOIN MW_RESERVA R ON R.ID_SESSION = P2.ID_SESSION AND R.NR_BENEFICIO = P2.CD_PROMOCIONAL
+							WHERE R.ID_APRESENTACAO = ? AND R.ID_CADEIRA = ? AND R.ID_SESSION = ?
+						)';
+			$params = array($_REQUEST['apresentacao'], $_REQUEST['id'], session_id());
+			$result = executeSQL($mainConnection, $query, $params);
+
 			$query = 'DELETE FROM MW_RESERVA
 						 WHERE ID_APRESENTACAO = ? AND ID_CADEIRA = ?
 						 AND ID_SESSION = ?';

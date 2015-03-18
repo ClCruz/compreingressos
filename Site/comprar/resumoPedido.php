@@ -125,6 +125,7 @@ while ($rs = fetchResult($result)) {
 						<div class="icone_validador <?php echo ($rs['CD_BINITAU'] || $rs['NR_BENEFICIO']) ? 'valido' : ''; ?>"></div>
 						<div class="container_validador">
 							<input type="text" name="bin[]" class="validador_itau  <?php echo ($rs['CD_BINITAU'] || $rs['NR_BENEFICIO']) ? 'hidden' : 'notHidden'; ?>" placeholder="<?php echo $beneficio_texto; ?>" maxlength="<?php echo $beneficio_size; ?>" value="<?php echo $rs['CD_BINITAU'].$rs['NR_BENEFICIO']; ?>" <?php echo ($rs['CD_BINITAU'] || $rs['NR_BENEFICIO']) ? 'readonly' : ''; ?>>
+							<input type="hidden" name="tipoBin[]" value="<?php echo $rs['CD_BINITAU'] ? 'itau' : 'promocao'; ?>" />
 							<a class="validarBin <?php echo ($rs['CD_BINITAU'] || $rs['NR_BENEFICIO']) ? 'hidden' : 'notHidden'; ?>" href="#">validar</a>
 							<img class="<?php echo !($rs['CD_BINITAU'] || $rs['NR_BENEFICIO']) ? 'hidden' : 'notHidden'; ?>" src="">
 						</div>

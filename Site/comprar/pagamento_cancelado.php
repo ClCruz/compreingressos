@@ -52,6 +52,11 @@ if (isset($_COOKIE['ipagareError'])) {
 		$noErrors = (empty($sqlErrors) and $noErrors);
 	}
 	
+	$query = 'UPDATE MW_PROMOCAO SET ID_SESSION = NULL
+				 WHERE ID_SESSION = ?';
+	$params = array(session_id());
+	executeSQL($mainConnection, $query, $params);
+	
 	$query = 'DELETE FROM MW_RESERVA
 				 WHERE ID_SESSION = ?';
 	$params = array(session_id());
@@ -89,7 +94,6 @@ if (isset($_COOKIE['ipagareError'])) {
 
 $campanha = get_campanha_etapa('etapa5');
 ?>
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 	<head>

@@ -91,7 +91,6 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 			</div>
 
 			<form id="dadosPagamento" action="formCartao.php" method="post">
-                            <input type="hidden" name="usuario_pdv" value="<?php echo (isset($_SESSION["usuario_pdv"])) ? $_SESSION["usuario_pdv"] : 0; ?>" />
 				<div class="centraliza">
 					<div class="descricao_pag">
 						<div class="img">
@@ -110,7 +109,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 								</p>
 							</div>
 						</div>
-						<a href="etapa5.php?eventoDS=<?php echo $_GET['eventoDS']; ?><?php echo $campanha['tag_avancar']; ?>" class="botao avancar passo6 botao_pagamento">pagamento</a>
+						<a href="etapa5.php?eventoDS=<?php echo $_GET['eventoDS']; ?><?php echo $campanha['tag_avancar']; ?>" class="botao avancar passo6 botao_pagamento <?php echo $_COOKIE['total_exibicao'] == 0 ? 'finalizar' : '' ?>">pagamento</a>
 					
 						<?php require('formCartao.php'); ?>
 
@@ -118,7 +117,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 					
 					<div class="container_botoes_etapas">
 					<a href="etapa4.php?eventoDS=<?php echo $_GET['eventoDS']; ?><?php echo $campanha['tag_voltar']; ?>" class="botao voltar passo4">confirmação</a>
-					<a href="etapa5.php?eventoDS=<?php echo $_GET['eventoDS']; ?><?php echo $campanha['tag_avancar']; ?>" class="botao avancar passo6 botao_pagamento">pagamento</a>
+					<a href="etapa5.php?eventoDS=<?php echo $_GET['eventoDS']; ?><?php echo $campanha['tag_avancar']; ?>" class="botao avancar passo6 botao_pagamento <?php echo $_COOKIE['total_exibicao'] == 0 ? 'finalizar' : '' ?>">pagamento</a>
 					</div>
 					<div class="img_cod_cartao"><img src=""><p></p></div>
 

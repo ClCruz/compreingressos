@@ -364,7 +364,13 @@ if ($contador_reserva[0] != count($params2)) {
     die();
 }
 
-if ($PaymentDataCollection['Amount'] > 0 and ($errors and empty($sqlErrors))) {
+
+$query = "SELECT COUNT(1) FROM MW_PROMOCAO WHERE ID_SESSION = ?";
+$rs = executeSQL($mainConnection, $query, array(session_id()), true);
+$is_promocional = ($rs[0] > 0);
+
+
+if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] == 0 and $is_promocional)) and ($errors and empty($sqlErrors))) {
     $parametros['PaymentDataCollection'] = array(new SoapVar($PaymentDataCollection, SOAP_ENC_ARRAY, 'CreditCardDataRequest', 'https://www.pagador.com.br/webservice/pagador', 'PaymentDataRequest'));
 
     $options = array(
@@ -394,8 +400,8 @@ if ($PaymentDataCollection['Amount'] > 0 and ($errors and empty($sqlErrors))) {
     //     array('requestMascarado' => $parametrosLOG));
     // echo "</pre>";
     // die(''.time());
-    
-    if ($_SESSION['usuario_pdv'] !== 1) {
+    echo '1';
+    if ($_SESSION['usuario_pdv'] !== 1 and $PaymentDataCollection['Amount'] != 0) {
     	try {
             executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
                 array($_SESSION['user'], json_encode(array('descricao' => '3. inicialização do pedido ' . $parametros['OrderData']['OrderId'], 'url' => $url_braspag)))
@@ -438,9 +444,8 @@ if ($PaymentDataCollection['Amount'] > 0 and ($errors and empty($sqlErrors))) {
 
             die("redirect.php?redirect=".urlencode("pagamento_ok.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : '')));
         }else{
-            if ($result->AuthorizeTransactionResult->CorrelationId == $ri
-                &&
-                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->Status == '0') {
+            if (($result->AuthorizeTransactionResult->CorrelationId == $ri and $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->Status == '0')
+                or ($PaymentDataCollection['Amount'] == 0 and $is_promocional)) {
 
                 require('concretizarCompra.php');
 

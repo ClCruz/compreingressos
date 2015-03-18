@@ -7,7 +7,7 @@ $mainConnection = mainConnection();
 
 if ($_GET['carrinho']) {
 
-    if (strlen($_POST['bin']) <= 6) {
+    if ($_POST['tipoBin'] == 'itau') {
 
         $query = "SELECT E.ID_BASE
                 FROM MW_EVENTO E
@@ -36,7 +36,7 @@ if ($_GET['carrinho']) {
         $result = executeSQL($conn, $query, $params);
 
         if (hasRows($result)) {
-            $query = "UPDATE MW_RESERVA SET CD_BINITAU = ? WHERE ID_RESERVA = ?";
+            $query = "UPDATE MW_RESERVA SET CD_BINITAU = ?, NR_BENEFICIO = NULL WHERE ID_RESERVA = ?";
             executeSQL($mainConnection, $query, $params);
 
             echo "true";
@@ -45,20 +45,43 @@ if ($_GET['carrinho']) {
         }
 
     }
-    // se o bin tiver mais que 6 characters ele nao e bin itau
+    // se nao for bin do itau é codigo promocional
     else {
 
-        $query = "SELECT 1 FROM TEMPBINSSESC WHERE MATRICULA = ?";
+        $query = "SELECT TOP 1 P.ID_PROMOCAO, P.ID_SESSION, P.ID_PEDIDO_VENDA, P.CODTIPPROMOCAO FROM MW_RESERVA R
+                    INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+                    INNER JOIN MW_PROMOCAO P ON P.ID_EVENTO = A.ID_EVENTO
+                    WHERE R.ID_RESERVA = ? AND P.CD_PROMOCIONAL = ?
+                    ORDER BY P.ID_SESSION, P.ID_PEDIDO_VENDA";
 
-        $result = executeSQL($mainConnection, $query, array($_POST['bin']));
+        $result = executeSQL($mainConnection, $query, array($_POST['reserva'], $_POST['bin']));
 
         if (hasRows($result)) {
-            $query = "UPDATE MW_RESERVA SET NR_BENEFICIO = ? WHERE ID_RESERVA = ?";
+            $rs = fetchResult($result);
+
+            $erros = array(
+                // codigo fixo
+                '1' => 'Não existem mais ingressos disponíveis para este tipo de promoção. Por favor, selecione outro tipo de ingresso.',
+                // codigo aleatorio
+                '2' => 'Este código promocional já foi utilizado. Por favor, informe outro código promocional ou selecione outro tipo de ingresso.',
+                // importacao do csv
+                '3' => 'Este código promocional já foi utilizado. Por favor, informe outro código promocional ou selecione outro tipo de ingresso.'
+            );
+
+            if (!empty($rs['ID_SESSION']) || !empty($rs['ID_PEDIDO_VENDA'])) {
+                echo $erros[$rs['CODTIPPROMOCAO']];
+                die();
+            }
+
+            $query = "UPDATE MW_PROMOCAO SET ID_SESSION = ? WHERE ID_PROMOCAO = ?";
+            executeSQL($mainConnection, $query, array(session_id(), $rs['ID_PROMOCAO']));
+
+            $query = "UPDATE MW_RESERVA SET CD_BINITAU = NULL, NR_BENEFICIO = ? WHERE ID_RESERVA = ?";
             executeSQL($mainConnection, $query, array($_POST['bin'], $_POST['reserva']));
 
             echo "true";
         } else {
-            echo "Este cartão não é participante da promoção vigente para esta apresentação!<br>Informe outro cartão ou indique outro tipo de ingresso não participante da promoção.";
+            echo "Código promocional inexistente.";
         }
 
     }

@@ -2096,6 +2096,10 @@ a.botao.avancar.passo6{
 	background-image:url('../images/bot_avancar6.png');
 }
 
+a.botao.avancar.passo6.finalizar {
+  background-image: url('../images/bot_finalizar.png');
+}
+
 a.botao.todasdatas{
   float:none;
 	width:160px;

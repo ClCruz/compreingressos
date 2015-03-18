@@ -720,7 +720,30 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 
     $ocultarLote = (getTotalLoteDisponivel($apresentacaoID) <= 0 and $rs2['LOTE'] == 0) ? true : false;
 
-    $query = "SELECT ID_APRESENTACAO_BILHETE, AB.CODTIPBILHETE, DS_TIPO_BILHETE, VL_LIQUIDO_INGRESSO, P.IN_BIN_ITAU, ISNULL(P.QT_BIN_POR_CPF,0) AS QT_BIN_POR_CPF, P.CODTIPBILHETEBIN, B.STATIPBILHMEIAESTUDANTE, B.QTDVENDAPORLOTE, B.IMG1PROMOCAO, B.IMG2PROMOCAO, A.ID_EVENTO
+    $query = "SELECT	ID_APRESENTACAO_BILHETE,
+					    AB.CODTIPBILHETE,
+					    DS_TIPO_BILHETE,
+					    VL_LIQUIDO_INGRESSO,
+					    P.IN_BIN_ITAU,
+					    ISNULL(P.QT_BIN_POR_CPF,0) AS QT_BIN_POR_CPF,
+					    P.CODTIPBILHETEBIN,
+					    B.STATIPBILHMEIAESTUDANTE,
+					    B.QTDVENDAPORLOTE,
+					    B.IMG1PROMOCAO,
+					    B.IMG2PROMOCAO,
+					    A.ID_EVENTO,
+						STUFF
+					    (
+					        (
+					            SELECT 
+					                ',' + CONVERT(VARCHAR, TPP.CODTIPPROMOCAO)
+					            FROM
+					                TABPROMOCAOPECA TPP
+					            WHERE
+					                TPP.CODPECA = P.CODPECA AND TPP.CODTIPBILHETE = B.CODTIPBILHETE
+					            FOR XML PATH('')
+					        )
+					    ,1,1,'') AS CODTIPPROMOCAO
 				FROM
 				 CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB 
 				 INNER JOIN 
@@ -785,25 +808,25 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
     		or ($is_lote and $is_lote_disponivel)
     		or ($is_lote and $is_lote_no_carrinho)) {
 			
+			// se for bin itau
 			if ($rs['IN_BIN_ITAU'] and $rs['CODTIPBILHETEBIN'] == $rs['CODTIPBILHETE']) {
 				$rs['IMG1PROMOCAO'] = '../images/promocional/' . basename($rs['IMG1PROMOCAO']);
 				$rs['IMG2PROMOCAO'] = '../images/promocional/' . basename($rs['IMG2PROMOCAO']);
 
-				if ($id_base == 136 || (IS_TESTE && $id_base == 137)) {
-					$query = "select 1 from mw_evento
-								where codpeca in (2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44)
-								and id_evento = ?";
-					$result_aux = executeSQL($mainConnection, $query, array($rs['ID_EVENTO']));
-
-        			if (hasRows($result_aux)) {
-        				$sizeBin = 12;
-        			}
-				}
-
 				$BIN = 'qtBin="' . $rs['QT_BIN_POR_CPF'] . '" codeBin="' . $rs['CODTIPBILHETEBIN'] .
-						'" img1="' . $rs['IMG1PROMOCAO'] . '" img2="' . $rs['IMG2PROMOCAO'] . '"' . ($sizeBin ? ' sizeBin="'.$sizeBin.'"' : '');
-			} else{
-				$BIN = '';
+						'" img1="' . $rs['IMG1PROMOCAO'] . '" img2="' . $rs['IMG2PROMOCAO'] . '" sizeBin="6"';
+
+			// se for codigo promocional
+			} elseif ($rs['CODTIPPROMOCAO'] != NULL) {
+				$rs['IMG1PROMOCAO'] = '../images/promocional/' . basename($rs['IMG1PROMOCAO']);
+				$rs['IMG2PROMOCAO'] = '../images/promocional/' . basename($rs['IMG2PROMOCAO']);
+
+				$promocao = 'codPromocao="'.$rs['CODTIPPROMOCAO'] .
+							'" img1="' . $rs['IMG1PROMOCAO'] . '" img2="' . $rs['IMG2PROMOCAO'] . '" sizeBin="32"';
+
+			// nem bin itau e nem codigo promocional
+			} else {
+				$BIN = $promocao = '';
 			}
 
 			$meia_estudante = $rs['STATIPBILHMEIAESTUDANTE'] == 'S' ? ' meia_estudante="1"' : '';
@@ -811,13 +834,13 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 
 			if (($selected == $rs['ID_APRESENTACAO_BILHETE'])) {
 			    $isSelected = 'selected';
-			    $text = '<input type="hidden" name="' . $name . '" value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $BIN .
+			    $text = '<input type="hidden" name="' . $name . '" value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $BIN . $promocao .
 		    			' valor="'.number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', '').'"><span class="' . $name . ' inputStyle">' . utf8_encode($rs['DS_TIPO_BILHETE']) . '</span>';
 			} else {
 			    $isSelected = '';
 			}
 
-			$combo .= '<option value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $isSelected . ' ' . $BIN . $meia_estudante . $lote .
+			$combo .= '<option value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $isSelected . ' ' . $BIN . $promocao . $meia_estudante . $lote .
 					  ' valor="'.number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', '').'">' . utf8_encode($rs['DS_TIPO_BILHETE']) . '</option>';
 		}
     }

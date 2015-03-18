@@ -99,6 +99,9 @@ end
 close c1
 deallocate c1
 
+-- limpa cupons promocionais
+update p set id_session = null from mw_promocao p inner join mw_reserva r on r.id_session = p.id_session where dt_validade <= getdate()
+
 delete from mw_reserva where dt_validade <= @dataatual
 
 IF @@ERROR <> 0 

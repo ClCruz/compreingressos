@@ -102,13 +102,13 @@ $(function() {
 			// ingresso selecionado é promocional? tem bin associado?
 			if ($this.find('option:selected').attr('codeBin') != undefined) {
 				$mesmoBinSelecionado = $('option:selected').filter(function(){
-					return $(this).attr('codeBin') == $this.find('option:selected').attr('codeBin');
+					return $(this).attr('codeBin') != undefined && $(this).attr('codeBin') == $this.find('option:selected').attr('codeBin');
 				});
 
 				qtBinSelecionado = $mesmoBinSelecionado.length;
 
 				// ja existe algum ingresso promocional nao validado selecionado?
-				if (qtBinSelecionado > 0 && $('.beneficio:visible').find('.icone_validador:not(.valido)').length > 0) {
+				if (qtBinSelecionado > 1 && $('.beneficio:visible').filter(function(){return $(this).find("input[name='tipoBin\\[\\]']").val() == 'itau'}).find('.icone_validador:not(.valido)').length > 0) {
 					$this.selectbox('detach');
 					$this.val($this.data('lastValue'));
 					$this.selectbox('attach');
@@ -139,8 +139,8 @@ $(function() {
 							.val($mesmoBinSelecionado.filter(function(){return !$(this).parent().is($this)}).closest('tr.complementar').next('.beneficio').find('[name="bin\\[\\]"]').val());
 						window.validarBin = function(){$this.closest('tr').next('.beneficio').find('.validarBin').trigger('click', [true])};
 					} else {
-						sizeBin = $this.find('option:selected').attr('sizeBin') ? $this.find('option:selected').attr('sizeBin') : 6;
-						placeholder = sizeBin != 6 ? 'número cartão/matrícula SESC' : sizeBin + ' primeiros números do seu cartão';
+						sizeBin = $this.find('option:selected').attr('sizeBin');
+						placeholder = sizeBin + ' primeiros números do seu cartão';
 
 						$this.closest('tr').addClass('complementar')
 							.next('.beneficio')
@@ -148,8 +148,48 @@ $(function() {
 							.find('.img_complemento img').attr('src', $this.find('option:selected').attr('img1')).end()
 							.find('.container_validador img').attr('src', $this.find('option:selected').attr('img2')).end()
 							.slideDown();
+
+						if (trigger != 'automatico'
+							&& $this.closest('tr').next('.beneficio').find('.icone_validador').is('.valido')
+							&& $this.closest('tr').next('.beneficio').find('input[name=tipoBin\\[\\]]').val() != 'itau') {
+							var	$tr = $this.closest('tr').next('.beneficio'),
+								$hidden = $tr.find('.hidden'),
+								$notHidden = $tr.find('.notHidden'),
+								$bin = $tr.find('.validador_itau');
+
+							$hidden.removeClass('hidden').addClass('notHidden');
+							$notHidden.removeClass('notHidden').addClass('hidden');
+							$tr.find('.icone_validador').removeClass('valido');
+							$bin.val('').prop('readonly', false);
+						}
 					}
+
+					$this.closest('tr').next('.beneficio').find('input[name=tipoBin\\[\\]]').val('itau');
 				}
+			} else if ($this.find('option:selected').attr('codpromocao') != undefined) {
+				if (trigger != 'automatico'
+					&& $this.closest('tr').next('.beneficio').find('.icone_validador').is('.valido')) {
+					var	$tr = $this.closest('tr').next('.beneficio'),
+						$hidden = $tr.find('.hidden'),
+						$notHidden = $tr.find('.notHidden'),
+						$bin = $tr.find('.validador_itau');
+
+					$hidden.removeClass('hidden').addClass('notHidden');
+					$notHidden.removeClass('notHidden').addClass('hidden');
+					$tr.find('.icone_validador').removeClass('valido');
+					$bin.val('').prop('readonly', false);
+				}
+
+				sizeBin = $this.find('option:selected').attr('sizeBin');
+				placeholder = 'código promocional';
+
+				$this.closest('tr').addClass('complementar')
+					.next('.beneficio')
+					.find('input[name=bin\\[\\]]').attr('maxlength', sizeBin).attr('placeholder', placeholder).end()
+					.find('.img_complemento img').attr('src', $this.find('option:selected').attr('img1')).end()
+					.find('.container_validador img').attr('src', $this.find('option:selected').attr('img2')).end()
+					.find('input[name=tipoBin\\[\\]]').val('promocao').end()
+					.slideDown();
 			} else {
 				$this.closest('tr').next('.beneficio').find('[name="bin\\[\\]"]').val('');
 				$this.closest('tr').removeClass('complementar').next('.beneficio').slideUp(function(){
@@ -217,10 +257,11 @@ $(function() {
 		var $tr = $(this).closest('tr'),
 			$hidden = $tr.find('.hidden'),
 			$notHidden = $tr.find('.notHidden'),
-			$bin = $tr.find('.validador_itau'),
+			$bin = $tr.find('.validador_itau')
+			$tipoBin = $bin.next('input[name="tipoBin\\[\\]"]'),
 			reserva = $tr.prev('tr').find('[name="reserva\\[\\]"]').val();
 
-		if ($bin.val().length < $bin.attr('maxlength')) {
+		if (($tipoBin.val() == 'itau' && $bin.val().length < $bin.attr('maxlength')) || $bin.val().length == 0) {
 			$bin.addClass('erro');
 		} else {
 			$bin.removeClass('erro');
@@ -228,7 +269,7 @@ $(function() {
 			ajax = $.ajax({
 				url: 'validarBin.php?carrinho=1',
 				type: 'post',
-				data: 'reserva=' + reserva + '&bin=' + $bin.val()
+				data: 'reserva=' + reserva + '&bin=' + $bin.val() + '&tipoBin=' + $tipoBin.val()
 			});
 
 			if (!skipChanges) {

@@ -115,7 +115,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 390, true)) {
             ?><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><?php
         }
         ?>
-        <h2>Códigos Promocionais</h2>
+        <h2>Informações do público por evento</h2>
         <form id="dados" name="dados" method="post">
             <table>
                 <tr>
@@ -191,6 +191,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 390, true)) {
                         <th align="left">Nome do Cliente</th>
                         <th align="left">Sala</th>
                         <th align="left">Setor</th>
+                        <th align="left">Lugar</th>
                         <th align="left">Data/Hora Entrada</th>
                         <th align="left">Assinante</th>
                         <th align="left">Tipo de Ingresso</th>

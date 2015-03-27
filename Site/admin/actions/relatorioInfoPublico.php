@@ -86,6 +86,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 390, true)) {
                 <td><?php echo utf8_encode($rs['NOME']); ?></td>
                 <td><?php echo utf8_encode($rs['NOMSALA']); ?></td>
                 <td><?php echo utf8_encode($rs['NOMSETOR']); ?></td>
+                <td><?php echo utf8_encode($rs['NOMOBJETO']); ?></td>
                 <td><?php echo $rs['DATHRENTRADA'] ? $rs['DATHRENTRADA']->format("d/m/Y H:i:s") : $rs['DATHRENTRADA']; ?></td>
                 <td><?php echo $rs['IN_ASSINANTE'] == 'S' ? 'Sim' : 'Não'; ?></td>
                 <td><?php echo $rs['TIPBILHETE']; ?></td>

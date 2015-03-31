@@ -743,7 +743,8 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 					                TPP.CODPECA = P.CODPECA AND TPP.CODTIPBILHETE = B.CODTIPBILHETE
 					            FOR XML PATH('')
 					        )
-					    ,1,1,'') AS CODTIPPROMOCAO
+					    ,1,1,'') AS CODTIPPROMOCAO,
+					    ISNULL(P.QT_INGRESSOS_POR_PROMOCAO,0) AS QT_INGRESSOS_POR_PROMOCAO
 				FROM
 				 CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB 
 				 INNER JOIN 
@@ -797,7 +798,9 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 				
     $result = executeSQL($conn, $query, array($apresentacaoID, $idCadeira));
 
-    $combo = '<select name="' . $name . '" class="' . $name . ' inputStyle">'; //<option value="">Selecione um bilhete...</option>';
+    $combo = '<select name="' . $name . '" class="' . $name . ' inputStyle">';
+    $first_selected = false;
+
     while ($rs = fetchResult($result)) {
     	$is_lote = $rs['QTDVENDAPORLOTE'] > 0 and $rs['STATIPBILHMEIAESTUDANTE'] == 'N';
     	$is_lote_disponivel = getTotalLoteDisponivel($rs['ID_APRESENTACAO_BILHETE']) > 0;
@@ -821,7 +824,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 				$rs['IMG1PROMOCAO'] = '../images/promocional/' . basename($rs['IMG1PROMOCAO']);
 				$rs['IMG2PROMOCAO'] = '../images/promocional/' . basename($rs['IMG2PROMOCAO']);
 
-				$promocao = 'codPromocao="'.$rs['CODTIPPROMOCAO'] .
+				$promocao = 'qtPromocao="' . $rs['QT_INGRESSOS_POR_PROMOCAO'] . '" codPromocao="'.$rs['CODTIPPROMOCAO'] .
 							'" img1="' . $rs['IMG1PROMOCAO'] . '" img2="' . $rs['IMG2PROMOCAO'] . '" sizeBin="32"';
 
 			// nem bin itau e nem codigo promocional
@@ -838,6 +841,12 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 		    			' valor="'.number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', '').'"><span class="' . $name . ' inputStyle">' . utf8_encode($rs['DS_TIPO_BILHETE']) . '</span>';
 			} else {
 			    $isSelected = '';
+			}
+
+			// seleciona o primeira ingresso nao promocional desde que o usuario nao tenha selecionado nada ainda
+			if (empty($selected) and $BIN == $promocao and !$first_selected) {
+				$isSelected = 'selected';
+				$first_selected = true;
 			}
 
 			$combo .= '<option value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $isSelected . ' ' . $BIN . $promocao . $meia_estudante . $lote .

@@ -3,14 +3,26 @@ require_once('../settings/functions.php');
 require_once('../settings/settings.php');
 require_once('../settings/Log.class.php');
 
-require_once('../settings/recaptchalib.php');
-$resp = recaptcha_check_answer ($recaptcha['private_key'],
-                                $_SERVER["REMOTE_ADDR"],
-                                $_POST["recaptcha_challenge_field"],
-                                $_POST["recaptcha_response_field"]);
+// reCAPTCHA v2 ---------------
+$post_data = http_build_query(array('secret'    => $recaptcha['private_key'],
+                                    'response'  => $_POST["g-recaptcha-response"],
+                                    'remoteip'  => $_SERVER["REMOTE_ADDR"]));
 
-if (!$resp->is_valid) {
-    echo "O código informado não corresponde à imagem/áudio.";
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, "https://www.google.com/recaptcha/api/siteverify");
+curl_setopt($ch, CURLOPT_POST, 1);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+curl_setopt($ch, CURLOPT_PROXY, ($is_teste == '1' ? $proxy_homologacao['host'].':'.$proxy_homologacao['port'] : $proxy_producao['host'].':'.$proxy_producao['port']));
+curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+$server_output = curl_exec($ch);
+curl_close($ch);
+
+$resp = json_decode($server_output, true);
+
+if (!$resp['success']) {
+    echo "Favor efetuar a verificação de robô.";
     exit();
 }
 
@@ -380,7 +392,9 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
         
         'trace' => true,
         'exceptions' => true,
-        'cache_wsdl' => WSDL_CACHE_NONE
+        'cache_wsdl' => WSDL_CACHE_NONE,
+        'proxy_host'     => ($is_teste == '1' ? $proxy_homologacao['host'] : $proxy_producao['host']),
+        'proxy_port'     => ($is_teste == '1' ? $proxy_homologacao['port'] : $proxy_producao['port'])
     );
 
     $descricao_erro = '';
@@ -400,7 +414,7 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
     //     array('requestMascarado' => $parametrosLOG));
     // echo "</pre>";
     // die(''.time());
-    echo '1';
+    
     if ($_SESSION['usuario_pdv'] !== 1 and $PaymentDataCollection['Amount'] != 0) {
     	try {
             executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",

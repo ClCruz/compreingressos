@@ -18,7 +18,7 @@ $(function(){
                 }
             }
 
-	    $this.find(':input:not(#recaptcha_response_field)').each(function(i,e) {
+	    $this.find(':input:not(#recaptcha_response_field, #g-recaptcha-response)').each(function(i,e) {
     		var e = $(e);
     		if (e.val().length < e.attr('maxlength')/2 || e.val() == '') {
     		    e.addClass('erro');
@@ -61,6 +61,7 @@ $(function(){
     		fechaLoading();
 
     		if (typeof(Recaptcha) !== 'undefined') Recaptcha.reload();
+    		if (typeof(grecaptcha) !== 'undefined') grecaptcha.reset();
 	    } else {
 	    	$.dialog({text: 'Preencha os campos em vermelho'});
 	    }

@@ -110,20 +110,7 @@ if ($_GET['carrinho']) {
 
     $numBinsUtilizados = numRows($conn, $query, $params);
 
-    if ($id_base == 136 || (IS_TESTE && $id_base == 137)) {
-        $query = "SELECT DISTINCT NR_BENEFICIO
-                FROM CI_MIDDLEWAY..MW_RESERVA R
-                INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
-                INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
-                INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO = R.ID_APRESENTACAO AND AB.IN_ATIVO = 1 AND AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
-                INNER JOIN TABPECA P ON P.CODPECA = E.CODPECA AND P.CODTIPBILHETEBIN = AB.CODTIPBILHETE
-                WHERE P.IN_BIN_ITAU = 1
-                AND R.ID_SESSION = ?";
-
-        $numBinsUtilizadosSESC = numRows($conn, $query, $params);
-    }
-
-    if ($numBinsUtilizados > 1 || $numBinsUtilizadosSESC > 1) {
+    if ($numBinsUtilizados > 1) {
         echo "Não é possível utilizar dois ou mais códigos promocionais de cartões diferentes.<br/><br/>Por favor, retorne e valide seu código promocional novamente.";
         die();
     }
@@ -142,7 +129,7 @@ if ($_GET['carrinho']) {
     $rs = executeSQL($mainConnection, 'SELECT CD_CPF FROM MW_CLIENTE WHERE ID_CLIENTE = ?', array($_SESSION['user']), true);
     $cpf = $rs[0];
 
-    //lista codapresentacao e id_base a partir da reserva
+    // lista codapresentacao e id_base a partir da reserva
     $query = 'SELECT A.ID_APRESENTACAO, A.CODAPRESENTACAO, E.ID_BASE, A.HR_APRESENTACAO, CONVERT(VARCHAR(8), A.DT_APRESENTACAO, 112) DT_APRESENTACAO, E.CODPECA, MAX(R.NR_BENEFICIO) NR_BENEFICIO
              FROM MW_EVENTO E
              INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
@@ -150,7 +137,7 @@ if ($_GET['carrinho']) {
              WHERE R.ID_SESSION = ?
              GROUP BY A.ID_APRESENTACAO, A.CODAPRESENTACAO, E.ID_BASE, A.HR_APRESENTACAO, CONVERT(VARCHAR(8), A.DT_APRESENTACAO, 112), E.CODPECA';
 
-    //confere se o bin informado é valido
+    // confere se o bin informado é valido
     $query22 = 'SELECT TOP 1 1
                 FROM
                 CI_MIDDLEWAY..MW_RESERVA R
@@ -165,7 +152,7 @@ if ($_GET['carrinho']) {
                 AND P.IN_BIN_ITAU = 1
                 AND R.ID_SESSION = ?';
 
-    //(só restorna se participa da promoção) retorna limite e quantidade de bilhetes que participam da promo da compra atual
+    // (só restorna se participa da promoção) retorna limite e quantidade de bilhetes que participam da promo da compra atual
     $query2 = 'SELECT P.QT_BIN_POR_CPF, COUNT(R.ID_RESERVA) AS COMPRANDO
                 FROM CI_MIDDLEWAY..MW_RESERVA R
                 INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A2 ON A2.ID_APRESENTACAO = R.ID_APRESENTACAO
@@ -175,7 +162,7 @@ if ($_GET['carrinho']) {
                 WHERE A2.ID_APRESENTACAO = ? AND P.IN_BIN_ITAU = 1 AND R.ID_SESSION = ?
                 GROUP BY P.QT_BIN_POR_CPF';
 
-    //quantos ingressos da apresentacao na reserva o cliente ja comprou com qualquer bin promocional
+    // quantos ingressos da apresentacao na reserva o cliente ja comprou com qualquer bin promocional
     $query3 = 'SELECT ISNULL(SUM(CASE H.CODTIPLANCAMENTO WHEN 1 THEN 1 ELSE -1 END), 0) AS TOTAL
                 FROM TABCLIENTE C
                 INNER JOIN TABHISCLIENTE H ON C.CODIGO = H.CODIGO
@@ -201,18 +188,14 @@ if ($_GET['carrinho']) {
         $nr_beneficio = $rs['NR_BENEFICIO'];
         $result3 = executeSQL($conn, $query2, array($idapresentacao, session_id()));
         
+        // verifica limite bin
         if (hasRows($result3)) {
             $rs = fetchResult($result3);
             $limite = $rs['QT_BIN_POR_CPF'];
             $comprando = $rs['COMPRANDO'];
 
             if ($limite > 0) {
-                // bin itau ou outro beneficio?
-                if ($nr_beneficio) {
-                    $result2 = executeSQL($mainConnection, "SELECT 1 FROM TEMPBINSSESC WHERE MATRICULA = ?", array($nr_beneficio));
-                } else {
-                    $result2 = executeSQL($conn, $query22, array($numeroDoCartao, $idapresentacao, session_id()));
-                }
+                $result2 = executeSQL($conn, $query22, array($numeroDoCartao, $idapresentacao, session_id()));
 
                 if (hasRows($result2)) {
                     $rs = executeSQL($conn, $query3, array($cpf, $data, $hora, $codpeca), true);
@@ -220,7 +203,7 @@ if ($_GET['carrinho']) {
                     if ($rs['TOTAL'] >= $limite) {
                         $erro = 'Você atingiu o limite de ' . $limite . ' ingresso(s) promocional(is) para esse cartão em um ou mais eventos.<br><br>Favor revisar o pedido.';
                     } else if ($rs['TOTAL'] + $comprando > $limite) {
-                        $erro = 'Você pode comprar apenas ' . $limite . ' ingresso(s) promocional(is) com este cartão.<br><br>Clique em Alterar Pedido e selecione apenas 1 ingresso promocional por apresentação.';
+                        $erro = 'Você pode comprar apenas ' . $limite . ' ingresso(s) promocional(is) com este cartão.<br><br>Retorne ao passo 2 e selecione apenas 1 ingresso promocional por apresentação.';
                     }
                 } else {
                     $erro = 'Atenção! Este cartão não é participante da promoção vigente para esta apresentação!<br><br>Informe outro cartão ou indique outro tipo de ingresso não participante da promoção.';
@@ -228,6 +211,86 @@ if ($_GET['carrinho']) {
             }
         }
     }
+
+
+    // verifica limite promocoes
+
+    // lista reserva por evento
+    $query = "SELECT DISTINCT E.ID_BASE, A.HR_APRESENTACAO, CONVERT(VARCHAR(8), A.DT_APRESENTACAO, 112) DT_APRESENTACAO, E.CODPECA
+             FROM MW_EVENTO E
+             INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
+             INNER JOIN MW_RESERVA R ON R.ID_APRESENTACAO = A.ID_APRESENTACAO
+             WHERE R.ID_SESSION = ?";
+
+    // retorna quantidade de ingressos promocionais selecionados e o máximo por evento
+    $query4 = "WITH RESULTADO AS (
+                    SELECT P.QT_INGRESSOS_POR_PROMOCAO, E.ID_EVENTO,
+                    STUFF
+                    (
+                        (
+                            SELECT 
+                                ',' + CONVERT(VARCHAR, TPP.CODTIPPROMOCAO)
+                            FROM
+                                TABPROMOCAOPECA TPP
+                            WHERE
+                                TPP.CODPECA = P.CODPECA AND TPP.CODTIPBILHETE = AB.CODTIPBILHETE
+                            FOR XML PATH('')
+                        )
+                    ,1,1,'') AS CODTIPPROMOCAO
+                    FROM CI_MIDDLEWAY..MW_RESERVA R
+                    INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A2 ON A2.ID_APRESENTACAO = R.ID_APRESENTACAO
+                    INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = A2.ID_EVENTO
+                    INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
+                    INNER JOIN TABPECA P ON P.CODPECA = E.CODPECA
+                    WHERE R.NR_BENEFICIO IS NOT NULL AND R.ID_SESSION = ? AND P.CODPECA = ?
+                )
+                SELECT QT_INGRESSOS_POR_PROMOCAO, ID_EVENTO, COUNT(1) AS COMPRANDO
+                FROM RESULTADO
+                GROUP BY QT_INGRESSOS_POR_PROMOCAO, ID_EVENTO";
+
+    // quantos ingressos promocionais da apresentacao na reserva o cliente ja comprou
+    $query5 = "SELECT ISNULL(SUM(CASE H.CODTIPLANCAMENTO WHEN 1 THEN 1 ELSE -1 END), 0) AS TOTAL
+                FROM TABCLIENTE C
+                INNER JOIN TABHISCLIENTE H ON C.CODIGO = H.CODIGO
+                INNER JOIN TABCOMPROVANTE CR ON CR.CODCLIENTE = H.CODIGO AND CR.CODAPRESENTACAO = H.CODAPRESENTACAO
+                INNER JOIN TABINGRESSO I ON I.CODVENDA = CR.CODVENDA AND LEFT(I.INDICE, 6) = H.INDICE
+                WHERE C.CPF = ? AND H.CODAPRESENTACAO IN (
+                        SELECT CODAPRESENTACAO FROM TABAPRESENTACAO
+                        WHERE DATAPRESENTACAO = ? AND HORSESSAO = ? AND CODPECA = ?
+                )
+                AND EXISTS (SELECT 1 FROM TABPROMOCAOPECA P WHERE P.CODPECA = CR.CODPECA AND P.CODTIPBILHETE = H.CODTIPBILHETE)";
+
+    $result = executeSQL($mainConnection, $query, array(session_id()));
+
+    while ($rs = fetchResult($result)) {
+
+        $conn = getConnection($rs['ID_BASE']);
+        $data = $rs['DT_APRESENTACAO'];
+        $hora = str_replace(array('h', 'H'), ':', $rs['HR_APRESENTACAO']);
+        $codpeca = $rs['CODPECA'];
+
+        $result2 = executeSQL($conn, $query4, array(session_id(), $codpeca));
+
+        if (hasRows($result2)) {
+            $rs = fetchResult($result2);
+
+            $limite = $rs['QT_INGRESSOS_POR_PROMOCAO'];
+            $comprando = $rs['COMPRANDO'];
+
+            if ($limite > 0) {
+                $rs = executeSQL($conn, $query5, array($cpf, $data, $hora, $codpeca), true);
+
+                if ($rs['TOTAL'] >= $limite) {
+                    $erro = 'Você atingiu o limite de ' . $limite . ' ingresso(s) promocional(is) em um ou mais eventos.<br><br>Favor revisar o pedido.';
+                } else if ($rs['TOTAL'] + $comprando > $limite) {
+                    $erro = 'Você pode comprar apenas ' . ($limite - $rs['TOTAL']) . ' ingresso(s) promocional(is).<br><br>Retorne ao passo 2 e selecione outro tipo de ingresso.';
+                }
+            }
+        }
+    }
+
+
+
 
     if ($erro != '') {
         echo $erro;

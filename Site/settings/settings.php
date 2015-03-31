@@ -26,6 +26,16 @@ $url_braspag_homologacao = 'https://homologacao.pagador.com.br/webservice/pagado
 $url_braspag_producao = 'https://transaction.pagador.com.br/webservice/pagadorTransaction.asmx?WSDL';
 // $url_braspag_homologacao = $url_braspag_producao;
 
+$proxy_homologacao = array(
+	'host'	=>	'10.0.9.1',
+	'port'	=>	8080
+);
+$proxy_producao = array(
+	'host'	=>	'192.168.13.1',
+	'port'	=>	8080
+);
+// $proxy_homologacao = $proxy_producao;
+
 /** PRODUCAO ---------------------------------------------------
 $recaptcha = array(
 	'public_key' => '6LehdNkSAAAAAAk9orcTupYUPYngqXfn1Kdf6fDs',

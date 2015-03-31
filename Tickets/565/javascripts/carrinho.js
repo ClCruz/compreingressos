@@ -99,7 +99,7 @@ $(function() {
 
 		// verifica se esta na etapa 2 ou etapa 4 (select = etapa 4)
 		if ($this.is('select')) {
-			// ingresso selecionado é promocional? tem bin associado?
+			// ingresso selecionado é bin itaucard? tem bin associado?
 			if ($this.find('option:selected').attr('codeBin') != undefined) {
 				$mesmoBinSelecionado = $('option:selected').filter(function(){
 					return $(this).attr('codeBin') != undefined && $(this).attr('codeBin') == $this.find('option:selected').attr('codeBin');
@@ -166,7 +166,30 @@ $(function() {
 
 					$this.closest('tr').next('.beneficio').find('input[name=tipoBin\\[\\]]').val('itau');
 				}
+
+			// ingresso selecionado é promocional?
 			} else if ($this.find('option:selected').attr('codpromocao') != undefined) {
+				var evento_id = $this.closest('.resumo_espetaculo').data('evento');
+				
+				$promocoesSelecionadas = $('.resumo_espetaculo').filter(function(){
+					return $(this).data('evento') == evento_id;
+				}).find('option:selected').filter(function(){
+					return $(this).attr('codpromocao') != undefined;
+				});
+
+				qtPromocoesSelecionadas = $promocoesSelecionadas.length;
+
+				if (qtPromocoesSelecionadas > $this.find('option:selected').attr('qtPromocao')) {
+					$this.selectbox('detach');
+					$this.val($this.data('lastValue'));
+					$this.selectbox('attach');
+					// IMPORTANT!: Firefox will not act properly without this:
+					$this.blur();
+
+					$.dialog({text: "A quantidade máxima de ingressos promocionais para esta apresentação foi atingida."});
+					return false;
+				}
+
 				if (trigger != 'automatico'
 					&& $this.closest('tr').next('.beneficio').find('.icone_validador').is('.valido')) {
 					var	$tr = $this.closest('tr').next('.beneficio'),

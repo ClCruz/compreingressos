@@ -4,7 +4,7 @@ include('../settings/Log.class.php');
 $mainConnection = mainConnection();
 session_start();
 
-if (acessoPermitido($mainConnection, $_SESSION['admin'], 390, true)) {
+if (acessoPermitido($mainConnection, $_SESSION['admin'], 400, true)) {
 
     $pagina = basename(__FILE__);
 
@@ -113,7 +113,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 390, true)) {
                         <th align="left">TELEFONE</th>
                         <th align="left">DDD_CELULAR</th>
                         <th align="left">CELULAR</th>
-                        <th align="left">EMAIL_LOGIN</th>
+                        <th align="left">EMAIL</th>
                         <th align="left">PACOTE</th>
                         <th align="left">SETOR</th>
                         <th align="left">LOCALIZACAO</th>

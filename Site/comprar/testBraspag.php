@@ -58,7 +58,9 @@ $options = array(
     //'authentication' => SOAP_AUTHENTICATION_BASIC || SOAP_AUTHENTICATION_DIGEST
     'trace' => true,
     'exceptions' => true,
-    'cache_wsdl' => WSDL_CACHE_NONE
+    'cache_wsdl' => WSDL_CACHE_NONE,
+    'proxy_host' => '192.168.13.1',
+    'proxy_port' => 8080
 );
 
 $descricao_erro = '';

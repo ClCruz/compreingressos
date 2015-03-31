@@ -1,6 +1,6 @@
 <?php
 
-if (acessoPermitido($mainConnection, $_SESSION['admin'], 390, true)) {
+if (acessoPermitido($mainConnection, $_SESSION['admin'], 400, true)) {
 
     if ($_GET['action'] == 'busca' and isset($_GET['cboTeatro']) and isset($_GET['txtTemporada'])) {
 
@@ -33,7 +33,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 390, true)) {
                                     AND TS.CODSETOR = TSD.CODSETOR
                                 WHERE E2.ID_BASE = ?
                                     AND PR.IN_STATUS_RESERVA = 'R'
-                                    AND PR.IN_ANO_TEMPORADA = ?",
+                                    AND PR.IN_ANO_TEMPORADA = ?
+                            ORDER BY NOME, PACOTE, SETOR, LOCALIZACAO",
                             array($_GET['cboTeatro'], $_GET['txtTemporada']));
 
         ob_start();

@@ -65,6 +65,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 400, true)) {
             ?><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><?php
         }
         ?>
+        <style>
+            table tr td {mso-number-format:"\@";/*force text*/}
+        </style>
         <h2>Assinantes-Exportação de dados</h2>
         <form id="dados" name="dados" method="post">
             <table style="width:50%;">

@@ -186,20 +186,22 @@ limparCookies();
 	</script>
 	<noscript><img height="1" width="1" alt="" style="display:none" src="https://www.facebook.com/offsite_event.php?id=6009548174001&amp;value=<?php echo $valorPagamento; ?>&amp;currency=USD" /></noscript>
 
-	<script type="text/javascript">
-	var fb_param = {};
-	fb_param.pixel_id = '6011741368445';
-	fb_param.value = '<?php echo $valorPagamento; ?>';
-	fb_param.currency = 'BRL';
-	(function(){
-	  var fpw = document.createElement('script');
-	  fpw.async = true;
-	  fpw.src = '//connect.facebook.net/en_US/fp.js';
-	  var ref = document.getElementsByTagName('script')[0];
-	  ref.parentNode.insertBefore(fpw, ref);
+	<!-- Facebook Conversion Code for Compra -->
+	<script>(function() {
+	  var _fbq = window._fbq || (window._fbq = []);
+	  if (!_fbq.loaded) {
+	    var fbds = document.createElement('script');
+	    fbds.async = true;
+	    fbds.src = '//connect.facebook.net/en_US/fbds.js';
+	    var s = document.getElementsByTagName('script')[0];
+	    s.parentNode.insertBefore(fbds, s);
+	    _fbq.loaded = true;
+	  }
 	})();
+	window._fbq = window._fbq || [];
+	window._fbq.push(['track', '6025588813845', {'value':'<?php echo $valorPagamento; ?>','currency':'BRL'}]);
 	</script>
-	<noscript><img height="1" width="1" alt="" style="display:none" src="https://www.facebook.com/offsite_event.php?id=6011741368445&amp;value=<?php echo $valorPagamento; ?>&amp;currency=BRL" /></noscript>
+	<noscript><img height="1" width="1" alt="" style="display:none" src="https://www.facebook.com/tr?ev=6025588813845&amp;cd[value]=<?php echo $valorPagamento; ?>&amp;cd[currency]=BRL&amp;noscript=1" /></noscript>
 
 	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
 </head>

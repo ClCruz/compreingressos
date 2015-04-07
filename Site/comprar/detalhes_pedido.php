@@ -60,7 +60,11 @@ $query = 'SELECT
 			 I.DS_SETOR,
 			 I.VL_UNITARIO,
 			 I.VL_TAXA_CONVENIENCIA,
-			 AB.DS_TIPO_BILHETE
+			 AB.DS_TIPO_BILHETE,
+			 I.INDICE,
+			 A.CODAPRESENTACAO,
+			 I.CODVENDA,
+			 E.ID_BASE
 			 FROM
 			 MW_PEDIDO_VENDA P
 			 INNER JOIN MW_ITEM_PEDIDO_VENDA I ON I.ID_PEDIDO_VENDA = P.ID_PEDIDO_VENDA
@@ -83,7 +87,11 @@ SELECT
 			 I.DS_SETOR,
 			 I.VL_UNITARIO,
 			 I.VL_TAXA_CONVENIENCIA,
-			 I.DS_TIPO_BILHETE
+			 I.DS_TIPO_BILHETE,
+			 NULL,
+			 NULL,
+			 NULL,
+			 NULL
 			 FROM
 			 MW_PEDIDO_VENDA P
 			 INNER JOIN MW_ITEM_PEDIDO_VENDA_HIST I ON I.ID_PEDIDO_VENDA = P.ID_PEDIDO_VENDA
@@ -136,8 +144,21 @@ while ($rs = fetchResult($result)) {
 <?php
 		$eventoAtual = $rs['ID_EVENTO'] . $rs['ID_APRESENTACAO'];
 	}
+
+	if (basename($_SERVER['SCRIPT_FILENAME']) == 'pagamento_ok.php') {
+		$conn = getConnection($rs['ID_BASE']);
+
+		$queryCodigo = "SELECT codbar
+		                FROM tabControleSeqVenda c
+		                INNER JOIN tabLugSala l ON l.CodApresentacao = c.CodApresentacao AND l.Indice = c.Indice
+		                WHERE l.CodApresentacao = ? AND l.CodVenda = ? AND c.Indice = ? AND c.statusingresso = 'L'";
+		$params = array($rs['CODAPRESENTACAO'], $rs['CODVENDA'], $rs['INDICE']);
+
+		$codigo = executeSQL($conn, $queryCodigo, $params, true);
+		$codbar = $codigo[0];
+	}
 ?>
-			<tr>
+			<tr<?php echo $codbar ? " data:uid='$codbar'" : ''; ?>>
 				<td>
 					<div class="local">
 						<table>

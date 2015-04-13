@@ -86,7 +86,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
             $is_cancelamento = date('d', strtotime($pedido['DATA'])) == date('d');
 
             // VENDAS PELO PDV, PEDIDOS FILHOS (DE ASSINATURAS) E PEDIDOS COM INGRESSOS PROMOCIONAIS E VALOR 0 NÃO SÃO ESTORNADAS DO BRASPAG
-            $is_estorno_brasbag = ($pedido["IN_TRANSACAO_PDV"] == 0 and !$pedido["FILHO"] and ($pedido['INGRESSOS_PROMOCIONAIS'] == 0 and $pedido['VL_TOTAL_PEDIDO_VENDA'] != 0));
+            $is_estorno_brasbag = ($pedido["IN_TRANSACAO_PDV"] == 0 and !$pedido["FILHO"] and ($pedido['INGRESSOS_PROMOCIONAIS'] == 0 and $pedido['VALOR'] != 0));
 
             $options = array(
                 'local_cert' => file_get_contents('../settings/cert.pem'),

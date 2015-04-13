@@ -7,7 +7,7 @@ session_start();
 if (isset($_POST['login']) and isset($_POST['senha'])) {
     $mainConnection = mainConnection();
 
-    $query = 'SELECT ID_USUARIO, IN_TELEMARKETING, IN_PDV FROM MW_USUARIO WHERE CD_LOGIN = ? AND CD_PWW = ?';
+    $query = 'SELECT ID_USUARIO, IN_TELEMARKETING, IN_PDV FROM MW_USUARIO WHERE CD_LOGIN = ? AND CD_PWW = ? AND IN_ATIVO = 1';
     $params = array($_POST['login'], md5($_POST['senha']));
 
     $result = executeSQL($mainConnection, $query, $params);

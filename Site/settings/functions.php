@@ -681,7 +681,7 @@ function comboTipoLocalOptions($name, $selected, $isCombo = true) {
 function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NULL, $isCombo = true) {
     $mainConnection = mainConnection();
 
-    $query = 'SELECT B.ID_BASE
+    $query = 'SELECT B.ID_BASE, E.ID_EVENTO
 				 FROM
 				 MW_BASE B
 				 INNER JOIN MW_EVENTO E ON E.ID_BASE = B.ID_BASE
@@ -692,6 +692,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 
     $id_base = $rs['ID_BASE'];
     $conn = getConnection($rs['ID_BASE']);
+    $id_evento = $rs['ID_EVENTO'];
 
     $query = "SELECT COUNT(1) AS MEIA_ESTUDANTE
 				FROM TABTIPBILHETE B
@@ -744,7 +745,8 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 					            FOR XML PATH('')
 					        )
 					    ,1,1,'') AS CODTIPPROMOCAO,
-					    ISNULL(P.QT_INGRESSOS_POR_PROMOCAO,0) AS QT_INGRESSOS_POR_PROMOCAO
+					    ISNULL(P.QT_INGRESSOS_POR_PROMOCAO,0) AS QT_INGRESSOS_POR_PROMOCAO,
+					    B.IN_HOT_SITE
 				FROM
 				 CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB 
 				 INNER JOIN 
@@ -802,6 +804,19 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
     $first_selected = false;
 
     while ($rs = fetchResult($result)) {
+
+    	if (
+    		(in_array($id_evento, explode(',', $_COOKIE['hotsite'])) and $rs['IN_HOT_SITE'] == '1')
+    		or
+    		(!in_array($id_evento, explode(',', $_COOKIE['hotsite'])) and $rs['IN_HOT_SITE'] != '1')
+    		) {
+    		// bilhetes que passarem na validacao serao exibidos
+    	} else {
+    		// ignorar bilhetes que sejam de hotsite durante o acesso normal
+    		// ignorar bilhetes normais em eventos acessados via hotsite
+    		continue;
+    	}
+
     	$is_lote = $rs['QTDVENDAPORLOTE'] > 0 and $rs['STATIPBILHMEIAESTUDANTE'] == 'N';
     	$is_lote_disponivel = getTotalLoteDisponivel($rs['ID_APRESENTACAO_BILHETE']) > 0;
     	$is_lote_no_carrinho = in_array($rs['CODTIPBILHETE'], $bilhetes_lote_no_carrinho);
@@ -1883,6 +1898,8 @@ function limparCookies() {
 
 	setcookie('mc_eid', '', -1);
 	setcookie('mc_cid', '', -1);
+
+	setcookie('hotsite', '', -1);
 }
 
 function getIdClienteBaseSelecionada($idBase){

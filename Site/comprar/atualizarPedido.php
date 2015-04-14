@@ -243,7 +243,7 @@ if (isset($_GET['action'])) {
 		
 		for ($i = 0; $i < count($_POST['apresentacao']); $i++) {
 			if (!isset($_POST['valorIngresso'][$i])) {
-				$_POST['valorIngresso'][$i] = 'NULL';
+				$retorno = "Não existem tipos de ingressos disponíveis para a operação. Por favor, entre em contato com a Compreingressos pelo telefone: 11 2122 4070.";
 			}
 
 			$rs = executeSQL($mainConnection, $selectInfoVB, array($_POST['valorIngresso'][$i], $_POST['apresentacao'][$i]), true);
@@ -392,7 +392,7 @@ if (isset($_GET['action'])) {
 			$retorno = $retorno ? $retorno : 'true';
 		} else {
 			//rollbackTransaction($mainConnection);
-			$retorno = 'Seu pedido contém erro(s)!<br><br>Favor revisá-lo.<br><br>Se o erro persistir, favor entrar em contato com o suporte.';
+			$retorno = $retorno ? $retorno : 'Seu pedido contém erro(s)!<br><br>Favor revisá-lo.<br><br>Se o erro persistir, favor entrar em contato com o suporte.';
 		}
 		// var_dump($errors, $query, $params);
 

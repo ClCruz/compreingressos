@@ -97,7 +97,7 @@ $(function() {
 			$target = $this.closest('tr').find('.valorConveniencia'),
 			ids = [];
 
-		// verifica se esta na etapa 2 ou etapa 4 (select = etapa 4)
+		// verifica se esta na etapa 2 ou etapa 4 (select = etapa 2)
 		if ($this.is('select')) {
 			// ingresso selecionado é bin itaucard? tem bin associado?
 			if ($this.find('option:selected').attr('codeBin') != undefined) {

@@ -35,24 +35,6 @@ require('verificarServicosPedido.php');
 	
 	<?php echo $campanha['script']; ?>
 
-    <?php if (!isset($_SESSION['msg_tipo_ingresso'])) { $_SESSION['msg_tipo_ingresso'] = true; ?>
-    <script type="text/javascript">
-      $(function(){
-      	$.confirmDialog({
-	        text: 'Confirme o tipo de ingresso selecionado antes de avançar.',
-	        detail: '',
-	        uiOptions: {
-	          buttons: {
-	            'Ok, entendi': ['', function(){
-	              fecharOverlay();
-	            }]
-	          }
-	        }
-	      });
-      });
-    </script>
-    <?php } ?>
-
 	<script type="text/javascript">
 	  var _gaq = _gaq || [];
 	  _gaq.push(['_setAccount', 'UA-16656615-1']);

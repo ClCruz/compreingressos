@@ -179,8 +179,8 @@ $(function() {
 		} else {
 		
 			var $this = $(this),
-				 naoRequeridos = '#email,[id^=nascimento],#celular,#complemento,#checkbox_guia,#checkbox_sms,#checkbox_estrangeiro',
-				 especiais = '#fixo,#email1,#email2,#senha1,#senha2,[name="tag"],#recaptcha_challenge_field,#recaptcha_response_field,[type="button"],#cpf,#tipo_documento'
+				 naoRequeridos = '#email,[id^=nascimento],[name=sexo],#celular,#complemento,#checkbox_guia,#checkbox_sms,#checkbox_estrangeiro',
+				 especiais = '#fixo,#email1,#email2,#senha1,#senha2,[name="tag"],#recaptcha_challenge_field,#recaptcha_response_field,[type="button"],#cpf,#tipo_documento,#rg'
 				 formulario = $('#form_cadastro'),
 				 campos = formulario.find(':input:not(' + naoRequeridos + ',' + especiais +')'),
 				 valido = true;
@@ -308,7 +308,7 @@ $(function() {
 			} else {
 				$this.addClass('erro').findNextMsg().slideDown('fast');
 			}
-		} else if ($this.is(':radio')) {
+		}/* else if ($this.is(':radio')) {
 			var $radio = $('[name=' + $this.attr('name') + ']');
 			
 			if (!$radio.is(':checked')) {
@@ -316,7 +316,7 @@ $(function() {
 			} else {
 				$radio.removeClass('erro').findNextMsg().slideUp('slow');
 			}
-		}
+		}*/
 
 		if ($area.find(':input.erro').length > 0) {
 			$area.addClass('erro')

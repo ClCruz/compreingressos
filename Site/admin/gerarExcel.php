@@ -30,7 +30,8 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
                     PV.IN_RETIRA_ENTREGA,
                     C.DS_DDD_TELEFONE,
                     C.DS_TELEFONE,
-                    U.DS_NOME ";
+                    U.DS_NOME,
+                    PV.ID_IP ";
 
     $from = " FROM MW_PEDIDO_VENDA PV INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE
                       LEFT JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
@@ -52,7 +53,8 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
                   PV.IN_RETIRA_ENTREGA,
                   C.DS_DDD_TELEFONE,
                   C.DS_TELEFONE,
-                  U.DS_NOME ";
+                  U.DS_NOME,
+                  PV.ID_IP ";
 
     if (!empty($_GET["num_pedido"])) {
 
@@ -80,7 +82,8 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
                             COUNT(1) AS QUANTIDADE,
                             PV.IN_RETIRA_ENTREGA,
                             C.DS_DDD_TELEFONE,
-                            C.DS_TELEFONE ";
+                            C.DS_TELEFONE,
+                            PV.ID_IP ";
 
                 $group = " GROUP BY
                               (CONVERT(VARCHAR(10), PV.DT_PEDIDO_VENDA, 103) + ' - ' + CONVERT(VARCHAR(8), PV.DT_PEDIDO_VENDA, 114)),
@@ -91,7 +94,8 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
                               DT_PEDIDO_VENDA,
                               PV.IN_RETIRA_ENTREGA,
                               C.DS_DDD_TELEFONE,
-                              C.DS_TELEFONE ";
+                              C.DS_TELEFONE,
+                              PV.ID_IP ";
 
                 $from = "FROM MW_PEDIDO_VENDA PV INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE AND PV.ID_USUARIO_CALLCENTER IS NULL
                           LEFT JOIN MW_ITEM_PEDIDO_VENDA_HIST IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA ";
@@ -216,6 +220,7 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
         $total['SERVICO'] += $rs["VL_TOTAL_TAXA_CONVENIENCIA"];
     }
 ?>
+<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
 <style type="text/css">
     .moeda {
         mso-number-format:"_\(\[$R$ -416\]* \#\,\#\#0\.00_\)\;_\(\[$R$ -416\]* \\\(\#\,\#\#0\.00\\\)\;_\(\[$R$ -416\]* \0022-\0022??_\)\;_\(\@_\)";
@@ -264,6 +269,7 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
             <th>Pedido nº</th>
             <th>Operador</th>
             <th>Data</th>
+            <th>IP</th>
             <th>Cliente e Telefone</th>
             <th>Valor total</th>
             <th>Qtde Ingressos</th>
@@ -289,6 +295,7 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
                         ?>
                     </td>
                     <td><?php echo $rs['DT_PEDIDO_VENDA'] ?></td>
+                    <td><?php echo $rs['ID_IP'] ?></td>
                     <td><?php echo utf8_encode($rs['CLIENTE'] . " " . $rs['DS_SOBRENOME']) . " / " . $rs['DS_DDD_TELEFONE'] . " " . $rs['DS_TELEFONE']; ?></td>
                     <td class="moeda"><?php echo str_replace(".", ",", $rs['TOTAL_UNIT']); ?></td>
                     <td><?php echo $rs["QUANTIDADE"];?></td>
@@ -297,14 +304,6 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
                 </tr>
         <?php
             }
-        ?>
-            <tr class="total">
-                <td align="right" colspan="4"><strong>Totais</strong></td>
-                <td><?php echo number_format($total['TOTAL_PEDIDO'], 2, ",", "."); ?></td>
-                <td><?php echo $total['QUANTIDADE']; ?></td>
-                <td colspan="2"><strong>Total de Serviços</strong> <?php echo number_format($total['SERVICO'], 2, ",", "."); ?></td>
-            </tr>
-       <?php
         }
         ?>
     </tbody>

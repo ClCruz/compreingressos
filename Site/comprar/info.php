@@ -105,12 +105,13 @@ function getItems($order_id) {
 function getHistory($client_id) {
 	$mainConnection = mainConnection();
 
-	$query = "SELECT DISTINCT
+	$query = "SELECT
 					ID_PEDIDO_VENDA,
 				    DT_PEDIDO_VENDA, 
 				    VL_TOTAL_PEDIDO_VENDA,
-				    ID_PEDIDO_PAI
-				FROM MW_PEDIDO_VENDA PV
+				    ID_PEDIDO_PAI,
+				    (SELECT TOP 1 1 FROM MW_PEDIDO_VENDA b WHERE b.ID_PEDIDO_PAI = a.ID_PEDIDO_VENDA) as ASSINATURA
+				FROM MW_PEDIDO_VENDA a
 				WHERE ID_CLIENTE = ? AND IN_SITUACAO <> 'P'
 				ORDER BY 1 DESC";
 
@@ -122,6 +123,8 @@ function getHistory($client_id) {
 		
 		$orders[] = array(
 			'number' => $rs['ID_PEDIDO_VENDA'],
+			'assinatura' => $rs['ASSINATURA'] ? TRUE : FALSE,
+			'pedido_pai' => $rs['ID_PEDIDO_PAI'],
 			'date' => utf8_encode(strftime("%a %#d %b", $rs['DT_PEDIDO_VENDA']->format('U'))),
 			'total' => number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, ',', ''),
 			'items' => getItems($rs['ID_PEDIDO_VENDA'])

@@ -56,8 +56,11 @@ $(function() {
       $.ajax({
         url: 'annotations.php',
         data: scriptVars,
+        dataType: 'json',
         success: function(data) {
-          annotations = eval(data);
+          var annotations = data.cadeiras,
+              imagens = data.imagens;
+
           $mapa_de_plateia.removeAnnotations();
           $mapa_de_plateia.addAnnotations(annotation, annotations);
 
@@ -83,7 +86,7 @@ $(function() {
                             '<p class="local">'+dados[1]+'</p>'+
                             '<p class="descricao">clique apenas uma vez e aguarde<br>a reserva do lugar escolhido</p>'+
                           '</div>'+
-                          ($(this).data('img') ? '<span>Visão aproximada do palco</span><img src="'+$(this).data('img')+'" class="foto-plateia">' : '')+
+                          ($(this).data('img') ? '<span>Visão aproximada do palco</span><img src="'+imagens[$(this).data('img')]+'" class="foto-plateia">' : '')+
                         '</div>';
               }
             });

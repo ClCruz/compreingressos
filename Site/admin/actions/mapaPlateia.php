@@ -5,13 +5,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
   if ($_GET['action'] == 'load') { /* ------------ LOAD ------------ */
     $conn = getConnection($_POST['teatro']);
 
-    $query = 'SELECT NOMEIMAGEMSITE, ALTURASITE, LARGURASITE, TAMANHOLUGAR
+    $query = 'SELECT NOMEIMAGEMSITE, ALTURASITE, LARGURASITE, TAMANHOLUGAR, FOTOIMAGEMSITE
               FROM TABSALA WHERE CODSALA = ?';
     $params = array($_POST['sala']);
     $rs = executeSQL($conn, $query, $params, true);
 
-    if ($rs[0] != '') {
-      $imagem = $rs[0];
+    if ($rs['FOTOIMAGEMSITE'] != '') {
+      $imagem = $rs['FOTOIMAGEMSITE'];
     }
     if ($rs[1] != '') {
       $yScale = $rs[1];
@@ -29,7 +29,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
     $params = array($_POST['sala']);
     $rs = executeSQL($conn, $query, $params, true);
 
-    $query = 'SELECT S.INDICE, S.NOMOBJETO, S.CODSETOR, SE.NOMSETOR, S.IMGVISAOLUGAR, ';
+    $query = 'SELECT S.INDICE, S.NOMOBJETO, S.CODSETOR, SE.NOMSETOR, S.IMGVISAOLUGAR, S.IMGVISAOLUGARFOTO, ';
 
     if ($rs['MAXXSITE'] == '' or $rs['MAXYSITE'] == '' or $_POST['reset']) {
       $query .= '(((S.POSX * ?) / ?) + ?) POSXSITE, (((S.POSY * ?) / ?) + ?) POSYSITE';
@@ -54,33 +54,68 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
 
     $result = executeSQL($conn, $query, $params);
 
-    $cadeiras = '[';
-
+    $cadeiras = array();
+    $imagens = array();
+    
     while ($rs = fetchResult($result)) {
-      $cadeiras .= "{" .
-              "id:'" . $rs['INDICE'] . "'" .
-              ",name:'" . $rs['NOMOBJETO'] . "'" .
-              ",setor:'" . utf8_encode($rs['NOMSETOR']) . "'" .
-              ",codSetor:'" . $rs['CODSETOR'] . "'" .
-              ",x:" . $rs['POSXSITE'] .
-              ",y:" . $rs['POSYSITE'] .
-              ($rs['IMGVISAOLUGAR'] ? ",img:'" . $rs['IMGVISAOLUGAR'] . "'" : '') .
-              "},";
+      
+      $rs['STATUS'] = (session_id() == $rs['ID_SESSION']) ? 'S' : $rs['STATUS'];
+      
+      $cadeira = array( 
+        "id" => $rs['INDICE'],
+        "name" => utf8_encode($rs['NOMOBJETO']),
+        "setor" => utf8_encode($rs['NOMSETOR']),
+        "codSetor" => $rs['CODSETOR'],
+        "x" => $rs['POSXSITE'],
+        "y" => $rs['POSYSITE']
+      );
+
+      if ($rs['IMGVISAOLUGARFOTO']) {
+        $img_index = md5($rs['IMGVISAOLUGARFOTO']);
+        $cadeira['img'] = $img_index;
+        $imagens[$img_index] = $rs['IMGVISAOLUGARFOTO'];
+      }
+
+      $cadeiras[] = $cadeira;
     }
+
+    $data = array(
+      'cadeiras' => $cadeiras,
+      'imagens' => $imagens,
+      'imagem' => $imagem,
+      'xScale' => $xScale,
+      'yScale' => $yScale,
+      'size' => $size
+    );
 
     header("Content-type: text/txt");
 
-    echo substr($cadeiras, 0, -1) . ']' . '||' . $imagem . '||' . $xScale . '||' . $yScale . '||' . $size;
+    echo json_encode($data);
   } else if ($_GET['action'] == 'save') {
+    //get upload path
+    require_once('../settings/settings.php');
+    //---------------
+
+    // checa se a imagem enviada é um caminho valido ou ja esta em base64
+    if ($_POST['image']) {
+      if (file_exists($uploadPath.$_POST['image'])) {
+        $imagem = getBase64ImgString($uploadPath.$_POST['image']);
+      } else {
+        $imagem = $_POST['image'];
+      }
+    } else {
+      $imagem = NULL;
+    }
+
     $conn = getConnection($_POST['teatro']);
 
-    $query = 'UPDATE TABSALA SET NOMEIMAGEMSITE = ?,
+    $query = 'UPDATE TABSALA SET FOTOIMAGEMSITE = ?,
               LARGURASITE = ?,
               ALTURASITE = ?,
               TAMANHOLUGAR = ?
               WHERE CODSALA = ?';
     $params = array(
-        (isset($_POST['image'])) ? $_POST['image'] : '',
+        $imagem,
         (isset($_POST['xScale'])) ? $_POST['xScale'] : '',
         (isset($_POST['yScale'])) ? $_POST['yScale'] : '',
         (isset($_POST['Size'])) ? $_POST['Size'] : '',
@@ -94,19 +129,30 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
     $log->__set('log', $query);
     $log->save($mainConnection);
 
-    $query = 'UPDATE TABSALDETALHE SET
-              POSXSITE = ?,
-              POSYSITE = ?,
-              IMGVISAOLUGAR = ?
-              WHERE CODSALA = ? AND INDICE = ?';
-
     $obj = json_decode($_POST['obj']);
 
     beginTransaction($conn);
 
     foreach ($obj as $cadeira) {
       $cadeira = get_object_vars($cadeira);
-      $params = array($cadeira['x'], $cadeira['y'], $cadeira['img'], $_POST['sala'], $cadeira['id']);
+
+      if ($cadeira['img'] == 'manter_imagem') {
+        $query = 'UPDATE TABSALDETALHE SET
+                  POSXSITE = ?,
+                  POSYSITE = ?
+                  WHERE CODSALA = ? AND INDICE = ?';
+        $params = array($cadeira['x'], $cadeira['y'], $_POST['sala'], $cadeira['id']);
+      } else {
+        $query = 'UPDATE TABSALDETALHE SET
+                  POSXSITE = ?,
+                  POSYSITE = ?,
+                  IMGVISAOLUGARFOTO = ?
+                  WHERE CODSALA = ? AND INDICE = ?';
+
+        $img_string = $cadeira['img'] ? getBase64ImgString($cadeira['img']) : NULL;
+
+        $params = array($cadeira['x'], $cadeira['y'], $img_string, $_POST['sala'], $cadeira['id']);
+      }
 
       executeSQL($conn, $query, $params);
     }

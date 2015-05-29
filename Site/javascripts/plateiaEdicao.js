@@ -132,7 +132,10 @@ $(function() {
       $.each(objs, function(key, val) {
         dados += '{';
         $.each(val, function(key, val) {
-          dados += '"' + key + '":"' + val + '",';
+          if (val != undefined) {
+            val = key == 'img' ? (val.indexOf('data:image') != -1 ? 'manter_imagem' : val) : val;
+            dados += '"' + key + '":"' + val + '",';
+          }
         });
         dados = dados.substr(0, dados.length - 1);
         dados += '},';
@@ -141,8 +144,11 @@ $(function() {
       dados = dados.substr(0, dados.length - 1) + ']';
 			
       if ($('#mapa_de_plateia img').attr('src') != defaultImage) {
-        var img_src = $('#mapa_de_plateia img').attr('src').split('/'),
-        imageName = img_src[img_src.length - 1];
+        var img_src = $('#mapa_de_plateia img').attr('src');
+        if (img_src.indexOf('data:image') == -1) {
+          img_src = img_src.split('/');
+          img_src = img_src[img_src.length - 1];
+        }
       }
 			
       $.ajax({
@@ -151,7 +157,7 @@ $(function() {
         data: 'obj=' + dados +
         '&teatro=' + $('#teatroID').val() +
         '&sala=' + $('#salaID').val() +
-        ((imageName != undefined) ? '&image=' + imageName : '') +
+        ((img_src != undefined) ? '&image=' + encodeURIComponent(img_src) : '') +
         ((xScale != 630) ? '&xScale=' + xScale : '') +
         ((yScale != 510) ? '&yScale=' + yScale : '') +
         ((size != 0) ? '&Size=' + size : '')
@@ -195,9 +201,9 @@ $(function() {
     autoOpen: false,
     buttons: {
       OK: function() {
-        var path = $("#dialog-confirm .img").find('img,span').attr('src');
+        var path = $("#dialog-confirm .img").find('img').attr('src');
         path = path ? path : '';
-
+console
         $(".ui-selected").each(function() {
           $(this).data('img', path);
         });
@@ -212,8 +218,8 @@ $(function() {
 	
   function loadAnnotations(dados) {
     if ($('#teatroID').val() != '' && $('#salaID').val() != '') {
-      dados = 'teatro='+$('#teatroID').val()+'&sala='+$('#salaID').val()+'&xmargin='+$('#xMargin').slider('value')+'&ymargin='+$('#yMargin').slider('value') + dados;
-      size = 10;
+      var dados = 'teatro='+$('#teatroID').val()+'&sala='+$('#salaID').val()+'&xmargin='+$('#xMargin').slider('value')+'&ymargin='+$('#yMargin').slider('value') + dados,
+          size = 10;
 
       $('#loadingIcon').fadeIn('fast')
 			
@@ -221,14 +227,18 @@ $(function() {
         url: 'mapaPlateia.php?action=load',
         type: 'post',
         data: dados,
+        dataType: 'json',
         success: function(data) {
-          data = data.split('||');
           $('#mapa_de_plateia').removeAnnotations();
 					
-          changeScale(data[2], data[3]);
-          size = data[4];
+          changeScale(data.xScale, data.yScale);
+          size = data['size'];
+
+          $.each(data.cadeiras, function(i, v){
+            data.cadeiras[i].img = data.imagens[data.cadeiras[i].img];
+          });
 					
-          $('#mapa_de_plateia').addAnnotations(annotation, eval(data[0]));
+          $('#mapa_de_plateia').addAnnotations(annotation, data.cadeiras);
           $('#mapa_de_plateia span').tooltip({
             track: true,
             content: function() {
@@ -243,8 +253,8 @@ $(function() {
             }
           });
 					
-          if (data[1].length > 0) {
-            changeImage(uploadPath + data[1]);
+          if (data.imagem) {
+            changeImage(data.imagem);
           } else {
             changeImage(defaultImage);
           }
@@ -402,47 +412,31 @@ $(function() {
   }
 	
   function changeScale(x, y) {
-    if (x.length > 0) {
-      $('#xScale').slider('value', parseInt(x));
-      updateX(null, {
-        value: parseInt(x)
-      });
+    if (x > 0) {
+      $('#xScale').slider('value', x);
+      updateX(null, { value: x });
     } else {
       $('#xScale').slider('value', 630);
-      updateX(null, {
-        value: 630
-      });
+      updateX(null, { value: 630 });
     }
-    if (y.length > 0) {
-      $('#yScale').slider('value', parseInt(y));
-      updateY(null, {
-        value: parseInt(y)
-      });
+    if (y > 0) {
+      $('#yScale').slider('value', y);
+      updateY(null, { value: y });
     } else {
       $('#yScale').slider('value', 510);
-      updateY(null, {
-        value: 510
-      });
-      stopY(null, {
-        value: 510
-      });
+      updateY(null, { value: 510 });
+      stopY(null, { value: 510 });
     }    
   }
 
   function changeSize(size){
-    if(size.length > 0){
-      $('#ScaleSize').slider('value', parseInt(size));
-      updateSize(null, {
-        value: parseInt(size)
-      });
+    if(size > 0){
+      $('#ScaleSize').slider('value', size);
+      updateSize(null, { value: size });
     }else{
-      $('#ScaleSize').slider('value', parseInt(10));
-      updateSize(null, {
-        value: 10
-      });
-      stopSize(null, {
-        value: 10
-      });
+      $('#ScaleSize').slider('value', 10);
+      updateSize(null, { value: 10 });
+      stopSize(null, { value: 10 });
     }
   }
 

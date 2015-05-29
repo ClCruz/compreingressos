@@ -14,7 +14,7 @@ curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-curl_setopt($ch, CURLOPT_PROXY, ($is_teste == '1' ? $proxy_homologacao['host'].':'.$proxy_homologacao['port'] : $proxy_producao['host'].':'.$proxy_producao['port']));
+// curl_setopt($ch, CURLOPT_PROXY, ($is_teste == '1' ? $proxy_homologacao['host'].':'.$proxy_homologacao['port'] : $proxy_producao['host'].':'.$proxy_producao['port']));
 curl_setopt($ch, CURLOPT_TIMEOUT, 5);
 $server_output = curl_exec($ch);
 curl_close($ch);
@@ -392,9 +392,9 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
         
         'trace' => true,
         'exceptions' => true,
-        'cache_wsdl' => WSDL_CACHE_NONE,
+        'cache_wsdl' => WSDL_CACHE_NONE/*,
         'proxy_host'     => ($is_teste == '1' ? $proxy_homologacao['host'] : $proxy_producao['host']),
-        'proxy_port'     => ($is_teste == '1' ? $proxy_homologacao['port'] : $proxy_producao['port'])
+        'proxy_port'     => ($is_teste == '1' ? $proxy_homologacao['port'] : $proxy_producao['port'])*/
     );
 
     $descricao_erro = '';

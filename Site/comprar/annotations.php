@@ -26,7 +26,7 @@ if (isset($_GET['teatro']) and isset($_GET['codapresentacao'])) {
 					ELSE 'C'
 				END STATUS,
 				L.ID_SESSION,
-				S.IMGVISAOLUGAR
+				S.IMGVISAOLUGARFOTO
 				FROM TABSALDETALHE S
 				INNER JOIN TABSETOR SE ON SE.CODSALA = S.CODSALA AND SE.CODSETOR = S.CODSETOR
 				INNER JOIN TABAPRESENTACAO A ON A.CODSALA = S.CODSALA
@@ -38,27 +38,40 @@ if (isset($_GET['teatro']) and isset($_GET['codapresentacao'])) {
 	$params = array($_GET['teatro'], $_GET['codapresentacao'], $_GET['teatro'], $_GET['codapresentacao'], $_GET['codapresentacao']);
 	$result = executeSQL($conn, $query, $params);
 	
-	$cadeiras = '[';
+	$cadeiras = array();
+	$imagens = array();
 	
 	while ($rs = fetchResult($result)) {
 		
 		$rs['STATUS'] = (session_id() == $rs['ID_SESSION']) ? 'S' : $rs['STATUS'];
 		
-		$cadeiras .= "{" . 
-						"id:'" . $rs['INDICE'] . "'" .
-						",name:'" . $rs['NOMOBJETO'] . "'" .
-						",classeObj:'" . $rs['CLASSEOBJ'] . "'" .
-						",setor:'" . utf8_encode($rs['NOMSETOR']) . "'" .
-						",codSetor:'" . $rs['CODSETOR'] . "'" .
-						",x:" . $rs['POSXSITE'] .
-						",y:" . $rs['POSYSITE'] .
-						// O = openned / C = closed / S = standby = selected by current user
-						",status:'" . $rs['STATUS'] . "'" .
-						($rs['IMGVISAOLUGAR'] ? ",img:'" . $rs['IMGVISAOLUGAR'] . "'" : '') .
-						"},";
+		$cadeira = array( 
+			"id" => $rs['INDICE'],
+			"name" => utf8_encode($rs['NOMOBJETO']),
+			"classeObj" => utf8_encode($rs['CLASSEOBJ']),
+			"setor" => utf8_encode($rs['NOMSETOR']),
+			"codSetor" => $rs['CODSETOR'],
+			"x" => $rs['POSXSITE'],
+			"y" => $rs['POSYSITE'],
+			// O = openned / C = closed / S = standby = selected by current user
+			"status" => $rs['STATUS']
+		);
+
+		if ($rs['IMGVISAOLUGARFOTO']) {
+			$img_index = md5($rs['IMGVISAOLUGARFOTO']);
+			$cadeira['img'] = $img_index;
+			$imagens[$img_index] = $rs['IMGVISAOLUGARFOTO'];
+		}
+
+		$cadeiras[] = $cadeira;
 	}
+
+	$data = array(
+		'cadeiras' => $cadeiras,
+		'imagens' => $imagens
+	);
 	
 	header("Content-type: text/txt");
-	echo substr($cadeiras, 0, -1) . ']';
+	echo json_encode($data);
 }
 ?>

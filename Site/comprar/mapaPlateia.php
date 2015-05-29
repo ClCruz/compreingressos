@@ -22,7 +22,7 @@ $result = executeSQL($mainConnection, $query, $params);
 
 
 $conn = getConnection($rs['ID_BASE']);
-$query = 'SELECT S.NOMEIMAGEMSITE, S.ALTURASITE, S.LARGURASITE
+$query = 'SELECT S.FOTOIMAGEMSITE, S.ALTURASITE, S.LARGURASITE
          FROM TABAPRESENTACAO A
          INNER JOIN TABSALA S ON S.CODSALA = A.CODSALA
          WHERE A.CODAPRESENTACAO = ?';
@@ -32,10 +32,10 @@ $rs = executeSQL($conn, $query, $params, true);
 ?>
 <!--<p>Escolha o setor: <select id="piso" name="piso">-->
 <?php
-/**
+/*
 while ($rs2 = fetchResult($result)) {
   echo '<option value="'.$rs2['ID_APRESENTACAO'].'"'.(($rs2['ID_APRESENTACAO'] == $_GET['apresentacao']) ? ' selected' : '').'>'.utf8_encode($rs2['DS_PISO']).'</option>';
-}**/
+}*/
 ?>
 <!--</select></p>-->
 <!--<p><span class="annotation open legenda">&nbsp;&nbsp;&nbsp;</span>Dispon&iacute;veis
@@ -44,5 +44,5 @@ while ($rs2 = fetchResult($result)) {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <span class="annotation closed legenda">&nbsp;&nbsp;&nbsp;</span><?php // echo $id_base_legenda == 83 ? "Venda na bilheteria do Teatro" : "Indispon&iacute;vel"; ?></p>-->
 <div id="mapa_de_plateia" style="width:<?php echo $rs['LARGURASITE'] == '' ? '660' : $rs['LARGURASITE']; ?>px;">
-  <img src="<?php echo $rs['NOMEIMAGEMSITE'] == '' ? '../images/palco.png' : $uploadPath . $rs['NOMEIMAGEMSITE']; ?>" width="<?php echo $rs['LARGURASITE'] == '' ? '660' : $rs['LARGURASITE']; ?>" height="<?php echo $rs['ALTURASITE'] == '' ? '610' : $rs['ALTURASITE']; ?>" />
+  <img src="<?php echo $rs['FOTOIMAGEMSITE'] == '' ? '../images/palco.png' : $rs['FOTOIMAGEMSITE']; ?>" width="<?php echo $rs['LARGURASITE'] == '' ? '660' : $rs['LARGURASITE']; ?>" height="<?php echo $rs['ALTURASITE'] == '' ? '610' : $rs['ALTURASITE']; ?>" />
 </div>

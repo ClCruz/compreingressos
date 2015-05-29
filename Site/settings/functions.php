@@ -833,12 +833,14 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 
 				$BIN = 'qtBin="' . $rs['QT_BIN_POR_CPF'] . '" codeBin="' . $rs['CODTIPBILHETEBIN'] .
 						'" img1="' . $rs['IMG1PROMOCAO'] . '" img2="' . $rs['IMG2PROMOCAO'] . '" sizeBin="6"';
+				$promocao = '';
 
 			// se for codigo promocional
 			} elseif ($rs['CODTIPPROMOCAO'] != NULL) {
 				$rs['IMG1PROMOCAO'] = '../images/promocional/' . basename($rs['IMG1PROMOCAO']);
 				$rs['IMG2PROMOCAO'] = '../images/promocional/' . basename($rs['IMG2PROMOCAO']);
 
+				$BIN = '';
 				$promocao = 'qtPromocao="' . $rs['QT_INGRESSOS_POR_PROMOCAO'] . '" codPromocao="'.$rs['CODTIPPROMOCAO'] .
 							'" img1="' . $rs['IMG1PROMOCAO'] . '" img2="' . $rs['IMG2PROMOCAO'] . '" sizeBin="32"';
 
@@ -1787,6 +1789,15 @@ function saveAndGetPath($image, $name) {
 	$gif = imagegif($image, $path);
 
 	return $path;
+}
+
+function getBase64ImgString($path) {
+	if (!file_exists($path)) return false;
+
+	$type = pathinfo($path, PATHINFO_EXTENSION);
+	$data = file_get_contents($path);
+
+	return 'data:image/' . $type . ';base64,' . base64_encode($data);
 }
 
 function normalize_string($string) {

@@ -4,9 +4,9 @@ $(function() {
   standbyClass = 'standby',
   closedClass = 'closed',
   $mapa_de_plateia = $('#mapa_de_plateia');
-	
+  
   if ($mapa_de_plateia.length == 0) {
-		
+    
     //$('#numIngressos').change(function() {
     $('.botao_avancar').click(function(event) {
       event.preventDefault();
@@ -35,14 +35,14 @@ $(function() {
       $('.botao_avancar').hide();
       $('.container_ingressos .container_ingresso .ingresso').hide();
     }
-		
+    
 //    $('.botao_avancar').click(function(event) {
 //      event.preventDefault();
 //      $('#numIngressos').change();
 //    });
-		
+    
   } else {
-		
+    
     function annotation(obj) {
       return $(document.createElement('span'))
       .attr('id', obj.id)
@@ -51,15 +51,14 @@ $(function() {
       .addClass('diametro')
       .addClass((obj.status == 'O') ? opennedClass : (obj.status == 'C') ? closedClass : standbyClass);
     }
-				
+        
     function refreshCadeiras(refreshTime) {
       $.ajax({
         url: 'annotations.php',
         data: scriptVars,
         dataType: 'json',
         success: function(data) {
-          var annotations = data.cadeiras,
-              imagens = data.imagens;
+          var annotations = data.cadeiras
 
           $mapa_de_plateia.removeAnnotations();
           $mapa_de_plateia.addAnnotations(annotation, annotations);
@@ -86,7 +85,7 @@ $(function() {
                             '<p class="local">'+dados[1]+'</p>'+
                             '<p class="descricao">clique apenas uma vez e aguarde<br>a reserva do lugar escolhido</p>'+
                           '</div>'+
-                          ($(this).data('img') ? '<span>Visão aproximada do palco</span><img src="'+imagens[$(this).data('img')]+'" class="foto-plateia">' : '')+
+                          ($(this).data('img') ? '<span>Visão aproximada do palco</span><img src="annotations.php?'+$.serializeUrlVars()+'&cadeira='+$(this).data('id')+'" class="foto-plateia">' : '')+
                         '</div>';
               }
             });
@@ -96,7 +95,7 @@ $(function() {
           mapaDePlateia();
         }
       });
-			
+      
       if (refreshTime == undefined) {
         setTimeout(refreshCadeiras, 300000);
       }
@@ -106,14 +105,14 @@ $(function() {
     if ($mapa_de_plateia.width() > $mapa_de_plateia.parent().width()) {
       $mapa_de_plateia.css({'margin-left': (($mapa_de_plateia.width()-$mapa_de_plateia.parent().width())/2)*-1+'px'}).width();
     }
-		
+    
     function statusCadeira(indice, status) {
       if (status != undefined) {
         indice.data('status', status);
       } else {
         (indice.data('status') == 'O') ? indice.data('status', 'S') : indice.data('status', 'O');
       }
-			
+      
       indice
       .removeClass(opennedClass)
       .removeClass(standbyClass)
@@ -212,12 +211,12 @@ $(function() {
         }
       });
     }
-		
+    
     $('.botao_avancar').click(function(event) {
       event.preventDefault();
 
       var href = $(this).attr('href');
-			
+      
       if ($('#mapa_de_plateia span.standby').length > 0) {
         document.location = href;
       } else {
@@ -244,7 +243,7 @@ $(function() {
       $mapa_de_plateia.off(e);
     });
   }
-	
+  
   if ($('#setor option').length > 1) {
     $('.container_locais_select').slideDown();
     $('#setor').on('change', function(event) {

@@ -29,7 +29,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
     $params = array($_POST['sala']);
     $rs = executeSQL($conn, $query, $params, true);
 
-    $query = 'SELECT S.INDICE, S.NOMOBJETO, S.CODSETOR, SE.NOMSETOR, S.IMGVISAOLUGAR, S.IMGVISAOLUGARFOTO, ';
+    $query = 'SELECT S.INDICE, S.NOMOBJETO, S.CODSETOR, SE.NOMSETOR, S.IMGVISAOLUGAR,
+              CASE WHEN S.IMGVISAOLUGARFOTO IS NOT NULL THEN 1 ELSE 0 END IMGVISAOLUGARFOTO, ';
 
     if ($rs['MAXXSITE'] == '' or $rs['MAXYSITE'] == '' or $_POST['reset']) {
       $query .= '(((S.POSX * ?) / ?) + ?) POSXSITE, (((S.POSY * ?) / ?) + ?) POSYSITE';
@@ -55,7 +56,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
     $result = executeSQL($conn, $query, $params);
 
     $cadeiras = array();
-    $imagens = array();
     
     while ($rs = fetchResult($result)) {
       
@@ -67,21 +67,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
         "setor" => utf8_encode($rs['NOMSETOR']),
         "codSetor" => $rs['CODSETOR'],
         "x" => $rs['POSXSITE'],
-        "y" => $rs['POSYSITE']
+        "y" => $rs['POSYSITE'],
+        "img" => $rs['IMGVISAOLUGARFOTO'] ? 1 : 0
       );
-
-      if ($rs['IMGVISAOLUGARFOTO']) {
-        $img_index = md5($rs['IMGVISAOLUGARFOTO']);
-        $cadeira['img'] = $img_index;
-        $imagens[$img_index] = $rs['IMGVISAOLUGARFOTO'];
-      }
 
       $cadeiras[] = $cadeira;
     }
 
     $data = array(
       'cadeiras' => $cadeiras,
-      'imagens' => $imagens,
       'imagem' => $imagem,
       'xScale' => $xScale,
       'yScale' => $yScale,
@@ -91,6 +85,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
     header("Content-type: text/txt");
 
     echo json_encode($data);
+
   } else if ($_GET['action'] == 'save') {
     //get upload path
     require_once('../settings/settings.php');
@@ -136,22 +131,22 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
     foreach ($obj as $cadeira) {
       $cadeira = get_object_vars($cadeira);
 
-      if ($cadeira['img'] == 'manter_imagem') {
-        $query = 'UPDATE TABSALDETALHE SET
-                  POSXSITE = ?,
-                  POSYSITE = ?
-                  WHERE CODSALA = ? AND INDICE = ?';
-        $params = array($cadeira['x'], $cadeira['y'], $_POST['sala'], $cadeira['id']);
-      } else {
+      if (isset($cadeira['new_img'])) {
         $query = 'UPDATE TABSALDETALHE SET
                   POSXSITE = ?,
                   POSYSITE = ?,
                   IMGVISAOLUGARFOTO = ?
                   WHERE CODSALA = ? AND INDICE = ?';
 
-        $img_string = $cadeira['img'] ? getBase64ImgString($cadeira['img']) : NULL;
+        $img_string = $cadeira['new_img'] ? getBase64ImgString($cadeira['new_img']) : NULL;
 
         $params = array($cadeira['x'], $cadeira['y'], $img_string, $_POST['sala'], $cadeira['id']);
+      } else {
+        $query = 'UPDATE TABSALDETALHE SET
+                  POSXSITE = ?,
+                  POSYSITE = ?
+                  WHERE CODSALA = ? AND INDICE = ?';
+        $params = array($cadeira['x'], $cadeira['y'], $_POST['sala'], $cadeira['id']);
       }
 
       executeSQL($conn, $query, $params);
@@ -166,6 +161,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
       rollbackTransaction($conn);
       echo sqlErrors('messsage');
     }
+
   } else if ($_GET['action'] == 'lista_fotos') {
     require_once('../settings/settings.php');
 
@@ -178,6 +174,22 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
     foreach ($files as $file_name) {
       echo "<img src='".$fotos_path.$file_name."' />";
     }
+
+  } else if ($_GET['action'] == 'loadImage') {
+
+    $conn = getConnection($_GET['teatro']);
+    $query = "SELECT IMGVISAOLUGARFOTO FROM TABSALDETALHE WHERE INDICE = ? AND CODSALA = ?";
+    $params = array($_GET['indice'], $_GET['sala']);
+    $rs = executeSQL($conn, $query, $params, true);
+
+    $data = explode(';base64,', $rs['IMGVISAOLUGARFOTO']);
+
+    $mime = preg_replace("/data:/", '', $data[0]);
+    $content = $data[1];
+
+    header("Cache-Control: max-age=86400, public");
+    header('Content-Type: '.$mime);
+    echo base64_decode($content);
   }
 }
 ?>

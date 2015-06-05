@@ -1,10 +1,43 @@
 <?php
-if (isset($_GET['teatro']) and isset($_GET['codapresentacao'])) {
-	require_once('../settings/functions.php');
-	session_start();
+require_once('../settings/functions.php');
+session_start();
+
+if (isset($_GET['apresentacao']) and isset($_GET['cadeira'])) {
+
+	$mainConnection = mainConnection();
+	$query = "SELECT CODAPRESENTACAO, ID_BASE
+				FROM MW_APRESENTACAO A
+				INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+				WHERE ID_APRESENTACAO = ?";
+	$params = array($_GET['apresentacao']);
+	$rs = executeSQL($mainConnection, $query, $params, true);
+	
+	$conn = getConnection($rs['ID_BASE']);
+	$query = "SELECT S.IMGVISAOLUGARFOTO
+				FROM TABSALDETALHE S
+				INNER JOIN TABSETOR SE ON SE.CODSALA = S.CODSALA AND SE.CODSETOR = S.CODSETOR
+				INNER JOIN TABAPRESENTACAO A ON A.CODSALA = S.CODSALA
+				INNER JOIN TABPECA P ON P.CODPECA = A.CODPECA
+				WHERE A.CODAPRESENTACAO = ? AND S.TIPOBJETO = 'C' AND P.STAPECA = 'A' 
+				AND CONVERT(varchar(8), P.DATFINPECA, 112) >= CONVERT(varchar(8), GETDATE(), 112) AND P.IN_VENDE_SITE = 1
+				AND S.INDICE = ?";
+	$params = array($rs['CODAPRESENTACAO'], $_GET['cadeira']);
+	$rs = executeSQL($conn, $query, $params, true);
+
+	$data = explode(';base64,', $rs['IMGVISAOLUGARFOTO']);
+
+	$mime = preg_replace("/data:/", '', $data[0]);
+	$content = $data[1];
+
+	header("Cache-Control: max-age=86400, public");
+	header('Content-Type: '.$mime);
+	echo base64_decode($content);
+}
+
+elseif (isset($_GET['teatro']) and isset($_GET['codapresentacao'])) {
 	
 	$conn = getConnection($_GET['teatro']);
-	$query .= "WITH RESULTADO AS (
+	$query = "WITH RESULTADO AS (
 					SELECT PR.ID_CADEIRA FROM CI_MIDDLEWAY..MW_PACOTE_RESERVA PR
 					INNER JOIN CI_MIDDLEWAY..MW_PACOTE_APRESENTACAO PA ON PA.ID_PACOTE = PR.ID_PACOTE
 					INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.ID_APRESENTACAO = PA.ID_APRESENTACAO
@@ -26,7 +59,7 @@ if (isset($_GET['teatro']) and isset($_GET['codapresentacao'])) {
 					ELSE 'C'
 				END STATUS,
 				L.ID_SESSION,
-				S.IMGVISAOLUGARFOTO
+				CASE WHEN S.IMGVISAOLUGARFOTO IS NOT NULL THEN 1 ELSE 0 END IMGVISAOLUGARFOTO
 				FROM TABSALDETALHE S
 				INNER JOIN TABSETOR SE ON SE.CODSALA = S.CODSALA AND SE.CODSETOR = S.CODSETOR
 				INNER JOIN TABAPRESENTACAO A ON A.CODSALA = S.CODSALA
@@ -39,7 +72,6 @@ if (isset($_GET['teatro']) and isset($_GET['codapresentacao'])) {
 	$result = executeSQL($conn, $query, $params);
 	
 	$cadeiras = array();
-	$imagens = array();
 	
 	while ($rs = fetchResult($result)) {
 		
@@ -54,24 +86,17 @@ if (isset($_GET['teatro']) and isset($_GET['codapresentacao'])) {
 			"x" => $rs['POSXSITE'],
 			"y" => $rs['POSYSITE'],
 			// O = openned / C = closed / S = standby = selected by current user
-			"status" => $rs['STATUS']
+			"status" => $rs['STATUS'],
+			"img" => $rs['IMGVISAOLUGARFOTO']
 		);
-
-		if ($rs['IMGVISAOLUGARFOTO']) {
-			$img_index = md5($rs['IMGVISAOLUGARFOTO']);
-			$cadeira['img'] = $img_index;
-			$imagens[$img_index] = $rs['IMGVISAOLUGARFOTO'];
-		}
 
 		$cadeiras[] = $cadeira;
 	}
 
 	$data = array(
-		'cadeiras' => $cadeiras,
-		'imagens' => $imagens
+		'cadeiras' => $cadeiras
 	);
 	
 	header("Content-type: text/txt");
 	echo json_encode($data);
 }
-?>

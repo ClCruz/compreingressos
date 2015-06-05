@@ -1,38 +1,38 @@
 $(function() {
   $('.number').onlyNumbers();
   $('.alpha').onlyAlpha();
-	
+  
   $.busyCursor();
-	
+  
   $('.button').button();
-	
+  
   var selected = $([]), offset = {
     top:0,
     left:0
   },
   defaultImage = '../images/palco.png',
   uploadPath = '';
-	
+  
   $.get('../settings/settings.php', {
     'var': 'uploadPath'
   }, function(data) {
     uploadPath = data;
     uploaderInit();
   });
-	
+  
   function changeImage(image) {
     var img = $('#mapa_de_plateia img');
-		
+    
     img.fadeOut('fast', function() {
       img.attr('src', image);
       img.fadeIn('slow');
     });
   }
-	
+  
   $('#removerImagem').click(function() {
     changeImage(defaultImage);
   });
-	
+  
   function annotation(obj) {
     return $(document.createElement('span'))
     //.text("\u25CF")
@@ -53,7 +53,7 @@ $(function() {
       },
       drag: function(event, ui) {
         var dt = ui.position.top - offset.top, dl = ui.position.left - offset.left;
-							
+              
         selected.not(this).each(function() {
           var el = $(this), off = el.data("offset");
           el.css({
@@ -61,7 +61,7 @@ $(function() {
             left: off.left + dl
           });
         });
-				
+        
       },
       stop: function(ev, ui) {}
     })/*
@@ -75,18 +75,18 @@ $(function() {
               }
       })//*/;
   }
-	
+  
   $('#mapa_de_plateia').selectable({
     distance: 1,
     filter: 'span'
   });
-	
+  
   $('#teatroID').change(function() {
     if ($(this).val() != '') {
       var $this = $(this);
-			
+      
       $('#loadingIcon').fadeIn('fast')
-			
+      
       $.ajax({
         url: '../settings/functions.php',
         type: 'post',
@@ -110,7 +110,7 @@ $(function() {
       });
     }
   });
-	
+  
   $('#celSala').delegate('select', 'change', function() {
     $('#carregaEvento').click();
   });
@@ -118,31 +118,30 @@ $(function() {
   $('#coluna-setor').delegate('select', 'change', function() {
     loadAnnotations('');
   });
-	
+  
   $('#salvarEvento').click(function() {
     if ($('#teatroID').val() != '' && $('#salaID').val() != '') {
       $('#loadingIcon').fadeIn('fast')
-			
+      
       var objs = $('#mapa_de_plateia span').seralizeAnnotations(),
       xScale = $('#xScale').slider('value'),
       yScale = $('#yScale').slider('value'),
       size = $('#ScaleSize').slider('value'),
       dados = '[';
-			
-      $.each(objs, function(key, val) {
+      
+      $.each(objs, function(key, obj) {
         dados += '{';
-        $.each(val, function(key, val) {
+        $.each(obj, function(key, val) {
           if (val != undefined) {
-            val = key == 'img' ? (val.indexOf('data:image') != -1 ? 'manter_imagem' : val) : val;
             dados += '"' + key + '":"' + val + '",';
           }
         });
         dados = dados.substr(0, dados.length - 1);
         dados += '},';
       });
-			
+      
       dados = dados.substr(0, dados.length - 1) + ']';
-			
+      
       if ($('#mapa_de_plateia img').attr('src') != defaultImage) {
         var img_src = $('#mapa_de_plateia img').attr('src');
         if (img_src.indexOf('data:image') == -1) {
@@ -150,7 +149,7 @@ $(function() {
           img_src = img_src[img_src.length - 1];
         }
       }
-			
+      
       $.ajax({
         url: 'mapaPlateia.php?action=save',
         type: 'post',
@@ -174,11 +173,11 @@ $(function() {
       });
     }
   });
-	
+  
   $('#carregaEvento').click(function() {
     loadAnnotations('');
   });
-	
+  
   $('#resetEvento').click(function() {
     loadAnnotations('&reset=1');
   });
@@ -203,9 +202,10 @@ $(function() {
       OK: function() {
         var path = $("#dialog-confirm .img").find('img').attr('src');
         path = path ? path : '';
-console
+
         $(".ui-selected").each(function() {
-          $(this).data('img', path);
+          $(this).data('img', path ? 1 : 0);
+          $(this).data('new_img', path);
         });
 
         $(this).dialog("close");
@@ -215,14 +215,14 @@ console
       }
     }
   });
-	
+  
   function loadAnnotations(dados) {
     if ($('#teatroID').val() != '' && $('#salaID').val() != '') {
       var dados = 'teatro='+$('#teatroID').val()+'&sala='+$('#salaID').val()+'&xmargin='+$('#xMargin').slider('value')+'&ymargin='+$('#yMargin').slider('value') + dados,
           size = 10;
 
       $('#loadingIcon').fadeIn('fast')
-			
+      
       $.ajax({
         url: 'mapaPlateia.php?action=load',
         type: 'post',
@@ -230,29 +230,29 @@ console
         dataType: 'json',
         success: function(data) {
           $('#mapa_de_plateia').removeAnnotations();
-					
+          
           changeScale(data.xScale, data.yScale);
           size = data['size'];
-
-          $.each(data.cadeiras, function(i, v){
-            data.cadeiras[i].img = data.imagens[data.cadeiras[i].img];
-          });
-					
+          
           $('#mapa_de_plateia').addAnnotations(annotation, data.cadeiras);
           $('#mapa_de_plateia span').tooltip({
             track: true,
             content: function() {
               var element = $(this),
-                  text = element.attr("title");
+                  text = element.attr("title"),
+                  img;
 
               if (element.data('img')) {
-                text += "<br /><br /><img src='"+element.data('img')+"' class='foto-plateia' />";
+                img = element.data('new_img')
+                  ? element.data('new_img')
+                  : "mapaPlateia.php?action=loadImage&teatro="+$('#teatroID').val()+"&sala="+$('#salaID').val()+'&indice='+element.data('id');
+                text += "<br /><br /><img src='"+img+"' class='foto-plateia' />";
               }
 
               return text;
             }
           });
-					
+          
           if (data.imagem) {
             changeImage(data.imagem);
           } else {
@@ -266,14 +266,14 @@ console
       });
     }
   }
-	
+  
   $('#xMargin, #yMargin').slider({
     value: 0.1,
     min: 0.01,
     max: 0.99,
     step: 0.01
   });
-	
+  
   $('#xScale').slider({
     value: 630,
     min: 300,
@@ -282,7 +282,7 @@ console
     slide: updateX,
     stop: stopX
   });
-	
+  
   $('#yScale').slider({
     value: 510,
     min: 300,
@@ -300,7 +300,7 @@ console
     slide: updateSize,
     stop: stopSize
   });
-	
+  
   function updateX(event, ui) {
     $('#xScaleAmount').val(ui.value + 'px');
     $('#mapa_de_plateia, #mapa_de_plateia img').width(ui.value);
@@ -335,7 +335,7 @@ console
     $('.diametro').width(ui.value);
     $('.diametro').height(ui.value);
   }
-	
+  
   $('#xReset').click(function(event) {
     event.preventDefault();
     $('#xScale').slider('value', 630);
@@ -363,7 +363,7 @@ console
       value: 10
     });
   });
-	
+  
   function uploaderInit() {
     $('#background').uploadify({
       uploader: '../javascripts/uploadify/uploadify.swf',
@@ -410,7 +410,7 @@ console
       }
     });
   }
-	
+  
   function changeScale(x, y) {
     if (x > 0) {
       $('#xScale').slider('value', x);

@@ -74,16 +74,18 @@
 		var annotations = [];
 		
 		this.each(function(){
-			annotations.push(
-				{
-					x: $(this).relativeX(xPosition),
-					y: $(this).relativeY(yPosition),
-					id: $(this).data('id'),
-					name: $(this).data('name'),
-					setor: $(this).data('setor'),
-					img: $(this).data('img')
-				}
-			);
+			var obj = {
+				x: $(this).relativeX(xPosition),
+				y: $(this).relativeY(yPosition),
+				id: $(this).data('id'),
+				name: $(this).data('name'),
+				setor: $(this).data('setor'),
+				img: $(this).data('img')
+			};
+			if ($(this).data('new_img') != undefined) {
+				obj.new_img = $(this).data('new_img');
+			}
+			annotations.push(obj);
 		});
 		
 		return annotations;

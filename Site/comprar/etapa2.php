@@ -81,14 +81,19 @@ require('verificarServicosPedido.php');
 							</p>
 						</div>
 					</div>
-					<a href="etapa3.php?redirect=<?php echo urlencode('etapa4.php?eventoDS=' . $_GET['eventoDS'] . $campanha['tag_avancar']); ?><?php echo $campanha['tag_avancar']; ?>" class="botao avancar passo3 botao_avancar">outros pedidos</a>
 				</div>
 				
 				<?php require "resumoPedido.php"; ?>
 
 				<div class="container_botoes_etapas">
-					<a href="etapa1.php?<?php echo $_COOKIE['lastEvent']; ?><?php echo $campanha['tag_voltar']; ?>" class="botao voltar passo1">outros pedidos</a>
-					<a href="etapa3.php?redirect=<?php echo urlencode('etapa4.php?eventoDS=' . $_GET['eventoDS'] . $campanha['tag_avancar']); ?><?php echo $campanha['tag_avancar']; ?>" class="botao avancar passo3 botao_avancar">outros pedidos</a>
+					<div class="centraliza">
+						<a href="etapa1.php?<?php echo $_COOKIE['lastEvent']; ?><?php echo $campanha['tag_voltar']; ?>" class="botao voltar passo1">outros pedidos</a>
+						<div class="resumo_carrinho">
+							<span class="quantidade"></span>
+							<span class="frase">ingressos selecionados <br>para essa compra</span>
+						</div>
+						<a href="etapa3.php?redirect=<?php echo urlencode('etapa4.php?eventoDS=' . $_GET['eventoDS'] . $campanha['tag_avancar']); ?><?php echo $campanha['tag_avancar']; ?>" class="botao avancar passo3 botao_avancar">outros pedidos</a>
+					</div>
 				</div>
 			</div>
 		</div>

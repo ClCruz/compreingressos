@@ -474,3 +474,8 @@ $(document).ready(function(){
     $('div.cont_gen_class_dura span.classificacao').css('background-color',cor);
   }
 });
+
+function setQuantidadeResumo(i) {
+  i = i <= 9 ? '0' + i : i;
+  $('.resumo_carrinho .quantidade').text(i);
+}

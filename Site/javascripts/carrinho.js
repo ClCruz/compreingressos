@@ -458,6 +458,7 @@ function calculaQuantidadeTotalIngressos() {
 		val += parseInt($(this).text().replace(',', '.'));
 	});
 	$('#quantidadeIngressos').text(val.toFixed(0).replace('.', ','));
+	setQuantidadeResumo(val);
 };
 
 function calculaTotalIngressos() {

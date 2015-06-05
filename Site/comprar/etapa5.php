@@ -22,6 +22,10 @@ if (isset($_COOKIE['entrega'])) {
     require('calculaFrete.php');
 }
 
+$mainConnection = mainConnection();
+$rs = executeSQL($mainConnection, 'SELECT COUNT(1) FROM MW_RESERVA WHERE ID_SESSION = ?', array(session_id()), true);
+$qtdIngressos = $rs[0] >= 9 ? '0'.$rs[0] : $rs[0];
+
 $json = json_encode(array('descricao' => ($_POST ? '2.' : '1.') .' etapa5 - ' . ($_POST ? 'envio de dados' : 'formulario cartao')));
 include('logiPagareChamada.php');
 
@@ -111,15 +115,20 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 								</p>
 							</div>
 						</div>
-						<a href="etapa5.php?eventoDS=<?php echo $_GET['eventoDS']; ?><?php echo $campanha['tag_avancar']; ?>" class="botao avancar passo6 botao_pagamento <?php echo $_COOKIE['total_exibicao'] == 0 ? 'finalizar' : '' ?>">pagamento</a>
 					
 						<?php require('formCartao.php'); ?>
 
 					</div>
 					
 					<div class="container_botoes_etapas">
-					<a href="etapa4.php?eventoDS=<?php echo $_GET['eventoDS']; ?><?php echo $campanha['tag_voltar']; ?>" class="botao voltar passo4">confirmação</a>
-					<a href="etapa5.php?eventoDS=<?php echo $_GET['eventoDS']; ?><?php echo $campanha['tag_avancar']; ?>" class="botao avancar passo6 botao_pagamento <?php echo $_COOKIE['total_exibicao'] == 0 ? 'finalizar' : '' ?>">pagamento</a>
+						<div class="centraliza">
+							<a href="etapa4.php?eventoDS=<?php echo $_GET['eventoDS']; ?><?php echo $campanha['tag_voltar']; ?>" class="botao voltar passo4">confirmação</a>
+								<div class="resumo_carrinho">
+									<span class="quantidade"><?php echo $qtdIngressos; ?></span>
+									<span class="frase">ingressos selecionados <br>para essa compra</span>
+								</div>
+							<a href="etapa5.php?eventoDS=<?php echo $_GET['eventoDS']; ?><?php echo $campanha['tag_avancar']; ?>" class="botao avancar passo6 botao_pagamento <?php echo $_COOKIE['total_exibicao'] == 0 ? 'finalizar' : '' ?>">pagamento</a>
+						</div>
 					</div>
 					<div class="img_cod_cartao"><img src=""><p></p></div>
 

@@ -36,10 +36,9 @@ $(function() {
       $('.container_ingressos .container_ingresso .ingresso').hide();
     }
 		
-//    $('.botao_avancar').click(function(event) {
-//      event.preventDefault();
-//      $('#numIngressos').change();
-//    });
+    $('#numIngressos').on('change', function(){
+      setQuantidadeResumo($(this).val());
+    }).trigger('change');
 		
   } else {
 		
@@ -58,8 +57,7 @@ $(function() {
         data: scriptVars,
         dataType: 'json',
         success: function(data) {
-          var annotations = data.cadeiras,
-              imagens = data.imagens;
+          var annotations = data.cadeiras;
 
           $mapa_de_plateia.removeAnnotations();
           $mapa_de_plateia.addAnnotations(annotation, annotations);
@@ -86,7 +84,7 @@ $(function() {
                             '<p class="local">'+dados[1]+'</p>'+
                             '<p class="descricao">clique apenas uma vez e aguarde<br>a reserva do lugar escolhido</p>'+
                           '</div>'+
-                          ($(this).data('img') ? '<span>Visão aproximada do palco</span><img src="'+imagens[$(this).data('img')]+'" class="foto-plateia">' : '')+
+                          ($(this).data('img') ? '<span>Visão aproximada do palco</span><img src="annotations.php?'+$.serializeUrlVars()+'&cadeira='+$(this).data('id')+'" class="foto-plateia">' : '')+
                         '</div>';
               }
             });
@@ -94,6 +92,8 @@ $(function() {
           setup_without_touch();
 
           mapaDePlateia();
+
+          setQuantidadeResumo($('.annotation.standby').length);
         }
       });
 			
@@ -119,6 +119,8 @@ $(function() {
       .removeClass(standbyClass)
       .removeClass(closedClass)
       .addClass((indice.data('status') == 'C') ? closedClass : (indice.data('status') == 'O') ? opennedClass : standbyClass);
+
+      setQuantidadeResumo($('.annotation.standby').length);
     }
 
     function setup_with_touch() {
@@ -167,8 +169,9 @@ $(function() {
 
     function span_click(e) {
       var $this = $(e.target),
-      objSerialized = '',
-      action = ($this.hasClass(standbyClass)) ? 'delete' : 'add';
+          objSerialized = '',
+          action = ($this.hasClass(standbyClass)) ? 'delete' : 'add',
+          quantidade;
         
       $.each($this.data(), function(key, val) {
         var exceptions = 'tooltip events handle x y status';
@@ -245,10 +248,7 @@ $(function() {
     });
   }
 	
-  if ($('#setor option').length > 1) {
-    $('.container_locais_select').slideDown();
-    $('#setor').on('change', function(event) {
-      if ($(this).val() != '') document.location = 'etapa1.php?apresentacao=' + $(this).val() + '&eventoDS=' + $.getUrlVar('eventoDS') + '#info';
-    });
+  if ($('.container_setores .container_setor').length > 1) {
+    $('.container_setores').slideDown();
   }
 });

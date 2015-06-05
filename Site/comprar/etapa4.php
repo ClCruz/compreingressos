@@ -94,13 +94,18 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 							</p>
 						</div>
 					</div>
-					<a href="etapa5.php?eventoDS=<?php echo $_GET['eventoDS']; ?><?php echo $campanha['tag_avancar']; ?>" class="botao passo5 avancar">pagamento</a>
 				</div>
 
 				<?php require 'resumoPedido.php';?>
 				<div class="container_botoes_etapas">
-				<a href="etapa2.php?<?php echo $_COOKIE['lastEvent']; ?><?php echo $campanha['tag_voltar']; ?>" class="botao voltar passo3">identificação</a>
-				<a href="etapa5.php?eventoDS=<?php echo $_GET['eventoDS']; ?><?php echo $campanha['tag_avancar']; ?>" class="botao avancar passo5 botao_pagamento">pagamento</a>
+					<div class="centraliza">
+						<a href="etapa2.php?<?php echo $_COOKIE['lastEvent']; ?><?php echo $campanha['tag_voltar']; ?>" class="botao voltar passo3">identificação</a>
+							<div class="resumo_carrinho">
+								<span class="quantidade"></span>
+								<span class="frase">ingressos selecionados <br>para essa compra</span>
+							</div>
+						<a href="etapa5.php?eventoDS=<?php echo $_GET['eventoDS']; ?><?php echo $campanha['tag_avancar']; ?>" class="botao avancar passo5 botao_pagamento">pagamento</a>
+					</div>
 				</div>
 
 			</div>

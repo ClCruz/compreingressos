@@ -858,12 +858,12 @@ table#pedido_resumo tbody tr.beneficio div.icone_validador{
 	width:20px;
 	margin:28px 0 0 10px;
 	height:20px;
-	background:transparent url('../images/beneficio_validacao.png') 0 0 no-repeat;
+	background:transparent url('beneficio_validacao.png') 0 0 no-repeat;
 }
 
 table#pedido_resumo tbody tr.beneficio div.icone_validador.valido{
 	background:#CEA;
-	background:transparent url('../images/beneficio_validacao.png') 0 -20px no-repeat;
+	background:transparent url('beneficio_validacao.png') 0 -20px no-repeat;
 }
 
 table#pedido_resumo tbody tr.beneficio div.container_validador{
@@ -974,7 +974,7 @@ div.resumo_espetaculo div.outras_datas{
 	height:60px;
 	color:#930606;
 	text-align:center;
-	margin:30px 14px 0 0;
+	margin:18px 14px 0 0;
   cursor:pointer;
 }
 
@@ -1374,6 +1374,7 @@ div#detalhes_busca{
 #selos{
 	float:left;
 	width:100%;
+  margin-bottom:96px;
 }
 
 #selos div.centraliza{
@@ -2588,16 +2589,128 @@ div.input div.ano .sbSelector{
 	width:112px;
 }
 
-#selos p.creditos, a.link_adptativo {
-    color: #000;
-    float: left;
-    font-size: 13px;
-    margin: 0 0 20px;
-    text-align: center;
-    width: 100%;
+#selos p.creditos, a.link_adptativo{
+  color: #000;
+  float: left;
+  font-size: 13px;
+  margin: 0 0 20px;
+  text-align: center;
+  width: 100%;
 }
 
 a.link_adptativo {
-    color: #930606;
-    display: none;
+  color: #930606;
+  display: none;
+}
+p.descricao_fase{
+  float:left;
+  width:540px;
+  font-size:24px;
+  font-weight:300;
+  line-height:45px;
+  padding-left:55px;
+  margin:20px 0 0;
+  background:transparent url('../images/ico_exclamacao.png') left top no-repeat;
+}
+
+div.container_setores{
+  width:100%;
+  overflow:hidden;
+}
+
+div.container_setor{
+  float:left;
+  width:127px;
+  height:95px;
+  padding:5px;
+  text-align:center;
+  margin:10px 10px 0 0;
+  border:1px solid #930606;
+  background-color:#FFF;
+}
+
+div.container_setor div.nome_setor{
+  width:127px;
+  height:62px;
+  text-align:center;
+  padding-bottom:8px;
+  vertical-align:middle;
+  display:table-cell;
+}
+
+div.container_setor span{
+  color:#FFF;
+  font-size:10px;
+  padding:4px 8px;
+  cursor:pointer;
+  background-color:#930606;
+}
+
+div.container_setor:hover{
+  background-color:#930606;
+  color:#FFF;
+}
+
+div.container_setor:hover span{
+  background-color:#FFF;
+  color:#930606;
+}
+
+div.container_setor.ativo{
+  background-color:#930606;
+  color:#FFF;
+}
+
+div.container_setor.ativo div.nome_setor{
+  height:96px;
+}
+
+div.container_setor.ativo span{
+  display:none;
+}
+
+div.container_botoes_etapas{
+  width:100%;
+  position:fixed;
+  left:0;
+  bottom:0;
+  background-color:#000;
+  height:96px;
+  z-index:1;
+}
+
+div#content div.container_botoes_etapas div.centraliza{
+  margin:20px auto;
+  overflow:hidden;
+}
+
+div.resumo_carrinho{
+  color:#FFF;
+  width:500px;
+  height:56px;
+  position:absolute;
+  margin:0 195px 0 265px;
+}
+
+div.resumo_carrinho span.quantidade{
+  width:170px;
+  height:56px;
+  font-size:63px;
+  line-height:56px;
+  font-weight:400;
+  text-align:right;
+  display:block;
+  float:left;
+}
+
+div.resumo_carrinho span.frase{
+  width:320px;
+  height:56px;
+  font-size:20px;
+  margin-top:8px;
+  line-height:22px;
+  font-weight:400;
+  text-align:left;
+  display:block;
+  float:right;
 }

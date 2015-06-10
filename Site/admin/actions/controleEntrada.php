@@ -132,7 +132,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 							$params = array($rs['NUMSEQ'], $rs['CODAPRESENTACAO'], $rs['INDICE']);
 							executeSQL($conn, $query, $params);
 
-							$retorno = array('class' => 'sucesso', 'mensagem' => 'Acesso autorizado.');
+							$retorno = array('class' => 'sucesso', 'mensagem' => 'Saída autorizada.');
 						}
 
 					} elseif ($rs['STATUSINGRESSO'] == 'E') {

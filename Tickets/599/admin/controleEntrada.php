@@ -34,7 +34,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
                 $table_entrada_saida = $('#table_entrada_saida');
 
             $('.button, [type="button"]').button();
-            $('#radio').buttonset();
 
             $play_stop.on('click', function(){
 
@@ -50,8 +49,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
                 $resultado_leitura.removeClass('sucesso falha').html('');
 
                 if ($table_leitura.is(':hidden')) {
-                    $table_filtro.find('select').prop('disabled', true);
-                    $('#radio').buttonset('disable');
+                    $table_filtro.find('select, :radio').prop('disabled', true);
 
                     $table_leitura.show();
                     $table_entrada_saida.show();
@@ -65,8 +63,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 
                     $codigo.val('').trigger('focus');
                 } else {
-                    $table_filtro.find('select').prop('disabled', false);
-                    $('#radio').buttonset('enable');
+                    $table_filtro.find('select, :radio').prop('disabled', false);
 
                     $table_leitura.hide();
                     $table_entrada_saida.hide();
@@ -214,7 +211,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
         </style>
 </head>
 <body>
-    <h2>Controle de Entrada</h2>
+    <h2>Controle de Entrada e Saída</h2>
     <form id="dados" action="" method="POST">
         <table id="table_filtro">
             <tr>

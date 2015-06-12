@@ -64,6 +64,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
             <style>
                 .text {mso-number-format:"\@";/*force text*/}
+                .money {mso-number-format:"0\.00";/*force 2 decimals*/}
             </style>
             <?php
         }

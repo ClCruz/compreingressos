@@ -46,7 +46,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
                                 MP.DS_MEIO_PAGAMENTO REDE,
                                 NM_CARTAO_EXIBICAO_SITE BANDEIRA,
                                 PV.CD_NUMERO_TRANSACAO NSU,
-                                CASE WHEN PV.NR_PARCELAS_PGTO > 0 THEN 'PARCELADO' ELSE 'NÃO PARCELADO' END FORMA_PAGAMENTO,
+                                CASE WHEN PV.NR_PARCELAS_PGTO > 1 THEN 'PARCELADO' ELSE 'NÃO PARCELADO' END FORMA_PAGAMENTO,
                                 PV.NR_PARCELAS_PGTO PARCELAS,
                                 PV.VL_TOTAL_PEDIDO_VENDA/PV.NR_PARCELAS_PGTO VALOR_PARCELA,
                                 IPV.VL_UNITARIO,
@@ -87,7 +87,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
                 <td class="text"><?php echo $rs['ID_PEDIDO_VENDA']; ?></td>
                 <td><?php echo utf8_encode($info['DS_CANAL_VENDA']); ?></td>
                 <td><?php echo $rs['OPERADOR']; ?></td>
-                <td><?php echo $rs['DS_TIPO_BILHETE']; ?></td>
+                <td><?php echo utf8_encode($rs['DS_TIPO_BILHETE']); ?></td>
                 <td><?php echo utf8_encode($info['DS_LOCAL_EVENTO']); ?></td>
                 <td><?php echo utf8_encode($rs['DS_EVENTO']); ?></td>
                 <td><?php echo $rs['DT_APRESENTACAO']->format("d/m/Y"); ?></td>
@@ -97,15 +97,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
                 <td><?php echo $rs['DT_PEDIDO_VENDA']->format("d/m/Y"); ?></td>
                 <td><?php echo $rs['DT_PEDIDO_VENDA']->format("H:i:s"); ?></td>
                 <td><?php echo combosituacao('', $rs['IN_SITUACAO'], false); ?></td>
-                <td><?php echo $rs['REDE']; ?></td>
-                <td><?php echo $rs['BANDEIRA']; ?></td>
+                <td><?php echo utf8_encode($rs['REDE']); ?></td>
+                <td><?php echo utf8_encode($rs['BANDEIRA']); ?></td>
                 <td class="text"><?php echo $rs['NSU']; ?></td>
                 <td><?php echo $rs['FORMA_PAGAMENTO']; ?></td>
                 <td><?php echo $rs['PARCELAS']; ?></td>
-                <td><?php echo $rs['VALOR_PARCELA']; ?></td>
-                <td><?php echo $rs['VL_UNITARIO']; ?></td>
-                <td><?php echo $rs['VL_TAXA_CONVENIENCIA']; ?></td>
-                <td><?php echo $rs['VL_TOTAL_PEDIDO_VENDA']; ?></td>
+                <td class="money"><?php echo number_format($rs['VALOR_PARCELA'], 2, ',', '.'); ?></td>
+                <td class="money"><?php echo number_format($rs['VL_UNITARIO'], 2, ',', '.'); ?></td>
+                <td class="money"><?php echo number_format($rs['VL_TAXA_CONVENIENCIA'], 2, ',', '.'); ?></td>
+                <td class="money"><?php echo number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, ',', '.'); ?></td>
                 <td><?php echo utf8_encode($rs['NOME_CLIENTE']); ?></td>
                 <td class="text"><?php echo $rs['CD_CPF']; ?></td>
             </tr>

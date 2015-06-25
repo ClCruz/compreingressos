@@ -95,7 +95,8 @@ foreach ($itensPedido as $item) {
         $codigo_error_data[] = array(
             'code' => $code,
             'barcodeImage2' => $barcodeImage2,
-            'path2' => $path2
+            'path2' => $path2,
+            'item' => $item
         );
     }
 

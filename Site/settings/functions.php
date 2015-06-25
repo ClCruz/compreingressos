@@ -1894,7 +1894,7 @@ function limparImagesTemp() {
 		// todos os gif
 		if (pathinfo($dir_name.$value, PATHINFO_EXTENSION) == 'gif') {
 			// hora anterior ou mais velhos
-			if (filemtime($dir_name.$value) < strtotime('-1 hour')) {
+			if (filemtime($dir_name.$value) < strtotime('-3 hour')) {
 				unlink($dir_name.$value);
 			}
 		}
@@ -1934,6 +1934,15 @@ function getIdClienteBaseSelecionada($idBase){
     }
 
     return $idCliente;
+}
+
+function sendErrorMail($subject, $message) {
+	$namefrom = 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS';
+	$from = 'contato@cc.com.br';
+
+	$cc = array('Jefferson => jefferson.ferreira@cc.com.br', 'Edicarlos => edicarlos.barbosa@cc.com.br');
+
+	authSendEmail($from, $namefrom, 'gabriel.monteiro@cc.com.br', 'Gabriel', $subject, $message, $cc);
 }
 
 function pre() {

@@ -73,35 +73,7 @@ $queryCodigos = "SELECT codbar
                 WHERE l.CodApresentacao = ? AND l.CodVenda = ? and c.statusingresso = 'L'
                 ORDER BY c.Indice";
 foreach ($itensPedido as $item) {
-    if ($CodApresentacao !== $item['CodApresentacao']) {
-        $conn = getConnection($item['id_base']);
-        $codigos = executeSQL($conn, $queryCodigos, array($item['CodApresentacao'], $item['CodVenda']));
-
-        $rsCodigo = fetchResult($codigos);
-        $CodApresentacao = $item['CodApresentacao'];
-    } else {
-        $rsCodigo = fetchResult($codigos);
-    }
-
-    $code = $rsCodigo['codbar'];
-
-    for ($i = 0; $i < 3; $i++) {
-        $barcodeImage2 = encodeToBarcode($code, 'Aztec', array('X' => '0.12'));
-        $path2 = saveAndGetPath($barcodeImage2, $code . '_2');
-        if (file_exists($path2)) break;
-    }
-
-    if (!file_exists($path2)) {
-        $codigo_error_data[] = array(
-            'code' => $code,
-            'barcodeImage2' => $barcodeImage2,
-            'path2' => $path2,
-            'item' => $item
-        );
-    }
-
-    $barcodes[] = array('path' => $path2, 'cid' => $code . '_2');
-
+    
     $valores['itens_pedido'] .= '';
     if ($item['descricao_item'] == 'Serviço') {
         
@@ -109,6 +81,47 @@ foreach ($itensPedido as $item) {
         $valores['valor_ingressos'] = number_format(($PaymentDataCollection['Amount'] / 100) - $item['valor_item'], 2, ',', '');
 
     } else {
+        if ($CodApresentacao !== $item['CodApresentacao']) {
+
+            for ($i = 0; $i < 3; $i++) {
+                $codigo_sql_errors = array();
+
+                $conn = getConnection($item['id_base']);
+                $codigo_sql_errors[] = array(
+                    'id_base' => $item['id_base'],
+                    'conexao' => sqlErrors()
+                );
+                
+                $codigos = executeSQL($conn, $queryCodigos, array($item['CodApresentacao'], $item['CodVenda']));
+                $codigo_sql_errors[] = array(
+                    'params' => array($item['CodApresentacao'], $item['CodVenda']),
+                    'requisicao' => sqlErrors()
+                );
+                
+                $rsCodigo = fetchResult($codigos);
+                $codigo_sql_errors[] = array('fetch' => sqlErrors());
+
+                if ($rsCodigo['codbar'] != NULL) break;
+                else {
+                    $codigo_error_data[] = array(
+                        'tentativa' => $i + 1,
+                        'item' => $item,
+                        'codigo_sql_errors' => $codigo_sql_errors
+                    );
+                    sleep(3);
+                }
+            }
+            $CodApresentacao = $item['CodApresentacao'];
+        } else {
+            $rsCodigo = fetchResult($codigos);
+        }
+
+        $code = $rsCodigo['codbar'];
+
+        $barcodeImage2 = encodeToBarcode($code, 'Aztec', array('X' => '0.12'));
+        $path2 = saveAndGetPath($barcodeImage2, $code . '_2');
+        $barcodes[] = array('path' => $path2, 'cid' => $code . '_2');
+        
         $ingressosCount++;
 
         if ($print_email) {
@@ -383,6 +396,6 @@ if (!empty($codigo_error_data)) {
     ));
     echo "</pre>";
     $message = ob_get_clean();
-    sendErrorMail('Erro no Sistema COMPREINGRESSOS.COM - código do ingresso', $message);
+    sendErrorMail('Erro no Sistema COMPREINGRESSOS.COM - codigo do ingresso', $message);
 }
 ?>

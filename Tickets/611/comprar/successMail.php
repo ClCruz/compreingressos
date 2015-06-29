@@ -103,11 +103,17 @@ foreach ($itensPedido as $item) {
 
                 if ($rsCodigo['codbar'] != NULL) break;
                 else {
-                    $codigo_error_data[] = array(
-                        'tentativa' => $i + 1,
-                        'item' => $item,
-                        'codigo_sql_errors' => $codigo_sql_errors
-                    );
+                    $data_parts = explode('/', $item['descricao_item']['data']);
+                    
+                    $data_hora = $data_parts[2].'-'.$data_parts[1].'-'.$data_parts[0].' '.preg_replace('/h/i', ':', $item['descricao_item']['hora']);
+
+                    if (strtotime($data_hora) > time()) {
+                        $codigo_error_data[] = array(
+                            'tentativa' => $i + 1,
+                            'item' => $item,
+                            'codigo_sql_errors' => $codigo_sql_errors
+                        );
+                    }
                     sleep(3);
                 }
             }

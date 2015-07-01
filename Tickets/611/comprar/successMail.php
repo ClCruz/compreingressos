@@ -114,7 +114,7 @@ foreach ($itensPedido as $item) {
                             'codigo_sql_errors' => $codigo_sql_errors
                         );
                     }
-                    sleep(3);
+                    sleep(1);
                 }
             }
             $CodApresentacao = $item['CodApresentacao'];
@@ -124,9 +124,30 @@ foreach ($itensPedido as $item) {
 
         $code = $rsCodigo['codbar'];
 
-        $barcodeImage2 = encodeToBarcode($code, 'Aztec', array('X' => '0.12'));
-        $path2 = saveAndGetPath($barcodeImage2, $code . '_2');
-        $barcodes[] = array('path' => $path2, 'cid' => $code . '_2');
+        for ($i = 0; $i < 3; $i++) {
+            $barcodeImage2 = encodeToBarcode($code, 'Aztec', array('X' => '0.12'));
+            $path2 = saveAndGetPath($barcodeImage2, $code . '_2');
+
+            if (file_exists($path2)) {
+                $barcodes[] = array('path' => $path2, 'cid' => $code . '_2');
+                break;
+            } else {
+                $data_parts = explode('/', $item['descricao_item']['data']);
+                
+                $data_hora = $data_parts[2].'-'.$data_parts[1].'-'.$data_parts[0].' '.preg_replace('/h/i', ':', $item['descricao_item']['hora']);
+
+                if (strtotime($data_hora) > time()) {
+                    $codigo_error_data[] = array(
+                        'tentativa' => $i + 1,
+                        'code' => $code,
+                        'barcodeImage2' => $barcodeImage2,
+                        'path2' => $path2,
+                        'item' => $item
+                    );
+                    sleep(1);
+                }
+            }
+        }
         
         $ingressosCount++;
 

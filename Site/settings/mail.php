@@ -66,16 +66,21 @@ function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copi
 
 	$mail->ClearAllRecipients();
 	$mail->ClearAttachments();
-	if (!empty($attachment)) {
-		foreach($attachment as $file) {
-			unlink($file['path']);
-		}
-		limparImagesTemp();
-	}
 
 	$error = $mail->ErrorInfo;
 
-	return $enviado ? $enviado : authSendEmail_alternativo($from, $namefrom, $to, $nameto, $subject, $message, $copiesTo, $hiddenCopiesTo, $charset, $attachment);
+	if ($enviado) {
+		if (!empty($attachment)) {
+			foreach($attachment as $file) {
+				unlink($file['path']);
+			}
+			limparImagesTemp();
+		}
+
+		return true;
+	} else {
+		return authSendEmail_alternativo($from, $namefrom, $to, $nameto, $subject, $message, $copiesTo, $hiddenCopiesTo, $charset, $attachment);
+	}
 }
 
 function authSendEmail_alternativo($from, $namefrom, $to, $nameto, $subject, $message, $copiesTo = array(), $hiddenCopiesTo = array(), $charset = 'utf8', $attachment = array()) {
@@ -150,16 +155,21 @@ function authSendEmail_alternativo($from, $namefrom, $to, $nameto, $subject, $me
 
 	$mail->ClearAllRecipients();
 	$mail->ClearAttachments();
-	if (!empty($attachment)) {
-		foreach($attachment as $file) {
-			unlink($file['path']);
-		}
-		limparImagesTemp();
-	}
 
 	$error = $mail->ErrorInfo;
 
-	return $enviado ? $enviado : authSendEmail_alternativo2($from, $namefrom, $to, $nameto, $subject, $message, $copiesTo, $hiddenCopiesTo, $charset, $attachment);
+	if ($enviado) {
+		if (!empty($attachment)) {
+			foreach($attachment as $file) {
+				unlink($file['path']);
+			}
+			limparImagesTemp();
+		}
+
+		return true;
+	} else {
+		return authSendEmail_alternativo2($from, $namefrom, $to, $nameto, $subject, $message, $copiesTo, $hiddenCopiesTo, $charset, $attachment);
+	}
 }
 
 function authSendEmail_alternativo2($from, $namefrom, $to, $nameto, $subject, $message, $copiesTo = array(), $hiddenCopiesTo = array(), $charset = 'utf8', $attachment = array()) {
@@ -226,16 +236,21 @@ function authSendEmail_alternativo2($from, $namefrom, $to, $nameto, $subject, $m
 
 	$mail->ClearAllRecipients();
 	$mail->ClearAttachments();
-	if (!empty($attachment)) {
-		foreach($attachment as $file) {
-			unlink($file['path']);
-		}
-		limparImagesTemp();
-	}
 
 	$error = $mail->ErrorInfo;
 
-	return $enviado ? $enviado : authSendEmail_alternativo3($from, $namefrom, $to, $nameto, $subject, $message, $copiesTo, $hiddenCopiesTo, $charset, $attachment);
+	if ($enviado) {
+		if (!empty($attachment)) {
+			foreach($attachment as $file) {
+				unlink($file['path']);
+			}
+			limparImagesTemp();
+		}
+
+		return true;
+	} else {
+		return authSendEmail_alternativo3($from, $namefrom, $to, $nameto, $subject, $message, $copiesTo, $hiddenCopiesTo, $charset, $attachment);
+	}
 }
 
 function authSendEmail_alternativo3($from, $namefrom, $to, $nameto, $subject, $message, $copiesTo = array(), $hiddenCopiesTo = array(), $charset = 'utf8', $attachment = array()) {

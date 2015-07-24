@@ -46,8 +46,9 @@ $(function() {
 			}
 			$('#cep').mask('00000-000').attr('pattern', '.{9}');
 			$('input[name=fixo]').mask('(00) 0000-0000').attr('pattern', '.{14}');
-			$('input[name=celular]').mask('(00) 0000-0000',{onKeyPress: function(phone, e, currentField, options){
-				var new_sp_phone = phone.match(/^(\(11\) 9(5[0-9]|6[0-9]|7[01234569]|8[0-9]|9[0-9])[0-9]{1})/g);
+			var mask_celular = ($('input[name=celular]').val().length == 15 || $('input[name=celular]').val().length == 11 ? '(00) 00000-0000' : '(00) 0000-0000');
+			$('input[name=celular]').mask(mask_celular, {onKeyPress: function(phone, e, currentField, options){
+				var new_sp_phone = phone.match(/^(\([0-9]{2}\) 9(5[0-9]|6[0-9]|7[01234569]|8[0-9]|9[0-9])[0-9]{1})/g);
 				new_sp_phone ? $(currentField).mask('(00) 00000-0000', options) : $(currentField).mask('(00) 0000-0000', options)
 				}
 			});

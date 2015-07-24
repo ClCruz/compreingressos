@@ -1,5 +1,7 @@
-<?php session_start(); ?>
-<script>var RecaptchaOptions = {theme: 'white'};</script>
+<?php
+require_once('../settings/settings.php');
+session_start();
+?>
 <div id="dados_conta">
 	<form id="form_cadastro" name="form_cadastro" method="POST" action="cadastro.php">
 		<?php if (isset($_GET['tag'])) { ?>
@@ -227,13 +229,13 @@
 				</label>
 				<?php } ?>
 			</div>
-			<?php
-				if (!(isset($_SESSION['user']) and is_numeric($_SESSION['user'])) and !(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) {
-					require_once('../settings/settings.php');
-					require_once('../settings/recaptchalib.php');
-					echo recaptcha_get_html($recaptcha['public_key'], null, true);
-				}
-			?>
+
+			<?php if (!(isset($_SESSION['user']) and is_numeric($_SESSION['user'])) and !(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) { ?>
+			<script src="https://www.google.com/recaptcha/api.js?hl=pt-BR" async defer></script>
+			<div class="input_area recaptcha">
+				<div class="g-recaptcha" data-sitekey="<?php echo $recaptcha['public_key']; ?>"></div>
+			</div>
+			<?php } ?>
 			
 			<input type="button" class="submit salvar_dados" style="margin-top: 36px">
 			<div class="erro_help">

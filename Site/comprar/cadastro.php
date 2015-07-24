@@ -61,14 +61,26 @@ if (isset($_GET['action'])) {
 	if ($_GET['action'] == 'add') {
 		if (!(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) {
 			require_once('../settings/settings.php');
-			require_once('../settings/recaptchalib.php');
-			$resp = recaptcha_check_answer ($recaptcha['private_key'],
-			                                $_SERVER["REMOTE_ADDR"],
-			                                $_POST["recaptcha_challenge_field"],
-			                                $_POST["recaptcha_response_field"]);
+			// reCAPTCHA v2 ---------------
+			$post_data = http_build_query(array('secret'    => $recaptcha['private_key'],
+			                                    'response'  => $_POST["g-recaptcha-response"],
+			                                    'remoteip'  => $_SERVER["REMOTE_ADDR"]));
 
-			if (!$resp->is_valid) {
-				echo 'O código informado não corresponde à imagem/áudio.';
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, "https://www.google.com/recaptcha/api/siteverify");
+			curl_setopt($ch, CURLOPT_POST, 1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+			// curl_setopt($ch, CURLOPT_PROXY, ($is_teste == '1' ? $proxy_homologacao['host'].':'.$proxy_homologacao['port'] : $proxy_producao['host'].':'.$proxy_producao['port']));
+			curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+			$server_output = curl_exec($ch);
+			curl_close($ch);
+
+			$resp = json_decode($server_output, true);
+			// die(var_dump($resp));
+			if (!$resp['success']) {
+			    echo "Favor efetuar a verificação de robô.";
 			    exit();
 			}
 		}
@@ -216,7 +228,7 @@ if (isset($_GET['action'])) {
 		$params = array(
 							$_POST['nome'],
 							$_POST['sobrenome'],
-							$_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'],
+							(($_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] != '//') ? $_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] : NULL),
 							$_POST['ddd1'],
 							$_POST['ddd2'],
 							$_POST['telefone'],
@@ -334,20 +346,22 @@ if (isset($_GET['action'])) {
 
 		$mcapi = new MCAPI($MailChimp['api_key']);
 		$user_data = array(
-			'NOME' => $_POST['nome'],
-			'SOBRENOME' => $_POST['sobrenome'],
-			'DDDTEL' => $_POST['ddd1'],
-			'TELEFONE' => $_POST['telefone'],
-			'DDDCEL' => $_POST['ddd2'],
-			'CELULAR' => $_POST['celular'],
-			'BAIRRO' => $_POST['bairro'],
-			'CIDADE' => utf8_encode($_POST['cidade']),
-			'CEP' => $_POST['cep'],
-			'NASCIMENTO' => (($_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] != '//') ? $_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] : NULL),
-			'SEXO' => $_POST['sexo'],
-			'UF' => utf8_encode($rs['DS_ESTADO'])
+			'nm_email' => $_POST['email'],
+			'nome' => $_POST['nome'],
+			'apelido' => $_POST['sobrenome'],
+			'ddd_fone' => $_POST['ddd1'],
+			'telefone' => $_POST['telefone'],
+			'ddd_celular' => $_POST['ddd2'],
+			'celular' => $_POST['celular'],
+			'bairro' => $_POST['bairro'],
+			'cidade' => $_POST['cidade'],
+			'cep' => $_POST['cep'],
+			'dt_nascimento' => (($_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] != '//') ? $_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] : NULL),
+			'sexo' => $_POST['sexo'],
+			'uf' => $rs['DS_ESTADO']
 		);
 
+		/*
 		if ($_GET['action'] == 'update') {
 			$update = true;
 			$user_data['EMAIL'] = $_POST['email'];
@@ -356,11 +370,37 @@ if (isset($_GET['action'])) {
 			$update = false;
 			$new_email = $_POST['email1'];
 		}
+		*/
 
-		$mcapi->listSubscribe($MailChimp['list_key'], $email, $user_data, 'html', false, $update);
+		// All in Mail login
+		require_once('../settings/nusoap-0.9.5/lib/nusoap.php');
+
+		$client = new nusoap_client("http://painel01.allinmail.com.br/wsAllin/login.php?wsdl", true);
+		$ticket = $client->call('getTicket', array($mail_mkt['login'], $mail_mkt['senha']));
+
+		// formato All in Mail
+		foreach ($user_data as $key => $value)
+			$user_data[$key] = str_replace(';', ' ', $value);
+
+		$campos = implode(';', array_keys($user_data));
+		$valor = implode(';', array_values($user_data));
+
+		// adiciona na lista
+		$client = new nusoap_client("http://painel01.allinmail.com.br/wsAllin/inserir_email_base.php?wsdl", true);
+		$arr = array(
+			"nm_lista"	=> $mail_mkt['lista'],
+			"campos"	=> $campos,
+			"valor"		=> $valor
+		);
+		$result = $client->call('inserirEmailBase', array($ticket, $arr));
+		
+		// remove ou adiciona na lista de optout
+		$client = new nusoap_client("http://painel01.allinmail.com.br/wsAllin/optoutInOut.php?wsdl", true);
 
 		if ($_POST['extra_info'] != 'S') {
-			$mcapi->listUnsubscribe($MailChimp['list_key'], $new_email, false, false, false);
+			$result = $client->call('inserirOptout', array($ticket, $_POST['email']));
+		} else {
+			$result = $client->call('removerOptout', array($ticket, $_POST['email']));
 		}
 	}
 	

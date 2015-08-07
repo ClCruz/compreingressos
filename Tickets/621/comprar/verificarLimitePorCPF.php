@@ -6,12 +6,12 @@ if (isset($_SESSION['user'])) {
 	$rs = executeSQL($mainConnection, 'SELECT CD_CPF FROM MW_CLIENTE WHERE ID_CLIENTE = ?', array($_SESSION['user']), true);
 	$cpf = $rs[0];
 	
-	$query = 'SELECT E.ID_BASE, E.DS_EVENTO, A.CODAPRESENTACAO, SUM(1) TOTAL
-				 FROM MW_RESERVA R
-				 INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
-				 INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
-				 WHERE R.ID_SESSION = ?
-				 GROUP BY E.ID_BASE, E.DS_EVENTO, A.CODAPRESENTACAO';
+	$query = 'SELECT E.ID_BASE, E.DS_EVENTO, A.DT_APRESENTACAO, A.HR_APRESENTACAO, MAX(A.CODAPRESENTACAO) CODAPRESENTACAO, SUM(1) TOTAL
+				FROM MW_RESERVA R
+				INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+				INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+				WHERE R.ID_SESSION = ?
+				GROUP BY E.ID_BASE, E.DS_EVENTO, A.DT_APRESENTACAO, A.HR_APRESENTACAO';
 	$result = executeSQL($mainConnection, $query, array(session_id()));
 	
 	$start = 'Caro Sr(a)., o(s) seguinte(s) evento(s) permite(m) apenas a compra de um número limitado de ingressos.<br><br>';

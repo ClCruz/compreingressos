@@ -26,6 +26,12 @@ if (!$resp['success']) {
     exit();
 }
 
+// não passar código de cartão nulo ()
+if ($_POST['codCartao'] == '') {
+    echo "Nenhuma forma de pagamento selecionada.";
+    die();
+}
+
 // condicao que para uma tentativa de usar o cartao de teste no ambiente de producao
 if ($is_teste != '1' and $_POST['codCartao'] == 997) {
     echo "Nice try...";

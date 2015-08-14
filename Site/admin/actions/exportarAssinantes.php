@@ -22,6 +22,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 400, true)) {
                                     ,E2.DS_EVENTO AS PACOTE
                                     ,TS.NOMSETOR COLLATE SQL_LATIN1_GENERAL_CP1_CI_AS AS SETOR
                                     ,PR.DS_LOCALIZACAO AS LOCALIZACAO
+                                    ,(SELECT TIPBILHETE
+                                        FROM TABLUGSALA TLS 
+                                              INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A2 ON A2.CODAPRESENTACAO = TLS.CODAPRESENTACAO
+                                              INNER JOIN TABTIPBILHETE TB ON TB.CODTIPBILHETE = TLS.CODTIPBILHETE
+                                        WHERE A2.ID_EVENTO = A.ID_EVENTO
+                                              AND A2.DT_APRESENTACAO = A.DT_APRESENTACAO 
+                                              AND A2.HR_APRESENTACAO = A.HR_APRESENTACAO
+                                              AND TLS.INDICE = TSD.INDICE
+                                        ) AS TIPO_BILHETE
                                 FROM CI_MIDDLEWAY..MW_CLIENTE C
                                 INNER JOIN CI_MIDDLEWAY..MW_ESTADO E ON E.ID_ESTADO = C.ID_ESTADO
                                 INNER JOIN CI_MIDDLEWAY..MW_PACOTE_RESERVA PR ON PR.ID_CLIENTE = C.ID_CLIENTE
@@ -57,6 +66,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 400, true)) {
                 <td><?php echo utf8_encode($rs['PACOTE']); ?></td>
                 <td><?php echo utf8_encode($rs['SETOR']); ?></td>
                 <td><?php echo utf8_encode($rs['LOCALIZACAO']); ?></td>
+                <td><?php echo utf8_encode($rs['TIPO_BILHETE']); ?></td>
             </tr>
         <?php
         }

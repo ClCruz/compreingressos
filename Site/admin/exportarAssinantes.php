@@ -120,6 +120,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 400, true)) {
                         <th align="left">PACOTE</th>
                         <th align="left">SETOR</th>
                         <th align="left">LOCALIZACAO</th>
+                        <th align="left">TIPO_BILHETE</th>
                     </tr>
                 </thead>
                 <tbody id="registros">

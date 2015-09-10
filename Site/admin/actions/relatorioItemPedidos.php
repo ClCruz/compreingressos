@@ -35,7 +35,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
                             "SELECT
                                 PV.ID_PEDIDO_VENDA,
                                 U.DS_NOME OPERADOR,
-                                AB.DS_TIPO_BILHETE,
                                 E.DS_EVENTO,
                                 A.DT_APRESENTACAO,
                                 A.HR_APRESENTACAO,
@@ -62,7 +61,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
                             FROM MW_PEDIDO_VENDA PV
                             LEFT JOIN MW_USUARIO U ON U.ID_USUARIO = PV.ID_USUARIO_CALLCENTER
                             INNER JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
-                            INNER JOIN MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO_BILHETE = IPV.ID_APRESENTACAO_BILHETE
                             INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO
                             INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
                             INNER JOIN MW_MEIO_PAGAMENTO MP ON MP.ID_MEIO_PAGAMENTO = PV.ID_MEIO_PAGAMENTO
@@ -74,7 +72,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
                             GROUP BY
                                 PV.ID_PEDIDO_VENDA,
                                 U.DS_NOME,
-                                AB.DS_TIPO_BILHETE,
                                 E.DS_EVENTO,
                                 A.DT_APRESENTACAO,
                                 A.HR_APRESENTACAO,

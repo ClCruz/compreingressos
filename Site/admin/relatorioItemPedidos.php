@@ -112,7 +112,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
                         <th align="left">Nº Pedido</th>
                         <th align="left">Canal de Venda</th>
                         <th align="left">Operador</th>
-                        <th align="left">Tipo de Ingresso</th>
                         <th align="left">Local do Evento</th>
                         <th align="left">Evento</th>
                         <th align="left">Data do Evento</th>

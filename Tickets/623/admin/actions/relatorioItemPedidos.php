@@ -105,7 +105,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
                 <td class="text"><?php echo $rs['ID_PEDIDO_VENDA']; ?></td>
                 <td><?php echo utf8_encode($info['DS_CANAL_VENDA']); ?></td>
                 <td><?php echo $rs['OPERADOR']; ?></td>
-                <td><?php echo utf8_encode($rs['DS_TIPO_BILHETE']); ?></td>
                 <td><?php echo utf8_encode($info['DS_LOCAL_EVENTO']); ?></td>
                 <td><?php echo utf8_encode($rs['DS_EVENTO']); ?></td>
                 <td><?php echo $rs['DT_APRESENTACAO']->format("d/m/Y"); ?></td>

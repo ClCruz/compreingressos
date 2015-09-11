@@ -45,7 +45,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
                                 PV.CD_NUMERO_TRANSACAO NSU,
                                 CASE WHEN PV.NR_PARCELAS_PGTO > 1 THEN 'PARCELADO' ELSE 'NÃO PARCELADO' END FORMA_PAGAMENTO,
                                 PV.NR_PARCELAS_PGTO PARCELAS,
-                                PV.VL_TOTAL_PEDIDO_VENDA/PV.NR_PARCELAS_PGTO VALOR_PARCELA,
+                                VL_TOTAL_PEDIDO_VENDA - VL_TOTAL_TAXA_CONVENIENCIA VALOR_SEM_SERVICO,
                                 PV.VL_TOTAL_TAXA_CONVENIENCIA,
                                 PV.VL_TOTAL_PEDIDO_VENDA,
                                 C.DS_NOME + ' ' + C.DS_SOBRENOME NOME_CLIENTE,
@@ -82,7 +82,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
                                 PV.CD_NUMERO_TRANSACAO,
                                 CASE WHEN PV.NR_PARCELAS_PGTO > 1 THEN 'PARCELADO' ELSE 'NÃO PARCELADO' END,
                                 PV.NR_PARCELAS_PGTO,
-                                PV.VL_TOTAL_PEDIDO_VENDA/PV.NR_PARCELAS_PGTO,
+                                VL_TOTAL_PEDIDO_VENDA - VL_TOTAL_TAXA_CONVENIENCIA,
                                 PV.VL_TOTAL_TAXA_CONVENIENCIA,
                                 PV.VL_TOTAL_PEDIDO_VENDA,
                                 C.DS_NOME + ' ' + C.DS_SOBRENOME,
@@ -118,7 +118,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
                 <td><?php echo $rs['FORMA_PAGAMENTO']; ?></td>
                 <td><?php echo $rs['PARCELAS']; ?></td>
                 <td><?php echo $rs['QUANTIDADE_INGRESSOS']; ?></td>
-                <td class="money"><?php echo number_format($rs['VALOR_PARCELA'], 2, ',', '.'); ?></td>
+                <td class="money"><?php echo number_format($rs['VALOR_SEM_SERVICO'], 2, ',', '.'); ?></td>
                 <td class="money"><?php echo number_format($rs['VL_TOTAL_TAXA_CONVENIENCIA'], 2, ',', '.'); ?></td>
                 <td class="money"><?php echo number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, ',', '.'); ?></td>
                 <td><?php echo utf8_encode($rs['NOME_CLIENTE']); ?></td>

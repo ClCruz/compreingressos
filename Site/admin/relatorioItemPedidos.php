@@ -125,7 +125,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
                         <th align="left">Forma de Pagamento</th>
                         <th align="left">Parcelas</th>
                         <th align="left">Qtde. Lugares</th>
-                        <th align="left">Valor Parcela</th>
+                        <th align="left">Valor</th>
                         <th align="left">Valor Serviço</th>
                         <th align="left">Valor Total da Compra</th>
                         <th align="left">Cliente</th>

@@ -2,6 +2,38 @@
 require_once('../settings/settings.php');
 session_start();
 ?>
+<style type="text/css">
+	.dia div.erro_help p.help,
+	.mes div.erro_help p.help,
+	.ano div.erro_help p.help,
+	.dia div.erro_help,
+	.mes div.erro_help,
+	.ano div.erro_help {
+	    width: auto;
+	}
+
+	.dia {
+	    width: 90px;
+	}
+
+	.mes {
+	    width: 100px;
+	}
+
+	.ano {
+	    width: 120px;
+	}
+
+	.dia, .mes, .ano {
+	    margin-right: 10px;
+	    float: left;
+	}
+
+	.sbHolder.sbHolderDisabled {
+	    z-index: 0;
+	}
+</style>
+
 <div id="dados_conta">
 	<form id="form_cadastro" name="form_cadastro" method="POST" action="cadastro.php">
 		<?php if (isset($_GET['tag'])) { ?>
@@ -50,15 +82,28 @@ session_start();
 			<div class="input_area nascimento">
 				<div class="icone"></div>
 				<div class="inputs">
-					<p class="titulo">Data de nascimento</p>
+					<p class="titulo">
+						Data de nascimento<br/>
+						Birthdate<br/>
+						Fecha de nacimiento
+					</p>
 					<div class="dia">
 						<?php echo comboDia('nascimento_dia', $rs['DT_NASCIMENTO'][0], true); ?>
+						<div class="erro_help">
+							<p class="help">day / día</p>
+						</div>
 					</div>
 					<div class="mes">
 						<?php echo comboMeses('nascimento_mes', $rs['DT_NASCIMENTO'][1], false, true); ?>
+						<div class="erro_help">
+							<p class="help">month / mes</p>
+						</div>
 					</div>
 					<div class="ano">
 						<?php echo comboAnos('nascimento_ano', $rs['DT_NASCIMENTO'][2], date('Y')-100, date('Y'), true); ?>
+						<div class="erro_help">
+							<p class="help">year / año</p>
+						</div>
 					</div>
 					<div class="erro_help">
 						<p class="erro">informe a data de nascimento</p>
@@ -231,7 +276,7 @@ session_start();
 			</div>
 
 			<?php if (!(isset($_SESSION['user']) and is_numeric($_SESSION['user'])) and !(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) { ?>
-			<script src="https://www.google.com/recaptcha/api.js?hl=pt-BR" async defer></script>
+			<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 			<div class="input_area recaptcha">
 				<div class="g-recaptcha" data-sitekey="<?php echo $recaptcha['public_key']; ?>"></div>
 			</div>

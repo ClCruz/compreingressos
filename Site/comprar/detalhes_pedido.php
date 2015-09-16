@@ -25,7 +25,8 @@ $query = 'SELECT
 			 CD_CEP_ENTREGA,
 			 GETDATE() DATA_ATUAL,
 			 ID_PEDIDO_VENDA,
-			 NR_PARCELAS_PGTO
+			 NR_PARCELAS_PGTO,
+			 NM_CLIENTE_VOUCHER
 			 FROM MW_PEDIDO_VENDA
 			 WHERE ID_CLIENTE = ? AND ID_PEDIDO_VENDA = ?';
 $params = array($_SESSION['user'], $_GET['pedido']);
@@ -211,6 +212,10 @@ function finalizar($qtdIngressos, $totalIngressos, $rsPedido) {
 		<span class="total">total:</span><span class="cifrao">R$</span><span class="valor"><?php echo number_format($totalIngressos+$rsPedido['VL_FRETE'], 2, ',', ''); ?></span>
 		 (<?php echo $rsPedido['NR_PARCELAS_PGTO'] == 1 ? 'à vista' : 'em '.$rsPedido['NR_PARCELAS_PGTO'].' vezes'; ?>)
 	</p>
+
+	<?php if ($rsPedido['NM_CLIENTE_VOUCHER']) { ?>
+		<p class="pedido_total">Ingresso emitido em nome de <b><?php echo $rsPedido['NM_CLIENTE_VOUCHER']; ?></b></p>
+	<?php } ?>
 </div>
 <?php
 }

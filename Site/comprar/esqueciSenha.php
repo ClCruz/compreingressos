@@ -20,7 +20,8 @@ if (isset($_GET['email'])) {
 			$subject = 'Solicitação de Nova Senha'; 
 			
 			$namefrom = 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS';
-			$from = 'lembrete@compreingressos.com';
+			// $from = 'lembrete@compreingressos.com';
+			$from = ($is_teste == '1') ? 'contato@cc.com.br' : 'lembrete@compreingressos.com';
 
 			//define the body of the message.
 			ob_start(); //Turn on output buffering

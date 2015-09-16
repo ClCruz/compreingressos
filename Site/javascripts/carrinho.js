@@ -88,6 +88,14 @@ $(function() {
 			}
 		});
 	});
+
+	$('#pedido_resumo').on('keydown', 'input[name=bin\\[\\]]', function(e){
+		if (e.keyCode == 13) {
+			e.preventDefault();
+
+			$(this).parent('.container_validador').find('a.validarBin').trigger('click');
+		}
+	});
 	
 	$combo_ingressos.on('focus', function() {
 	    //Store old value

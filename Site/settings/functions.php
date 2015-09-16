@@ -162,17 +162,16 @@ function obterValorServico($id_bilhete, $valor_pedido = false, $id_pedido = null
 
             $query = 'SELECT
                         AB.VL_LIQUIDO_INGRESSO,
-                        P.CODPECA
+                        PC.ID_PROMOCAO_CONTROLE
                       FROM
                         CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB
-                      INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = ?
-                      LEFT JOIN TABPECA P ON P.CODPECA = E.CODPECA
-                        AND P.CODTIPBILHETEBIN = AB.CODTIPBILHETE
-                        AND P.IN_BIN_ITAU = 1
+                      LEFT JOIN TABTIPBILHETE TTB ON TTB.CODTIPBILHETE = AB.CODTIPBILHETE
+                      LEFT JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = TTB.ID_PROMOCAO_CONTROLE
+                      	AND PC.IN_ATIVO = 1 AND PC.CODTIPPROMOCAO = 4
                       WHERE
                         AB.IN_ATIVO = 1
                         AND AB.ID_APRESENTACAO_BILHETE = ?';
-            $params = array($id_evento, $id_bilhete);
+            $params = array($id_bilhete);
             $rs = executeSQL($conn, $query, $params, true);
 
             $quantidade = executeSQL($mainConnection, 'SELECT COUNT(1) AS INGRESSOS FROM MW_RESERVA WHERE ID_SESSION = ?', array(session_id()), true);
@@ -185,8 +184,8 @@ function obterValorServico($id_bilhete, $valor_pedido = false, $id_pedido = null
                 }
             } else {
                 $valor = $tipo == 'V'
-                                ? ($quantidade['INGRESSOS'] == 1 ? (is_null($rs['CODPECA']) ? $vl_um_ingresso : $vl_um_ingresso_promo) : (is_null($rs['CODPECA']) ? $normal : $promo))
-                                : (($quantidade['INGRESSOS'] == 1 ? (is_null($rs['CODPECA']) ? $vl_um_ingresso : $vl_um_ingresso_promo) : (is_null($rs['CODPECA']) ? $normal : $promo)) / 100) * $rs['VL_LIQUIDO_INGRESSO'];
+                                ? ($quantidade['INGRESSOS'] == 1 ? (is_null($rs['ID_PROMOCAO_CONTROLE']) ? $vl_um_ingresso : $vl_um_ingresso_promo) : (is_null($rs['ID_PROMOCAO_CONTROLE']) ? $normal : $promo))
+                                : (($quantidade['INGRESSOS'] == 1 ? (is_null($rs['ID_PROMOCAO_CONTROLE']) ? $vl_um_ingresso : $vl_um_ingresso_promo) : (is_null($rs['ID_PROMOCAO_CONTROLE']) ? $normal : $promo)) / 100) * $rs['VL_LIQUIDO_INGRESSO'];
             }
 
             if( isset($_SESSION['usuario_pdv']) and $_SESSION['usuario_pdv'] == 1 ){
@@ -205,7 +204,7 @@ function obterValorPercentualServicoPorPedido() {
 	session_start();
 	$soma = 0;
 
-	$query = 'SELECT R.ID_APRESENTACAO_BILHETE, E.ID_BASE, E.ID_EVENTO, TC.VL_TAXA_CONVENIENCIA, TC.VL_TAXA_PROMOCIONAL
+	$query = 'SELECT R.ID_APRESENTACAO_BILHETE, E.ID_BASE, TC.VL_TAXA_CONVENIENCIA, TC.VL_TAXA_PROMOCIONAL
 				FROM MW_RESERVA R
 				INNER JOIN MW_APRESENTACAO A ON R.ID_APRESENTACAO = A.ID_APRESENTACAO
 				INNER JOIN MW_EVENTO E ON A.ID_EVENTO = E.ID_EVENTO
@@ -217,21 +216,21 @@ function obterValorPercentualServicoPorPedido() {
 
 	while ($rs = fetchResult($result)) {
 		$id_bilhete = $rs['ID_APRESENTACAO_BILHETE'];
-		$id_evento = $rs['ID_EVENTO'];
 		$normal = $rs['VL_TAXA_CONVENIENCIA'];
 		$promo = $rs['VL_TAXA_PROMOCIONAL'];
 		$conn = getConnection($rs['ID_BASE']);
 
-		$query = 'SELECT AB.VL_LIQUIDO_INGRESSO, P.CODPECA
+		$query = 'SELECT AB.VL_LIQUIDO_INGRESSO, PC.ID_PROMOCAO_CONTROLE
 					FROM CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB
-					INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = ?
-					LEFT JOIN TABPECA P ON P.CODPECA = E.CODPECA AND P.CODTIPBILHETEBIN = AB.CODTIPBILHETE AND P.IN_BIN_ITAU = 1 
+                      LEFT JOIN TABTIPBILHETE TTB ON TTB.CODTIPBILHETE = AB.CODTIPBILHETE
+                      LEFT JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = TTB.ID_PROMOCAO_CONTROLE
+                      	AND PC.IN_ATIVO = 1 AND PC.CODTIPPROMOCAO = 4
 					WHERE AB.IN_ATIVO = 1
 					AND AB.ID_APRESENTACAO_BILHETE = ?';
-		$params = array($id_evento, $id_bilhete);
+		$params = array($id_bilhete);
 		$rs = executeSQL($conn, $query, $params, true);
 
-		$soma += (is_null($rs['CODPECA']) ? ($normal / 100) * $rs['VL_LIQUIDO_INGRESSO'] : ($promo / 100) * $rs['VL_LIQUIDO_INGRESSO']);
+		$soma += (is_null($rs['ID_PROMOCAO_CONTROLE']) ? ($normal / 100) * $rs['VL_LIQUIDO_INGRESSO'] : ($promo / 100) * $rs['VL_LIQUIDO_INGRESSO']);
 	}
 
 	return $soma;
@@ -447,7 +446,7 @@ function getTotalLoteDisponivel ($bilhete) {
 				AND A.IN_ATIVO = 1 AND AB.IN_ATIVO = 1 AND TTB.CODTIPBILHETE = ?
 				AND TTB.QTDVENDAPORLOTE > 0 AND TTB.STATIPBILHMEIAESTUDANTE = 'N' AND TTB.STATIPBILHETE = 'A'";
 	$params = array($bilhete);
-	$rs = executeSQL($conn, $query, array($rs['ID_EVENTO'], $rs['DT_APRESENTACAO'], $rs['HR_APRESENTACAO'], $rs['CODTIPBILHETE']), true);
+	$rs = executeSQL($conn, $query, array($rs['ID_EVENTO'], $rs['DT_APRESENTACAO']->format('Ymd'), $rs['HR_APRESENTACAO'], $rs['CODTIPBILHETE']), true);
 
 	return getTotalLote($bilhete) - $rs['TOTAL'];
 }
@@ -482,15 +481,15 @@ function sqlErrors($index = NULL) {
 }
 
 function beginTransaction($conn) {
-    return sqlsrv_begin_transaction($conn);
+    return null;//sqlsrv_begin_transaction($conn);
 }
 
 function commitTransaction($conn) {
-    return sqlsrv_commit($conn);
+    return null;//sqlsrv_commit($conn);
 }
 
 function rollbackTransaction($conn) {
-    return sqlsrv_rollback($conn);
+    return null;//sqlsrv_rollback($conn);
 }
 
 function executeSQL($conn, $strSql, $params = array(), $returnRs = false) {
@@ -723,29 +722,16 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 
     $query = "SELECT	ID_APRESENTACAO_BILHETE,
 					    AB.CODTIPBILHETE,
-					    DS_TIPO_BILHETE,
+					    AB.DS_TIPO_BILHETE,
 					    VL_LIQUIDO_INGRESSO,
-					    P.IN_BIN_ITAU,
-					    ISNULL(P.QT_BIN_POR_CPF,0) AS QT_BIN_POR_CPF,
-					    P.CODTIPBILHETEBIN,
+					    CASE WHEN PC.CODTIPPROMOCAO = 4 THEN 1 ELSE 0 END AS IN_BIN,
+					    ISNULL(CE.QT_PROMO_POR_CPF, ISNULL(PC.QT_PROMO_POR_CPF, 0)) AS QT_PROMO_POR_CPF,
 					    B.STATIPBILHMEIAESTUDANTE,
 					    B.QTDVENDAPORLOTE,
 					    B.IMG1PROMOCAO,
 					    B.IMG2PROMOCAO,
 					    A.ID_EVENTO,
-						STUFF
-					    (
-					        (
-					            SELECT 
-					                ',' + CONVERT(VARCHAR, TPP.CODTIPPROMOCAO)
-					            FROM
-					                TABPROMOCAOPECA TPP
-					            WHERE
-					                TPP.CODPECA = P.CODPECA AND TPP.CODTIPBILHETE = B.CODTIPBILHETE
-					            FOR XML PATH('')
-					        )
-					    ,1,1,'') AS CODTIPPROMOCAO,
-					    ISNULL(P.QT_INGRESSOS_POR_PROMOCAO,0) AS QT_INGRESSOS_POR_PROMOCAO,
+						B.ID_PROMOCAO_CONTROLE,
 					    B.IN_HOT_SITE
 				FROM
 				 CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB 
@@ -768,9 +754,11 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 							WHEN 6 THEN IN_SEX 
 							ELSE IN_SAB
 							END
-				INNER JOIN
-				TABPECA   P
-				ON P.CODPECA = E.CODPECA
+				LEFT JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE PC
+				 ON PC.ID_PROMOCAO_CONTROLE = B.ID_PROMOCAO_CONTROLE
+                LEFT JOIN CI_MIDDLEWAY..MW_CONTROLE_EVENTO CE
+                 ON CE.ID_PROMOCAO_CONTROLE = PC.ID_PROMOCAO_CONTROLE
+                 AND CE.ID_EVENTO = E.ID_EVENTO
 				WHERE AB.ID_APRESENTACAO = ? 
 				AND AB.IN_ATIVO = '1'
 				AND NOT EXISTS (SELECT 1 FROM 
@@ -796,7 +784,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 				WHERE AB.CODTIPBILHETE = R.CODTIPBILHETE
 				   AND AP.CODAPRESENTACAO = A.CODAPRESENTACAO)
 					$ocultarMeiaEstudante
-				ORDER BY DS_TIPO_BILHETE";
+				ORDER BY AB.DS_TIPO_BILHETE";
 				
     $result = executeSQL($conn, $query, array($apresentacaoID, $idCadeira));
 
@@ -827,21 +815,21 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
     		or ($is_lote and $is_lote_no_carrinho)) {
 			
 			// se for bin itau
-			if ($rs['IN_BIN_ITAU'] and $rs['CODTIPBILHETEBIN'] == $rs['CODTIPBILHETE']) {
+			if ($rs['IN_BIN']) {
 				$rs['IMG1PROMOCAO'] = '../images/promocional/' . basename($rs['IMG1PROMOCAO']);
 				$rs['IMG2PROMOCAO'] = '../images/promocional/' . basename($rs['IMG2PROMOCAO']);
 
-				$BIN = 'qtBin="' . $rs['QT_BIN_POR_CPF'] . '" codeBin="' . $rs['CODTIPBILHETEBIN'] .
+				$BIN = 'qtBin="' . $rs['QT_PROMO_POR_CPF'] . '" codeBin="' . $rs['ID_PROMOCAO_CONTROLE'] .
 						'" img1="' . $rs['IMG1PROMOCAO'] . '" img2="' . $rs['IMG2PROMOCAO'] . '" sizeBin="6"';
 				$promocao = '';
 
 			// se for codigo promocional
-			} elseif ($rs['CODTIPPROMOCAO'] != NULL) {
+			} elseif ($rs['ID_PROMOCAO_CONTROLE'] != NULL) {
 				$rs['IMG1PROMOCAO'] = '../images/promocional/' . basename($rs['IMG1PROMOCAO']);
 				$rs['IMG2PROMOCAO'] = '../images/promocional/' . basename($rs['IMG2PROMOCAO']);
 
 				$BIN = '';
-				$promocao = 'qtPromocao="' . $rs['QT_INGRESSOS_POR_PROMOCAO'] . '" codPromocao="'.$rs['CODTIPPROMOCAO'] .
+				$promocao = 'qtPromocao="' . $rs['QT_PROMO_POR_CPF'] . '" codPromocao="'.$rs['ID_PROMOCAO_CONTROLE'] .
 							'" img1="' . $rs['IMG1PROMOCAO'] . '" img2="' . $rs['IMG2PROMOCAO'] . '" sizeBin="32"';
 
 			// nem bin itau e nem codigo promocional
@@ -1383,6 +1371,45 @@ function comboCanalVenda($name, $selected) {
     return $combo;
 }
 
+function comboPromocoes($name, $selected, $isCombo = true) {
+    $mainConnection = mainConnection();
+    $result = executeSQL($mainConnection, 'SELECT ID_PROMOCAO_CONTROLE, DS_PROMOCAO FROM MW_PROMOCAO_CONTROLE WHERE IN_ATIVO = 1 ORDER BY DS_PROMOCAO');
+
+    $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione uma promoção...</option>';
+    while ($rs = fetchResult($result)) {
+    	if ($selected == $rs['ID_PROMOCAO_CONTROLE']) {
+		    $isSelected = 'selected';
+		    $text = $rs['DS_PROMOCAO'];
+		} else {
+		    $isSelected = '';
+		}
+
+		$combo .= '<option value="' . $rs['ID_PROMOCAO_CONTROLE'] . '"' . $isSelected . ' ' .
+			(($selected == $rs['ID_PROMOCAO_CONTROLE']) ? ' selected' : '') .
+			'>' . utf8_encode($rs['DS_PROMOCAO']) . '</option>';
+    }
+    $combo .= '</select>';
+
+    return $isCombo ? $combo : $text;
+}
+
+function comboTipoPromocao($name, $selected) {
+    $tipos = array(
+    	1 => 'Código Fixo',
+    	2 => 'Código Aleatório',
+    	3 => 'Arquivo CSV',
+    	4 => 'BIN'
+    );
+
+    $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione...</option>';
+    foreach ($tipos as $key => $value) {
+		$combo .= '<option value="' . $key . '"' . (($selected == $key) ? ' selected' : '') . '>' . $value . '</option>';
+    }
+    $combo .= '</select>';
+
+    return $combo;
+}
+
 // INICIO DOS COMBOS PARA O SISTEMA DE ASSINATURA ------------------------------------------
 
 // combo para os eventos que podem ser pacote
@@ -1900,6 +1927,30 @@ function limparImagesTemp() {
 		}
 	}
 }
+
+function limparTempAdmin() {
+	$dir_name = '../admin/temp/';
+
+	$files = array_diff(scandir($dir_name), array('..', '.'));
+
+	foreach ($files as $key => $value) {
+		// se for um diretorio
+		if (is_dir($dir_name.$value)) {
+			// hora anterior ou mais velhos
+			if (filemtime($dir_name.$value.'/.') < strtotime('-3 hour')) {
+				delTree($dir_name.$value);
+			}
+		}
+	}
+}
+
+function delTree($dir) { 
+	$files = array_diff(scandir($dir), array('.','..')); 
+	foreach ($files as $file) { 
+		(is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file"); 
+	} 
+	return rmdir($dir); 
+} 
 
 function limparCookies() {
 	setcookie('pedido', '', -1);

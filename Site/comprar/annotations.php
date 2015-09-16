@@ -1,4 +1,7 @@
 <?php
+ini_set('zlib.output_compression','On');
+ini_set('zlib.output_compression_level','1');
+
 require_once('../settings/functions.php');
 session_start();
 
@@ -83,8 +86,8 @@ elseif (isset($_GET['teatro']) and isset($_GET['codapresentacao'])) {
 			"classeObj" => utf8_encode($rs['CLASSEOBJ']),
 			"setor" => utf8_encode($rs['NOMSETOR']),
 			"codSetor" => $rs['CODSETOR'],
-			"x" => $rs['POSXSITE'],
-			"y" => $rs['POSYSITE'],
+			"x" => number_format($rs['POSXSITE'], 3),
+			"y" => number_format($rs['POSYSITE'], 3),
 			// O = openned / C = closed / S = standby = selected by current user
 			"status" => $rs['STATUS'],
 			"img" => $rs['IMGVISAOLUGARFOTO']

@@ -3,7 +3,9 @@ var RecaptchaOptions = {
 };
 
 $(function(){
-	var titular = $('input[name="nomeCartao"]');
+	var titular = $('input[name="nomeCartao"]'),
+		nomePresente = $('input[name=nomePresente]'),
+		emailPresente = $('input[name=emailPresente]');
 
 	$('#dadosPagamento').on('submit', function(e) {
 	    e.preventDefault();
@@ -11,14 +13,14 @@ $(function(){
 	    var $this = $(this),
 	    	valido = true;
 
-            if ($('input[name="usuario_pdv"]').val() == 0){
-                if ($('[name=codCartao]:checked').val() === undefined) {
-                    $.dialog({text: 'Selecione o cartão desejado.'});
-                    return false;
-                }
+        if ($('input[name="usuario_pdv"]').val() == 0){
+            if ($('[name=codCartao]:checked').val() === undefined) {
+                $.dialog({text: 'Selecione o cartão desejado.'});
+                return false;
             }
+        }
 
-	    $this.find(':input:not(#recaptcha_response_field, #g-recaptcha-response)').each(function(i,e) {
+	    $this.find(':input:not(#recaptcha_response_field, #g-recaptcha-response, [name=nomePresente], [name=emailPresente])').each(function(i,e) {
     		var e = $(e);
     		if (e.val().length < e.attr('maxlength')/2 || e.val() == '') {
     		    e.addClass('erro');
@@ -26,12 +28,29 @@ $(function(){
     		} else e.removeClass('erro');
 	    });
 
-            if ($('input[name="usuario_pdv"]').val() == 0){
-                if (titular.val().length < 3) {
-                    titular.addClass('erro');
-                    valido = false;
-                } else titular.removeClass('erro');
-            }
+        if ($('input[name="usuario_pdv"]').val() == 0) {
+            if (trim(titular.val()).length < 3) {
+                titular.addClass('erro');
+                valido = false;
+            } else titular.removeClass('erro');
+
+            if (!nomePresente.is(':hidden')) {
+	            if (trim(nomePresente.val()).length < 3) {
+	                nomePresente.addClass('erro');
+	                valido = false;
+	            } else nomePresente.removeClass('erro');
+
+	            emailPresente.removeClass('erro');
+	            if (emailPresente.val() != '') {
+	            	var email_pattern = /\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/i;
+
+		            if (!email_pattern.test(emailPresente.val())) {
+		                emailPresente.addClass('erro');
+		                valido = false;
+		            }
+		        }
+	        }
+        }
 
     	if (valido) {
     		// parar contagem regressiva
@@ -102,5 +121,20 @@ $(function(){
 		$('input[name=numCartao]').next('.erro_help').find('.help').text($cartao.attr('formatoCartao').replace(/0/g, 'X'));
 
     	if ($cartao.attr('formatoCodigo')) $('input[name=codSeguranca]').mask($cartao.attr('formatoCodigo'));
+	});
+
+	$('a.presente_toggle').on('click', function(e){
+		e.preventDefault();
+
+		$('.presente').slideToggle(function(){
+			$(this).find(':input').val('');
+		});
+
+		$('.explicacao_envio_presente').fadeOut();
+	});
+
+	$('a.envio_presente_explicao').on('click',function(e){
+		e.preventDefault();
+		$('.explicacao_envio_presente').fadeToggle();
 	});
 });

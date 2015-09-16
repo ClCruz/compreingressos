@@ -27,15 +27,33 @@ function atualizarCaixaMeiaEntrada(id) {
 	});
 }
 
+
+function sortColumn(column, hasHeader){
+    var table = $(column).parents('table').eq(0)
+    var rows = table.find('tr' + (hasHeader ? ':gt(0)' : '')).toArray().sort(comparer($(column).index()))
+    column.asc = !column.asc
+    if (!column.asc){rows = rows.reverse()}
+    for (var i = 0; i < rows.length; i++){table.append(rows[i])}
+}
+function comparer(index) {
+    return function(a, b) {
+        var valA = getCellValue(a, index), valB = getCellValue(b, index)
+        return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.localeCompare(valB)
+    }
+}
+function getCellValue(row, index){ return $(row).children('td').eq(index).html() }
+
 (function($){
 	$.ajaxSetup({cache: false});
 
-	$.fn.onlyNumbers = function() {
+	$.fn.onlyNumbers = function(allowPunctuation, allowMinus) {
 		$(this).keydown(function(event) {
 			if ((event.keyCode >= 48 && event.keyCode <= 57) ||
 				(event.keyCode >= 96 && event.keyCode <= 105) ||
 				(event.keyCode >= 37 && event.keyCode <= 40) ||
-				(event.keyCode == 8 || event.keyCode == 46 || event.keyCode == 9 || event.keyCode == 116)) {
+				(event.keyCode == 8 || event.keyCode == 46 || event.keyCode == 9 || event.keyCode == 116) ||
+				(allowPunctuation && event.keyCode == 188) ||
+				(allowMinus && event.keyCode == 189)) {
 			} else {
 				event.preventDefault();
 			}
@@ -112,7 +130,7 @@ function atualizarCaixaMeiaEntrada(id) {
 			same_message = $('.ui-dialog-content').filter(function(i,e){
 				return $(e).text() == element.text();
 			}).length;
-console.log(same_message);
+
 			if (same_message == 1) element.dialog('open');
 			else element.dialog('destroy').remove();
 		},

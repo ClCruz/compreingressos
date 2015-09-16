@@ -4,8 +4,9 @@ require_once('../settings/settings.php');
 
 session_start();
 
-if ($_POST) {    
+if ($_POST) {
     require('validarBin.php');
+    require('validarLote.php');
     require('verificarAssinatura.php');
     require('processarDadosCompra.php');
 } else {
@@ -153,6 +154,28 @@ if ($_POST) {
                 <?php
                 }
                 ?>
+                <div class="linha">
+                    <div class="input presente nome hidden">
+                        <p class="titulo">nome completo do presenteado</p>
+                        <input type="text" name="nomePresente" maxlength="60">
+                        <div class="erro_help">
+                            <p class="help"></p>
+                        </div>
+                    </div>
+                    <div class="input presente email hidden">
+                        <p class="titulo">e-mail do presenteado</p>
+                        <input type="text" name="emailPresente" maxlength="100">
+                        <div class="erro_help">
+                            <p class="help"><a href="#" class="envio_presente_explicao">como funciona?</a></p>
+                        </div>
+                    </div>
+                    <div class="input presente hidden" style="width: 820px;">
+                        <p class="titulo">para cancelar o envio como presente clique <a href="#" class="presente_toggle">aqui</a></p>
+                    </div>
+                    <div class="input presente" style="width: 820px;">
+                        <p class="titulo"><img src="../images/gift.png" style="vertical-align: middle;" /> para enviar como presente clique <a href="#" class="presente_toggle">aqui</a></p>
+                    </div>
+                </div>
     	</div>
 <?php
     }

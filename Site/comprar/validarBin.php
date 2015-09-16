@@ -23,13 +23,12 @@ if ($_GET['carrinho']) {
                 FROM
                 CI_MIDDLEWAY..MW_RESERVA R
                 INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
-                INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
                 INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO = R.ID_APRESENTACAO AND AB.IN_ATIVO = 1 AND AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
-                INNER JOIN TABPECA P ON P.CODPECA = E.CODPECA AND P.CODTIPBILHETEBIN = AB.CODTIPBILHETE
-                INNER JOIN CI_MIDDLEWAY..MW_EVENTO_PATROCINADO EP ON EP.CODPECA = E.CODPECA AND EP.ID_BASE = E.ID_BASE AND A.DT_APRESENTACAO BETWEEN EP.DT_INICIO AND EP.DT_FIM
-                INNER JOIN CI_MIDDLEWAY..MW_CARTAO_PATROCINADO CP ON CP.ID_CARTAO_PATROCINADO = EP.ID_CARTAO_PATROCINADO
+                INNER JOIN TABTIPBILHETE TTB ON TTB.CODTIPBILHETE = AB.CODTIPBILHETE
+                INNER JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = TTB.ID_PROMOCAO_CONTROLE AND A.DT_APRESENTACAO BETWEEN PC.DT_INICIO_PROMOCAO AND PC.DT_FIM_PROMOCAO
+                INNER JOIN CI_MIDDLEWAY..MW_CARTAO_PATROCINADO CP ON CP.ID_PATROCINADOR = PC.ID_PATROCINADOR
                 AND CP.CD_BIN = ?
-                WHERE P.IN_BIN_ITAU = 1
+                WHERE PC.CODTIPPROMOCAO = 4
                 AND R.ID_RESERVA = ?";
         $params = array($_POST['bin'], $_POST['reserva']);
 
@@ -48,13 +47,38 @@ if ($_GET['carrinho']) {
     // se nao for bin do itau é codigo promocional
     else {
 
-        $query = "SELECT TOP 1 P.ID_PROMOCAO, P.ID_SESSION, P.ID_PEDIDO_VENDA, P.CODTIPPROMOCAO FROM MW_RESERVA R
-                    INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
-                    INNER JOIN MW_PROMOCAO P ON P.ID_EVENTO = A.ID_EVENTO
-                    WHERE R.ID_RESERVA = ? AND P.CD_PROMOCIONAL = ?
-                    ORDER BY P.ID_SESSION, P.ID_PEDIDO_VENDA";
+        $query = "SELECT TOP 1 E.ID_BASE
+                    FROM MW_RESERVA R
+                    INNER JOIN MW_APRESENTACAO A
+                        ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+                    INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+                    WHERE R.ID_RESERVA = ?";
 
-        $result = executeSQL($mainConnection, $query, array($_POST['reserva'], $_POST['bin']));
+        $rs = executeSQL($mainConnection, $query, array($_POST['reserva']), true);
+
+        $conn = getConnection($rs['ID_BASE']);
+
+        $query = "SELECT TOP 1 P.ID_PROMOCAO,
+                        P.ID_SESSION,
+                        P.ID_PEDIDO_VENDA,
+                        PC.CODTIPPROMOCAO
+                    FROM CI_MIDDLEWAY..MW_RESERVA R
+                    INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB
+                        ON AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
+                            AND AB.IN_ATIVO = 1
+                    INNER JOIN TABTIPBILHETE TTB
+                        ON TTB.CODTIPBILHETE = AB.CODTIPBILHETE
+                    INNER JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE PC
+                        ON PC.ID_PROMOCAO_CONTROLE = TTB.ID_PROMOCAO_CONTROLE
+                            AND PC.IN_ATIVO = 1
+                    INNER JOIN CI_MIDDLEWAY..MW_PROMOCAO P
+                        ON P.ID_PROMOCAO_CONTROLE = PC.ID_PROMOCAO_CONTROLE
+                    WHERE R.ID_RESERVA = ?
+                        AND P.CD_PROMOCIONAL = ?
+                    ORDER BY P.ID_SESSION,
+                        P.ID_PEDIDO_VENDA";
+
+        $result = executeSQL($conn, $query, array($_POST['reserva'], $_POST['bin']));
 
         if (hasRows($result)) {
             $rs = fetchResult($result);
@@ -87,31 +111,13 @@ if ($_GET['carrinho']) {
     }
 } else {
 
-    $query = "SELECT TOP 1 E.ID_BASE
-            FROM MW_EVENTO E
-            INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
-            INNER JOIN MW_RESERVA R ON R.ID_APRESENTACAO = A.ID_APRESENTACAO
-            WHERE R.ID_SESSION = ?";
-    $params = array(session_id());
-    $rs = executeSQL($mainConnection, $query, $params, true);
-
-    $id_base = $rs['ID_BASE'];
-    $conn = getConnection($id_base);
-
-    $query = "SELECT DISTINCT CD_BINITAU
-            FROM CI_MIDDLEWAY..MW_RESERVA R
-            INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
-            INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
-            INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO = R.ID_APRESENTACAO AND AB.IN_ATIVO = 1 AND AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
-            INNER JOIN TABPECA P ON P.CODPECA = E.CODPECA AND P.CODTIPBILHETEBIN = AB.CODTIPBILHETE
-            WHERE P.IN_BIN_ITAU = 1
-            AND R.ID_SESSION = ?";
+    $query = "SELECT DISTINCT CD_BINITAU, ID_APRESENTACAO_BILHETE FROM MW_RESERVA R WHERE R.ID_SESSION = ? AND CD_BINITAU IS NOT NULL";
     $params = array(session_id());
 
-    $numBinsUtilizados = numRows($conn, $query, $params);
+    $numBinsUtilizados = numRows($mainConnection, $query, $params);
 
     if ($numBinsUtilizados > 1) {
-        echo "Não é possível utilizar dois ou mais códigos promocionais de cartões diferentes.<br/><br/>Por favor, retorne e valide seu código promocional novamente.";
+        echo "Não é possível utilizar dois ou mais códigos promocionais de cartões diferentes.<br/><br/>Por favor, retorne e selecione outro tipo de ingresso.";
         die();
     }
 
@@ -130,7 +136,7 @@ if ($_GET['carrinho']) {
     $cpf = $rs[0];
 
     // lista codapresentacao e id_base a partir da reserva
-    $query = 'SELECT A.ID_APRESENTACAO, A.CODAPRESENTACAO, E.ID_BASE, A.HR_APRESENTACAO, CONVERT(VARCHAR(8), A.DT_APRESENTACAO, 112) DT_APRESENTACAO, E.CODPECA, MAX(R.NR_BENEFICIO) NR_BENEFICIO
+    $query = 'SELECT A.ID_APRESENTACAO, A.CODAPRESENTACAO, E.ID_BASE, A.HR_APRESENTACAO, CONVERT(VARCHAR(8), A.DT_APRESENTACAO, 112) DT_APRESENTACAO, E.CODPECA
              FROM MW_EVENTO E
              INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
              INNER JOIN MW_RESERVA R ON R.ID_APRESENTACAO = A.ID_APRESENTACAO
@@ -142,25 +148,28 @@ if ($_GET['carrinho']) {
                 FROM
                 CI_MIDDLEWAY..MW_RESERVA R
                 INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
-                INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
                 INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO = R.ID_APRESENTACAO AND AB.IN_ATIVO = 1 AND AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
-                INNER JOIN TABPECA P ON P.CODPECA = E.CODPECA AND P.CODTIPBILHETEBIN = AB.CODTIPBILHETE
-                INNER JOIN CI_MIDDLEWAY..MW_EVENTO_PATROCINADO EP ON EP.CODPECA = E.CODPECA AND EP.ID_BASE = E.ID_BASE AND A.DT_APRESENTACAO BETWEEN EP.DT_INICIO AND EP.DT_FIM
-                INNER JOIN CI_MIDDLEWAY..MW_CARTAO_PATROCINADO CP ON CP.ID_CARTAO_PATROCINADO = EP.ID_CARTAO_PATROCINADO
+                INNER JOIN TABTIPBILHETE TTB ON TTB.CODTIPBILHETE = AB.CODTIPBILHETE
+                INNER JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = TTB.ID_PROMOCAO_CONTROLE AND A.DT_APRESENTACAO BETWEEN PC.DT_INICIO_PROMOCAO AND PC.DT_FIM_PROMOCAO
+                INNER JOIN CI_MIDDLEWAY..MW_CARTAO_PATROCINADO CP ON CP.ID_PATROCINADOR = PC.ID_PATROCINADOR
                 AND CP.CD_BIN = ?
-                WHERE A.ID_APRESENTACAO = ?
-                AND P.IN_BIN_ITAU = 1
+                WHERE PC.CODTIPPROMOCAO = 4
+                AND A.ID_APRESENTACAO = ?
                 AND R.ID_SESSION = ?';
 
     // (só restorna se participa da promoção) retorna limite e quantidade de bilhetes que participam da promo da compra atual
-    $query2 = 'SELECT P.QT_BIN_POR_CPF, COUNT(R.ID_RESERVA) AS COMPRANDO
+    $query2 = 'SELECT ISNULL(CE.QT_PROMO_POR_CPF, PC.QT_PROMO_POR_CPF) AS QT_PROMO_POR_CPF, COUNT(R.ID_RESERVA) AS COMPRANDO
                 FROM CI_MIDDLEWAY..MW_RESERVA R
                 INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A2 ON A2.ID_APRESENTACAO = R.ID_APRESENTACAO
                 INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = A2.ID_EVENTO
                 INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
-                INNER JOIN TABPECA P ON P.CODPECA = E.CODPECA AND P.CODTIPBILHETEBIN = AB.CODTIPBILHETE
-                WHERE A2.ID_APRESENTACAO = ? AND P.IN_BIN_ITAU = 1 AND R.ID_SESSION = ?
-                GROUP BY P.QT_BIN_POR_CPF';
+                INNER JOIN TABTIPBILHETE TB ON TB.CODTIPBILHETE = AB.CODTIPBILHETE
+                INNER JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = TB.ID_PROMOCAO_CONTROLE
+                    AND PC.CODTIPPROMOCAO = 4
+                LEFT JOIN CI_MIDDLEWAY..MW_CONTROLE_EVENTO CE ON CE.ID_PROMOCAO_CONTROLE = PC.ID_PROMOCAO_CONTROLE
+                    AND CE.ID_EVENTO = E.ID_EVENTO
+                WHERE A2.ID_APRESENTACAO = ? AND R.ID_SESSION = ?
+                GROUP BY ISNULL(CE.QT_PROMO_POR_CPF, PC.QT_PROMO_POR_CPF)';
 
     // quantos ingressos da apresentacao na reserva o cliente ja comprou com qualquer bin promocional
     $query3 = 'SELECT ISNULL(SUM(CASE H.CODTIPLANCAMENTO WHEN 1 THEN 1 ELSE -1 END), 0) AS TOTAL
@@ -168,7 +177,8 @@ if ($_GET['carrinho']) {
                 INNER JOIN TABHISCLIENTE H ON C.CODIGO = H.CODIGO
                 INNER JOIN TABCOMPROVANTE CR ON CR.CODCLIENTE = H.CODIGO AND CR.CODAPRESENTACAO = H.CODAPRESENTACAO
                 INNER JOIN TABINGRESSO I ON I.CODVENDA = CR.CODVENDA AND LEFT(I.INDICE, 6) = H.INDICE
-                INNER JOIN TABPECA P ON P.CODPECA = CR.CODPECA AND P.CODTIPBILHETEBIN = H.CODTIPBILHETE
+                INNER JOIN TABTIPBILHETE TB ON TB.CODTIPBILHETE = H.CODTIPBILHETE
+                INNER JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = TB.ID_PROMOCAO_CONTROLE AND PC.CODTIPPROMOCAO = 4
                 WHERE C.CPF = ? AND H.CODAPRESENTACAO IN (
                         SELECT CODAPRESENTACAO FROM TABAPRESENTACAO
                         WHERE DATAPRESENTACAO = ? AND HORSESSAO = ? AND CODPECA = ?
@@ -185,13 +195,12 @@ if ($_GET['carrinho']) {
         $data = $rs['DT_APRESENTACAO'];
         $hora = str_replace(array('h', 'H'), ':', $rs['HR_APRESENTACAO']);
         $codpeca = $rs['CODPECA'];
-        $nr_beneficio = $rs['NR_BENEFICIO'];
         $result3 = executeSQL($conn, $query2, array($idapresentacao, session_id()));
         
         // verifica limite bin
         if (hasRows($result3)) {
             $rs = fetchResult($result3);
-            $limite = $rs['QT_BIN_POR_CPF'];
+            $limite = $rs['QT_PROMO_POR_CPF'];
             $comprando = $rs['COMPRANDO'];
 
             if ($limite > 0) {
@@ -216,7 +225,7 @@ if ($_GET['carrinho']) {
     // verifica limite promocoes
 
     // lista reserva por evento
-    $query = "SELECT DISTINCT E.ID_BASE, A.HR_APRESENTACAO, CONVERT(VARCHAR(8), A.DT_APRESENTACAO, 112) DT_APRESENTACAO, E.CODPECA
+    $query = "SELECT DISTINCT E.ID_BASE, A.HR_APRESENTACAO, CONVERT(VARCHAR(8), A.DT_APRESENTACAO, 112) DT_APRESENTACAO, E.ID_EVENTO, E.CODPECA
              FROM MW_EVENTO E
              INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
              INNER JOIN MW_RESERVA R ON R.ID_APRESENTACAO = A.ID_APRESENTACAO
@@ -224,29 +233,20 @@ if ($_GET['carrinho']) {
 
     // retorna quantidade de ingressos promocionais selecionados e o máximo por evento
     $query4 = "WITH RESULTADO AS (
-                    SELECT P.QT_INGRESSOS_POR_PROMOCAO, E.ID_EVENTO,
-                    STUFF
-                    (
-                        (
-                            SELECT 
-                                ',' + CONVERT(VARCHAR, TPP.CODTIPPROMOCAO)
-                            FROM
-                                TABPROMOCAOPECA TPP
-                            WHERE
-                                TPP.CODPECA = P.CODPECA AND TPP.CODTIPBILHETE = AB.CODTIPBILHETE
-                            FOR XML PATH('')
-                        )
-                    ,1,1,'') AS CODTIPPROMOCAO
+                    SELECT ISNULL(CE.QT_PROMO_POR_CPF, ISNULL(PC.QT_PROMO_POR_CPF, 0)) QT_PROMO_POR_CPF, E.ID_EVENTO, TTB.ID_PROMOCAO_CONTROLE
                     FROM CI_MIDDLEWAY..MW_RESERVA R
                     INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A2 ON A2.ID_APRESENTACAO = R.ID_APRESENTACAO
                     INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = A2.ID_EVENTO
                     INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
-                    INNER JOIN TABPECA P ON P.CODPECA = E.CODPECA
-                    WHERE R.NR_BENEFICIO IS NOT NULL AND R.ID_SESSION = ? AND P.CODPECA = ?
+                    INNER JOIN TABTIPBILHETE TTB ON TTB.CODTIPBILHETE = AB.CODTIPBILHETE
+                    INNER JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = TTB.ID_PROMOCAO_CONTROLE
+                    LEFT JOIN CI_MIDDLEWAY..MW_CONTROLE_EVENTO CE ON CE.ID_PROMOCAO_CONTROLE = PC.ID_PROMOCAO_CONTROLE
+                        AND CE.ID_EVENTO = E.ID_EVENTO
+                    WHERE R.NR_BENEFICIO IS NOT NULL AND R.ID_SESSION = ? AND E.ID_EVENTO = ?
                 )
-                SELECT QT_INGRESSOS_POR_PROMOCAO, ID_EVENTO, COUNT(1) AS COMPRANDO
+                SELECT QT_PROMO_POR_CPF, ID_EVENTO, COUNT(1) AS COMPRANDO, ID_PROMOCAO_CONTROLE
                 FROM RESULTADO
-                GROUP BY QT_INGRESSOS_POR_PROMOCAO, ID_EVENTO";
+                GROUP BY QT_PROMO_POR_CPF, ID_EVENTO, ID_PROMOCAO_CONTROLE";
 
     // quantos ingressos promocionais da apresentacao na reserva o cliente ja comprou
     $query5 = "SELECT ISNULL(SUM(CASE H.CODTIPLANCAMENTO WHEN 1 THEN 1 ELSE -1 END), 0) AS TOTAL
@@ -258,7 +258,7 @@ if ($_GET['carrinho']) {
                         SELECT CODAPRESENTACAO FROM TABAPRESENTACAO
                         WHERE DATAPRESENTACAO = ? AND HORSESSAO = ? AND CODPECA = ?
                 )
-                AND EXISTS (SELECT 1 FROM TABPROMOCAOPECA P WHERE P.CODPECA = CR.CODPECA AND P.CODTIPBILHETE = H.CODTIPBILHETE)";
+                AND EXISTS (SELECT 1 FROM TABTIPBILHETE TTB WHERE TTB.CODTIPBILHETE = H.CODTIPBILHETE AND TTB.ID_PROMOCAO_CONTROLE = ?)";
 
     $result = executeSQL($mainConnection, $query, array(session_id()));
 
@@ -268,17 +268,19 @@ if ($_GET['carrinho']) {
         $data = $rs['DT_APRESENTACAO'];
         $hora = str_replace(array('h', 'H'), ':', $rs['HR_APRESENTACAO']);
         $codpeca = $rs['CODPECA'];
+        $id_evento = $rs['ID_EVENTO'];
 
-        $result2 = executeSQL($conn, $query4, array(session_id(), $codpeca));
+        $result2 = executeSQL($conn, $query4, array(session_id(), $id_evento));
 
         if (hasRows($result2)) {
             $rs = fetchResult($result2);
 
-            $limite = $rs['QT_INGRESSOS_POR_PROMOCAO'];
+            $limite = $rs['QT_PROMO_POR_CPF'];
             $comprando = $rs['COMPRANDO'];
+            $id_promocao_controle = $rs['ID_PROMOCAO_CONTROLE'];
 
             if ($limite > 0) {
-                $rs = executeSQL($conn, $query5, array($cpf, $data, $hora, $codpeca), true);
+                $rs = executeSQL($conn, $query5, array($cpf, $data, $hora, $codpeca, $id_promocao_controle), true);
 
                 if ($rs['TOTAL'] >= $limite) {
                     $erro = 'Você atingiu o limite de ' . $limite . ' ingresso(s) promocional(is) em um ou mais eventos.<br><br>Favor revisar o pedido.';

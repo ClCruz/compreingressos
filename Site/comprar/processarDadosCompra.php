@@ -20,7 +20,7 @@ $server_output = curl_exec($ch);
 curl_close($ch);
 
 $resp = json_decode($server_output, true);
-
+// die(var_dump($resp));
 if (!$resp['success']) {
     echo "Favor efetuar a verificação de robô.";
     exit();
@@ -108,6 +108,9 @@ $dadosExtrasEmail['ddd_telefone2'] = $rs['DS_DDD_CELULAR'];
 $dadosExtrasEmail['numero_telefone2'] = $rs['DS_CELULAR'];
 $dadosExtrasEmail['ddd_telefone3'] = '';
 $dadosExtrasEmail['numero_telefone3'] = '';
+
+$dadosExtrasEmail['nome_presente'] = $_POST['nomePresente'];
+$dadosExtrasEmail['email_presente'] = $_POST['emailPresente'];
 
 $parametros['RequestId'] = $ri;
 $parametros['Version'] = '1.0';
@@ -326,10 +329,23 @@ $query = 'UPDATE MW_PEDIDO_VENDA SET
                         ,ID_IP = ?
                         ,NR_PARCELAS_PGTO = ?
                         ,NR_BENEFICIO = ?
+                        ,NM_CLIENTE_VOUCHER = ?
+                        ,DS_EMAIL_VOUCHER = ?
 			WHERE ID_PEDIDO_VENDA = ?
 				AND ID_CLIENTE = ?';
 
-$params = array(($totalIngressos + $frete + $totalConveniencia), $totalIngressos, $totalConveniencia, $_SERVER["REMOTE_ADDR"], $PaymentDataCollection['NumberOfPayments'], $nr_beneficio, $newMaxId, $_SESSION['user']);
+if ($_POST['nomePresente']) {
+    $nome_presente = $_POST['nomePresente'];
+    $email_presente = $_POST['emailPresente'] ? $_POST['emailPresente'] : null;
+} else {
+    $nome_presente = null;
+    $email_presente = null;
+}
+
+$params = array(($totalIngressos + $frete + $totalConveniencia), $totalIngressos, $totalConveniencia,
+                $_SERVER["REMOTE_ADDR"], $PaymentDataCollection['NumberOfPayments'],
+                $nr_beneficio, $nome_presente, $email_presente,
+                $newMaxId, $_SESSION['user']);
 
 if ($itensPedido > 0) {
     $gravacao = executeSQL($mainConnection, $query, $params);
@@ -495,7 +511,7 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
 	$log->__set('log', json_encode($parametros));
 	$log->save($mainConnection);
 	
-	echo "Ocorreu erro inesperado.<br>Ajude a melhorar nosso serviço, entre em contato e reporte o erro.";
+	echo "Ocorreu um erro inesperado.<br>Ajude a melhorar nosso serviço, entre em contato e reporte o erro.";
 	die();
 	
 }

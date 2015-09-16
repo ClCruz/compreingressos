@@ -12,7 +12,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
         require('actions/' . $pagina);
     } else {
         $result = executeSQL($mainConnection, 'SELECT ID_BASE, DS_NOME_BASE_SQL, DS_NOME_TEATRO, IN_ATIVO FROM MW_BASE ORDER BY DS_NOME_TEATRO');
-        $bases = executeSQL($mainConnection, "SELECT NAME FROM SYS.DATABASES D WHERE NAME LIKE 'CI_%' AND NOT EXISTS (SELECT 1 FROM MW_BASE B WHERE B.DS_NOME_BASE_SQL = D.NAME)");
+        $bases = executeSQL($mainConnection, "SELECT NAME FROM SYS.DATABASES D WHERE NAME LIKE 'CI_%' AND NOT EXISTS (SELECT 1 FROM MW_BASE B WHERE B.DS_NOME_BASE_SQL collate Latin1_General_CI_AS = D.NAME)");
 ?>
         <style>
             label, input { display:block; }

@@ -1135,7 +1135,7 @@ div.container_cartoes div.inputs div.container_cartao{
 	width:148px;
 }
 
-div.img_cod_cartao{
+div.img_cod_cartao, div.explicacao_envio_presente{
   float:left;
   width:340px;
   margin:654px 0 0 395px;
@@ -1151,11 +1151,24 @@ div.img_cod_cartao img{
   margin-right:20px;
 }
 
-div.img_cod_cartao p{
+div.img_cod_cartao p, div.explicacao_envio_presente p{
   float:left;
   font-size:12px;
   color:#808080;
   margin-top:12px;
+}
+
+div.explicacao_envio_presente{
+  margin-top:760px;
+}
+
+div.explicacao_envio_presente p{
+  margin-top:0;
+}
+
+div.presente img {
+  width: 64px;
+  margin-right: 10px;
 }
 
 #content div.container_cartoes div.container_cartao label.radio{

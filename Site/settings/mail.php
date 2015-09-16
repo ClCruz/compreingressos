@@ -269,11 +269,11 @@ function authSendEmail_alternativo3($from, $namefrom, $to, $nameto, $subject, $m
 	
 	$mail->Port = 587;
 	$mail->SMTPAuth = true;
-	$mail->Username = 'compreingressos@gmail.com';//"lembrete@compreingressos.com";
+	$mail->Username = 'compreingressos@siscompre.com';//"lembrete@compreingressos.com";
 	$mail->Password = '743081clc@';//"lembrete0015";
 	
 	// somente gmail
-	$mail->From = 'compreingressos@gmail.com';//$from;
+	$mail->From = 'compreingressos@siscompre.com';//$from;
 	$mail->FromName = $namefrom;
 	
 	$mail->AddAddress($to, $nameto);

@@ -3,8 +3,8 @@
 -- Create date: 08/10/10
 -- Description:	Atualiza os eventos no Middleway
 -- =============================================
-alter TRIGGER dbo.tr_atualiza_bilhetes 
-   ON  TABVALBILHETE
+ALTER TRIGGER [dbo].[tr_atualiza_bilhetes] 
+   ON  [dbo].[tabValBilhete]
    AFTER INSERT,DELETE,UPDATE
 AS 
 BEGIN
@@ -74,18 +74,24 @@ BEGIN
 
 				end
 			else
-				begin
-
-					select @id_evento = id_evento from ci_middleway..mw_evento 
-					where id_base = @id_base
-					  and codpeca = (select distinct codpeca from deleted) 
+				begin 
 
 					UPDATE ci_middleway..mw_apresentacao_bilhete 
 					SET in_ativo = 0
 					WHERE CodTipBilhete in (select CodTipBilhete from deleted)
-					  and id_apresentacao in (select id_apresentacao from ci_middleway..mw_apresentacao where id_evento = @id_evento)
+					  and id_apresentacao in (
+							select id_apresentacao
+							from ci_middleway..mw_apresentacao
+							where id_evento IN (
+								select id_evento
+								from ci_middleway..mw_evento 
+								where id_base = @id_base
+								and codpeca IN (
+									select distinct codpeca from deleted
+								)
+							)
+						)
 
 				end
 		end
 END
-GO

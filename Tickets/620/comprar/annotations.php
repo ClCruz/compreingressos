@@ -1,7 +1,4 @@
 <?php
-ini_set('zlib.output_compression','On');
-ini_set('zlib.output_compression_level','1');
-
 require_once('../settings/functions.php');
 session_start();
 

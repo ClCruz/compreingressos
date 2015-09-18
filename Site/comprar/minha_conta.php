@@ -51,7 +51,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
     $resultTeatros = executeSQL($mainConnection, $queryTeatros, array($_SESSION['user']));
     $options = '';
     while ($rsTeatros = fetchResult($resultTeatros)) {
-        $options .= '<option value="'.$rsTeatros['ID_BASE'].'">'.utf8_encode($rs['DS_NOME_TEATRO']).'</option>';
+        $options .= '<option value="'.$rsTeatros['ID_BASE'].'">'.utf8_encode($rsTeatros['DS_NOME_TEATRO']).'</option>';
     }
 
 

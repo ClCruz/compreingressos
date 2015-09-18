@@ -72,7 +72,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                 });
             });
         </script>
-        <h2>Promocões</h2>
+        <h2>Gerar Promocões</h2>
         <form id="dados" name="dados" method="post">
             <table class="ui-widget ui-widget-content">
                 <thead>

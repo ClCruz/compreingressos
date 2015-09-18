@@ -10,7 +10,7 @@ $cookieExpireTime = time() + 60 * 20; //20min
 
 $compraExpireTime = 150;//minutos
 
-$maxIngressos = 10;//maximo por compra
+$maxIngressos = 4;//maximo por compra
 
 $uploadPath = '../images/uploads/';
 

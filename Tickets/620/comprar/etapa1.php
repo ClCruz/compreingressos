@@ -366,7 +366,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
           </div><!-- FECHA CONTENT -->
           <div id="texts">
             <div class="centraliza">
-              <p>Escolha até 10 lugares ou ingressos desejados e clique em avançar para continuar o processo de compra de ingressos.</p>
+              <p>Escolha até <?php echo $maxIngressos; ?> lugares ou ingressos desejados e clique em avançar para continuar o processo de compra de ingressos.</p>
             </div>
           </div>
 

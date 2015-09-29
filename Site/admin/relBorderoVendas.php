@@ -18,9 +18,13 @@ $DataFim = (isset($_GET["DataFim"]) && !empty($_GET["DataFim"])) ? $_GET["DataFi
 $HorSessao = (isset($_GET["HorSessao"]) && !empty($_GET["HorSessao"])) ? $_GET["HorSessao"] : "null";
 $Resumido = $_GET["Resumido"];
 
-//Recupera o nome da base de dados
-$queryBase = "SELECT DISTINCT DS_NOME_TEATRO FROM MW_BASE WHERE DS_NOME_BASE_SQL = ?";
-$NomeBase = executeSQL($mainConnection, $queryBase, array($_SESSION["NomeBase"]), true);
+$queryBase = "SELECT ds_local_evento DS_NOME_TEATRO FROM tabpeca tp INNER JOIN ci_middleway..mw_local_evento le ON le.id_local_evento = tp.id_local_evento WHERE tp.CodPeca = ?";
+$nomeBase = executeSQL($connBase, $queryBase, array($_GET["CodPeca"]), true);
+
+if (empty($nomeBase)) {
+  $queryBase = "SELECT DISTINCT DS_NOME_TEATRO FROM MW_BASE WHERE DS_NOME_BASE_SQL = ?";
+  $nomeBase = executeSQL($connMiddleway, $queryBase, array($_SESSION["NomeBase"]), true);
+}
 
 if (isset($_GET["imagem"]) && $_GET["imagem"] == "logo") {
   $strSql = "SP_REL_BORDERO_VENDAS;2 ?, ?, ?";
@@ -91,7 +95,7 @@ if (isset($err) && $err != "") {
           <table class="tabela" width="648">
             <tr>
               <td align="right" width="70"><font size=1 face="tahoma,verdana,arial"><b>Local:</b></font></td>
-              <td align="left" width="370" style="font-size: 14px;"><?php echo utf8_encode($NomeBase["DS_NOME_TEATRO"]); ?></td>
+              <td align="left" width="370" style="font-size: 14px;"><?php echo utf8_encode($nomeBase["DS_NOME_TEATRO"]); ?></td>
               <td align="right" width="120"><font size=1 face="tahoma,verdana,arial"><b>Borderô nº</b></font></td>
               <td align="left" width="220"><?php echo $pRSGeral["NumBordero"]; ?></td>
             </tr>
@@ -496,10 +500,10 @@ if (isset($err) && $err != "") {
                     echo $table3; ?>
                     <table width=656 class="tabela" border="0" bgcolor="LightGrey">
                       <tr>
-                        <td align="center" colspan="4"><font size=2 face="tahoma,verdana,arial"><B>4 - ESTATÍSTICA POR CANAL DE VENDA</B></font></td>
+                        <td align="center" colspan="4"><font size=2 face="tahoma,verdana,arial"><B>4 - ESTATÍSTICA POR CANAL</B></font></td>
                       </tr>
                       <tr>
-                        <td align="left" width="162" class="titulogrid">Canais de Venda</td>
+                        <td align="left" width="162" class="titulogrid">Canais</td>
                         <td align="right" width="162" class="titulogrid">Qtde de Transações</td>
                         <td align="right" width="162" class="titulogrid">Total</td>
                         <td align="right" width="163" class="titulogrid">% do Total de Transações</td>
@@ -528,7 +532,7 @@ if (isset($err) && $err != "") {
                     }
       ?>
                     <tr>
-                      <td bgcolor="LightGrey" align="left" class="label"><b>TOTAL DE VENDAS</b></td>
+                      <td bgcolor="LightGrey" align="left" class="label"><b>TOTAL</b></td>
                       <td bgcolor="LightGrey" align="right" class="label"><b><?php echo $nQt; ?></b></td>
                       <td bgcolor="LightGrey" align="right" class="label"><b>R$&nbsp;&nbsp;<?php echo number_format($nBrutoTot, 2, ",", "."); ?></b></td>
                       <td bgcolor="LightGrey" align="right" class="label"><b><?php echo number_format($cont, 0); ?>%</b></td>

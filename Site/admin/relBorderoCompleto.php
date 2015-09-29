@@ -19,9 +19,13 @@ $horSessao = (isset($_GET["HorSessao"]) && !empty($_GET["HorSessao"])) ? $_GET["
 $horSessao = (($_GET['Small'] == '1') ? '--' : $horSessao);
 $resumido = $_GET["Resumido"];
 
-//Recupera o nome da base de dados
-$queryBase = "SELECT DISTINCT DS_NOME_TEATRO FROM MW_BASE WHERE DS_NOME_BASE_SQL = ?";
-$nomeBase = executeSQL($connMiddleway, $queryBase, array($_SESSION["NomeBase"]), true);
+$queryBase = "SELECT ds_local_evento DS_NOME_TEATRO FROM tabpeca tp INNER JOIN ci_middleway..mw_local_evento le ON le.id_local_evento = tp.id_local_evento WHERE tp.CodPeca = ?";
+$nomeBase = executeSQL($connGeral, $queryBase, array($_GET["CodPeca"]), true);
+
+if (empty($nomeBase)) {
+  $queryBase = "SELECT DISTINCT DS_NOME_TEATRO FROM MW_BASE WHERE DS_NOME_BASE_SQL = ?";
+  $nomeBase = executeSQL($connMiddleway, $queryBase, array($_SESSION["NomeBase"]), true);
+}
 
 // Monta e executa query principal do relatório
 $strGeral = "SP_REL_BORDERO" . (($codSala == 'TODOS') ? '10' : '01') . " 'Emerson', " . $codPeca . "," . $codSala . "," . $dataIni . "," . $dataFim . ",'" . (($_GET['Small'] == '1') ? '--' : $horSessao) . "','" . $_SESSION["NomeBase"] . "'";
@@ -514,10 +518,10 @@ if (isset($err) && $err != "") {
     ?>
                       <table width=656 class="tabela" border="0" bgcolor="LightGrey">
                         <tr>
-                          <td align="center" colspan="4"><font size=2 face="tahoma,verdana,arial"><b>4 - DETALHAMENTO POR CANAL DE VENDA</b></font></td>
+                          <td align="center" colspan="4"><font size=2 face="tahoma,verdana,arial"><b>4 - DETALHAMENTO POR CANAL</b></font></td>
                         </tr>
                         <tr>
-                          <td	align="left" width="162" class="titulogrid">Canais de Venda</td>
+                          <td	align="left" width="162" class="titulogrid">Canais</td>
                           <td	align="right" width="162" class="titulogrid">Qtde Transações</td>
                           <td	align="right" width="162" class="titulogrid">Total</td>
                           <td	align="right" width="163" class="titulogrid">% do Total de Transações</td>
@@ -552,7 +556,7 @@ if (isset($err) && $err != "") {
                       }
       ?>
                       <tr>
-                        <td bgcolor="LightGrey" align="left" class="label"><b>TOTAL DE VENDAS</b></td>
+                        <td bgcolor="LightGrey" align="left" class="label"><b>TOTAL</b></td>
                         <td bgcolor="LightGrey" align="right" class="label"><b><?php echo $nQt; ?></b></td>
                         <td bgcolor="LightGrey" align="right" class="label"><b>R$&nbsp;&nbsp;<?php echo number_format($nBrutoTot, 2, ",", "."); ?></b></td>
                         <td bgcolor="LightGrey" align="right" class="label"><b><?php echo number_format($cont, 0); ?>%</b></td>

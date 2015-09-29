@@ -123,5 +123,25 @@
       <FullPath>13-Fato_evento_mes.dtsx</FullPath>
       <References />
     </DtsPackage>
+    <DtsPackage FormatVersion="3">
+      <Name>14-Dim_tipo_ingresso.dtsx</Name>
+      <FullPath>14-Dim_tipo_ingresso.dtsx</FullPath>
+      <References />
+    </DtsPackage>
+    <DtsPackage FormatVersion="3">
+      <Name>50-Fato_Vendas_Ingresso.dtsx</Name>
+      <FullPath>50-Fato_Vendas_Ingresso.dtsx</FullPath>
+      <References />
+    </DtsPackage>
+    <DtsPackage FormatVersion="3">
+      <Name>15-Dim_Forma_Pagamento.dtsx</Name>
+      <FullPath>15-Dim_Forma_Pagamento.dtsx</FullPath>
+      <References />
+    </DtsPackage>
+    <DtsPackage FormatVersion="3">
+      <Name>07-Dim_base.dtsx</Name>
+      <FullPath>07-Dim_base.dtsx</FullPath>
+      <References />
+    </DtsPackage>
   </DTSPackages>
 </Project>

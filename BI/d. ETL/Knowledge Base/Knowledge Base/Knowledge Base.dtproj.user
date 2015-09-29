@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataTransformationsUserConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Configurations>
+    <Configuration>
+      <Name>Development</Name>
+      <Options>
+        <UserIDs>
+          <ConfigurationSetting>
+            <Id>CI DW</Id>
+            <Name>CI DW</Name>
+            <Value xsi:type="xsd:string">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAA05jIQjz540qYxRgUODxgjgAAAAAMAAAAQwBJACAARABXAAAAEGYAAAABAAAgAAAApfY7dnY9+RlIKTKp//Jv1gx3vlymxXtkepGwTzkYZX0AAAAADoAAAAACAAAgAAAAa3XSU593Nx3Cs3M3ZO9x9YGNTMhGB4yh6NBU9Q8PuNoQAAAAc8er56XZRq1VeX7esNJGIEAAAABsZcJ2ukUskT93SVdfmzNcpKCYze5ZX+vw+VjOQpJNxECFyzwRaimSvfR/MhADuGAaV/1XffkQ5H+10HbsphBc</Value>
+          </ConfigurationSetting>
+          <ConfigurationSetting>
+            <Id>CI JBPM</Id>
+            <Name>CI JBPM</Name>
+            <Value xsi:type="xsd:string">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAA05jIQjz540qYxRgUODxgjgAAAAAQAAAAQwBJACAASgBCAFAATQAAABBmAAAAAQAAIAAAANw46hqgV5sV6GZ8uxZFAPAr9mEYCnRhUHDF4jZIC7aaAAAAAA6AAAAAAgAAIAAAAELygbPAdUL/gxvVbIIalcQqRdgA1iNzAi6lKgARVa9VEAAAAMDx2tl1tLCFmYOkoqdqqn9AAAAAPgYXIp1MO0RzPa5MAV7vDx6S81v5Q0rnFiXMK+N2jxvsRFDbcrI4you4YhRHQdyk7iovmZo67SgcXHL8FOotlQ==</Value>
+          </ConfigurationSetting>
+          <ConfigurationSetting>
+            <Id>CI MIDDLEWAY</Id>
+            <Name>CI MIDDLEWAY</Name>
+            <Value xsi:type="xsd:string">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAA05jIQjz540qYxRgUODxgjgAAAAAaAAAAQwBJACAATQBJAEQARABMAEUAVwBBAFkAAAAQZgAAAAEAACAAAABhZLxnIeSms4FbuPWvdXYk0ZaEplKYtOokAN7f7SqBRQAAAAAOgAAAAAIAACAAAADr0go1jdMvdAU2SDDQa8vWcioIWsszRSkw9gDzKPoy8xAAAAAIxVa4mfq53k9WETx9u5khQAAAAE5dUDwTClUlLUPhcOTeCgwZn5KZRO2+YnyPLyWPPaNTeBYan2nMFFhiXtdqTpA3JCaTr1UbqEgQsLQNdkeW5cs=</Value>
+          </ConfigurationSetting>
+        </UserIDs>
+        <UserPasswords>
+          <ConfigurationSetting>
+            <Id>CI DW</Id>
+            <Name>CI DW</Name>
+            <Value xsi:type="xsd:string">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAA05jIQjz540qYxRgUODxgjgAAAAAMAAAAQwBJACAARABXAAAAEGYAAAABAAAgAAAAa1EBOJnkovVEKc/uyU3lsDLKfYYLQypiDSQGh+RyP+sAAAAADoAAAAACAAAgAAAAu6bX0dU2drXKW44oTl30KFHfK0/OXR2wtMavWiNCzoYgAAAAJVD1Nvj0lk5HMJVKa3cWsJrIqJ6FS54GAmv/PpMeM5NAAAAAdvznqUjKHbeuwWNBcIZcy8ZzQOvUiWJbiECVvXRP1QUziQqgsfoMef0vX7wReyHTfXL2vckBkzv7R2/l0mrrNw==</Value>
+          </ConfigurationSetting>
+          <ConfigurationSetting>
+            <Id>CI JBPM</Id>
+            <Name>CI JBPM</Name>
+            <Value xsi:type="xsd:string">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAA05jIQjz540qYxRgUODxgjgAAAAAQAAAAQwBJACAASgBCAFAATQAAABBmAAAAAQAAIAAAADK4BXzuucmqT2QmaGGPwQguox3KbPcCoQjJeynT3cAXAAAAAA6AAAAAAgAAIAAAAFjHHyTyY16Poo8sdDIrPrvJQ8LbTlpEF1uPsUIq/bvJIAAAAEBSRAPHCK/5n/78pMj4JnRj7SkdJE32f26P6sCi8uMEQAAAAFnpDLIPs+EIwlHZE3uN0jzJFnsTvy4yWsabrR003edlz8zbVE7bN6O4Yd29kCV3VTB9AqOEWfF6nN1mes/gJec=</Value>
+          </ConfigurationSetting>
+          <ConfigurationSetting>
+            <Id>CI MIDDLEWAY</Id>
+            <Name>CI MIDDLEWAY</Name>
+            <Value xsi:type="xsd:string">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAA05jIQjz540qYxRgUODxgjgAAAAAaAAAAQwBJACAATQBJAEQARABMAEUAVwBBAFkAAAAQZgAAAAEAACAAAAC65qA8rF7qFe5TFsWS8FLV2o4aN3YWZwg0ICwr9u3a0gAAAAAOgAAAAAIAACAAAAA8Dghu7YRufK/z7athRfCcjoUABGaJ6FbYUkTXpdgRJiAAAADaFboJZk3q1q+tw0nv76UNpY0evK0iHBuLurDZs6nuFEAAAACsHEyzxZZxAgqrBuFRh/TUtKWiqGig0zwPr55wNi8kztPGU2tK6mLDr2fl4QvCPPyogfxdW0b7uEjEQhgYIQhN</Value>
+          </ConfigurationSetting>
+        </UserPasswords>
+        <OfflineMode>false</OfflineMode>
+        <ProgressReporting>true</ProgressReporting>
+      </Options>
+    </Configuration>
+  </Configurations>
+</DataTransformationsUserConfiguration>

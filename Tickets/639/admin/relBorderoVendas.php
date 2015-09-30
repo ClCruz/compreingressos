@@ -23,7 +23,7 @@ $nomeBase = executeSQL($connBase, $queryBase, array($_GET["CodPeca"]), true);
 
 if (empty($nomeBase)) {
   $queryBase = "SELECT DISTINCT DS_NOME_TEATRO FROM MW_BASE WHERE DS_NOME_BASE_SQL = ?";
-  $nomeBase = executeSQL($connMiddleway, $queryBase, array($_SESSION["NomeBase"]), true);
+  $nomeBase = executeSQL($mainConnection, $queryBase, array($_SESSION["NomeBase"]), true);
 }
 
 if (isset($_GET["imagem"]) && $_GET["imagem"] == "logo") {

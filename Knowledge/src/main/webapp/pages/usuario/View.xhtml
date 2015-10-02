@@ -21,7 +21,7 @@
                         <h:outputText value="#{bundle.ViewUsuarioLabel_email}"/>
                         <h:outputText value="#{usuarioController.selected.email}" title="#{bundle.ViewUsuarioTitle_email}"/>
                         <h:outputText value="#{bundle.ViewUsuarioLabel_inAtivo}"/>
-                        <p:selectBooleanCheckbox value="#{usuarioController.selected.inAtivo}" disabled="true"/>
+                        <p:selectBooleanCheckbox value="#{usuarioController.selected.ativo}" disabled="true"/>
                     </p:panelGrid>
                     <p:commandButton value="#{bundle.Close}" type="button" onclick="PF('UsuarioViewDialog').hide()"/>
                 </h:panelGroup>

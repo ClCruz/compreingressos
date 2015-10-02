@@ -129,10 +129,10 @@ public class Usuario implements Serializable {
         this.email = email;
     }
 
-    public boolean getInAtivo() {
-        return ativo;
+    public boolean isAtivo() {
+        return this.ativo;
     }
-
+    
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
     }

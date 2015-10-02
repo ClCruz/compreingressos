@@ -43,13 +43,7 @@
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListMunicipioTitle_estado}"/>
                             </f:facet>
-                            <h:outputText value="#{item.estado}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListMunicipioTitle_codigoMunicipio}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.codigoMunicipio}"/>
+                            <h:outputText value="#{item.estado.descricao}"/>
                         </p:column>
                         <p:column>
                             <f:facet name="header">

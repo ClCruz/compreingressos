@@ -20,9 +20,7 @@
                                            var="estado"
                                            itemValue="#{estado}"
                                            itemLabel="#{estado.descricao}"/>
-                        </p:selectOneMenu>                       
-                        <p:outputLabel value="#{bundle.EditMunicipioLabel_codigoMunicipio}" for="codigoMunicipio" />
-                        <p:inputText id="codigoMunicipio" value="#{municipioController.selected.codigoMunicipio}" title="#{bundle.EditMunicipioTitle_codigoMunicipio}"/>                        
+                        </p:selectOneMenu>                                               
                     </p:panelGrid>
                     <p:commandButton actionListener="#{municipioController.update}" value="#{bundle.Save}" update="display,:MunicipioListForm:datalist,:growl" oncomplete="handleSubmit(args, 'MunicipioEditDialog');"/>
                     <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('MunicipioEditDialog').hide()"/>

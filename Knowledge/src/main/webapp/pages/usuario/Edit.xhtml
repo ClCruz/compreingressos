@@ -21,7 +21,7 @@
                         <p:outputLabel value="#{bundle.EditUsuarioLabel_email}" for="email" />
                         <p:inputText id="email" value="#{usuarioController.selected.email}" title="#{bundle.EditUsuarioTitle_email}" required="true" requiredMessage="#{bundle.EditUsuarioRequiredMessage_email}"/>
                         <p:outputLabel value="#{bundle.EditUsuarioLabel_inAtivo}" for="inAtivo" />
-                        <p:selectBooleanCheckbox id="inAtivo" value="#{usuarioController.selected.inAtivo}" />
+                        <p:selectBooleanCheckbox id="inAtivo" value="#{usuarioController.selected.ativo}" />
                     </p:panelGrid>
                     <p:commandButton actionListener="#{usuarioController.update}" value="#{bundle.Save}" update="display,:UsuarioListForm:datalist,:growl" oncomplete="handleSubmit(args, 'UsuarioEditDialog');"/>
                     <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('UsuarioEditDialog').hide()"/>

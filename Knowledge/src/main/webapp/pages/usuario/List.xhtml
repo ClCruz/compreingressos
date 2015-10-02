@@ -55,7 +55,7 @@
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListUsuarioTitle_inAtivo}"/>
                             </f:facet>
-                            <p:selectBooleanCheckbox value="#{item.inAtivo}" disabled="true"/>
+                            <p:selectBooleanCheckbox value="#{item.ativo}" disabled="true"/>
                         </p:column>
                         <f:facet name="footer">
                             <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{usuarioController.prepareCreate}" update=":UsuarioCreateForm" oncomplete="PF('UsuarioCreateDialog').show()"/>

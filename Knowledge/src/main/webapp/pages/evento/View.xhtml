@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="EventoViewDlg" widgetVar="EventoViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewEventoTitle}">
+            <h:form id="EventoViewForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{eventoController.selected != null}">
+                        <h:outputText value="#{bundle.ViewEventoLabel_id}"/>
+                        <h:outputText value="#{eventoController.selected.id}" title="#{bundle.ViewEventoTitle_id}"/>
+                        <h:outputText value="#{bundle.ViewEventoLabel_descricaoResumida}"/>
+                        <h:outputText value="#{eventoController.selected.descricaoResumida}" title="#{bundle.ViewEventoTitle_descricaoResumida}"/>
+                        <h:outputText value="#{bundle.ViewEventoLabel_descricaoCompleta}"/>
+                        <h:outputText value="#{eventoController.selected.descricaoCompleta}" title="#{bundle.ViewEventoTitle_descricaoCompleta}"/>
+                        <h:outputText value="#{bundle.ViewEventoLabel_descricaoSinopse}"/>
+                        <h:outputText value="#{eventoController.selected.descricaoSinopse}" title="#{bundle.ViewEventoTitle_descricaoSinopse}"/>
+                        <h:outputText value="#{bundle.ViewEventoLabel_idExterno}"/>
+                        <h:outputText value="#{eventoController.selected.idExterno}" title="#{bundle.ViewEventoTitle_idExterno}"/>
+                        <h:outputText value="#{bundle.ViewEventoLabel_dtAtualizacao}"/>
+                        <h:outputText value="#{eventoController.selected.dtAtualizacao}" title="#{bundle.ViewEventoTitle_dtAtualizacao}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+                        </h:outputText>
+                        <h:outputText value="#{bundle.ViewEventoLabel_produtorNacional}"/>
+                        <h:outputText value="#{eventoController.selected.produtorNacional.nomeProdutor}" title="#{bundle.ViewEventoTitle_produtorNacional}"/>
+                        <h:outputText value="#{bundle.ViewEventoLabel_produtorLocal}"/>
+                        <h:outputText value="#{eventoController.selected.produtorLocal.nomeProdutor}" title="#{bundle.ViewEventoTitle_produtorLocal}"/>
+                        <h:outputText value="#{bundle.ViewEventoLabel_local}"/>
+                        <h:outputText value="#{eventoController.selected.local.descricao}" title="#{bundle.ViewEventoTitle_local}"/>
+                        <h:outputText value="#{bundle.ViewEventoLabel_genero}"/>
+                        <h:outputText value="#{eventoController.selected.genero.descricao}" title="#{bundle.ViewEventoTitle_genero}"/>
+                    </p:panelGrid>
+                    <p:commandButton value="#{bundle.Close}" type="button" onclick="PF('EventoViewDialog').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

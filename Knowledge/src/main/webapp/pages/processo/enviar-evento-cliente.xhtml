@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">    
+
+    <f:metadata>
+        <f:viewParam name="task" value="#{processoController.task}" converter="taskConverter" />
+        <f:event type="preRenderView" listener="#{processoController.obtemProcesso()}"/>
+    </f:metadata>
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="Knowledge"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <div class="menu-item">
+                <h1>#{processoController.task.name}</h1>
+            </div> 
+            <h:form id="ProcessoCreateForm" prependId="false">
+                <h:panelGroup id="display">
+                    <table width="100%" cellpadding="2" cellspacing="2" border="0">
+                        <tr>
+                            <td width="200">
+                                <p:outputLabel for="dtEnvio" value="Data de Envio:" style="font-weight: bold;"/><br/>
+                                <p:calendar id="dtEnvio" value="#{processoController.dataEnvio}" locale="pt" pattern="dd/MM/yyyy" required="true" requiredMessage="O campo Data de Envio é obrigatório."/>
+                            </td>
+                            <td width="400">
+                                <p:outputLabel for="cliente" value="Cliente:" style="font-weight: bold;"/><br/>
+                                <p:selectOneMenu id="cliente" value="#{processoController.cliente}" required="true" requiredMessage="O campo Cliente é obrigatório." style="min-width: 200px;">
+                                    <f:selectItems value="#{clienteController.itemsAvailableSelectOne}"
+                                                   var="cliente"
+                                                   itemLabel="#{cliente.descricao}"
+                                                   itemValue="#{cliente}"/>
+                                </p:selectOneMenu>
+                            </td>
+                            <td>
+                                <p:outputLabel for="lista" value="Nome da Lista:" style="font-weight: bold;"/><br/>
+                                <p:inputText id="lista" value="#{processoController.nomeLista}" size="60" maxlength="255" required="true" requiredMessage="O campo Nome da Lista é obrigatório."/>
+                            </td>
+                        </tr>                                                                                                                       
+                        <tr>
+                            <td colspan="3">
+                                <br/>
+                                <p:dataTable id="datalist" 
+                                             var="item"
+                                             value="#{processoController.eventos}"                                   
+                                             paginator="true"                                 
+                                             rows="10"
+                                             paginatorPosition="bottom"
+                                             rowsPerPageTemplate="10,20,30,40,50">
+                                    <f:facet name="header">
+                                        <h:outputText value="Eventos"/>
+                                    </f:facet>                        
+                                    <p:column filterBy="#{item.descricaoCompleta}" filterMatchMode="contains" sortBy="#{item.descricaoResumida}">
+                                        <f:facet name="header">
+                                            <h:outputText value="Descrição"/>
+                                        </f:facet>
+                                        <h:outputText value="#{item.descricaoCompleta}"/>
+                                    </p:column>
+                                    <p:column headerText="Local" filterBy="#{item.local.descricao}" filterMatchMode="contains" sortBy="#{item.local.descricao}">
+                                        <h:outputText value="#{item.local.descricao}"/>
+                                    </p:column>
+                                    <p:column headerText="Gênero" width="200" filterBy="#{item.genero.descricao}" filterMatchMode="contains" sortBy="#{item.genero.descricao}">
+                                        <h:outputText value="#{item.genero.descricao}"/>
+                                    </p:column>
+                                    <p:column width="50" style="text-align: center;">
+                                        <p:selectBooleanCheckbox value="#{item.selected}"/>
+                                    </p:column>                                                
+                                </p:dataTable>                                
+                            </td>
+                        </tr>                                                                    
+                    </table>
+
+                    <p:commandButton value="Liberar" process="@this" action="/pages/Tarefas" actionListener="#{processoController.releaseTask()}" update=":growl" style="margin-right: 10px;"/>
+                    <p:commandButton value="Completar" action="/pages/Tarefas" actionListener="#{processoController.completeTask(1)}" update=":growl,ProcessoCreateForm"/>
+                </h:panelGroup>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

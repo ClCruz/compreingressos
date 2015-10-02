@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="DiaEditDlg" widgetVar="DiaEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditDiaTitle}">
+            <h:form id="DiaEditForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{diaController.selected != null}">
+                        <p:outputLabel value="#{bundle.EditDiaLabel_idDia}" for="idDia" />
+                        <p:inputText id="idDia" value="#{diaController.selected.idDia}" title="#{bundle.EditDiaTitle_idDia}" required="true" requiredMessage="#{bundle.EditDiaRequiredMessage_idDia}"/>
+                        <p:outputLabel value="#{bundle.EditDiaLabel_dtDia}" for="dtDia" />
+                        <p:calendar id="dtDia" pattern="MM/dd/yyyy HH:mm:ss" value="#{diaController.selected.dtDia}" title="#{bundle.EditDiaTitle_dtDia}"  showOn="button"/>
+                        <p:outputLabel value="#{bundle.EditDiaLabel_idAno}" for="idAno" />
+                        <p:inputText id="idAno" value="#{diaController.selected.idAno}" title="#{bundle.EditDiaTitle_idAno}" />
+                        <p:outputLabel value="#{bundle.EditDiaLabel_idDiaAnterior}" for="idDiaAnterior" />
+                        <p:inputText id="idDiaAnterior" value="#{diaController.selected.idDiaAnterior}" title="#{bundle.EditDiaTitle_idDiaAnterior}" />
+                        <p:outputLabel value="#{bundle.EditDiaLabel_idDiaAnoAnterior}" for="idDiaAnoAnterior" />
+                        <p:inputText id="idDiaAnoAnterior" value="#{diaController.selected.idDiaAnoAnterior}" title="#{bundle.EditDiaTitle_idDiaAnoAnterior}" />
+                        <p:outputLabel value="#{bundle.EditDiaLabel_idSemestre}" for="idSemestre" />
+                        <p:inputText id="idSemestre" value="#{diaController.selected.idSemestre}" title="#{bundle.EditDiaTitle_idSemestre}" />
+                        <p:outputLabel value="#{bundle.EditDiaLabel_idTrimestre}" for="idTrimestre" />
+                        <p:inputText id="idTrimestre" value="#{diaController.selected.idTrimestre}" title="#{bundle.EditDiaTitle_idTrimestre}" />
+                        <p:outputLabel value="#{bundle.EditDiaLabel_idMes}" for="idMes" />
+                        <p:inputText id="idMes" value="#{diaController.selected.idMes}" title="#{bundle.EditDiaTitle_idMes}" />
+                        <p:outputLabel value="#{bundle.EditDiaLabel_idQuinzenaMes}" for="idQuinzenaMes" />
+                        <p:inputText id="idQuinzenaMes" value="#{diaController.selected.idQuinzenaMes}" title="#{bundle.EditDiaTitle_idQuinzenaMes}" />
+                        <p:outputLabel value="#{bundle.EditDiaLabel_idDiaSemana}" for="idDiaSemana" />
+                        <p:inputText id="idDiaSemana" value="#{diaController.selected.idDiaSemana}" title="#{bundle.EditDiaTitle_idDiaSemana}" />
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{diaController.update}" value="#{bundle.Save}" update="display,:DiaListForm:datalist,:growl" oncomplete="handleSubmit(args, 'DiaEditDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('DiaEditDialog').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

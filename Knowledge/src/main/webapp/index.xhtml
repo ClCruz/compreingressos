@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui">
+    <f:view contentType="text/html"/>
+    <h:head>
+        <title>Knowledge</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+        <link rel="stylesheet" type="text/css"
+              href="#{facesContext.externalContext.requestContextPath}/resources/css/admin.css" />
+        <style type="text/css">
+            body {
+                background-image: url('#{facesContext.externalContext.requestContextPath}/resources/img/background.jpg');
+            }
+        </style>
+    </h:head>
+    <h:body>
+        <div id="holder">
+            <div id="header" class="ui-corner-top">
+                <h:form>
+                    <p style="font-weight: bold;" id="clock"></p>
+                    <c:if test="#{loginManagedBean.usuario.logado}">
+                        <p>Bem vindo, <h:outputText value="#{loginController.usuario.nome}"/> !<br />
+                            [<h:commandLink action="#{loginController.logout}" value="Sair" />]
+                        </p>
+                    </c:if>
+                    <img src="#{facesContext.externalContext.requestContextPath}/resources/img/logotipo.jpg" id="logo" alt="Stellmar.arq.br" />
+                </h:form>
+            </div>
+
+            <h:form id="frmMenu">
+                <p:menubar>
+                    <p:submenu>
+                        <f:facet name="label"></f:facet>
+                    </p:submenu>
+                </p:menubar>
+            </h:form>
+
+            <div id="content">
+                <div id="app">
+                    <h:panelGrid style="margin: 0 auto 25px auto;">
+                        <p:messages id="mensagem" showSummary="true"/>
+                        <h:form id="frmLogin" prependId="false">
+                            <p:panel header="Dados de acesso">
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="Usuário:"/>
+                                    <h:inputText id="login" required="true" value="#{loginController.usuario.login}"
+                                                 requiredMessage="Campo [Usuário] obrigatório"/>
+                                    <h:outputLabel value="Senha:"/>
+                                    <h:inputSecret value="#{loginController.usuario.password}" required="true"
+                                                   requiredMessage="Campo [Senha] obrigatório"/>
+
+                                    <p:ajaxStatus>
+                                        <f:facet name="start">
+                                            <h:graphicImage value="/faces/resources/images/ajaxloading.gif"/>
+                                        </f:facet>
+                                        <f:facet name="complete">
+                                            <h:outputText value=""/>
+                                        </f:facet>
+                                    </p:ajaxStatus>
+
+                                    <p:commandButton value="Login"
+                                                     action="#{loginController.login}"
+                                                     ajax="false"/>
+                                </h:panelGrid>
+                            </p:panel>
+                        </h:form>
+                    </h:panelGrid>
+                </div>
+            </div>
+
+            <div id="footer" class="ui-corner-bottom">
+                <p>&copy; Copyright Compreingressos | Todos os direitos reservados</p>
+            </div>
+        </div>
+    </h:body>
+</html>

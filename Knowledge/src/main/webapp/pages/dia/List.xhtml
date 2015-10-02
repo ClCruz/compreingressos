@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/template.xhtml">
+
+
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ListDiaTitle}"></h:outputText>
+        </ui:define>
+
+        <ui:define name="body">
+            <h:form id="DiaListForm">
+                <p:panel header="#{bundle.ListDiaTitle}">
+                    <p:dataTable id="datalist" value="#{diaController.items}" var="item"
+                                 selectionMode="single" selection="#{diaController.selected}"
+                                 paginator="true"
+                                 rowKey="#{item.idDia}"
+                                 rows="10"
+                                 rowsPerPageTemplate="10,20,30,40,50"
+                                 >
+
+                        <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
+                        <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListDiaTitle_idDia}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idDia}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListDiaTitle_dtDia}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.dtDia}">
+                                <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListDiaTitle_idAno}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idAno}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListDiaTitle_idDiaAnterior}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idDiaAnterior}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListDiaTitle_idDiaAnoAnterior}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idDiaAnoAnterior}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListDiaTitle_idSemestre}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idSemestre}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListDiaTitle_idTrimestre}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idTrimestre}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListDiaTitle_idMes}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idMes}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListDiaTitle_idQuinzenaMes}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idQuinzenaMes}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListDiaTitle_idDiaSemana}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idDiaSemana}"/>
+                        </p:column>
+                        <f:facet name="footer">
+                            <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{diaController.prepareCreate}" update=":DiaCreateForm" oncomplete="PF('DiaCreateDialog').show()"/>
+                            <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":DiaViewForm" oncomplete="PF('DiaViewDialog').show()" disabled="#{empty diaController.selected}"/>
+                            <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":DiaEditForm" oncomplete="PF('DiaEditDialog').show()" disabled="#{empty diaController.selected}"/>
+                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{diaController.destroy}" update=":growl,datalist" disabled="#{empty diaController.selected}"/>
+                        </f:facet>
+                    </p:dataTable>
+                </p:panel>
+            </h:form>
+
+            <ui:include src="Create.xhtml"/>
+            <ui:include src="Edit.xhtml"/>
+            <ui:include src="View.xhtml"/>
+        </ui:define>
+    </ui:composition>
+
+</html>

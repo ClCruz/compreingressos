@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="EventoClienteViewDlg" widgetVar="EventoClienteViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewEventoClienteTitle}">
+            <h:form id="EventoClienteViewForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{eventoClienteController.selected != null}">
+                        <h:outputText value="#{bundle.ViewEventoClienteLabel_id}"/>
+                        <h:outputText value="#{eventoClienteController.selected.id}" title="#{bundle.ViewEventoClienteTitle_id}"/>
+                        <h:outputText value="#{bundle.ViewEventoClienteLabel_dataEnvio}"/>
+                        <h:outputText value="#{eventoClienteController.selected.dataEnvio}" title="#{bundle.ViewEventoClienteTitle_dataEnvio}">
+                            <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                        </h:outputText>
+                        <h:outputText value="#{bundle.ViewEventoClienteLabel_dataResposta}"/>
+                        <h:outputText value="#{eventoClienteController.selected.dataResposta}" title="#{bundle.ViewEventoClienteTitle_dataResposta}">
+                            <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                        </h:outputText>
+                        <h:outputText value="#{bundle.ViewEventoClienteLabel_dataConfirmacao}"/>
+                        <h:outputText value="#{eventoClienteController.selected.dataConfirmacao}" title="#{bundle.ViewEventoClienteTitle_dataConfirmacao}">
+                            <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                        </h:outputText>
+                        <h:outputText value="#{bundle.ViewEventoClienteLabel_dataAceiteProdutor}"/>
+                        <h:outputText value="#{eventoClienteController.selected.dataAceiteProdutor}" title="#{bundle.ViewEventoClienteTitle_dataAceiteProdutor}">
+                            <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                        </h:outputText>
+                        <h:outputText value="#{bundle.ViewEventoClienteLabel_dataImplementacao}"/>
+                        <h:outputText value="#{eventoClienteController.selected.dataImplementacao}" title="#{bundle.ViewEventoClienteTitle_dataImplementacao}">
+                            <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                        </h:outputText>
+                        <h:outputText value="#{bundle.ViewEventoClienteLabel_observacao}"/>
+                        <h:outputText value="#{eventoClienteController.selected.observacao}" title="#{bundle.ViewEventoClienteTitle_observacao}"/>
+                        <h:outputText value="#{bundle.ViewEventoClienteLabel_motivo}"/>
+                        <h:outputText value="#{eventoClienteController.selected.motivo}" title="#{bundle.ViewEventoClienteTitle_motivo}"/>
+                        <h:outputText value="#{bundle.ViewEventoClienteLabel_evento}"/>
+                        <h:outputText value="#{eventoClienteController.selected.evento}" title="#{bundle.ViewEventoClienteTitle_evento}"/>
+                        <h:outputText value="#{bundle.ViewEventoClienteLabel_cliente}"/>
+                        <h:outputText value="#{eventoClienteController.selected.cliente}" title="#{bundle.ViewEventoClienteTitle_cliente}"/>
+                    </p:panelGrid>
+                    <p:commandButton value="#{bundle.Close}" type="button" onclick="PF('EventoClienteViewDialog').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

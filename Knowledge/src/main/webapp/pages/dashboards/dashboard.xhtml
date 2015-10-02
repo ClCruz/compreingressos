@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="Dashboard de Processos e Tarefas"></h:outputText>
+        </ui:define>        
+        <ui:define name="style">
+            <style type="text/css">
+                #content{padding: 0 !important;}
+                #app{padding: 0 !important;}
+                #dashbuilder{
+                    width: 100%;
+                    height: 1750px;
+                    overflow: hidden;
+                }
+            </style>            
+        </ui:define>        
+        
+        <ui:define name="body">            
+            <iframe id="dashbuilder" src="about:blank" width="100%" height="600"/>
+            <script type="text/javascript">
+                var host = document.location.host;
+                var protocol  = document.location.protocol;
+                var loc = protocol +"//"+ host + "/dashbuilder/workspace/en/jbpm-dashboard/process-dashboard?embedded=true&amp;refresh=true";
+                
+                document.getElementById("dashbuilder").src = loc;                
+            </script>
+        </ui:define>
+    </ui:composition>
+</html>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="ProdutorViewDlg" widgetVar="ProdutorViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewProdutorTitle}">
+            <h:form id="ProdutorViewForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{produtorController.selected != null}">
+                        <h:outputText value="#{bundle.ViewProdutorLabel_id}"/>
+                        <h:outputText value="#{produtorController.selected.id}" title="#{bundle.ViewProdutorTitle_id}"/>
+                        <h:outputText value="#{bundle.ViewProdutorLabel_nomeProdutor}"/>
+                        <h:outputText value="#{produtorController.selected.nomeProdutor}" title="#{bundle.ViewProdutorTitle_nomeProdutor}"/>
+                        <h:outputText value="#{bundle.ViewProdutorLabel_nomeEmpresa}"/>
+                        <h:outputText value="#{produtorController.selected.nomeEmpresa}" title="#{bundle.ViewProdutorTitle_nomeEmpresa}"/>
+                        <h:outputText value="#{bundle.ViewProdutorLabel_cnpj}"/>
+                        <h:outputText value="#{produtorController.selected.cnpj}" title="#{bundle.ViewProdutorTitle_cnpj}"/>
+                        <h:outputText value="#{bundle.ViewProdutorLabel_endereco}"/>
+                        <h:outputText value="#{produtorController.selected.endereco}" title="#{bundle.ViewProdutorTitle_endereco}"/>
+                        <h:outputText value="#{bundle.ViewProdutorLabel_cep}"/>
+                        <h:outputText value="#{produtorController.selected.cep}" title="#{bundle.ViewProdutorTitle_cep}"/>
+                        <h:outputText value="#{bundle.ViewProdutorLabel_bairro}"/>
+                        <h:outputText value="#{produtorController.selected.bairro}" title="#{bundle.ViewProdutorTitle_bairro}"/>
+                        <h:outputText value="#{bundle.ViewProdutorLabel_telefone}"/>
+                        <h:outputText value="#{produtorController.selected.telefone}" title="#{bundle.ViewProdutorTitle_telefone}"/>
+                        <h:outputText value="#{bundle.ViewProdutorLabel_celular}"/>
+                        <h:outputText value="#{produtorController.selected.celular}" title="#{bundle.ViewProdutorTitle_celular}"/>
+                        <h:outputText value="#{bundle.ViewProdutorLabel_email1}"/>
+                        <h:outputText value="#{produtorController.selected.email1}" title="#{bundle.ViewProdutorTitle_email1}"/>
+                        <h:outputText value="#{bundle.ViewProdutorLabel_email2}"/>
+                        <h:outputText value="#{produtorController.selected.email2}" title="#{bundle.ViewProdutorTitle_email2}"/>
+                        <h:outputText value="#{bundle.ViewProdutorLabel_site}"/>
+                        <h:outputText value="#{produtorController.selected.site}" title="#{bundle.ViewProdutorTitle_site}"/>
+                        <h:outputText value="#{bundle.ViewProdutorLabel_observacao}"/>
+                        <h:outputText value="#{produtorController.selected.observacao}" title="#{bundle.ViewProdutorTitle_observacao}"/>
+                        <h:outputText value="#{bundle.ViewProdutorLabel_dtAtualizacao}"/>
+                        <h:outputText value="#{produtorController.selected.dtAtualizacao}" title="#{bundle.ViewProdutorTitle_dtAtualizacao}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+                        </h:outputText>
+                    </p:panelGrid>
+                    <p:commandButton value="#{bundle.Close}" type="button" onclick="PF('ProdutorViewDialog').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

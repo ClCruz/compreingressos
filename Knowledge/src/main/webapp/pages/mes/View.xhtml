@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="MesViewDlg" widgetVar="MesViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewMesTitle}">
+            <h:form id="MesViewForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{mesController.selected != null}">
+                        <h:outputText value="#{bundle.ViewMesLabel_idMes}"/>
+                        <h:outputText value="#{mesController.selected.idMes}" title="#{bundle.ViewMesTitle_idMes}"/>
+                        <h:outputText value="#{bundle.ViewMesLabel_dsMes}"/>
+                        <h:outputText value="#{mesController.selected.dsMes}" title="#{bundle.ViewMesTitle_dsMes}"/>
+                        <h:outputText value="#{bundle.ViewMesLabel_idMesNoAno}"/>
+                        <h:outputText value="#{mesController.selected.idMesNoAno}" title="#{bundle.ViewMesTitle_idMesNoAno}"/>
+                        <h:outputText value="#{bundle.ViewMesLabel_idMesAnoAnterior}"/>
+                        <h:outputText value="#{mesController.selected.idMesAnoAnterior}" title="#{bundle.ViewMesTitle_idMesAnoAnterior}"/>
+                        <h:outputText value="#{bundle.ViewMesLabel_idMesAnterior}"/>
+                        <h:outputText value="#{mesController.selected.idMesAnterior}" title="#{bundle.ViewMesTitle_idMesAnterior}"/>
+                        <h:outputText value="#{bundle.ViewMesLabel_idAno}"/>
+                        <h:outputText value="#{mesController.selected.idAno}" title="#{bundle.ViewMesTitle_idAno}"/>
+                        <h:outputText value="#{bundle.ViewMesLabel_idSemestre}"/>
+                        <h:outputText value="#{mesController.selected.idSemestre}" title="#{bundle.ViewMesTitle_idSemestre}"/>
+                        <h:outputText value="#{bundle.ViewMesLabel_idTrimestre}"/>
+                        <h:outputText value="#{mesController.selected.idTrimestre}" title="#{bundle.ViewMesTitle_idTrimestre}"/>
+                    </p:panelGrid>
+                    <p:commandButton value="#{bundle.Close}" type="button" onclick="PF('MesViewDialog').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

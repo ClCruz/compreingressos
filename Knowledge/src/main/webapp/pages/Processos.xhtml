@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"      
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <ui:composition template="/template.xhtml">
+
+        <ui:define name="title">
+            <h:outputText value="Processos"></h:outputText>
+        </ui:define>
+
+        <ui:define name="body">
+            <div class="menu-item">
+                <h1> Processos </h1>
+            </div>
+            <h:form id="ProcessosListForm">
+
+                <p:dataTable id="datalist" value="#{processDefinitionController.processDefinition}" 
+                             var="item"
+                             paginator="true"
+                             rows="10"
+                             paginatorPosition="bottom">
+
+                    <p:column sortBy="#{item.name}">
+                        <f:facet name="header">
+                            <h:outputText value="Nome"/>
+                        </f:facet>
+                        <h:outputText value="#{item.name}"/>
+                    </p:column>
+                    <p:column sortBy="#{item.version}">
+                        <f:facet name="header">
+                            <h:outputText value="Versão"/>
+                        </f:facet>
+                        <h:outputText value="#{item.version}"/>
+                    </p:column>
+                    <p:column sortBy="#{item.packageName}">
+                        <f:facet name="header">
+                            <h:outputText value="Projeto"/>
+                        </f:facet>
+                        <h:outputText value="#{item.packageName}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Ações"/>
+                        </f:facet>
+                        <p:commandButton id="createButton" value="Executar" icon="ui-icon-play" action="Tarefas" actionListener="#{processDefinitionController.startProcess}" update=":growl" />
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="GeneroCreateDlg" widgetVar="GeneroCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateGeneroTitle}">
+            <h:form id="GeneroCreateForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{generoController.selected != null}">                        
+                        <p:outputLabel value="#{bundle.CreateGeneroLabel_descricao}" for="descricao" />
+                        <p:inputText id="descricao" value="#{generoController.selected.descricao}" title="#{bundle.CreateGeneroTitle_descricao}" required="true" requiredMessage="#{bundle.CreateGeneroRequiredMessage_descricao}"/>                        
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{generoController.create}" value="#{bundle.Save}" update="display,:GeneroListForm:datalist,:growl" oncomplete="handleSubmit(args,'GeneroCreateDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('GeneroCreateDialog').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

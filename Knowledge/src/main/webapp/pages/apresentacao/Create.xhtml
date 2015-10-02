@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="ApresentacaoCreateDlg" widgetVar="ApresentacaoCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateApresentacaoTitle}">
+            <h:form id="ApresentacaoCreateForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{apresentacaoController.selected != null}">                        
+                        <p:outputLabel value="#{bundle.CreateApresentacaoLabel_data}" for="data" />
+                        <p:calendar id="data" locale="pt" pattern="dd/MM/yyyy" value="#{apresentacaoController.selected.data}" title="#{bundle.EditApresentacaoTitle_data}" required="true" requiredMessage="#{bundle.EditApresentacaoRequiredMessage_data}"/>
+                        <p:outputLabel value="#{bundle.CreateApresentacaoLabel_hora}" for="hora" />
+                        <p:inputMask mask="99h99" id="hora" value="#{apresentacaoController.selected.hora}" title="#{bundle.CreateApresentacaoTitle_hora}" />
+                        <p:outputLabel value="#{bundle.CreateApresentacaoLabel_valorIngresso}" for="valorIngresso" />
+                        <p:inputText id="valorIngresso" value="#{apresentacaoController.selected.valorIngresso}" title="#{bundle.CreateApresentacaoTitle_valorIngresso}"/>
+                        <p:outputLabel value="#{bundle.CreateApresentacaoLabel_evento}" for="evento" />
+                        <p:selectOneMenu id="evento" value="#{apresentacaoController.selected.evento}" converter="eventoConverter">
+                            <f:selectItems value="#{eventoController.itemsAvailableSelectOne}"                                           
+                                           var="eventoItem"
+                                           itemValue="#{eventoItem}"
+                                           itemLabel="#{eventoItem.descricaoResumida}"/>
+                        </p:selectOneMenu>                        
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{apresentacaoController.create}" value="#{bundle.Save}" update="display,:ApresentacaoListForm:datalist,:growl" oncomplete="handleSubmit(args,'ApresentacaoCreateDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('ApresentacaoCreateDialog').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

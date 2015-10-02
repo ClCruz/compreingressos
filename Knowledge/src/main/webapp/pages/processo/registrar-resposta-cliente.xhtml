@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">    
+
+    <f:metadata>
+        <f:viewParam name="task" value="#{processoController.task}" converter="taskConverter" />
+        <f:event type="preRenderView" listener="#{processoController.obtemProcesso()}"/>
+    </f:metadata>
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="Knowledge"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <div class="menu-item">
+                <h1>#{processoController.task.name}</h1>
+            </div>
+            <h:form id="ProcessoCreateForm" prependId="false">
+                <table width="100%" cellpadding="2" cellspacing="2" border="0">
+                    <tr>
+                        <td width="200">
+                            <p:outputLabel for="dtEnvio" value="Data de Envio:" style="font-weight: bold;"/><br/>
+                            <p:calendar id="dtEnvio" value="#{processoController.dataEnvio}" locale="pt" pattern="dd/MM/yyyy" disabled="true"/>
+                        </td>
+                        <td width="400">
+                            <p:outputLabel for="cliente" value="Cliente:" style="font-weight: bold;"/><br/>
+                            <p:selectOneMenu id="cliente" value="#{processoController.cliente}" style="min-width: 200px;" disabled="true">
+                                <f:selectItems value="#{clienteController.itemsAvailableSelectOne}"
+                                               var="cliente"
+                                               itemLabel="#{cliente.descricao}"
+                                               itemValue="#{cliente}"/>
+                            </p:selectOneMenu>
+                        </td>
+                        <td>
+                            <p:outputLabel for="lista" value="Nome da Lista:" style="font-weight: bold;"/><br/>
+                            <p:inputText id="lista" value="#{processoController.nomeLista}" size="60" disabled="true"/>
+                        </td>
+                    </tr>                                                                                                                       
+                    <tr>
+                        <td colspan="3">  
+                            <br/>                                                               
+                            <p:dataTable id="pacote" var="pacote" value="#{processoController.items}" editable="true">
+                                <f:facet name="header">Eventos</f:facet>
+
+                                <p:column headerText="Evento" style="width: 300px;">
+                                    <h:outputText value="#{pacote.evento.descricaoCompleta}" />
+                                </p:column>
+                                <p:column headerText="Resposta">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputText value="Aceito" rendered="#{pacote.respostaCliente}" />
+                                            <h:outputText value="Recusado" rendered="#{!pacote.respostaCliente}" />
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <h:selectOneMenu id="resposta" value="#{pacote.respostaCliente}" style="width: 100%;">
+                                                <f:selectItem itemLabel="Aceito" itemValue="true"/>
+                                                <f:selectItem itemLabel="Recusado" itemValue="false"/>
+                                            </h:selectOneMenu>
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                <p:column headerText="Motivo">
+                                    <p:cellEditor>
+                                        <f:facet name="output"><h:outputText value="#{pacote.motivo.descricao}" /></f:facet>
+                                        <f:facet name="input">
+                                            <h:selectOneMenu id="motivo" value="#{pacote.motivo}" style="width: 100%;">
+                                                <f:selectItem itemValue="#{null}" itemLabel=""/>
+                                                <f:selectItems value="#{motivoController.itemsAvailableSelectOne}"
+                                                               var="motivo"
+                                                               itemValue="#{motivo}"
+                                                               itemLabel="#{motivo.descricao}"/>
+                                            </h:selectOneMenu>
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                <p:column headerText="Data de Resposta">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputText value="#{pacote.dataResposta}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:calendar id="dtResposta" value="#{pacote.dataResposta}" locale="pt" pattern="dd/MM/yyyy" required="true" requiredMessage="Necessário informar a Data de Resposta para todos os eventos." style="width: 100%;"/>
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                <p:column headerText="Observação">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputText value="#{pacote.observacao}"/>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:inputText id="observacao" value="#{pacote.observacao}" style="width: 100%;"/>
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                <p:column styleClass="ui-row-editor-custom">
+                                    <p:rowEditor />
+                                </p:column>
+                            </p:dataTable>
+                            <br/>
+                        </td>
+                    </tr>
+                </table>
+
+                <p:commandButton value="Liberar" process="@this" action="/pages/Tarefas" actionListener="#{processoController.releaseTask()}" update=":growl" style="margin-right: 10px;"/>
+                <p:commandButton value="Completar" action="/pages/Tarefas" actionListener="#{processoController.completeTask(2)}" update=":growl,ProcessoCreateForm"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

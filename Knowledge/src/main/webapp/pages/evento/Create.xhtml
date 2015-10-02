@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="EventoCreateDlg" widgetVar="EventoCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateEventoTitle}">
+            <h:form id="EventoCreateForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{eventoController.selected != null}">                        
+                        <p:outputLabel value="#{bundle.CreateEventoLabel_descricaoResumida}" for="descricaoResumida" />
+                        <p:inputText id="descricaoResumida" value="#{eventoController.selected.descricaoResumida}" title="#{bundle.CreateEventoTitle_descricaoResumida}" required="true" requiredMessage="#{bundle.CreateEventoRequiredMessage_descricaoResumida}"/>
+                        <p:outputLabel value="#{bundle.CreateEventoLabel_descricaoCompleta}" for="descricaoCompleta" />
+                        <p:inputText id="descricaoCompleta" value="#{eventoController.selected.descricaoCompleta}" title="#{bundle.CreateEventoTitle_descricaoCompleta}" />
+                        <p:outputLabel value="#{bundle.CreateEventoLabel_descricaoSinopse}" for="descricaoSinopse" />
+                        <p:inputTextarea rows="4" cols="30" id="descricaoSinopse" value="#{eventoController.selected.descricaoSinopse}" title="#{bundle.CreateEventoTitle_descricaoSinopse}" />                        
+                        <p:outputLabel value="#{bundle.CreateEventoLabel_produtorNacional}" for="produtorNacional" />
+                        <p:selectOneMenu id="produtorNacional" value="#{eventoController.selected.produtorNacional}" >
+                            <f:selectItems value="#{produtorController.itemsAvailableSelectOne}"
+                                           var="produtorNacionalItem"
+                                           itemValue="#{produtorNacionalItem}"
+                                           itemLabel="#{produtorNacionalItem.nomeProdutor}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.CreateEventoLabel_produtorLocal}" for="produtorLocal" />
+                        <p:selectOneMenu id="produtorLocal" value="#{eventoController.selected.produtorLocal}" >
+                            <f:selectItems value="#{produtorController.itemsAvailableSelectOne}"
+                                           var="produtorLocalItem"
+                                           itemValue="#{produtorLocalItem}"
+                                           itemLabel="#{produtorLocalItem.nomeProdutor}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.CreateEventoLabel_local}" for="local" />
+                        <p:selectOneMenu id="local" value="#{eventoController.selected.local}" >
+                            <f:selectItems value="#{localController.itemsAvailableSelectOne}"
+                                           var="localItem"
+                                           itemValue="#{localItem}"
+                                           itemLabel="#{localItem.descricao}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.CreateEventoLabel_genero}" for="genero" />
+                        <p:selectOneMenu id="genero" value="#{eventoController.selected.genero}" >
+                            <f:selectItems value="#{generoController.itemsAvailableSelectOne}"
+                                           var="generoItem"
+                                           itemValue="#{generoItem}"
+                                           itemLabel="#{generoItem.descricao}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{eventoController.create}" value="#{bundle.Save}" update="display,:EventoListForm:datalist,:growl" oncomplete="handleSubmit(args,'EventoCreateDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('EventoCreateDialog').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

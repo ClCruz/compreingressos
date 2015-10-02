@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/template.xhtml">
+
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ListFusiUsuaTitle}"></h:outputText>
+        </ui:define>
+
+        <ui:define name="body">
+            <div class="menu-item">
+                <h1> Funções do Sistema x Usuário </h1>
+            </div>
+            <h:form id="FusiUsuaCreateForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2">                                                
+                        <p:outputLabel value="Usuário" for="usuaId" />
+                        <p:selectOneMenu id="usuaId" 
+                                         value="#{fusiUsuaController.usuario}" 
+                                         required="true" 
+                                         requiredMessage="#{bundle.CreateFusiUsuaRequiredMessage_usuario}"
+                                         valueChangeListener="#{fusiUsuaController.changeUsuario}">
+                            <f:selectItem itemLabel="Selecione o Usuário"/>
+                            <f:selectItems value="#{usuarioController.itemsAvailableSelectOne}"
+                                           var="usuario"
+                                           itemValue="#{usuario}"
+                                           itemLabel="#{usuario.nome}"/>
+                            <p:ajax event="change" update="datalist"/>
+                        </p:selectOneMenu> 
+                    </p:panelGrid>
+                    <br/><br/>
+                                        
+                    <p:dataTable id="datalist" 
+                                 var="item"
+                                 value="#{fusiUsuaController.items}"                                   
+                                 paginator="true"                                 
+                                 rows="10"
+                                 paginatorPosition="bottom"
+                                 rowsPerPageTemplate="10,20,30,40,50">
+                        <f:facet name="header">
+                            <h:outputText value="Permissões do Sistema"/>
+                        </f:facet>                        
+                        <p:column style="text-align: left;">
+                            <f:facet name="header">
+                                <h:outputText value="Função do Sistema"/>
+                            </f:facet>
+                            <h:outputText value="#{item.descricao}"/>
+                        </p:column>
+                        <p:column width="100" style="text-align: center;">
+                            <f:facet name="header">
+                                <p:selectBooleanCheckbox id="todos" value="#{fusiUsuaController.todos}">
+                                    <p:ajax event="change" listener="#{fusiUsuaController.save}" update=":growl, datalist"/>
+                                </p:selectBooleanCheckbox>
+                            </f:facet>
+                            <p:selectBooleanCheckbox value="#{item.selected}">
+                                <p:ajax event="change" listener="#{fusiUsuaController.change(item)}" update=":growl, datalist"/>
+                            </p:selectBooleanCheckbox>
+                        </p:column>                                                
+                    </p:dataTable>                    
+                </h:panelGroup>
+            </h:form>            
+        </ui:define>
+
+    </ui:composition>
+</html>

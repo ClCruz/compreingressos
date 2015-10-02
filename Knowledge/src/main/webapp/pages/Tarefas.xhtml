@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"      
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <ui:composition template="/template.xhtml">       
+        <ui:define name="title">
+            <h:outputText value="Tarefas"></h:outputText>
+        </ui:define>
+
+        <ui:define name="body">
+            <div class="menu-item">
+                <h1> Tarefas </h1>
+            </div> 
+            <h:form id="TarefasListForm">
+                <p:dataTable id="datalist" 
+                             value="#{taskController.listaTask}"                                                                  
+                             var="item"
+                             rowKey="#{item.id}"
+                             paginator="true"
+                             rows="10"
+                             rowsPerPageTemplate="10,20,30,40,50"
+                             paginatorPosition="bottom">                                                   
+
+                    <p:column filterBy="#{item.name}" filterMatchMode="contains" sortBy="#{item.name}">
+                        <f:facet name="header">
+                            <h:outputText value="Nome"/>
+                        </f:facet>
+                        <h:outputText value="#{item.name}"/>
+                    </p:column>
+                    <p:column filterBy="#{taskController.decodeBase64(taskController.processInstance(item, 'nomeLista'))}" filterMatchMode="contains" sortBy="#{taskController.decodeBase64(taskController.processInstance(item, 'nomeLista'))}">
+                        <f:facet name="header">
+                            <h:outputText value="Nome da Lista"/>
+                        </f:facet>
+                        <h:outputText value="#{taskController.decodeBase64(taskController.processInstance(item, 'nomeLista'))}"/>
+                    </p:column>
+                    <p:column filterBy="#{item.taskData.status}" filterMatchMode="contains" sortBy="#{item.taskData.status}">
+                        <f:facet name="header">
+                            <h:outputText value="Status"/>
+                        </f:facet>
+                        <h:outputText value="#{item.taskData.status}"/>
+                    </p:column>
+                    <p:column sortBy="#{item.taskData.createdOn}">
+                        <f:facet name="header">
+                            <h:outputText value="Data Criação"/>
+                        </f:facet>
+                        <h:outputText value="#{item.taskData.createdOn}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>                    
+                    <p:column sortBy="#{item.taskData.expirationTime}">
+                        <f:facet name="header">
+                            <h:outputText value="Data Limite"/>
+                        </f:facet>
+                        <h:outputText value="#{item.taskData.expirationTime}"/>
+                    </p:column>                        
+                    <p:column width="120">
+                        <f:facet name="header">
+                            <h:outputText value="Ações"/>
+                        </f:facet>                 
+                        <p:commandButton id="searchButton" icon="ui-icon-pencil" 
+                                         title="Editar Tarefa" ajax="false"
+                                         rendered="#{item.taskData.actualOwner != null}"
+                                         action="#{taskController.redirect(item)}">                                
+                            <f:setPropertyActionListener target="#{processoController.task}" value="#{item}"/>
+                        </p:commandButton>
+                        <p:commandButton id="claimButton" icon="ui-icon-unlocked" 
+                                         actionListener="#{taskController.startTask(item)}" 
+                                         rendered="#{item.taskData.actualOwner == null}"
+                                         title="Iniciar Tarefa"
+                                         update=":growl,datalist">
+                            <f:setPropertyActionListener target="#{processoController.task}" value="#{item}"/>
+                        </p:commandButton>
+                        <p:commandButton id="releaseButton" icon="ui-icon-locked" 
+                                         actionListener="#{taskController.releaseTask(item)}" 
+                                         rendered="#{item.taskData.actualOwner != null}"
+                                         title="Liberar Tarefa"
+                                         update=":growl,datalist"/>                            
+                    </p:column>
+                </p:dataTable>
+            </h:form>  
+        </ui:define>
+    </ui:composition>
+</html>

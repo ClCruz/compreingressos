@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="PatrocinadorViewDlg" widgetVar="PatrocinadorViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewPatrocinadorTitle}">
+            <h:form id="PatrocinadorViewForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{patrocinadorController.selected != null}">
+                        <h:outputText value="#{bundle.ViewPatrocinadorLabel_id}"/>
+                        <h:outputText value="#{patrocinadorController.selected.id}" title="#{bundle.ViewPatrocinadorTitle_id}"/>
+                        <h:outputText value="#{bundle.ViewPatrocinadorLabel_descricao}"/>
+                        <h:outputText value="#{patrocinadorController.selected.descricao}" title="#{bundle.ViewPatrocinadorTitle_descricao}"/>
+                        <h:outputText value="#{bundle.ViewPatrocinadorLabel_dtAtualizacao}"/>
+                        <h:outputText value="#{patrocinadorController.selected.dtAtualizacao}" title="#{bundle.ViewPatrocinadorTitle_dtAtualizacao}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+                        </h:outputText>
+                    </p:panelGrid>
+                    <p:commandButton value="#{bundle.Close}" type="button" onclick="PF('PatrocinadorViewDialog').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

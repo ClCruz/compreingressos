@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="PapelViewDlg" widgetVar="PapelViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewPapelTitle}">
+            <h:form id="PapelViewForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{papelController.selected != null}">
+                        <h:outputText value="#{bundle.ViewPapelLabel_id}"/>
+                        <h:outputText value="#{papelController.selected.id}" title="#{bundle.ViewPapelTitle_id}"/>
+                        <h:outputText value="#{bundle.ViewPapelLabel_nome}"/>
+                        <h:outputText value="#{papelController.selected.nome}" title="#{bundle.ViewPapelTitle_nome}"/>
+                    </p:panelGrid>
+                    <p:commandButton value="#{bundle.Close}" type="button" onclick="PF('PapelViewDialog').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

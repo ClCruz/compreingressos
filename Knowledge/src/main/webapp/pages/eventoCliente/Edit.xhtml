@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="EventoClienteEditDlg" widgetVar="EventoClienteEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditEventoClienteTitle}">
+            <h:form id="EventoClienteEditForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{eventoClienteController.selected != null}">
+                        <p:outputLabel value="#{bundle.EditEventoClienteLabel_id}" for="id" />
+                        <p:inputText id="id" value="#{eventoClienteController.selected.id}" title="#{bundle.EditEventoClienteTitle_id}" required="true" requiredMessage="#{bundle.EditEventoClienteRequiredMessage_id}"/>
+                        <p:outputLabel value="#{bundle.EditEventoClienteLabel_dataEnvio}" for="dataEnvio" />
+                        <p:calendar id="dataEnvio" pattern="MM/dd/yyyy HH:mm:ss" value="#{eventoClienteController.selected.dataEnvio}" title="#{bundle.EditEventoClienteTitle_dataEnvio}"  showOn="button"/>
+                        <p:outputLabel value="#{bundle.EditEventoClienteLabel_dataResposta}" for="dataResposta" />
+                        <p:calendar id="dataResposta" pattern="MM/dd/yyyy HH:mm:ss" value="#{eventoClienteController.selected.dataResposta}" title="#{bundle.EditEventoClienteTitle_dataResposta}"  showOn="button"/>
+                        <p:outputLabel value="#{bundle.EditEventoClienteLabel_dataConfirmacao}" for="dataConfirmacao" />
+                        <p:calendar id="dataConfirmacao" pattern="MM/dd/yyyy HH:mm:ss" value="#{eventoClienteController.selected.dataConfirmacao}" title="#{bundle.EditEventoClienteTitle_dataConfirmacao}"  showOn="button"/>
+                        <p:outputLabel value="#{bundle.EditEventoClienteLabel_dataAceiteProdutor}" for="dataAceiteProdutor" />
+                        <p:calendar id="dataAceiteProdutor" pattern="MM/dd/yyyy HH:mm:ss" value="#{eventoClienteController.selected.dataAceiteProdutor}" title="#{bundle.EditEventoClienteTitle_dataAceiteProdutor}"  showOn="button"/>
+                        <p:outputLabel value="#{bundle.EditEventoClienteLabel_dataImplementacao}" for="dataImplementacao" />
+                        <p:calendar id="dataImplementacao" pattern="MM/dd/yyyy HH:mm:ss" value="#{eventoClienteController.selected.dataImplementacao}" title="#{bundle.EditEventoClienteTitle_dataImplementacao}"  showOn="button"/>
+                        <p:outputLabel value="#{bundle.EditEventoClienteLabel_observacao}" for="observacao" />
+                        <p:inputTextarea rows="4" cols="30" id="observacao" value="#{eventoClienteController.selected.observacao}" title="#{bundle.EditEventoClienteTitle_observacao}" />
+                        <p:outputLabel value="#{bundle.EditEventoClienteLabel_motivo}" for="motivo" />
+                        <p:selectOneMenu id="motivo" value="#{eventoClienteController.selected.motivo}" >
+                            <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                            <f:selectItems value="#{motivoController.itemsAvailableSelectOne}"
+                                           var="motivoItem"
+                                           itemValue="#{motivoItem}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.EditEventoClienteLabel_evento}" for="evento" />
+                        <p:selectOneMenu id="evento" value="#{eventoClienteController.selected.evento}" >
+                            <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                            <f:selectItems value="#{eventoController.itemsAvailableSelectOne}"
+                                           var="eventoItem"
+                                           itemValue="#{eventoItem}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.EditEventoClienteLabel_cliente}" for="cliente" />
+                        <p:selectOneMenu id="cliente" value="#{eventoClienteController.selected.cliente}" >
+                            <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                            <f:selectItems value="#{clienteController.itemsAvailableSelectOne}"
+                                           var="clienteItem"
+                                           itemValue="#{clienteItem}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{eventoClienteController.update}" value="#{bundle.Save}" update="display,:EventoClienteListForm:datalist,:growl" oncomplete="handleSubmit(args, 'EventoClienteEditDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('EventoClienteEditDialog').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="MesCreateDlg" widgetVar="MesCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateMesTitle}">
+            <h:form id="MesCreateForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{mesController.selected != null}">
+                        <p:outputLabel value="#{bundle.CreateMesLabel_idMes}" for="idMes" />
+                        <p:inputText id="idMes" value="#{mesController.selected.idMes}" title="#{bundle.CreateMesTitle_idMes}" required="true" requiredMessage="#{bundle.CreateMesRequiredMessage_idMes}"/>
+                        <p:outputLabel value="#{bundle.CreateMesLabel_dsMes}" for="dsMes" />
+                        <p:inputText id="dsMes" value="#{mesController.selected.dsMes}" title="#{bundle.CreateMesTitle_dsMes}" required="true" requiredMessage="#{bundle.CreateMesRequiredMessage_dsMes}"/>
+                        <p:outputLabel value="#{bundle.CreateMesLabel_idMesNoAno}" for="idMesNoAno" />
+                        <p:inputText id="idMesNoAno" value="#{mesController.selected.idMesNoAno}" title="#{bundle.CreateMesTitle_idMesNoAno}" required="true" requiredMessage="#{bundle.CreateMesRequiredMessage_idMesNoAno}"/>
+                        <p:outputLabel value="#{bundle.CreateMesLabel_idMesAnoAnterior}" for="idMesAnoAnterior" />
+                        <p:inputText id="idMesAnoAnterior" value="#{mesController.selected.idMesAnoAnterior}" title="#{bundle.CreateMesTitle_idMesAnoAnterior}" required="true" requiredMessage="#{bundle.CreateMesRequiredMessage_idMesAnoAnterior}"/>
+                        <p:outputLabel value="#{bundle.CreateMesLabel_idMesAnterior}" for="idMesAnterior" />
+                        <p:inputText id="idMesAnterior" value="#{mesController.selected.idMesAnterior}" title="#{bundle.CreateMesTitle_idMesAnterior}" required="true" requiredMessage="#{bundle.CreateMesRequiredMessage_idMesAnterior}"/>
+                        <p:outputLabel value="#{bundle.CreateMesLabel_idAno}" for="idAno" />
+                        <p:inputText id="idAno" value="#{mesController.selected.idAno}" title="#{bundle.CreateMesTitle_idAno}" required="true" requiredMessage="#{bundle.CreateMesRequiredMessage_idAno}"/>
+                        <p:outputLabel value="#{bundle.CreateMesLabel_idSemestre}" for="idSemestre" />
+                        <p:inputText id="idSemestre" value="#{mesController.selected.idSemestre}" title="#{bundle.CreateMesTitle_idSemestre}" required="true" requiredMessage="#{bundle.CreateMesRequiredMessage_idSemestre}"/>
+                        <p:outputLabel value="#{bundle.CreateMesLabel_idTrimestre}" for="idTrimestre" />
+                        <p:inputText id="idTrimestre" value="#{mesController.selected.idTrimestre}" title="#{bundle.CreateMesTitle_idTrimestre}" required="true" requiredMessage="#{bundle.CreateMesRequiredMessage_idTrimestre}"/>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{mesController.create}" value="#{bundle.Save}" update="display,:MesListForm:datalist,:growl" oncomplete="handleSubmit(args,'MesCreateDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('MesCreateDialog').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

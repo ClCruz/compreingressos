@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="ApresentacaoViewDlg" widgetVar="ApresentacaoViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewApresentacaoTitle}">
+            <h:form id="ApresentacaoViewForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{apresentacaoController.selected != null}">
+                        <h:outputText value="#{bundle.ViewApresentacaoLabel_id}"/>
+                        <h:outputText value="#{apresentacaoController.selected.id}" title="#{bundle.ViewApresentacaoTitle_id}"/>
+                        <h:outputText value="#{bundle.ViewApresentacaoLabel_data}"/>
+                        <h:outputText value="#{apresentacaoController.selected.data}" title="#{bundle.ViewApresentacaoTitle_data}">
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </h:outputText>
+                        <h:outputText value="#{bundle.ViewApresentacaoLabel_hora}"/>
+                        <h:outputText value="#{apresentacaoController.selected.hora}" title="#{bundle.ViewApresentacaoTitle_hora}"/>
+                        <h:outputText value="#{bundle.ViewApresentacaoLabel_valorIngresso}"/>
+                        <h:outputText value="#{apresentacaoController.selected.valorIngresso}" title="#{bundle.ViewApresentacaoTitle_valorIngresso}">
+                            <f:convertNumber type="currency" minFractionDigits="2"/>
+                        </h:outputText>
+                        <h:outputText value="#{bundle.ViewApresentacaoLabel_dataAtualizacao}"/>
+                        <h:outputText value="#{apresentacaoController.selected.dataAtualizacao}" title="#{bundle.ViewApresentacaoTitle_dataAtualizacao}">
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </h:outputText>                        
+                        <h:outputText value="#{bundle.ViewApresentacaoLabel_evento}"/>
+                        <h:outputText value="#{apresentacaoController.selected.evento.descricaoCompleta}" title="#{bundle.ViewApresentacaoTitle_evento}"/>
+                    </p:panelGrid>
+                    <p:commandButton value="#{bundle.Close}" type="button" onclick="PF('ApresentacaoViewDialog').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

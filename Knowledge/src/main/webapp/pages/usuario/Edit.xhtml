@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="UsuarioEditDlg" widgetVar="UsuarioEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditUsuarioTitle}">
+            <h:form id="UsuarioEditForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{usuarioController.selected != null}">                        
+                        <p:outputLabel value="#{bundle.EditUsuarioLabel_nome}" for="nome" />
+                        <p:inputText id="nome" value="#{usuarioController.selected.nome}" title="#{bundle.EditUsuarioTitle_nome}" required="true" requiredMessage="#{bundle.EditUsuarioRequiredMessage_nome}"/>
+                        <p:outputLabel value="#{bundle.EditUsuarioLabel_login}" for="login" />
+                        <p:inputText id="login" value="#{usuarioController.selected.login}" title="#{bundle.EditUsuarioTitle_login}" required="true" requiredMessage="#{bundle.EditUsuarioRequiredMessage_login}"/>
+                        <p:outputLabel value="#{bundle.EditUsuarioLabel_password}" for="password" />
+                        <h:inputSecret id="password" value="#{usuarioController.selected.password}" title="#{bundle.EditUsuarioTitle_password}" required="true" requiredMessage="#{bundle.EditUsuarioRequiredMessage_password}"/>
+                        <p:outputLabel value="#{bundle.EditUsuarioLabel_email}" for="email" />
+                        <p:inputText id="email" value="#{usuarioController.selected.email}" title="#{bundle.EditUsuarioTitle_email}" required="true" requiredMessage="#{bundle.EditUsuarioRequiredMessage_email}"/>
+                        <p:outputLabel value="#{bundle.EditUsuarioLabel_inAtivo}" for="inAtivo" />
+                        <p:selectBooleanCheckbox id="inAtivo" value="#{usuarioController.selected.inAtivo}" />
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{usuarioController.update}" value="#{bundle.Save}" update="display,:UsuarioListForm:datalist,:growl" oncomplete="handleSubmit(args, 'UsuarioEditDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('UsuarioEditDialog').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

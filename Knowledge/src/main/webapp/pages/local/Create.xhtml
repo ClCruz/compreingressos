@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="LocalCreateDlg" widgetVar="LocalCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateLocalTitle}">
+            <h:form id="LocalCreateForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="4" rendered="#{localController.selected != null}">                        
+                        <p:outputLabel value="#{bundle.CreateLocalLabel_descricao}" for="descricao" />
+                        <p:inputText id="descricao" value="#{localController.selected.descricao}" title="#{bundle.CreateLocalTitle_descricao}" required="true" requiredMessage="#{bundle.CreateLocalRequiredMessage_descricao}"/>
+                        <p:outputLabel value="#{bundle.CreateLocalLabel_endereco}" for="endereco" />
+                        <p:inputText id="endereco" value="#{localController.selected.endereco}" title="#{bundle.CreateLocalTitle_endereco}" />
+                        <p:outputLabel value="#{bundle.CreateLocalLabel_bairro}" for="bairro" />
+                        <p:inputText id="bairro" value="#{localController.selected.bairro}" title="#{bundle.CreateLocalTitle_bairro}" />
+                        <p:outputLabel value="#{bundle.CreateLocalLabel_cep}" for="cep" />
+                        <p:inputText id="cep" value="#{localController.selected.cep}" title="#{bundle.CreateLocalTitle_cep}" />
+                        <p:outputLabel value="#{bundle.CreateLocalLabel_telefone}" for="telefone" />
+                        <p:inputText id="telefone" value="#{localController.selected.telefone}" title="#{bundle.CreateLocalTitle_telefone}" />
+                        <p:outputLabel value="#{bundle.CreateLocalLabel_fax}" for="fax" />
+                        <p:inputText id="fax" value="#{localController.selected.fax}" title="#{bundle.CreateLocalTitle_fax}" />
+                        <p:outputLabel value="#{bundle.CreateLocalLabel_quantidadeLugares}" for="quantidadeLugares" />
+                        <p:inputText id="quantidadeLugares" value="#{localController.selected.quantidadeLugares}" title="#{bundle.CreateLocalTitle_quantidadeLugares}" />
+                        <p:outputLabel value="#{bundle.CreateLocalLabel_tipoPropriedade}" for="tipoPropriedade" />
+                        <p:inputText id="tipoPropriedade" value="#{localController.selected.tipoPropriedade}" title="#{bundle.CreateLocalTitle_tipoPropriedade}" />                        
+                        <p:outputLabel value="#{bundle.CreateLocalLabel_site}" for="site" />
+                        <p:inputText id="site" value="#{localController.selected.site}" title="#{bundle.CreateLocalTitle_site}" />
+                        <p:outputLabel value="#{bundle.CreateLocalLabel_nomePresidente}" for="nomePresidente" />
+                        <p:inputText id="nomePresidente" value="#{localController.selected.nomePresidente}" title="#{bundle.CreateLocalTitle_nomePresidente}" />
+                        <p:outputLabel value="#{bundle.CreateLocalLabel_nomeDiretorTeatro}" for="nomeDiretorTeatro" />
+                        <p:inputText id="nomeDiretorTeatro" value="#{localController.selected.nomeDiretorTeatro}" title="#{bundle.CreateLocalTitle_nomeDiretorTeatro}" />
+                        <p:outputLabel value="#{bundle.CreateLocalLabel_nomeDiretorPauta}" for="nomeDiretorPauta" />
+                        <p:inputText id="nomeDiretorPauta" value="#{localController.selected.nomeDiretorPauta}" title="#{bundle.CreateLocalTitle_nomeDiretorPauta}" />
+                        <p:outputLabel value="#{bundle.CreateLocalLabel_emailDiretorPauta}" for="emailDiretorPauta" />
+                        <p:inputText id="emailDiretorPauta" value="#{localController.selected.emailDiretorPauta}" title="#{bundle.CreateLocalTitle_emailDiretorPauta}" />
+                        <p:outputLabel value="#{bundle.CreateLocalLabel_observacao}" for="observacao" />
+                        <p:inputText id="observacao" value="#{localController.selected.observacao}" title="#{bundle.CreateLocalTitle_observacao}" />
+                        <p:outputLabel value="#{bundle.CreateLocalLabel_estado}" for="estado" />
+                        <p:selectOneMenu id="estado"
+                                         valueChangeListener="#{municipioController.valueChangeEstado}"
+                                         converter="estadoControllerConverter">
+                            <f:selectItems value="#{estadoController.itemsAvailableSelectOne}"
+                                           var="estado"
+                                           itemValue="#{estado}"
+                                           itemLabel="#{estado.descricao}"/>
+                            <p:ajax event="change" update="municipio"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.CreateLocalLabel_municipio}" for="municipio" />
+                        <p:selectOneMenu id="municipio" value="#{localController.selected.municipio}" >
+                            <f:selectItems value="#{municipioController.itemsAvailableSelectOneByEstado}"
+                                           var="municipio"
+                                           itemValue="#{municipio}"
+                                           itemLabel="#{municipio.descricao}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.CreateLocalLabel_tipoLocal}" for="tipoLocal" />
+                        <p:selectOneMenu id="tipoLocal" value="#{localController.selected.tipoLocal}" >
+                            <f:selectItems value="#{tipoLocalController.itemsAvailableSelectOne}"
+                                           var="tipoLocal"
+                                           itemValue="#{tipoLocal}"
+                                           itemLabel="#{tipoLocal.descricao}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{localController.create}" value="#{bundle.Save}" update="display,:LocalListForm:datalist,:growl" oncomplete="handleSubmit(args,'LocalCreateDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('LocalCreateDialog').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title><ui:insert name="title">Default Title</ui:insert></title>
+        <h:outputStylesheet library="css" name="jsfcrud.css"/>
+        <h:outputStylesheet library="css" name="admin.css"/>
+        <h:outputScript library="js" name="jsfcrud.js"/>
+        <h:outputScript library="js" name="calendar-locale.js"/>
+        <ui:insert name="style"></ui:insert>
+    </h:head>
+
+    <h:body>
+        <p:growl id="growl" life="5000" showDetail="false" />
+        <div id="holder">
+            <div id="header" class="ui-corner-top">
+                <h:form>
+                    <p style="font-weight: bold;" id="clock"></p>
+                    <p>Bem vindo, <h:outputText value="#{loginController.usuario.nome}"/>!<br />
+                        <c:if test="#{loginController.usuario.logado}">
+                            [<h:commandLink action="#{loginController.logout}" value="Sair" />]
+                        </c:if>
+                    </p>
+                    <img src="#{facesContext.externalContext.requestContextPath}/resources/img/logotipo.jpg" id="logo" alt="Compreingressos.com" />
+                </h:form>
+            </div>
+
+            <h:form id="menuForm">
+                <p:menubar model="#{loginController.model}"/>
+            </h:form>
+
+            <div id="content">
+                <div id="app">
+                    <ui:insert name="body"/>
+                </div>
+            </div>
+            
+            <div id="footer" class="ui-corner-bottom">
+                <p>&copy; Copyright Compreingressos.com 2011 - 2015 | Todos os direitos reservados</p>
+            </div>
+        </div>        
+        <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />
+
+        <p:dialog widgetVar="statusDialog" styleClass="ui-dialog-custom" modal="true" draggable="false" closable="false" resizable="false" header="Por favor, aguarde...">            
+            <br/>
+            <h:graphicImage library="img" value="/resources/img/ajax-loader.gif"/>
+            <br/><br/>
+            <h:outputText value="Efetuando as alterações necessárias." />
+        </p:dialog>
+    </h:body>    
+</html>

@@ -17,7 +17,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                 executeSQL($conn, $query, $params);
             
                 $log = new Log($_SESSION['admin']);
-                $log->__set('funcionalidade', 'Códigos Promocionais');
+                $log->__set('funcionalidade', 'Gestão de Promoções');
                 $log->__set('parametros', $params);
                 $log->__set('log', $query);
                 $log->save($conn);
@@ -28,7 +28,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                 executeSQL($conn, $query, $params);
             
                 $log = new Log($_SESSION['admin']);
-                $log->__set('funcionalidade', 'Edição de Promoção');
+                $log->__set('funcionalidade', 'Gestão de Promoções');
                 $log->__set('parametros', $params);
                 $log->__set('log', $query);
                 $log->save($conn);
@@ -59,7 +59,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
         executeSQL($conn, $query, array($id_promocao));
 
         $log = new Log($_SESSION['admin']);
-        $log->__set('funcionalidade', 'Edição de Promoção');
+        $log->__set('funcionalidade', 'Gestão de Promoções');
         $log->__set('parametros', $params);
         $log->__set('log', $query);
         $log->save($conn);
@@ -73,7 +73,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
             executeSQL($conn, $query, $params);
 
             $log = new Log($_SESSION['admin']);
-            $log->__set('funcionalidade', 'Edição de Promoção');
+            $log->__set('funcionalidade', 'Gestão de Promoções');
             $log->__set('parametros', $params);
             $log->__set('log', $query);
             $log->save($conn);
@@ -112,7 +112,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
         }
 
         $log = new Log($_SESSION['admin']);
-        $log->__set('funcionalidade', 'Códigos Promocionais');
+        $log->__set('funcionalidade', 'Gestão de Promoções');
         $log->__set('parametros', array_unshift($params, $quantidade));
         $log->__set('log', '? x '.$query);
         $log->save($conn);
@@ -129,7 +129,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
         }
 
         $log = new Log($_SESSION['admin']);
-        $log->__set('funcionalidade', 'Códigos Promocionais');
+        $log->__set('funcionalidade', 'Gestão de Promoções');
         $log->__set('parametros', $params);
         $log->__set('log', $query);
         $log->save($conn);
@@ -175,7 +175,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
             if ($rs['SUCCESS']) {
 
                 $log = new Log($_SESSION['admin']);
-                $log->__set('funcionalidade', 'Códigos Promocionais');
+                $log->__set('funcionalidade', 'Gestão de Promoções');
                 $log->__set('parametros', $params);
                 $log->__set('log', $query);
                 $log->save($conn);
@@ -237,7 +237,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
         executeSQL($mainConnection, $query, $params);
         
         $log = new Log($_SESSION['admin']);
-        $log->__set('funcionalidade', 'Edição de Promoção');
+        $log->__set('funcionalidade', 'Gestão de Promoções');
         $log->__set('parametros', $params);
         $log->__set('log', $query);
         $log->save($mainConnection);
@@ -377,7 +377,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
         $result = executeSQL($mainConnection, $query, $params);
 
         $log = new Log($_SESSION['admin']);
-        $log->__set('funcionalidade', 'Edição de Promoção');
+        $log->__set('funcionalidade', 'Gestão de Promoções');
         $log->__set('parametros', $params);
         $log->__set('log', $query);
         $log->save($mainConnection);

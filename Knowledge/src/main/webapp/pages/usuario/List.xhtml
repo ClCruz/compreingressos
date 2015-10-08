@@ -16,7 +16,7 @@
         <ui:define name="body">
             <h:form id="UsuarioListForm">
                 <p:panel header="#{bundle.ListUsuarioTitle}">
-                    <p:dataTable id="datalist" value="#{usuarioController.items}" var="item"
+                    <p:dataTable id="datalist" widgetVar="datalistTable" value="#{usuarioController.items}" var="item"
                                  selectionMode="single" selection="#{usuarioController.selected}"
                                  paginator="true"
                                  rowKey="#{item.id}"
@@ -27,35 +27,34 @@
                         <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
                         <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
 
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListUsuarioTitle_id}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.id}"/>
-                        </p:column>
-                        <p:column>
+                        <p:column filterBy="#{item.nome}" filterMatchMode="contains" sortBy="#{item.nome}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListUsuarioTitle_nome}"/>
                             </f:facet>
                             <h:outputText value="#{item.nome}"/>
                         </p:column>
-                        <p:column>
+                        <p:column filterBy="#{item.login}" filterMatchMode="contains" sortBy="#{item.login}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListUsuarioTitle_login}"/>
                             </f:facet>
                             <h:outputText value="#{item.login}"/>
                         </p:column>                        
-                        <p:column>
+                        <p:column filterBy="#{item.email}" filterMatchMode="contains" sortBy="#{item.email}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListUsuarioTitle_email}"/>
                             </f:facet>
                             <h:outputText value="#{item.email}"/>
                         </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListUsuarioTitle_inAtivo}"/>
+                        <p:column headerText="#{bundle.ListUsuarioTitle_inAtivo}" filterBy="#{item.ativo}" filterOptions="equals" sortBy="#{item.ativo ? 'Ativo' : 'Inativo'}">
+                            <f:facet name="filter">
+                                <p:selectOneButton onchange="PF('datalistTable').filter()">
+                                    <f:converter converterId="javax.faces.Boolean" />
+                                    <f:selectItem itemLabel="Todos" itemValue="" />
+                                    <f:selectItem itemLabel="Ativo" itemValue="true"/>
+                                    <f:selectItem itemLabel="Inativo" itemValue="false"/>
+                                </p:selectOneButton>
                             </f:facet>
-                            <p:selectBooleanCheckbox value="#{item.ativo}" disabled="true"/>
+                            <h:outputText value="#{item.ativo ? 'Ativo' : 'Inativo'}"/>
                         </p:column>
                         <f:facet name="footer">
                             <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{usuarioController.prepareCreate}" update=":UsuarioCreateForm" oncomplete="PF('UsuarioCreateDialog').show()"/>

@@ -15,7 +15,7 @@
                         <p:outputLabel value="#{bundle.CreateMunicipioLabel_descricao}" for="descricao" />
                         <p:inputText id="descricao" value="#{municipioController.selected.descricao}" title="#{bundle.CreateMunicipioTitle_descricao}" required="true" requiredMessage="#{bundle.CreateMunicipioRequiredMessage_descricao}"/>
                         <p:outputLabel value="#{bundle.CreateMunicipioLabel_estado}" for="estado" />
-                        <p:selectOneMenu id="estado" value="#{municipioController.selected.estado}">
+                        <p:selectOneMenu id="estado" value="#{municipioController.selected.estado}" converter="estadoControllerConverter">
                             <f:selectItems value="#{estadoController.itemsAvailableSelectOne}"
                                            var="estado"
                                            itemValue="#{estado}"

@@ -27,31 +27,31 @@
                         <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
                         <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
                         
-                        <p:column>
+                        <p:column filterBy="#{item.descricao}" filterMatchMode="contains" sortBy="#{item.descricao}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListLocalTitle_descricao}"/>
                             </f:facet>
                             <h:outputText value="#{item.descricao}"/>
                         </p:column>                        
-                        <p:column>
+                        <p:column filterBy="#{item.telefone}" filterMatchMode="contains" sortBy="#{item.telefone}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListLocalTitle_telefone}"/>
                             </f:facet>
                             <h:outputText value="#{item.telefone}"/>
                         </p:column>                        
-                        <p:column style="text-align: right;">
+                        <p:column style="text-align: right;" filterBy="#{item.quantidadeLugares}" filterMatchMode="contains" sortBy="#{item.quantidadeLugares}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListLocalTitle_quantidadeLugares}"/>
                             </f:facet>
                             <h:outputText value="#{item.quantidadeLugares}"/>
                         </p:column>                                                
-                        <p:column>
+                        <p:column filterBy="#{item.municipio.descricao}" filterMatchMode="contains" sortBy="#{item.municipio.descricao}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListLocalTitle_municipio}"/>
                             </f:facet>
                             <h:outputText value="#{item.municipio.descricao}"/>
                         </p:column>
-                        <p:column>
+                        <p:column filterBy="#{item.tipoLocal.descricao}" filterMatchMode="contains" sortBy="#{item.tipoLocal.descricao}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListLocalTitle_tipoLocal}"/>
                             </f:facet>

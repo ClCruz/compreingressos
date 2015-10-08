@@ -45,7 +45,7 @@
                                 <br/>                                                               
                                 <p:dataTable id="pacote" var="pacote" value="#{processoController.itemsCliente}" editable="true">
                                     <f:facet name="header">Eventos</f:facet>
-                                    <p:column headerText="Evento" style="width: 300px;">
+                                    <p:column headerText="Evento">
                                         <h:outputText value="#{pacote.evento.descricaoCompleta}" />
                                     </p:column>
                                     <p:column headerText="Produtor Nacional">
@@ -71,7 +71,7 @@
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
-                                    <p:column headerText="Data de Resposta">
+                                    <p:column headerText="Data de Resposta" class="ui-column-center">
                                         <p:cellEditor>
                                             <f:facet name="output">
                                                 <h:outputText value="#{pacote.dataAceiteProdutor}">
@@ -80,6 +80,40 @@
                                             </f:facet>
                                             <f:facet name="input">
                                                 <p:calendar id="dtResposta" value="#{pacote.dataAceiteProdutor}" locale="pt" pattern="dd/MM/yyyy" style="width: 100%;"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column headerText="Qt. Ingressos de Cortesia" class="ui-column-right">
+                                        <p:cellEditor>
+                                            <f:facet name="output">
+                                                <h:outputText value="#{pacote.qtdeIngressoCortesia}"/>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="#{pacote.qtdeIngressoCortesia}" style="width: 100%;"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column headerText="Desconto (%)" class="ui-column-right">
+                                        <p:cellEditor>
+                                            <f:facet name="output">
+                                                <h:outputText value="#{pacote.valorDesconto}">
+                                                    <f:convertNumber type="currency" minFractionDigits="2"/>
+                                                </h:outputText>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="#{pacote.valorDesconto}" style="width: 100%;"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column headerText="Dt. Início da Divulgação" class="ui-column-center">
+                                        <p:cellEditor>
+                                            <f:facet name="output">
+                                                <h:outputText value="#{pacote.dataImplementacao}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                </h:outputText>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:calendar value="#{pacote.dataImplementacao}" locale="pt" class="ui-width-full" pattern="dd/MM/yyyy"/>
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>

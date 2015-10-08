@@ -27,7 +27,7 @@
                         <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
                         <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
                         
-                        <p:column>
+                        <p:column filterBy="#{item.data}" filterMatchMode="contains" sortBy="#{item.data}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListApresentacaoTitle_data}"/>
                             </f:facet>
@@ -35,13 +35,13 @@
                                 <f:convertDateTime pattern="dd/MM/yyyy" />
                             </h:outputText>
                         </p:column>
-                        <p:column>
+                        <p:column filterBy="#{item.hora}" filterMatchMode="contains" sortBy="#{item.hora}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListApresentacaoTitle_hora}"/>
                             </f:facet>
                             <h:outputText value="#{item.hora}"/>
                         </p:column>
-                        <p:column>
+                        <p:column filterBy="#{item.valorIngresso}" filterMatchMode="contains" sortBy="#{item.valorIngresso}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListApresentacaoTitle_valorIngresso}"/>
                             </f:facet>
@@ -49,7 +49,7 @@
                                 <f:convertNumber type="currency" minFractionDigits="2"/>
                             </h:outputText>
                         </p:column>                                                
-                        <p:column>
+                        <p:column filterBy="#{item.evento.descricaoResumida}" filterMatchMode="contains" sortBy="#{item.evento.descricaoResumida}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListApresentacaoTitle_evento}"/>
                             </f:facet>

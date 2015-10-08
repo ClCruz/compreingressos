@@ -27,13 +27,7 @@
                         <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
                         <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
 
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListTipoLocalTitle_id}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.id}"/>
-                        </p:column>
-                        <p:column>
+                        <p:column filterBy="#{item.descricao}" filterMatchMode="contains" sortBy="#{item.descricao}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListTipoLocalTitle_descricao}"/>
                             </f:facet>

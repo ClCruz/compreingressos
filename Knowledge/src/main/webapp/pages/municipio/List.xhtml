@@ -26,20 +26,14 @@
 
                         <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
                         <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
-
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListMunicipioTitle_id}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.id}"/>
-                        </p:column>
-                        <p:column>
+                        
+                        <p:column filterBy="#{item.descricao}" filterMatchMode="contains" sortBy="#{item.descricao}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListMunicipioTitle_descricao}"/>
                             </f:facet>
                             <h:outputText value="#{item.descricao}"/>
                         </p:column>
-                        <p:column>
+                        <p:column filterBy="#{item.estado.descricao}" filterMatchMode="contains" sortBy="#{item.estado.descricao}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListMunicipioTitle_estado}"/>
                             </f:facet>

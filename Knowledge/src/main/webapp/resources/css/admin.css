@@ -71,6 +71,14 @@ body {
     width: 100%;
 }
 
+.ui-column-right{
+    text-align: right;
+}
+
+.ui-column-center{
+    text-align: center;
+}
+
 #footer {
     width:100%;
     height:auto;

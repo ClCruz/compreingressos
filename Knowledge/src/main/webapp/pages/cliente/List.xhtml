@@ -27,13 +27,13 @@
                         <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
                         <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
 
-                        <p:column>
+                        <p:column filterBy="#{item.id}" filterMatchMode="contains" sortBy="#{item.id}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListClienteTitle_id}"/>
                             </f:facet>
                             <h:outputText value="#{item.id}"/>
                         </p:column>
-                        <p:column>
+                        <p:column filterBy="#{item.descricao}" filterMatchMode="contains" sortBy="#{item.descricao}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListClienteTitle_descricao}"/>
                             </f:facet>

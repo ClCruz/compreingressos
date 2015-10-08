@@ -27,50 +27,42 @@
                         <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
                         <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
                         
-                        <p:column>
+                        <p:column filterBy="#{item.nomeProdutor}" filterMatchMode="contains" sortBy="#{item.nomeProdutor}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListProdutorTitle_nomeProdutor}"/>
                             </f:facet>
                             <h:outputText value="#{item.nomeProdutor}"/>
                         </p:column>
-                        <p:column>
+                        <p:column filterBy="#{item.nomeEmpresa}" filterMatchMode="contains" sortBy="#{item.nomeEmpresa}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListProdutorTitle_nomeEmpresa}"/>
                             </f:facet>
                             <h:outputText value="#{item.nomeEmpresa}"/>
                         </p:column>
-                        <p:column>
+                        <p:column filterBy="#{item.cnpj}" filterMatchMode="contains" sortBy="#{item.cnpj}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListProdutorTitle_cnpj}"/>
                             </f:facet>
                             <h:outputText value="#{item.cnpj}"/>
                         </p:column>                        
-                        <p:column>
+                        <p:column filterBy="#{item.telefone}" filterMatchMode="contains" sortBy="#{item.telefone}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListProdutorTitle_telefone}"/>
                             </f:facet>
                             <h:outputText value="#{item.telefone}"/>
                         </p:column>
-                        <p:column>
+                        <p:column filterBy="#{item.celular}" filterMatchMode="contains" sortBy="#{item.celular}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListProdutorTitle_celular}"/>
                             </f:facet>
                             <h:outputText value="#{item.celular}"/>
                         </p:column>
-                        <p:column>
+                        <p:column filterBy="#{item.email1}" filterMatchMode="contains" sortBy="#{item.email1}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListProdutorTitle_email1}"/>
                             </f:facet>
                             <h:outputText value="#{item.email1}"/>
-                        </p:column>                                                                        
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListProdutorTitle_dtAtualizacao}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.dtAtualizacao}">
-                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
-                            </h:outputText>
-                        </p:column>
+                        </p:column>                                                                                                
                         <f:facet name="footer">
                             <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{produtorController.prepareCreate}" update=":ProdutorCreateForm" oncomplete="PF('ProdutorCreateDialog').show()"/>
                             <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":ProdutorViewForm" oncomplete="PF('ProdutorViewDialog').show()" disabled="#{empty produtorController.selected}"/>

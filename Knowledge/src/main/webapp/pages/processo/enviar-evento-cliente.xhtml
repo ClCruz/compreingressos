@@ -62,6 +62,12 @@
                                     <p:column headerText="Local" filterBy="#{item.local.descricao}" filterMatchMode="contains" sortBy="#{item.local.descricao}">
                                         <h:outputText value="#{item.local.descricao}"/>
                                     </p:column>
+                                    <p:column headerText="Estado" filterBy="#{item.local.municipio.estado.descricao}" filterMatchMode="contains" sortBy="#{item.local.municipio.estado.descricao}">
+                                        <h:outputText value="#{item.local.municipio.estado.descricao}"/>
+                                    </p:column>
+                                    <p:column headerText="Munícipio" filterBy="#{item.local.municipio.descricao}" filterMatchMode="contains" sortBy="#{item.local.municipio.descricao}">
+                                        <h:outputText value="#{item.local.municipio.descricao}"/>
+                                    </p:column>
                                     <p:column headerText="Gênero" width="200" filterBy="#{item.genero.descricao}" filterMatchMode="contains" sortBy="#{item.genero.descricao}">
                                         <h:outputText value="#{item.genero.descricao}"/>
                                     </p:column>

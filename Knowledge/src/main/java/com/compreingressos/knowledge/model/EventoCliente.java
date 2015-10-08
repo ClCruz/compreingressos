@@ -88,6 +88,10 @@ public class EventoCliente implements Serializable {
     @Column(name = "DS_NOME_LISTA")
     @Size(max = 255)
     private String nomeLista;
+    @Column(name = "QT_KBEC_INGRESSO_CORTESIA")
+    private int qtdeIngressoCortesia;
+    @Column(name = "VL_KBEC_DESCONTO")
+    private float valorDesconto;
     
     public EventoCliente() {
     }
@@ -228,7 +232,23 @@ public class EventoCliente implements Serializable {
     public void setNomeLista(String nomeLista) {
         this.nomeLista = nomeLista;
     }
-                
+
+    public int getQtdeIngressoCortesia() {
+        return qtdeIngressoCortesia;
+    }
+
+    public void setQtdeIngressoCortesia(int qtdeIngressoCortesia) {
+        this.qtdeIngressoCortesia = qtdeIngressoCortesia;
+    }
+
+    public float getValorDesconto() {
+        return valorDesconto;
+    }
+
+    public void setValorDesconto(float valorDesconto) {
+        this.valorDesconto = valorDesconto;
+    }
+                        
     @Override
     public int hashCode() {
         int hash = 0;

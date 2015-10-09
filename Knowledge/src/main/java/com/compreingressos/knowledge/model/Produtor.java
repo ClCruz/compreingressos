@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "DIM_KBASE_PRODUTOR")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Produtor.findAll", query = "SELECT p FROM Produtor p")})
+    @NamedQuery(name = "Produtor.findAll", query = "SELECT p FROM Produtor p ORDER BY p.nomeProdutor")})
 public class Produtor implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

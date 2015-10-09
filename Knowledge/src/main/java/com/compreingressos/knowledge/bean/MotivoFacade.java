@@ -6,6 +6,7 @@
 package com.compreingressos.knowledge.bean;
 
 import com.compreingressos.knowledge.model.Motivo;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -26,6 +27,11 @@ public class MotivoFacade extends AbstractFacade<Motivo> {
 
     public MotivoFacade() {
         super(Motivo.class);
+    }
+
+    @Override
+    public List<Motivo> findAll() {
+        return getEntityManager().createNamedQuery("Motivo.findAll").getResultList();
     }
     
 }

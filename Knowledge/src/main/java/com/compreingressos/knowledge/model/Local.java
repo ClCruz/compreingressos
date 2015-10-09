@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "DIM_KBASE_LOCAL")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Local.findAll", query = "SELECT l FROM Local l")})
+    @NamedQuery(name = "Local.findAll", query = "SELECT l FROM Local l ORDER BY l.descricao")})
 public class Local implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

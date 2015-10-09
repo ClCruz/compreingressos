@@ -30,6 +30,11 @@ public class MunicipioFacade extends AbstractFacade<Municipio> {
         super(Municipio.class);
     }
 
+    @Override
+    public List<Municipio> findAll() {
+        return getEntityManager().createNamedQuery("Municipio.findAll").getResultList();
+    }
+    
     public List<Municipio> findAllByEstado(Estado estado) {
         return getEntityManager().createNamedQuery("Municipio.findAllByEstado").setParameter("estado", estado).getResultList();
     }

@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "DIM_KBASE_USUARIO")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Usuario.findAll", query = "SELECT u FROM Usuario u"),
+    @NamedQuery(name = "Usuario.findAll", query = "SELECT u FROM Usuario u ORDER BY u.nome"),
     @NamedQuery(name = "Usuario.login", query = "SELECT u FROM Usuario u WHERE u.login = :login AND u.password = :password AND u.ativo = true")
 })
 public class Usuario implements Serializable {

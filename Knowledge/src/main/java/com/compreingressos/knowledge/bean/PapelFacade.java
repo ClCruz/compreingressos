@@ -6,6 +6,7 @@
 package com.compreingressos.knowledge.bean;
 
 import com.compreingressos.knowledge.model.Papel;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -26,6 +27,11 @@ public class PapelFacade extends AbstractFacade<Papel> {
 
     public PapelFacade() {
         super(Papel.class);
+    }
+
+    @Override
+    public List<Papel> findAll() {
+        return getEntityManager().createNamedQuery("Papel.findAll").getResultList();
     }
     
 }

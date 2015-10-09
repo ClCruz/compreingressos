@@ -6,6 +6,7 @@
 package com.compreingressos.knowledge.bean;
 
 import com.compreingressos.knowledge.model.Evento;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -26,6 +27,11 @@ public class EventoFacade extends AbstractFacade<Evento> {
 
     public EventoFacade() {
         super(Evento.class);
+    }
+
+    @Override
+    public List<Evento> findAll() {
+        return getEntityManager().createNamedQuery("Evento.findAll").getResultList();
     }
     
 }

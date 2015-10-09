@@ -6,6 +6,7 @@
 package com.compreingressos.knowledge.bean;
 
 import com.compreingressos.knowledge.model.Produtor;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -27,5 +28,10 @@ public class ProdutorFacade extends AbstractFacade<Produtor> {
     public ProdutorFacade() {
         super(Produtor.class);
     }
-    
+
+    @Override
+    public List<Produtor> findAll() {
+        return getEntityManager().createNamedQuery("Produtor.findAll").getResultList();
+    }
+            
 }

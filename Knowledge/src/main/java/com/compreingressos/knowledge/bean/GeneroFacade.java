@@ -6,6 +6,7 @@
 package com.compreingressos.knowledge.bean;
 
 import com.compreingressos.knowledge.model.Genero;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -26,6 +27,11 @@ public class GeneroFacade extends AbstractFacade<Genero> {
 
     public GeneroFacade() {
         super(Genero.class);
+    }
+
+    @Override
+    public List<Genero> findAll() {
+        return getEntityManager().createNamedQuery("Genero.findAll").getResultList();
     }
     
 }

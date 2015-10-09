@@ -6,6 +6,7 @@
 package com.compreingressos.knowledge.bean;
 
 import com.compreingressos.knowledge.model.Cliente;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -26,6 +27,11 @@ public class ClienteFacade extends AbstractFacade<Cliente> {
 
     public ClienteFacade() {
         super(Cliente.class);
+    }    
+
+    @Override
+    public List<Cliente> findAll() {
+        return getEntityManager().createNamedQuery("Cliente.findAll").getResultList();
     }
     
 }

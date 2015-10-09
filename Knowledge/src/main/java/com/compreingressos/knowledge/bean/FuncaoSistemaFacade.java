@@ -30,6 +30,11 @@ public class FuncaoSistemaFacade extends AbstractFacade<FuncaoSistema> {
         super(FuncaoSistema.class);
     }
 
+    @Override
+    public List<FuncaoSistema> findAll() {
+        return getEntityManager().createNamedQuery("FuncaoSistema.findAll").getResultList();
+    }
+    
     public List<FuncaoSistema> findPai(Integer usuarioId) {        
         return getEntityManager().createNamedQuery("FuncaoSistema.findPai")
                 .setParameter("usuarioId", usuarioId)

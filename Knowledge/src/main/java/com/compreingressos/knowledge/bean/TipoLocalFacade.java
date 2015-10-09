@@ -6,6 +6,7 @@
 package com.compreingressos.knowledge.bean;
 
 import com.compreingressos.knowledge.model.TipoLocal;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -26,6 +27,11 @@ public class TipoLocalFacade extends AbstractFacade<TipoLocal> {
 
     public TipoLocalFacade() {
         super(TipoLocal.class);
+    }
+
+    @Override
+    public List<TipoLocal> findAll() {
+        return getEntityManager().createNamedQuery("TipoLocal.findAll").getResultList();
     }
     
 }

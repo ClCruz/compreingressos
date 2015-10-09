@@ -8,7 +8,6 @@
 
     <ui:composition template="/template.xhtml">
 
-
         <ui:define name="title">
             <h:outputText value="#{bundle.ListEventoTitle}"></h:outputText>
         </ui:define>
@@ -33,25 +32,25 @@
                             </f:facet>
                             <h:outputText value="#{item.descricaoCompleta}"/>
                         </p:column>                                                
-                        <p:column>
+                        <p:column filterBy="#{item.produtorNacional.nomeProdutor}" filterMatchMode="contains" sortBy="#{item.produtorNacional.nomeProdutor}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListEventoTitle_produtorNacional}"/>
                             </f:facet>
                             <h:outputText value="#{item.produtorNacional.nomeProdutor}"/>
                         </p:column>
-                        <p:column>
+                        <p:column filterBy="#{item.produtorLocal.nomeProdutor}" filterMatchMode="contains" sortBy="#{item.produtorLocal.nomeProdutor}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListEventoTitle_produtorLocal}"/>
                             </f:facet>
                             <h:outputText value="#{item.produtorLocal.nomeProdutor}"/>
                         </p:column>
-                        <p:column>
+                        <p:column filterBy="#{item.local.descricao}" filterMatchMode="contains" sortBy="#{item.local.descricao}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListEventoTitle_local}"/>
                             </f:facet>
                             <h:outputText value="#{item.local.descricao}"/>
                         </p:column>
-                        <p:column>
+                        <p:column filterBy="#{item.genero.descricao}" filterMatchMode="contains" sortBy="#{item.genero.descricao}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListEventoTitle_genero}"/>
                             </f:facet>

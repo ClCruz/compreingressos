@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "DIM_KBASE_FUNCAO_SISTEMA")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "FuncaoSistema.findAll", query = "SELECT f FROM FuncaoSistema f"),
+    @NamedQuery(name = "FuncaoSistema.findAll", query = "SELECT f FROM FuncaoSistema f ORDER BY f.descricao"),
     @NamedQuery(name = "FuncaoSistema.findPai", 
             query = "SELECT f FROM FuncaoSistema f INNER JOIN f.listaFuncaoUsuario fu "
                     + "WHERE fu.usuario.id = :usuarioId AND f.ativo = true "

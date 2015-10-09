@@ -6,6 +6,7 @@
 package com.compreingressos.knowledge.bean;
 
 import com.compreingressos.knowledge.model.Local;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -27,5 +28,10 @@ public class LocalFacade extends AbstractFacade<Local> {
     public LocalFacade() {
         super(Local.class);
     }
+
+    @Override
+    public List<Local> findAll() {
+        return getEntityManager().createNamedQuery("Local.findAll").getResultList();
+    }        
     
 }

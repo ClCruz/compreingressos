@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "DIM_MUNICIPIO")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Municipio.findAll", query = "SELECT m FROM Municipio m"),
+    @NamedQuery(name = "Municipio.findAll", query = "SELECT m FROM Municipio m ORDER BY m.descricao"),
     @NamedQuery(name = "Municipio.findAllByEstado", query = "SELECT m FROM Municipio m WHERE m.estado = :estado ORDER BY m.descricao")
 })
 public class Municipio implements Serializable {

@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "DIM_KBASE_PAPEL")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Papel.findAll", query = "SELECT p FROM Papel p")})
+    @NamedQuery(name = "Papel.findAll", query = "SELECT p FROM Papel p ORDER BY p.nome")})
 public class Papel implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

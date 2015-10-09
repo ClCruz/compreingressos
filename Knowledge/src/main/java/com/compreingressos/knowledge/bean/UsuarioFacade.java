@@ -6,6 +6,7 @@
 package com.compreingressos.knowledge.bean;
 
 import com.compreingressos.knowledge.model.Usuario;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -27,6 +28,11 @@ public class UsuarioFacade extends AbstractFacade<Usuario> {
 
     public UsuarioFacade() {
         super(Usuario.class);
+    }
+
+    @Override
+    public List<Usuario> findAll() {
+        return getEntityManager().createNamedQuery("Usuario.findAll").getResultList();
     }
     
     public Usuario login(Usuario usuario) {

@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "DIM_KBASE_PATROCINADOR")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Patrocinador.findAll", query = "SELECT p FROM Patrocinador p")})
+    @NamedQuery(name = "Patrocinador.findAll", query = "SELECT p FROM Patrocinador p ORDER BY p.descricao")})
 public class Patrocinador implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

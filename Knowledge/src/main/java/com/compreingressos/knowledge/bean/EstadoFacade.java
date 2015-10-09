@@ -6,6 +6,7 @@
 package com.compreingressos.knowledge.bean;
 
 import com.compreingressos.knowledge.model.Estado;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -27,5 +28,10 @@ public class EstadoFacade extends AbstractFacade<Estado> {
     public EstadoFacade() {
         super(Estado.class);
     }
-            
+
+    @Override
+    public List<Estado> findAll() {
+        return getEntityManager().createNamedQuery("Estado.findAll").getResultList();
+    }
+    
 }

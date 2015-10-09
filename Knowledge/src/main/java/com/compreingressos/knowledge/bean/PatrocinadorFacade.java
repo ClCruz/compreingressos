@@ -6,6 +6,7 @@
 package com.compreingressos.knowledge.bean;
 
 import com.compreingressos.knowledge.model.Patrocinador;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -26,6 +27,11 @@ public class PatrocinadorFacade extends AbstractFacade<Patrocinador> {
 
     public PatrocinadorFacade() {
         super(Patrocinador.class);
+    }
+
+    @Override
+    public List<Patrocinador> findAll() {
+        return getEntityManager().createNamedQuery("Patrocinador.findAll").getResultList();
     }
     
 }

@@ -5,6 +5,7 @@ $(function(){
     if ($overlay.find('.datas').is(':empty')) {
       $.ajax({
         url: 'timeTable.php',
+        cache: false,
         data: {'evento': $.getUrlVar('evento', $("script[src*='overlay_datas']").attr('src'))}
       }).done(function(data) {
         var horarios = '';

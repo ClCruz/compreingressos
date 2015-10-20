@@ -1,10 +1,10 @@
 package com.compreingressos.knowledge.controller;
 
-import com.compreingressos.knowledge.model.Evento;
+import com.compreingressos.knowledge.bean.EventoPatrocinioFacade;
 import com.compreingressos.knowledge.controller.util.JsfUtil;
 import com.compreingressos.knowledge.controller.util.JsfUtil.PersistAction;
-import com.compreingressos.knowledge.bean.EventoFacade;
-import com.compreingressos.knowledge.model.Local;
+import com.compreingressos.knowledge.model.EventoPatrocinio;
+import com.compreingressos.knowledge.model.EventoPatrocinioPK;
 
 import java.io.Serializable;
 import java.util.List;
@@ -19,73 +19,66 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.event.ValueChangeEvent;
 
-@Named("eventoController")
+@Named("eventoPatrocinioController")
 @SessionScoped
-public class EventoController implements Serializable {
+public class EventoPatrocinioController implements Serializable {
 
     @EJB
-    private com.compreingressos.knowledge.bean.EventoFacade ejbFacade;
-    private List<Evento> items = null;
-    private Evento selected;
-    private Local local;
+    private com.compreingressos.knowledge.bean.EventoPatrocinioFacade ejbFacade;
+    private List<EventoPatrocinio> items = null;
+    private EventoPatrocinio selected;
 
-    public EventoController() {
+    public EventoPatrocinioController() {
     }
 
-    public Evento getSelected() {
+    public EventoPatrocinio getSelected() {
         return selected;
     }
 
-    public void setSelected(Evento selected) {
+    public void setSelected(EventoPatrocinio selected) {
         this.selected = selected;
     }
 
-    public Local getLocal() {
-        return local;
-    }
-
-    public void setLocal(Local local) {
-        this.local = local;
-    }
-    
     protected void setEmbeddableKeys() {
+        selected.getEventoPatrocinioPK().setPatrocinadorId(selected.getPatrocinador().getId());
+        selected.getEventoPatrocinioPK().setEventoId(selected.getEvento().getId());
     }
 
     protected void initializeEmbeddableKey() {
+        selected.setEventoPatrocinioPK(new com.compreingressos.knowledge.model.EventoPatrocinioPK());
     }
 
-    private EventoFacade getFacade() {
+    private EventoPatrocinioFacade getFacade() {
         return ejbFacade;
     }
 
-    public Evento prepareCreate() {
-        selected = new Evento();
+    public EventoPatrocinio prepareCreate() {
+        selected = new EventoPatrocinio();
         initializeEmbeddableKey();
         return selected;
     }
 
     public void create() {
-        persist(PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("EventoCreated"));
+        persist(PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("EventoPatrocinioCreated"));
         if (!JsfUtil.isValidationFailed()) {
-            items = null;    // Invalidate list of items to trigger re-query.
+            items = null;
         }
     }
 
     public void update() {
-        persist(PersistAction.UPDATE, ResourceBundle.getBundle("/Bundle").getString("EventoUpdated"));
+        persist(PersistAction.UPDATE, ResourceBundle.getBundle("/Bundle").getString("EventoPatrocinioUpdated"));
     }
 
     public void destroy() {
-        persist(PersistAction.DELETE, ResourceBundle.getBundle("/Bundle").getString("EventoDeleted"));
+        persist(PersistAction.DELETE, ResourceBundle.getBundle("/Bundle").getString("EventoPatrocinioDeleted"));
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.
         }
     }
 
-    public List<Evento> getItems() {
+    public List<EventoPatrocinio> getItems() {
         if (items == null) {
             items = getFacade().findAll();
         }
@@ -97,7 +90,6 @@ public class EventoController implements Serializable {
             setEmbeddableKeys();
             try {
                 if (persistAction != PersistAction.DELETE) {
-                    selected.setDtAtualizacao(new java.util.Date());
                     getFacade().edit(selected);
                 } else {
                     getFacade().remove(selected);
@@ -121,48 +113,48 @@ public class EventoController implements Serializable {
         }
     }
 
-    public void valueChangeLocal(ValueChangeEvent event){
-        this.local = (Local) event.getNewValue();
-    }
-    
-    public Evento getEvento(java.lang.Integer id) {
+    public EventoPatrocinio getEventoPatrocinio(EventoPatrocinioPK id) {
         return getFacade().find(id);
     }
 
-    public List<Evento> getItemsAvailableSelectMany() {
+    public List<EventoPatrocinio> getItemsAvailableSelectMany() {
         return getFacade().findAll();
     }
 
-    public List<Evento> getItemsAvailableSelectOne() {
+    public List<EventoPatrocinio> getItemsAvailableSelectOne() {
         return getFacade().findAll();
     }
-    
-    public List<Evento> getItemsAvailableSelectOneByLocal(){
-        return getFacade().findAllByLocal(local);
-    }
 
-    @FacesConverter(forClass = Evento.class, value = "eventoConverter")
-    public static class EventoControllerConverter implements Converter {
+    @FacesConverter(forClass = EventoPatrocinio.class)
+    public static class EventoPatrocinioControllerConverter implements Converter {
+
+        private static final String SEPARATOR = "#";
+        private static final String SEPARATOR_ESCAPED = "\\#";
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            EventoController controller = (EventoController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "eventoController");
-            return controller.getEvento(getKey(value));
+            EventoPatrocinioController controller = (EventoPatrocinioController) facesContext.getApplication().getELResolver().
+                    getValue(facesContext.getELContext(), null, "eventoPatrocinioController");
+            return controller.getEventoPatrocinio(getKey(value));
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
+        EventoPatrocinioPK getKey(String value) {
+            com.compreingressos.knowledge.model.EventoPatrocinioPK key;
+            String values[] = value.split(SEPARATOR_ESCAPED);
+            key = new EventoPatrocinioPK();
+            key.setPatrocinadorId(Integer.parseInt(values[0]));
+            key.setEventoId(Integer.parseInt(values[1]));
             return key;
         }
 
-        String getStringKey(java.lang.Integer value) {
+        String getStringKey(EventoPatrocinioPK value) {
             StringBuilder sb = new StringBuilder();
-            sb.append(value);
+            sb.append(value.getPatrocinadorId());
+            sb.append(SEPARATOR);
+            sb.append(value.getEventoId());
             return sb.toString();
         }
 
@@ -171,11 +163,11 @@ public class EventoController implements Serializable {
             if (object == null) {
                 return null;
             }
-            if (object instanceof Evento) {
-                Evento o = (Evento) object;
-                return getStringKey(o.getId());
+            if (object instanceof EventoPatrocinio) {
+                EventoPatrocinio o = (EventoPatrocinio) object;
+                return getStringKey(o.getEventoPatrocinioPK());
             } else {
-                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "object {0} is of type {1}; expected type: {2}", new Object[]{object, object.getClass().getName(), Evento.class.getName()});
+                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "object {0} is of type {1}; expected type: {2}", new Object[]{object, object.getClass().getName(), EventoPatrocinio.class.getName()});
                 return null;
             }
         }

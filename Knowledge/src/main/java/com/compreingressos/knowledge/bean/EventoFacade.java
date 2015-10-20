@@ -6,6 +6,7 @@
 package com.compreingressos.knowledge.bean;
 
 import com.compreingressos.knowledge.model.Evento;
+import com.compreingressos.knowledge.model.Local;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -32,6 +33,10 @@ public class EventoFacade extends AbstractFacade<Evento> {
     @Override
     public List<Evento> findAll() {
         return getEntityManager().createNamedQuery("Evento.findAll").getResultList();
+    }
+
+    public List<Evento> findAllByLocal(Local local) {
+        return getEntityManager().createNamedQuery("Evento.findAllByLocal").setParameter("local", local).getResultList();
     }
     
 }

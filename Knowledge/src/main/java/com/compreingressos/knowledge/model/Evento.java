@@ -39,7 +39,9 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "DIM_KBASE_EVENTO")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Evento.findAll", query = "SELECT e FROM Evento e ORDER BY e.descricaoCompleta")})
+    @NamedQuery(name = "Evento.findAll", query = "SELECT e FROM Evento e ORDER BY e.descricaoCompleta"),
+    @NamedQuery(name = "Evento.findAllByLocal", query = "SELECT e FROM Evento e WHERE e.local = :local ORDER BY e.descricaoCompleta")
+})
 public class Evento implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

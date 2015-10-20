@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/template.xhtml">
+
+
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ListEventoPatrocinioTitle}"></h:outputText>
+        </ui:define>
+
+        <ui:define name="body">
+            <h:form id="EventoPatrocinioListForm">
+                <p:panel header="#{bundle.ListEventoPatrocinioTitle}">
+                    <p:dataTable id="datalist" value="#{eventoPatrocinioController.items}" var="item"
+                                 selectionMode="single" selection="#{eventoPatrocinioController.selected}"
+                                 paginator="true"
+                                 rowKey="#{item.eventoPatrocinioPK}"
+                                 rows="10"
+                                 rowsPerPageTemplate="10,20,30,40,50"
+                                 >
+
+                        <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
+                        <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
+                        
+                        <p:column filterBy="#{item.patrocinador.descricao}" filterMatchMode="contains" sortBy="#{item.patrocinador.descricao}">
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListEventoPatrocinioTitle_patrocinador}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.patrocinador.descricao}"/>
+                        </p:column>
+                        <p:column filterBy="#{item.evento.descricaoCompleta}" filterMatchMode="contains" sortBy="#{item.evento.descricaoCompleta}">
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListEventoPatrocinioTitle_evento}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.evento.descricaoCompleta}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListEventoPatrocinioTitle_dataInicial}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.dataInicial}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListEventoPatrocinioTitle_dataFinal}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.dataFinal}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListEventoPatrocinioTitle_valor}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.valor}">
+                                <f:convertNumber type="currency" minFractionDigits="2"/>
+                            </h:outputText>
+                        </p:column>
+                        <f:facet name="footer">
+                            <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{eventoPatrocinioController.prepareCreate}" update=":EventoPatrocinioCreateForm" oncomplete="PF('EventoPatrocinioCreateDialog').show()"/>
+                            <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":EventoPatrocinioViewForm" oncomplete="PF('EventoPatrocinioViewDialog').show()" disabled="#{empty eventoPatrocinioController.selected}"/>
+                            <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":EventoPatrocinioEditForm" oncomplete="PF('EventoPatrocinioEditDialog').show()" disabled="#{empty eventoPatrocinioController.selected}">
+                                <f:setPropertyActionListener value="#{eventoPatrocinioController.selected.evento.local}" target="#{eventoController.local}"/>
+                            </p:commandButton>
+                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{eventoPatrocinioController.destroy}" update=":growl,datalist" disabled="#{empty eventoPatrocinioController.selected}"/>
+                        </f:facet>
+                    </p:dataTable>
+                </p:panel>
+            </h:form>
+
+            <ui:include src="Create.xhtml"/>
+            <ui:include src="Edit.xhtml"/>
+            <ui:include src="View.xhtml"/>
+        </ui:define>
+    </ui:composition>
+
+</html>

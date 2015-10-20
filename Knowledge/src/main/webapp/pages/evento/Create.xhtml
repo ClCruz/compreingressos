@@ -33,7 +33,7 @@
                                            itemLabel="#{produtorLocalItem.nomeProdutor}"/>
                         </p:selectOneMenu>
                         <p:outputLabel value="#{bundle.CreateEventoLabel_local}" for="local" />
-                        <p:selectOneMenu id="local" value="#{eventoController.selected.local}" >
+                        <p:selectOneMenu id="local" value="#{eventoController.selected.local}" converter="localConverter" >
                             <f:selectItems value="#{localController.itemsAvailableSelectOne}"
                                            var="localItem"
                                            itemValue="#{localItem}"

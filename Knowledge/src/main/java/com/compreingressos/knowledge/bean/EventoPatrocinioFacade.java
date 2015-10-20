@@ -5,8 +5,7 @@
  */
 package com.compreingressos.knowledge.bean;
 
-import com.compreingressos.knowledge.model.Apresentacao;
-import java.util.List;
+import com.compreingressos.knowledge.model.EventoPatrocinio;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -16,7 +15,7 @@ import javax.persistence.PersistenceContext;
  * @author edicarlos.barbosa
  */
 @Stateless
-public class ApresentacaoFacade extends AbstractFacade<Apresentacao> {
+public class EventoPatrocinioFacade extends AbstractFacade<EventoPatrocinio> {
     @PersistenceContext(unitName = "KnowledgePU")
     private EntityManager em;
 
@@ -25,13 +24,8 @@ public class ApresentacaoFacade extends AbstractFacade<Apresentacao> {
         return em;
     }
 
-    public ApresentacaoFacade() {
-        super(Apresentacao.class);
-    }
-
-    @Override
-    public List<Apresentacao> findAll() {
-        return getEntityManager().createNamedQuery("Apresentacao.findAll").getResultList();
+    public EventoPatrocinioFacade() {
+        super(EventoPatrocinio.class);
     }
     
 }

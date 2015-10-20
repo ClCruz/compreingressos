@@ -35,7 +35,7 @@
                                            itemLabel="#{produtorLocalItem.nomeProdutor}"/>
                         </p:selectOneMenu>
                         <p:outputLabel value="#{bundle.EditEventoLabel_local}" for="local" />
-                        <p:selectOneMenu id="local" value="#{eventoController.selected.local}" >
+                        <p:selectOneMenu id="local" value="#{eventoController.selected.local}" converter="localConverter">
                             <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
                             <f:selectItems value="#{localController.itemsAvailableSelectOne}"
                                            var="localItem"

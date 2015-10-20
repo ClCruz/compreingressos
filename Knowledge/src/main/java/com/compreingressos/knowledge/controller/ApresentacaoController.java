@@ -4,12 +4,16 @@ import com.compreingressos.knowledge.model.Apresentacao;
 import com.compreingressos.knowledge.controller.util.JsfUtil;
 import com.compreingressos.knowledge.controller.util.JsfUtil.PersistAction;
 import com.compreingressos.knowledge.bean.ApresentacaoFacade;
+import com.compreingressos.knowledge.model.ApresentacaoDetalhe;
 import com.compreingressos.knowledge.model.Dia;
 import com.compreingressos.knowledge.model.Mes;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -22,6 +26,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
 
 @Named("apresentacaoController")
 @SessionScoped
@@ -31,6 +37,7 @@ public class ApresentacaoController implements Serializable {
     private com.compreingressos.knowledge.bean.ApresentacaoFacade ejbFacade;
     private List<Apresentacao> items = null;
     private Apresentacao selected;
+    private List<ApresentacaoDetalhe> detalhes = null;
 
     public ApresentacaoController() {
     }
@@ -41,6 +48,14 @@ public class ApresentacaoController implements Serializable {
 
     public void setSelected(Apresentacao selected) {
         this.selected = selected;
+    }
+
+    public List<ApresentacaoDetalhe> getDetalhes() {
+        return detalhes;
+    }
+
+    public void setDetalhes(List<ApresentacaoDetalhe> detalhes) {
+        this.detalhes = detalhes;
     }
 
     protected void setEmbeddableKeys() {
@@ -55,6 +70,7 @@ public class ApresentacaoController implements Serializable {
 
     public Apresentacao prepareCreate() {
         selected = new Apresentacao();
+        createDetalhes();
         initializeEmbeddableKey();
         return selected;
     }
@@ -89,9 +105,28 @@ public class ApresentacaoController implements Serializable {
         if (selected != null) {
             setEmbeddableKeys();
             try {
-                if (persistAction != PersistAction.DELETE) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-                    SimpleDateFormat sdfMes = new SimpleDateFormat("yyyyMM");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+                SimpleDateFormat sdfMes = new SimpleDateFormat("yyyyMM");
+                if (persistAction == PersistAction.CREATE) {
+                    int diffDays = Days.daysBetween(new DateTime(selected.getData()), new DateTime(selected.getDataFinal())).getDays();
+                    Date data = selected.getData();
+                    for(int i = 0; i <= diffDays; i++) {
+                        Calendar calendar = new GregorianCalendar(data.getYear(), data.getMonth(), data.getDay());
+                        int diaSemana = calendar.get(Calendar.DAY_OF_WEEK) - 1;
+                        if(detalhes.get(diaSemana).isSelected()){                            
+                            selected.setDia(new Dia(Integer.parseInt(sdf.format(selected.getData()))));
+                            selected.setMes(new Mes(Integer.parseInt(sdfMes.format(selected.getData()))));
+                            selected.setDataAtualizacao(new Date(System.currentTimeMillis()));                            
+                            selected.setHora(detalhes.get(diaSemana).getHora());
+                            selected.setValorIngresso(detalhes.get(diaSemana).getValor());
+                            getFacade().edit(selected);
+                        }
+                        Calendar c = Calendar.getInstance();
+                        c.setTime(data);
+                        c.add(Calendar.DATE, 1);
+                        data = c.getTime();
+                    }
+                } else if(persistAction == PersistAction.UPDATE) {
                     selected.setDia(new Dia(Integer.parseInt(sdf.format(selected.getData()))));
                     selected.setMes(new Mes(Integer.parseInt(sdfMes.format(selected.getData()))));
                     selected.setDataAtualizacao(new Date(System.currentTimeMillis()));
@@ -128,6 +163,43 @@ public class ApresentacaoController implements Serializable {
 
     public List<Apresentacao> getItemsAvailableSelectOne() {
         return getFacade().findAll();
+    }
+
+    public void createDetalhes() {
+        detalhes = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            detalhes.add(i, new ApresentacaoDetalhe(false));
+        }
+    }
+
+    public void validarDias() {
+        if(selected.getData() != null && selected.getDataFinal() != null){
+            int diffDays = Days.daysBetween(new DateTime(selected.getData()), new DateTime(selected.getDataFinal())).getDays();
+            System.out.println("Diff: " + diffDays);
+            Date data = selected.getData();
+
+            for (int i = 0; i < 7; i++) {
+                detalhes.set(i, new ApresentacaoDetalhe(false));
+            }
+
+            if (diffDays <= 6) {
+                while (data.getTime() <= selected.getDataFinal().getTime()) {
+                    System.out.println("Data: " + data);
+                    Calendar calendar = new GregorianCalendar(data.getYear(), data.getMonth(), data.getDay());
+                    int diaSemana = calendar.get(Calendar.DAY_OF_WEEK) - 1;
+                    System.out.println("Dia Semana: " + diaSemana);
+                    detalhes.set(diaSemana, new ApresentacaoDetalhe(true));
+                    Calendar c = Calendar.getInstance();
+                    c.setTime(data);
+                    c.add(Calendar.DATE, 1);
+                    data = c.getTime();
+                }
+            } else {
+                for (int i = 0; i < 7; i++) {
+                    detalhes.set(i, new ApresentacaoDetalhe(true));
+                }
+            }
+        }
     }
 
     @FacesConverter(forClass = Apresentacao.class)

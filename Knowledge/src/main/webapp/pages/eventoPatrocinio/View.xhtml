@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition>
+
+        <p:dialog id="EventoPatrocinioViewDlg" widgetVar="EventoPatrocinioViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewEventoPatrocinioTitle}">
+            <h:form id="EventoPatrocinioViewForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{eventoPatrocinioController.selected != null}">                        
+                        <h:outputText value="#{bundle.ViewEventoPatrocinioLabel_patrocinador}"/>
+                        <h:outputText value="#{eventoPatrocinioController.selected.patrocinador.descricao}" title="#{bundle.ViewEventoPatrocinioTitle_patrocinador}"/>
+                        <h:outputText value="#{bundle.ViewEventoPatrocinioLabel_evento}"/>
+                        <h:outputText value="#{eventoPatrocinioController.selected.evento.descricaoCompleta}" title="#{bundle.ViewEventoPatrocinioTitle_evento}"/>
+                        <h:outputText value="#{bundle.ViewEventoPatrocinioLabel_dataInicial}"/>
+                        <h:outputText value="#{eventoPatrocinioController.selected.dataInicial}" title="#{bundle.ViewEventoPatrocinioTitle_dataInicial}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                        <h:outputText value="#{bundle.ViewEventoPatrocinioLabel_dataFinal}"/>
+                        <h:outputText value="#{eventoPatrocinioController.selected.dataFinal}" title="#{bundle.ViewEventoPatrocinioTitle_dataFinal}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                        <h:outputText value="#{bundle.ViewEventoPatrocinioLabel_valor}"/>
+                        <h:outputText value="#{eventoPatrocinioController.selected.valor}" title="#{bundle.ViewEventoPatrocinioTitle_valor}">
+                            <f:convertNumber minFractionDigits="2" type="currency"/>
+                        </h:outputText>
+                    </p:panelGrid>
+                    <p:commandButton value="#{bundle.Close}" type="button" onclick="PF('EventoPatrocinioViewDialog').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

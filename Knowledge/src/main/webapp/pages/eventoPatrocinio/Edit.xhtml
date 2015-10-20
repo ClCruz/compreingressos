@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="EventoPatrocinioEditDlg" widgetVar="EventoPatrocinioEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditEventoPatrocinioTitle}">
+            <h:form id="EventoPatrocinioEditForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{eventoPatrocinioController.selected != null}">        
+                        <p:outputLabel value="#{bundle.EditEventoPatrocinioLabel_patrocinador}" for="patrocinador" />
+                        <p:selectOneMenu id="patrocinador" value="#{eventoPatrocinioController.selected.patrocinador}" required="true" requiredMessage="#{bundle.EditEventoPatrocinioRequiredMessage_patrocinador}">
+                            <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                            <f:selectItems value="#{patrocinadorController.itemsAvailableSelectOne}"
+                                           var="patrocinadorItem"
+                                           itemLabel="#{patrocinadorItem.descricao}"
+                                           itemValue="#{patrocinadorItem}"/>
+                        </p:selectOneMenu>                        
+                        <p:outputLabel value="#{bundle.CreateEventoPatrocinioLabel_local}" for="local" />
+                        <p:selectOneMenu id="local"
+                                         value="#{eventoPatrocinioController.selected.evento.local}"
+                                         valueChangeListener="#{eventoController.valueChangeLocal}"
+                                         converter="localConverter">
+                            <f:selectItem itemValue="#{null}" itemLabel="#{bundle.SelectOneMessage}"/>
+                            <f:selectItems value="#{localController.itemsAvailableSelectOne}"                                           
+                                           var="localItem"                                           
+                                           itemValue="#{localItem}"
+                                           itemLabel="#{localItem.descricao}"/>
+                            <p:ajax event="change" update="evento"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.EditEventoPatrocinioLabel_evento}" for="evento" />
+                        <p:selectOneMenu id="evento" 
+                                         value="#{eventoPatrocinioController.selected.evento}" 
+                                         required="true" 
+                                         requiredMessage="#{bundle.EditEventoPatrocinioRequiredMessage_evento}"
+                                         converter="eventoConverter">
+                            <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                            <f:selectItems value="#{eventoController.itemsAvailableSelectOneByLocal}"
+                                           var="eventoItem"
+                                           itemLabel="#{eventoItem.descricaoCompleta}"
+                                           itemValue="#{eventoItem}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.CreateEventoPatrocinioLabel_dataInicial}" for="dataInicial" />
+                        <p:calendar id="dataInicial" locale="pt" pattern="dd/MM/yyyy" value="#{eventoPatrocinioController.selected.dataInicial}" title="#{bundle.EditApresentacaoTitle_data}" required="true" requiredMessage="#{bundle.EditEventoPatrocinioRequiredMessage_dataInicial}"/>
+                        <p:outputLabel value="#{bundle.CreateEventoPatrocinioLabel_dataFinal}" for="dataFinal" />
+                        <p:calendar id="dataFinal" locale="pt" pattern="dd/MM/yyyy" value="#{eventoPatrocinioController.selected.dataFinal}" title="#{bundle.EditApresentacaoTitle_data}" required="true" requiredMessage="#{bundle.EditEventoPatrocinioRequiredMessage_dataFinal}"/>
+                        <p:outputLabel value="#{bundle.CreateEventoPatrocinioLabel_valor}" for="valor" />
+                        <p:inputText id="valor" value="#{eventoPatrocinioController.selected.valor}" title="#{bundle.CreateEventoPatrocinioTitle_valor}" required="true" requiredMessage="#{bundle.EditEventoPatrocinioRequiredMessage_valor}"/>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{eventoPatrocinioController.update}" value="#{bundle.Save}" update="display,:EventoPatrocinioListForm:datalist,:growl" oncomplete="handleSubmit(args, 'EventoPatrocinioEditDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('EventoPatrocinioEditDialog').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

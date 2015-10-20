@@ -122,7 +122,7 @@ public class LocalController implements Serializable {
         return getFacade().findAll();
     }
 
-    @FacesConverter(forClass = Local.class)
+    @FacesConverter(forClass = Local.class, value = "localConverter")
     public static class LocalControllerConverter implements Converter {
 
         @Override

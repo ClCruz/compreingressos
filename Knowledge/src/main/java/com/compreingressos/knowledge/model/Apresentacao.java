@@ -7,6 +7,7 @@ package com.compreingressos.knowledge.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,9 +21,11 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -65,6 +68,8 @@ public class Apresentacao implements Serializable {
     @JoinColumn(name = "ID_DIA", referencedColumnName = "ID_DIA")
     @ManyToOne
     private Dia dia;
+    @Transient
+    private Date dataFinal;   
 
     public Apresentacao() {
     }
@@ -143,6 +148,15 @@ public class Apresentacao implements Serializable {
         this.dia = dia;
     }
 
+    @XmlTransient
+    public Date getDataFinal() {
+        return dataFinal;
+    }
+
+    public void setDataFinal(Date dataFinal) {
+        this.dataFinal = dataFinal;
+    }       
+            
     @Override
     public int hashCode() {
         int hash = 0;

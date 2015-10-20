@@ -14,14 +14,31 @@
                     <p:panelGrid rendered="#{apresentacaoController.selected != null}">
                         <p:row>
                             <p:column>
+                                <p:outputLabel value="Local" for="local" />
+                            </p:column>
+                            <p:column colspan="3">
+                                <p:selectOneMenu id="local" 
+                                                 converter="localConverter"
+                                                 valueChangeListener="#{eventoController.valueChangeLocal}">
+                                    <f:selectItem itemValue="#{null}" itemLabel="Selecione o Local"/>
+                                    <f:selectItems value="#{localController.itemsAvailableSelectOne}"
+                                                   var="localItem"
+                                                   itemValue="#{localItem}"
+                                                   itemLabel="#{localItem.descricao}"/>
+                                    <p:ajax event="change" update="evento" />
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
                                 <p:outputLabel value="#{bundle.CreateApresentacaoLabel_evento}" for="evento" />
                             </p:column>
                             <p:column colspan="3">
                                 <p:selectOneMenu id="evento" value="#{apresentacaoController.selected.evento}" converter="eventoConverter">
-                                    <f:selectItems value="#{eventoController.itemsAvailableSelectOne}"                                           
+                                    <f:selectItems value="#{eventoController.itemsAvailableSelectOneByLocal}"                                           
                                                    var="eventoItem"
                                                    itemValue="#{eventoItem}"
-                                                   itemLabel="#{eventoItem.descricaoResumida}"/>
+                                                   itemLabel="#{eventoItem.descricaoCompleta}"/>
                                 </p:selectOneMenu>
                             </p:column>
                         </p:row>

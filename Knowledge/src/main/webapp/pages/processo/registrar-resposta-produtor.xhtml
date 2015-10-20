@@ -104,19 +104,7 @@
                                                 <p:inputText value="#{pacote.valorDesconto}" style="width: 100%;"/>
                                             </f:facet>
                                         </p:cellEditor>
-                                    </p:column>
-                                    <p:column headerText="Dt. Início da Divulgação" class="ui-column-center">
-                                        <p:cellEditor>
-                                            <f:facet name="output">
-                                                <h:outputText value="#{pacote.dataImplementacao}">
-                                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
-                                                </h:outputText>
-                                            </f:facet>
-                                            <f:facet name="input">
-                                                <p:calendar value="#{pacote.dataImplementacao}" locale="pt" class="ui-width-full" pattern="dd/MM/yyyy"/>
-                                            </f:facet>
-                                        </p:cellEditor>
-                                    </p:column>
+                                    </p:column>                                    
                                     <p:column styleClass="ui-row-editor-custom">
                                         <p:rowEditor />
                                     </p:column>

@@ -5,7 +5,7 @@
       xmlns:ui="http://java.sun.com/jsf/facelets">
     <ui:composition template="/template.xhtml">
         <ui:define name="title">
-            <h:outputText value="Dashboard de Processos e Tarefas"></h:outputText>
+            <h:outputText value="Listas p/ Envio ao Cliente"></h:outputText>
         </ui:define>        
         <ui:define name="style">
             <style type="text/css">
@@ -15,15 +15,34 @@
                     width: 100%;
                     height: 1750px;
                     overflow: hidden;
+                    border: 0;
                 }
             </style>            
         </ui:define>        
-        
+
         <ui:define name="body">            
-            <iframe id="dashbuilder" src="about:blank" width="100%" height="600"/>
-            <script type="text/javascript">
-                document.getElementById("dashbuilder").src = "http://bi.compreingressos.com/microstrategy/asp/Main.aspx?Server=COMPREING-BI&amp;Project=Knowledge&amp;Port=0&amp;evt=4001&amp;src=Main.aspx.4001&amp;visMode=0&amp;reportID=FBF133CC4C317BCF85BDF6B4201F11DC&amp;reportViewMode=0&amp;uid=knowledge&amp;pwd=xxx&amp;hiddensections=header,path,dockBottom,footer";
-            </script>
+            <iframe id="dashbuilder" 
+                    src="http://bi.compreingressos.com/microstrategy/asp/Main.aspx?Server=COMPREING-BI&amp;Project=Knowledge&amp;Port=0&amp;evt=4001&amp;src=Main.aspx.4001&amp;visMode=0&amp;reportID=FBF133CC4C317BCF85BDF6B4201F11DC&amp;reportViewMode=0&amp;uid=knowledge&amp;pwd=xxx&amp;hiddensections=header,path,dockBottom,footer" 
+                    frameborder="0" scrolling="no"/>
+<!--            <script language="javascript" type="text/javascript">
+                $(function () {
+                    $('#dashbuilder').iFrameResize({
+                        log: true,
+                        heightCalculationMethod: "bodyScroll",
+                        resizedCallback: function (iframe, height, width, type) {
+                            var windowHeight = window.innerHeight;
+                            var headerHeight = $("#header")[0].offsetHeight + $("#menuForm")[0].offsetHeight;
+                            var footerHeight = $("#footer")[0].offsetHeight;
+                            var iframeHeight = windowHeight - headerHeight - footerHeight;
+                            console.log(iframe);
+                            if(iframeHeight &lt; 500) 
+                                this.size(500);
+                            else
+                                this.size(iframeHeight);
+                        }
+                    });
+                });
+            </script>-->
         </ui:define>
     </ui:composition>
 </html>

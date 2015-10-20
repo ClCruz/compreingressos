@@ -13,21 +13,15 @@
                 #app{padding: 0 !important;}
                 #dashbuilder{
                     width: 100%;
-                    height: 1750px;
+                    height: 1050px;
                     overflow: hidden;
+                    border: 0;
                 }
             </style>            
         </ui:define>        
         
         <ui:define name="body">            
-            <iframe id="dashbuilder" src="about:blank" width="100%" height="600"/>
-            <script type="text/javascript">
-                var host = document.location.host;
-                var protocol  = document.location.protocol;
-                var loc = protocol +"//"+ host + "/dashbuilder/workspace/en/jbpm-dashboard/process-dashboard?embedded=true&amp;refresh=true";
-                
-                document.getElementById("dashbuilder").src = loc;                
-            </script>
+            <iframe id="dashbuilder" src="http://bi.compreingressos.com/dashbuilder/workspace/en/jbpm-dashboard/process-dashboard?embedded=true&amp;refresh=true" />
         </ui:define>
     </ui:composition>
 </html>

@@ -96,8 +96,8 @@
                                     <p:column headerText="Desconto (%)" class="ui-column-right">
                                         <p:cellEditor>
                                             <f:facet name="output">
-                                                <h:outputText value="#{pacote.valorDesconto}">
-                                                    <f:convertNumber type="currency" minFractionDigits="2"/>
+                                                <h:outputText value="#{pacote.valorDesconto / 100}">
+                                                    <f:convertNumber type="percent" minFractionDigits="2" />
                                                 </h:outputText>
                                             </f:facet>
                                             <f:facet name="input">

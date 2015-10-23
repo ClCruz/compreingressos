@@ -1620,9 +1620,8 @@ div.cadastro_captcha{
 
 div.compra_captcha{
   width:322px;
-  height:132px;
   float:left;
-  margin:-40px 120px 0 120px;
+  margin:-20px 120px 0 120px;
 }
 
 div#recaptcha_widget_div{
@@ -1984,6 +1983,10 @@ input.submit:hover{
 
 input.submit.logar{
 	background-image:url('../images/bot_acessar.png');
+}
+
+input.submit.reenviar{
+	background-image:url('../images/bot_reenviar.png');
 }
 
 input.submit.trocar_senha{

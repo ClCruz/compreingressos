@@ -3,27 +3,20 @@ require_once('../settings/functions.php');
 require_once('../settings/settings.php');
 require_once('../settings/Log.class.php');
 
-// reCAPTCHA v2 ---------------
-$post_data = http_build_query(array('secret'    => $recaptcha['private_key'],
-                                    'response'  => $_POST["g-recaptcha-response"],
-                                    'remoteip'  => $_SERVER["REMOTE_ADDR"]));
+require_once('../settings/brandcaptchalib.php');
 
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, "https://www.google.com/recaptcha/api/siteverify");
-curl_setopt($ch, CURLOPT_POST, 1);
-curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-// curl_setopt($ch, CURLOPT_PROXY, ($is_teste == '1' ? $proxy_homologacao['host'].':'.$proxy_homologacao['port'] : $proxy_producao['host'].':'.$proxy_producao['port']));
-curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-$server_output = curl_exec($ch);
-curl_close($ch);
+$resp = brandcaptcha_check_answer($recaptcha['private_key'],
+    $_SERVER["REMOTE_ADDR"],
+    $_POST["brand_cap_challenge"],
+    $_POST["brand_cap_answer"]);
 
-$resp = json_decode($server_output, true);
-// die(var_dump($resp));
-if (!$resp['success']) {
-    echo "Favor efetuar a verificação de robô.";
-    exit();
+if ($is_teste != '1') {
+    if (!$resp->is_valid) {
+        // set the error code so that we can display it
+        $error = $resp->error;
+        echo "Entre com a informação solicitada no campo Autenticidade.";
+        exit();
+    }
 }
 
 // não passar código de cartão nulo ()

@@ -107,12 +107,7 @@ $(function() {
 			}
 			$('#cep').mask('00000-000').attr('pattern', '.{9}');
 			$('input[name=fixo]').mask('(00) 0000-0000').attr('pattern', '.{14}');
-			var mask_celular = ($('input[name=celular]').val().length == 15 || $('input[name=celular]').val().length == 11 ? '(00) 00000-0000' : '(00) 0000-0000');
-			$('input[name=celular]').mask(mask_celular, {onKeyPress: function(phone, e, currentField, options){
-				var new_sp_phone = phone.match(/^(\([0-9]{2}\) 9(5[0-9]|6[0-9]|7[01234569]|8[0-9]|9[0-9])[0-9]{1})/g);
-				new_sp_phone ? $(currentField).mask('(00) 00000-0000', options) : $(currentField).mask('(00) 0000-0000', options)
-				}
-			});
+			$('input[name=celular]').mask('(00) 000000000');
 		}
 	}).trigger('change');
 
@@ -180,7 +175,7 @@ $(function() {
 		
 			var $this = $(this),
 				 naoRequeridos = '#email,[id^=nascimento],[name=sexo],#celular,#complemento,#checkbox_guia,#checkbox_sms,#checkbox_estrangeiro',
-				 especiais = '#fixo,#email1,#email2,#senha1,#senha2,[name="tag"],#recaptcha_challenge_field,#recaptcha_response_field,[type="button"],#cpf,#tipo_documento,#rg'
+				 especiais = '#fixo,#email1,#email2,#senha1,#senha2,[name="tag"],.recaptcha :input,[type="button"],#cpf,#tipo_documento,#rg'
 				 formulario = $('#form_cadastro'),
 				 campos = formulario.find(':input:not(' + naoRequeridos + ',' + especiais +')'),
 				 valido = true;
@@ -266,13 +261,12 @@ $(function() {
 
 			if (valido) {
 				$.ajax({
-					url: formulario.attr('action') + '?action=' + (($.cookie('user') == null) ? 'add' : 'update'),
+					url: formulario.attr('action') + '?action=' + (($.cookie('user') == null) ? 'add' : 'update') + '&' + $.serializeUrlVars(),
 					data: formulario.serialize(),
 					type: formulario.attr('method'),
 					success: function(data) {
 						if (data != 'true') {
-							if (typeof(Recaptcha) !== 'undefined') Recaptcha.reload();
-    						if (typeof(grecaptcha) !== 'undefined') grecaptcha.reset();
+    						if (typeof(BrandCaptcha) !== 'undefined') BrandCaptcha.reload();
 							
 							if (data == 'Seus dados foram atualizados com sucesso!') {
 								$this.next('.erro_help').find('.help').slideDown('fast').delay(3000).slideUp('slow');

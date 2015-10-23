@@ -28,7 +28,7 @@ if (isset($_GET['email'])) {
 		?>
 <p>&nbsp;</p>
 <div style="background-color: rgb(255, 255, 255); padding-top: 5px; padding-right: 5px; padding-bottom: 5px; padding-left: 5px; margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; ">
-<p style="text-align: left; font-family: Arial, Verdana, sans-serif; font-size: 12px; ">&nbsp;<img alt="" src="http://www.compreingressos.com/images/menu_logo.jpg" /><span style="font-family: Verdana; "><strong>GEST&Atilde;O E ADMINISTRA&Ccedil;&Atilde;O DE INGRESSOS</strong></span></p>
+<p style="text-align: left; font-family: Arial, Verdana, sans-serif; font-size: 12px; ">&nbsp;<img alt="" src="http://www.compreingressos.com/images/logo_compre_2015.jpg" /><span style="font-family: Verdana; "><strong>GEST&Atilde;O E ADMINISTRA&Ccedil;&Atilde;O DE INGRESSOS</strong></span></p>
 <h3 style="font-family: Arial, Verdana, sans-serif; font-size: 12px; "><strong>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</strong><strong>SOLICIT</strong><strong>AÇÃO&nbsp;DE&nbsp;NOVA SENHA</strong></h3>
 <h2 style="margin-left: 40px; font-family: Arial, Verdana, sans-serif; font-size: 12px; "><span style="color: rgb(98, 98, 97); ">Olá,&nbsp;</span><span style="color: rgb(181, 9, 56); "><span style="font-size: smaller; "><span style="font-family: Verdana, sans-serif; "><?php echo $rs['DS_NOME']; ?></span></span></span><span style="font-size: medium; "><span style="font-family: Verdana; "><strong><span><br />
 </span></strong></span></span></h2>

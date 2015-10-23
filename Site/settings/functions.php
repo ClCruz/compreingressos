@@ -247,7 +247,7 @@ function enviarEmailNovaConta ($login, $nome, $email) {
 ?>
 <p>&nbsp;</p>
 <div style="background-color: rgb(255, 255, 255); padding-top: 5px; padding-right: 5px; padding-bottom: 5px; padding-left: 5px; margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; ">
-<p style="text-align: left; font-family: Arial, Verdana, sans-serif; font-size: 12px; ">&nbsp;<img alt="" src="http://www.compreingressos.com/images/menu_logo.jpg" /><span style="font-family: Verdana; "><strong>GEST&Atilde;O E ADMINISTRA&Ccedil;&Atilde;O DE INGRESSOS</strong></span></p>
+<p style="text-align: left; font-family: Arial, Verdana, sans-serif; font-size: 12px; ">&nbsp;<img alt="" src="http://www.compreingressos.com/images/logo_compre_2015.jpg" /><span style="font-family: Verdana; "><strong>GEST&Atilde;O E ADMINISTRA&Ccedil;&Atilde;O DE INGRESSOS</strong></span></p>
 <h3 style="font-family: Arial, Verdana, sans-serif; font-size: 12px; "><strong>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</strong><strong>NOTIFICA&Ccedil;&Atilde;O&nbsp;DE&nbsp;ACESSO</strong></h3>
 <h2 style="margin-left: 40px; font-family: Arial, Verdana, sans-serif; font-size: 12px; "><span style="color: rgb(98, 98, 97); ">Ol&aacute;,&nbsp;</span><span style="color: rgb(181, 9, 56); "><span style="font-size: smaller; "><span style="font-family: Verdana, sans-serif; "><?php echo $nome; ?></span></span></span><span style="font-size: medium; "><span style="font-family: Verdana; "><strong><span><br />
 </span></strong></span></span></h2>
@@ -1994,6 +1994,53 @@ function sendErrorMail($subject, $message) {
 	$cc = array('Jefferson => jefferson.ferreira@cc.com.br', 'Edicarlos => edicarlos.barbosa@cc.com.br');
 
 	authSendEmail($from, $namefrom, 'gabriel.monteiro@cc.com.br', 'Gabriel', $subject, $message, $cc);
+}
+
+function sendConfirmationMail($id_cliente) {
+    $mainConnection = mainConnection();
+
+    $query = "SELECT C.DS_NOME, C.CD_EMAIL_LOGIN, E.CD_CONFIRMACAO
+                FROM MW_CLIENTE C
+                LEFT JOIN MW_CONFIRMACAO_EMAIL E ON E.ID_CLIENTE = C.ID_CLIENTE
+                WHERE C.ID_CLIENTE = ?";
+    $rs = executeSQL($mainConnection, $query, array($id_cliente), true);
+
+    if ($rs['CD_CONFIRMACAO'] == null) {
+        require_once('../settings/Cypher.class.php');
+
+        $cipher = new Cipher('1ngr3ss0s');
+        $rs['CD_CONFIRMACAO'] = $cipher->encrypt($rs['CD_EMAIL_LOGIN'].'_'.time());
+
+        $query = "INSERT INTO MW_CONFIRMACAO_EMAIL VALUES (?, ?, GETDATE())";
+        executeSQL($mainConnection, $query, array($id_cliente, $rs['CD_CONFIRMACAO']), true);
+    }
+
+    require('../settings/settings.php');
+    require_once('../settings/Template.class.php');
+
+    $tpl = new Template('../comprar/templates/confirmacaoEmail.html');
+    $tpl->nome = $rs['DS_NOME'];
+    $tpl->codigo = $rs['CD_CONFIRMACAO'];
+    $tpl->link = $is_teste != '1'
+                    ? 'https://compra.compreingressos.com/comprar/confirmacaoEmail.php?codigo='.urlencode($rs['CD_CONFIRMACAO'])
+                    : 'http://homolog.compreingressos.com:8081/compreingressos2/comprar/confirmacaoEmail.php?codigo='.urlencode($rs['CD_CONFIRMACAO']);
+
+    if ($_REQUEST['redirect']) {
+        $tpl->link .= '&redirect='.urlencode($_REQUEST['redirect']);
+    }
+
+    $subject = utf8_decode('Confirmação de e-mail');
+
+    ob_start();
+    $tpl->show();
+    $message = ob_get_clean();
+
+    $namefrom = utf8_decode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS');
+    $from = ($is_teste == '1') ? 'contato@cc.com.br' : 'compreingressos@gmail.com';
+
+    $successMail = authSendEmail($from, $namefrom, $rs['CD_EMAIL_LOGIN'], $rs['DS_NOME'], $subject, utf8_decode($message), array(), array(), 'iso-8859-1');
+
+    return $successMail;
 }
 
 function pre() {

@@ -140,6 +140,10 @@ limparCookies();
 	#selos {
 		margin-bottom: 0;
 	}
+	.imprima_agora.nova_venda {
+	    float: right;
+	    width: auto;
+	}
 	</style>
 
 	<script type="text/javascript">
@@ -242,6 +246,9 @@ limparCookies();
 					</div>
 				</div>
 				<div class="imprima_agora"><a href="reimprimirEmail.php?pedido=<?php echo $_GET['pedido']; ?>"><div class="icone"></div>Imprima agora seus ingressos.</a></div>
+				<?php if ((isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) { ?>
+					<div class="imprima_agora nova_venda"><a href="etapa0.php">NOVA VENDA</a></div>
+				<?php } ?>
 				<div class="euvou">
             	<a href="javascript:popup('https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode($homeSite . 'espetaculos/' . $id_evento); ?>', 600, 350);"><div class="icone"></div>Eu vou! Convide seus amigos no <img src="../images/ico_facebook_logo.png"></a></div>
 

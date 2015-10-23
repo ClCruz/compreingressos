@@ -1,7 +1,3 @@
-var RecaptchaOptions = {
-   theme: 'white'
-};
-
 $(function(){
 	var titular = $('input[name="nomeCartao"]'),
 		nomePresente = $('input[name=nomePresente]'),
@@ -20,7 +16,7 @@ $(function(){
             }
         }
 
-	    $this.find(':input:not(#recaptcha_response_field, #g-recaptcha-response, [name=nomePresente], [name=emailPresente])').each(function(i,e) {
+	    $this.find(':input:not(.recaptcha :input, [name=nomePresente], [name=emailPresente])').each(function(i,e) {
     		var e = $(e);
     		if (e.val().length < e.attr('maxlength')/2 || e.val() == '') {
     		    e.addClass('erro');
@@ -79,8 +75,7 @@ $(function(){
 
     		fechaLoading();
 
-    		if (typeof(Recaptcha) !== 'undefined') Recaptcha.reload();
-    		if (typeof(grecaptcha) !== 'undefined') grecaptcha.reset();
+    		if (typeof(BrandCaptcha) !== 'undefined') BrandCaptcha.reload();
 	    } else {
 	    	$.dialog({text: 'Preencha os campos em vermelho'});
 	    }

@@ -13,11 +13,11 @@
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{eventoController.selected != null}">                        
                         <p:outputLabel value="#{bundle.CreateEventoLabel_descricaoResumida}" for="descricaoResumida" />
-                        <p:inputText id="descricaoResumida" value="#{eventoController.selected.descricaoResumida}" title="#{bundle.CreateEventoTitle_descricaoResumida}" required="true" requiredMessage="#{bundle.CreateEventoRequiredMessage_descricaoResumida}"/>
+                        <p:inputText id="descricaoResumida" style="width: 500px;" value="#{eventoController.selected.descricaoResumida}" title="#{bundle.CreateEventoTitle_descricaoResumida}" required="true" requiredMessage="#{bundle.CreateEventoRequiredMessage_descricaoResumida}"/>
                         <p:outputLabel value="#{bundle.CreateEventoLabel_descricaoCompleta}" for="descricaoCompleta" />
-                        <p:inputText id="descricaoCompleta" value="#{eventoController.selected.descricaoCompleta}" title="#{bundle.CreateEventoTitle_descricaoCompleta}" />
+                        <p:inputText id="descricaoCompleta" style="width: 500px;" value="#{eventoController.selected.descricaoCompleta}" title="#{bundle.CreateEventoTitle_descricaoCompleta}" />
                         <p:outputLabel value="#{bundle.CreateEventoLabel_descricaoSinopse}" for="descricaoSinopse" />
-                        <p:inputTextarea rows="4" cols="30" id="descricaoSinopse" value="#{eventoController.selected.descricaoSinopse}" title="#{bundle.CreateEventoTitle_descricaoSinopse}" />                        
+                        <p:editor width="500" controls="cut copy paste pastetext print redo undo" widgetVar="editorWidget" id="descricaoSinopse" value="#{eventoController.selected.descricaoSinopse}" />                        
                         <p:outputLabel value="#{bundle.CreateEventoLabel_produtorNacional}" for="produtorNacional" />
                         <p:selectOneMenu id="produtorNacional" value="#{eventoController.selected.produtorNacional}" >
                             <f:selectItems value="#{produtorController.itemsAvailableSelectOne}"

@@ -6,6 +6,7 @@ import com.compreingressos.knowledge.controller.util.JsfUtil.PersistAction;
 import com.compreingressos.knowledge.bean.ApresentacaoFacade;
 import com.compreingressos.knowledge.model.ApresentacaoDetalhe;
 import com.compreingressos.knowledge.model.Dia;
+import com.compreingressos.knowledge.model.Evento;
 import com.compreingressos.knowledge.model.Mes;
 
 import java.io.Serializable;
@@ -22,6 +23,7 @@ import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -74,6 +76,33 @@ public class ApresentacaoController implements Serializable {
         initializeEmbeddableKey();
         return selected;
     }
+    
+    public Apresentacao prepareCreate(Evento evento) {
+        selected = new Apresentacao();
+        selected.setEvento(evento);
+        Date minDate = findMinDate();
+        Date maxDate = findMaxDate();
+        createDetalhes();
+        initializeEmbeddableKey();        
+        if (minDate != null && maxDate != null) {
+            selected.setData(minDate);
+            selected.setDataFinal(maxDate);
+            validarDias();
+            FacesContext.getCurrentInstance().addMessage(null, 
+                    new FacesMessage(FacesMessage.SEVERITY_WARN, 
+                            "Atenção!", 
+                            "Já existem apresentações para este evento. Alterar por aqui irá remove-las."));
+        }        
+        return selected;
+    }
+    
+    public Date findMinDate(){
+        return getFacade().findMinDate(selected.getEvento());
+    }
+    
+    public Date findMaxDate(){
+        return getFacade().findMaxDate(selected.getEvento());
+    }   
 
     public void create() {
         persist(PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("ApresentacaoCreated"));
@@ -110,15 +139,17 @@ public class ApresentacaoController implements Serializable {
                 if (persistAction == PersistAction.CREATE) {
                     int diffDays = Days.daysBetween(new DateTime(selected.getData()), new DateTime(selected.getDataFinal())).getDays();
                     Date data = selected.getData();
+                    getFacade().remove(selected.getEvento());
                     for(int i = 0; i <= diffDays; i++) {
                         Calendar calendar = new GregorianCalendar(data.getYear(), data.getMonth(), data.getDay());
                         int diaSemana = calendar.get(Calendar.DAY_OF_WEEK) - 1;
-                        if(detalhes.get(diaSemana).isSelected()){                            
+                        if(detalhes.get(diaSemana).isSelected()){                         
+                            selected.setData(data);
                             selected.setDia(new Dia(Integer.parseInt(sdf.format(selected.getData()))));
                             selected.setMes(new Mes(Integer.parseInt(sdfMes.format(selected.getData()))));
                             selected.setDataAtualizacao(new Date(System.currentTimeMillis()));                            
                             selected.setHora(detalhes.get(diaSemana).getHora());
-                            selected.setValorIngresso(detalhes.get(diaSemana).getValor());
+                            selected.setValorIngresso(detalhes.get(diaSemana).getValor());                            
                             getFacade().edit(selected);
                         }
                         Calendar c = Calendar.getInstance();
@@ -175,20 +206,16 @@ public class ApresentacaoController implements Serializable {
     public void validarDias() {
         if(selected.getData() != null && selected.getDataFinal() != null){
             int diffDays = Days.daysBetween(new DateTime(selected.getData()), new DateTime(selected.getDataFinal())).getDays();
-            System.out.println("Diff: " + diffDays);
             Date data = selected.getData();
-
             for (int i = 0; i < 7; i++) {
                 detalhes.set(i, new ApresentacaoDetalhe(false));
             }
-
-            if (diffDays <= 6) {
+            if (diffDays <= 7) {
                 while (data.getTime() <= selected.getDataFinal().getTime()) {
-                    System.out.println("Data: " + data);
                     Calendar calendar = new GregorianCalendar(data.getYear(), data.getMonth(), data.getDay());
                     int diaSemana = calendar.get(Calendar.DAY_OF_WEEK) - 1;
-                    System.out.println("Dia Semana: " + diaSemana);
-                    detalhes.set(diaSemana, new ApresentacaoDetalhe(true));
+                    ApresentacaoDetalhe apreDetalhe = new ApresentacaoDetalhe(true);                    
+                    detalhes.set(diaSemana, apreDetalhe);                    
                     Calendar c = Calendar.getInstance();
                     c.setTime(data);
                     c.add(Calendar.DATE, 1);

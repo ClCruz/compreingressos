@@ -35,7 +35,10 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "FATO_KBASE_APRESENTACAO")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Apresentacao.findAll", query = "SELECT a FROM Apresentacao a")})
+    @NamedQuery(name = "Apresentacao.findAll", query = "SELECT a FROM Apresentacao a"),
+    @NamedQuery(name = "Apresentacao.findMinDate", query = "SELECT MIN(a.data) FROM Apresentacao a WHERE a.evento = :evento"),
+    @NamedQuery(name = "Apresentacao.findMaxDate", query = "SELECT MAX(a.data) FROM Apresentacao a WHERE a.evento = :evento")
+})
 public class Apresentacao implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

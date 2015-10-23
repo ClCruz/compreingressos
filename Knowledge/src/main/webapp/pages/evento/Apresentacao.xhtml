@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="ApresentacaoCreateDlg" widgetVar="ApresentacaoCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateApresentacaoTitle}">
+            <h:form id="ApresentacaoCreateForm">
+                <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+                <h:panelGroup id="display">
+                    <p:panelGrid rendered="#{apresentacaoController.selected != null}">
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Local" for="local" />
+                            </p:column>
+                            <p:column colspan="3">
+                                <p:selectOneMenu id="local" 
+                                                 converter="localConverter"
+                                                 value="#{apresentacaoController.selected.evento.local}"
+                                                 disabled="true">
+                                    <f:selectItem itemValue="#{null}" itemLabel="Selecione o Local"/>
+                                    <f:selectItems value="#{localController.itemsAvailableSelectOne}"
+                                                   var="localItem"
+                                                   itemValue="#{localItem}"
+                                                   itemLabel="#{localItem.descricao}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="#{bundle.CreateApresentacaoLabel_evento}" for="evento" />
+                            </p:column>
+                            <p:column colspan="3">
+                                <p:selectOneMenu id="evento" value="#{apresentacaoController.selected.evento}" converter="eventoConverter" disabled="true">
+                                    <f:selectItems value="#{eventoController.itemsAvailableSelectOne}"                                           
+                                                   var="eventoItem"
+                                                   itemValue="#{eventoItem}"
+                                                   itemLabel="#{eventoItem.descricaoCompleta}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="#{bundle.CreateApresentacaoLabel_data}" for="data" />
+                            </p:column>
+                            <p:column>
+                                <p:calendar id="data" locale="pt" 
+                                            pattern="dd/MM/yyyy" 
+                                            value="#{apresentacaoController.selected.data}"
+                                            maxdate="#{apresentacaoController.selected.dataFinal}"
+                                            title="#{bundle.EditApresentacaoTitle_data}" 
+                                            required="true" 
+                                            requiredMessage="#{bundle.EditApresentacaoRequiredMessage_data}">
+                                    <p:ajax event="dateSelect" 
+                                            listener="#{apresentacaoController.validarDias}" 
+                                            update=":growl,ApresentacaoPanelDetalhe,ApresentacaoCreateForm:dataFinal" 
+                                            process="@this"/>
+                                </p:calendar>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="#{bundle.CreateApresentacaoLabel_dataFinal}" for="dataFinal" />
+                            </p:column>                                
+                            <p:column>
+                                <p:calendar id="dataFinal" locale="pt" 
+                                            mindate="#{apresentacaoController.selected.data}" 
+                                            pattern="dd/MM/yyyy" 
+                                            value="#{apresentacaoController.selected.dataFinal}" 
+                                            title="#{bundle.EditApresentacaoTitle_data}" 
+                                            required="true" 
+                                            requiredMessage="#{bundle.EditApresentacaoRequiredMessage_data}">
+                                    <p:ajax event="dateSelect" 
+                                            listener="#{apresentacaoController.validarDias}" 
+                                            update=":growl,ApresentacaoPanelDetalhe,ApresentacaoCreateForm:data" 
+                                            process="@this data"/>
+                                </p:calendar>                                
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                    <p:spacer/>
+                    <p:panelGrid columns="4" style="width: 100%;" id="ApresentacaoPanelDetalhe" rendered="#{apresentacaoController.selected != null}">
+                        <h:outputText value=""/>
+                        <h:outputText value="Dia"/>
+                        <h:outputText value="Hora"/>                        
+                        <h:outputText value="Valor"/>                        
+
+                        <p:selectBooleanCheckbox value="#{apresentacaoController.detalhes[0].selected}" disabled="#{!apresentacaoController.detalhes[0].selected}">
+                            <p:ajax event="change" update="hora0 valor0"/>
+                        </p:selectBooleanCheckbox>
+                        <h:outputText value="Domingo"/>                            
+                        <p:inputMask id="hora0" value="#{apresentacaoController.detalhes[0].hora}" mask="99h99" disabled="#{!apresentacaoController.detalhes[0].selected}" required="#{apresentacaoController.detalhes[0].selected}"/>                            
+                        <p:inputText id="valor0" value="#{apresentacaoController.detalhes[0].valor}" disabled="#{!apresentacaoController.detalhes[0].selected}" required="#{apresentacaoController.detalhes[0].selected}" />                            
+
+                        <p:selectBooleanCheckbox value="#{apresentacaoController.detalhes[1].selected}" disabled="#{!apresentacaoController.detalhes[1].selected}">                        
+                            <p:ajax event="change" update="hora1 valor1"/>
+                        </p:selectBooleanCheckbox>
+                        <h:outputText value="Segunda-feira"/>                            
+                        <p:inputMask id="hora1" value="#{apresentacaoController.detalhes[1].hora}" mask="99h99" disabled="#{!apresentacaoController.detalhes[1].selected}" required="#{apresentacaoController.detalhes[1].selected}" />                            
+                        <p:inputText id="valor1" value="#{apresentacaoController.detalhes[1].valor}" disabled="#{!apresentacaoController.detalhes[1].selected}" required="#{apresentacaoController.detalhes[1].selected}" />
+
+                        <p:selectBooleanCheckbox value="#{apresentacaoController.detalhes[2].selected}" disabled="#{!apresentacaoController.detalhes[2].selected}">
+                            <p:ajax event="change" update="hora2 valor2"/>
+                        </p:selectBooleanCheckbox>
+                        <h:outputText value="Terça-feira"/>
+                        <p:inputMask id="hora2" value="#{apresentacaoController.detalhes[2].hora}" mask="99h99" disabled="#{!apresentacaoController.detalhes[2].selected}" required="#{apresentacaoController.detalhes[2].selected}" />
+                        <p:inputText id="valor2" value="#{apresentacaoController.detalhes[2].valor}" disabled="#{!apresentacaoController.detalhes[2].selected}" required="#{apresentacaoController.detalhes[2].selected}" />
+
+                        <p:selectBooleanCheckbox value="#{apresentacaoController.detalhes[3].selected}" disabled="#{!apresentacaoController.detalhes[3].selected}">
+                            <p:ajax event="change" update="hora3 valor3"/>
+                        </p:selectBooleanCheckbox>
+                        <h:outputText value="Quarta-feira"/>
+                        <p:inputMask id="hora3" value="#{apresentacaoController.detalhes[3].hora}" mask="99h99" disabled="#{!apresentacaoController.detalhes[3].selected}" required="#{apresentacaoController.detalhes[3].selected}" />
+                        <p:inputText id="valor3" value="#{apresentacaoController.detalhes[3].valor}" disabled="#{!apresentacaoController.detalhes[3].selected}" required="#{apresentacaoController.detalhes[3].selected}" />
+
+                        <p:selectBooleanCheckbox value="#{apresentacaoController.detalhes[4].selected}" disabled="#{!apresentacaoController.detalhes[4].selected}">
+                            <p:ajax event="change" update="hora4 valor4"/>
+                        </p:selectBooleanCheckbox>
+                        <h:outputText value="Quinta-feira"/>
+                        <p:inputMask id="hora4" value="#{apresentacaoController.detalhes[4].hora}" mask="99h99" disabled="#{!apresentacaoController.detalhes[4].selected}" required="#{apresentacaoController.detalhes[4].selected}" />
+                        <p:inputText id="valor4" value="#{apresentacaoController.detalhes[4].valor}" disabled="#{!apresentacaoController.detalhes[4].selected}" required="#{apresentacaoController.detalhes[4].selected}" />
+
+                        <p:selectBooleanCheckbox value="#{apresentacaoController.detalhes[5].selected}" disabled="#{!apresentacaoController.detalhes[5].selected}">
+                            <p:ajax event="change" update="hora5 valor5"/>
+                        </p:selectBooleanCheckbox>
+                        <h:outputText value="Sexta-feira"/>
+                        <p:inputMask id="hora5" value="#{apresentacaoController.detalhes[5].hora}" mask="99h99" disabled="#{!apresentacaoController.detalhes[5].selected}" required="#{apresentacaoController.detalhes[5].selected}" />
+                        <p:inputText id="valor5" value="#{apresentacaoController.detalhes[5].valor}" disabled="#{!apresentacaoController.detalhes[5].selected}" required="#{apresentacaoController.detalhes[5].selected}" />
+
+                        <p:selectBooleanCheckbox value="#{apresentacaoController.detalhes[6].selected}" disabled="#{!apresentacaoController.detalhes[6].selected}">
+                            <p:ajax event="change" update="hora6 valor6"/>
+                        </p:selectBooleanCheckbox>
+                        <h:outputText value="Sábado"/>
+                        <p:inputMask id="hora6" value="#{apresentacaoController.detalhes[6].hora}" mask="99h99" disabled="#{!apresentacaoController.detalhes[6].selected}" required="#{apresentacaoController.detalhes[6].selected}" />
+                        <p:inputText id="valor6" value="#{apresentacaoController.detalhes[6].valor}" disabled="#{!apresentacaoController.detalhes[6].selected}" required="#{apresentacaoController.detalhes[6].selected}" />
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{apresentacaoController.create}" value="#{bundle.Save}" update="display,:EventoListForm:datalist,:growl" oncomplete="handleSubmit(args,'ApresentacaoCreateDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('ApresentacaoCreateDialog').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

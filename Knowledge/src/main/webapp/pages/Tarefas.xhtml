@@ -49,13 +49,7 @@
                         <h:outputText value="#{item.taskData.createdOn}">
                             <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
                         </h:outputText>
-                    </p:column>                    
-                    <p:column sortBy="#{item.taskData.expirationTime}">
-                        <f:facet name="header">
-                            <h:outputText value="Data Limite"/>
-                        </f:facet>
-                        <h:outputText value="#{item.taskData.expirationTime}"/>
-                    </p:column>                        
+                    </p:column>                                           
                     <p:column width="120">
                         <f:facet name="header">
                             <h:outputText value="Ações"/>

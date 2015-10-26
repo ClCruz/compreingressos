@@ -143,6 +143,11 @@ limparCookies();
 	.imprima_agora.nova_venda {
 	    float: right;
 	    width: auto;
+	    background-color: #930606;
+	}
+	.imprima_agora.nova_venda a {
+		color: white;
+		padding: 10px;
 	}
 	</style>
 

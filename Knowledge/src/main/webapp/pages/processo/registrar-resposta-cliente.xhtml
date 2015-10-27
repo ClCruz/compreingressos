@@ -44,7 +44,9 @@
                             <br/>                                                               
                             <p:dataTable id="pacote" var="pacote" value="#{processoController.items}" editable="true">
                                 <f:facet name="header">Eventos</f:facet>
-
+                                
+                                <p:ajax event="rowEdit" listener="#{processoController.onRowEdit}" update=":growl" />
+                                
                                 <p:column headerText="Evento" style="width: 300px;">
                                     <h:outputText value="#{pacote.evento.descricaoCompleta}" />
                                 </p:column>

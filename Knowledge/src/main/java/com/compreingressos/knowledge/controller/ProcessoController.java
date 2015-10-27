@@ -1,6 +1,7 @@
 package com.compreingressos.knowledge.controller;
 
 import com.compreingressos.knowledge.bean.EventoClienteFacade;
+import com.compreingressos.knowledge.bean.EventoFacade;
 import com.compreingressos.knowledge.bpm.TaskBPM;
 import com.compreingressos.knowledge.controller.util.JsfUtil;
 import com.compreingressos.knowledge.exception.KnowledgeException;
@@ -28,6 +29,7 @@ import org.kie.api.runtime.manager.audit.AuditService;
 import org.kie.api.runtime.manager.audit.VariableInstanceLog;
 import org.kie.api.task.TaskService;
 import org.kie.api.task.model.Task;
+import org.primefaces.event.RowEditEvent;
 
 @ManagedBean(name = "processoController")
 @ViewScoped
@@ -35,6 +37,8 @@ public class ProcessoController implements Serializable {
 
     @EJB
     private EventoClienteFacade ejbFacade;
+    @EJB
+    private EventoFacade ejbEventoFacade;    
 
     private List<EventoCliente> items = null;
     private List<Evento> eventos = null;
@@ -52,8 +56,7 @@ public class ProcessoController implements Serializable {
     @ManagedProperty(name = "loginController", value = "#{loginController}")
     private LoginController loginController = new LoginController();
 
-    @ManagedProperty(name = "eventoController", value = "#{eventoController}")
-    private EventoController eventoController = new EventoController();
+    
 
     public ProcessoController() {
 
@@ -67,6 +70,8 @@ public class ProcessoController implements Serializable {
                 nomeLista = StringUtils.newStringUtf8(Base64.decodeBase64(TaskBPM.processInstance(task, "nomeLista", loginController.getUsuario())));
             } catch (EJBException ex) {
                 Logger.getLogger(this.getClass().getName()).log(Level.INFO, "EJB do Processo indisponível", ex);
+            } catch (NullPointerException ex) {
+                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Nenhuma informa\u00e7\u00e3o encontrada para a Tarefa: {0}", task.getName());
             } catch (Exception ex) {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, ex.getMessage(), ex);
             }
@@ -128,7 +133,7 @@ public class ProcessoController implements Serializable {
 
     public List<Evento> getEventos() {
         if (eventos == null) {
-            eventos = eventoController.getItems();
+            eventos = ejbEventoFacade.findAllByApresentacao();
         }
         return eventos;
     }
@@ -167,15 +172,7 @@ public class ProcessoController implements Serializable {
 
     public void setLoginController(LoginController loginController) {
         this.loginController = loginController;
-    }
-
-    public EventoController getEventoController() {
-        return eventoController;
-    }
-
-    public void setEventoController(EventoController eventoController) {
-        this.eventoController = eventoController;
-    }
+    }    
 
     public Long getProcessoId(Task task) {
         AuditService auditService = TaskBPM.getRuntimeEngine(loginController.getUsuario()).getAuditService();
@@ -276,6 +273,16 @@ public class ProcessoController implements Serializable {
             for (EventoCliente ec : items) {
                 getFacade().edit(ec);
             }
+        } catch (Exception ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            JsfUtil.addErrorMessage(ex, "Não foi salvar os dados da tarefa.");
+        }
+    }
+    
+    public void onRowEdit(RowEditEvent event) {
+        try {
+            EventoCliente ec = (EventoCliente) event.getObject();
+            getFacade().edit(ec);
         } catch (Exception ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, ex.getMessage(), ex);
             JsfUtil.addErrorMessage(ex, "Não foi salvar os dados da tarefa.");

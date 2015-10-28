@@ -87,7 +87,7 @@ public class ProcessDefinitionController {
     public void startProcess() throws MalformedURLException{
         String deploymentId = "com.compreingressos:knowledge:1.0.0";
         URL appUrl = new URL("http://127.0.0.1:8080/jbpm-console");
-        String user = loginController.getUsuario().getNome();
+        String user = loginController.getUsuario().getLogin();
         String password = loginController.getUsuario().getPassword();
 
         RuntimeEngine engine;

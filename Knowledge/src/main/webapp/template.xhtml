@@ -13,6 +13,11 @@
         <h:outputScript library="js" name="jsfcrud.js"/>
         <h:outputScript library="js" name="calendar-locale.js"/>
         <h:outputScript library="js" name="iframeResizer.min.js"/>
+        <style type="text/css">
+            body {
+                background-image: url('#{facesContext.externalContext.requestContextPath}/resources/img/background.jpg');
+            }
+        </style>
         <ui:insert name="style"></ui:insert>
     </h:head>
 
@@ -27,7 +32,7 @@
                             [<h:commandLink action="#{loginController.logout}" value="Sair" />]
                         </c:if>
                     </p>
-                    <img src="#{facesContext.externalContext.requestContextPath}/resources/img/logotipo.jpg" id="logo" alt="Compreingressos.com" />
+                    <img src="#{facesContext.externalContext.requestContextPath}/resources/img/logotipo.png" id="logo" alt="Compreingressos.com" />
                 </h:form>
             </div>
 

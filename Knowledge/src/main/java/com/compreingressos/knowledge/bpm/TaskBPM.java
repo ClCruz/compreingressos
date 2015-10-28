@@ -30,7 +30,7 @@ public final class TaskBPM {
                 URL jbpmURL = new URL(URL);
                 engineFactory = RemoteRuntimeEngineFactory.newRestBuilder()
                         .addUrl(jbpmURL)
-                        .addUserName(usuario.getNome())
+                        .addUserName(usuario.getLogin())
                         .addPassword(usuario.getPassword())
                         .addDeploymentId(deploymentId)
                         .build();

@@ -89,7 +89,7 @@ public class TaskController implements Serializable{
     public String redirect(Task task){
         TaskService taskService = TaskBPM.getRuntimeEngine(loginController.getUsuario()).getTaskService();
         if(task.getTaskData().getStatus() == Status.Reserved){
-            taskService.start(task.getId(), loginController.getUsuario().getNome());
+            taskService.start(task.getId(), loginController.getUsuario().getLogin());
         }        
         Map<String, Object> c = taskService.getTaskContent(task.getId());
         return "/pages/processo/"+c.get("TaskName").toString()+"?faces-redirect=true&amp;includeViewParams=true";
@@ -98,28 +98,28 @@ public class TaskController implements Serializable{
     public void retrieveTasks() {   
         TaskService taskService = TaskBPM.getRuntimeEngine(loginController.getUsuario()).getTaskService();
         listaTask = new ArrayList();
-        for(TaskSummary t : taskService.getTasksAssignedAsPotentialOwner(loginController.getUsuario().getNome(), "en-UK")){            
+        for(TaskSummary t : taskService.getTasksAssignedAsPotentialOwner(loginController.getUsuario().getLogin(), "en-UK")){            
             listaTask.add(taskService.getTaskById(t.getId()));            
         }
     }    
 
     public void startTask(Task task) {  
         TaskService taskService = TaskBPM.getRuntimeEngine(loginController.getUsuario()).getTaskService();
-        taskService.start(task.getId(), loginController.getUsuario().getNome());
+        taskService.start(task.getId(), loginController.getUsuario().getLogin());
         JsfUtil.addSuccessMessage("Tarefa " + task.getName() + " obtida.");
         retrieveTasks();
     }
 
     public void releaseTask(Task task) {
         TaskService taskService = TaskBPM.getRuntimeEngine(loginController.getUsuario()).getTaskService();
-        taskService.release(task.getId(), loginController.getUsuario().getNome());
+        taskService.release(task.getId(), loginController.getUsuario().getLogin());
         JsfUtil.addSuccessMessage("Tarefa " + task.getName() + " liberada.");
         retrieveTasks();
     }
 
     public void completeTask(Task task) {
         TaskService taskService = TaskBPM.getRuntimeEngine(loginController.getUsuario()).getTaskService();
-        taskService.complete(task.getId(), loginController.getUsuario().getNome(), new HashMap<String, Object>());
+        taskService.complete(task.getId(), loginController.getUsuario().getLogin(), new HashMap<String, Object>());
         JsfUtil.addSuccessMessage("Tarefa " + task.getName() + " concluída.");
         retrieveTasks();
     }

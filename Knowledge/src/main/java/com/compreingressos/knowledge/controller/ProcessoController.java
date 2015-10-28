@@ -187,7 +187,7 @@ public class ProcessoController implements Serializable {
 
     public void releaseTask() {
         TaskService taskService = TaskBPM.getRuntimeEngine(loginController.getUsuario()).getTaskService();
-        taskService.release(task.getId(), loginController.usuario.getNome());
+        taskService.release(task.getId(), loginController.usuario.getLogin());
         JsfUtil.addSuccessMessage("Tarefa " + task.getName() + " liberada.");
     }
 
@@ -210,7 +210,7 @@ public class ProcessoController implements Serializable {
                 salvarProcesso();
             }
             TaskService taskService = TaskBPM.getRuntimeEngine(loginController.getUsuario()).getTaskService();
-            taskService.complete(task.getId(), loginController.usuario.getNome(), getVars(passo));
+            taskService.complete(task.getId(), loginController.usuario.getLogin(), getVars(passo));
             JsfUtil.addSuccessMessage("Tarefa " + task.getName() + " concluída.");
         } catch (KnowledgeException ex) {
             JsfUtil.addErrorMessage(ex.getMessage());

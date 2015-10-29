@@ -1,84 +1,129 @@
 <?php
 require_once('../settings/functions.php');
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>COMPREINGRESSOS.COM - Operador</title>
-		<meta name="author" content="C&C - Computação e Comunicação" />
-		<link href="favicon.ico" rel="shortcut icon"/>
-		<link rel="stylesheet" href="../stylesheets/ci.css"/>
-		<link rel="stylesheet" href="../stylesheets/ajustes.css"/>
-		<link rel="stylesheet" href="../stylesheets/smoothness/jquery-ui-1.10.3.custom.css"/>
-		
-		<script type="text/javascript" src="../javascripts/jquery.js"></script>
-		<script type="text/javascript" src="../javascripts/jquery-ui.js"></script>
-		<script type="text/javascript" src="../javascripts/jquery.utils.js"></script>
-		<script>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<meta name="robots" content="noindex,nofollow">
+	<link href="../images/favicon.ico" rel="shortcut icon"/>
+	<link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
+    <?php require("desktopMobileVersion.php"); ?>
+	<link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
+
+	<script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.placeholder.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.selectbox-0.2.min.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.mask.min.js" type="text/javascript"></script>
+	<script src="../javascripts/cicompra.js" type="text/javascript"></script>
+
+	<script src="../javascripts/jquery.cookie.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
+	<script src="../javascripts/common.js" type="text/javascript"></script>
+	<script>
 		$(function() {
+			$('p.erro').hide();
+			
 			$('#logar').click(function(event) {
 				event.preventDefault();
+				var $this = $(this),
+					 form = $('#identificacaoForm'),
+					 senha = $('#senhaOld'),
+					 senha_txt = senha.val(),
+					 valido = true;
 				
-				var form = $('#identificacaoForm');
+				if (senha_txt.length < 6) {
+					senha.findNextMsg().slideDown('fast');
+					valido = false;
+				} else senha.findNextMsg().slideUp('slow');
 				
-				$.ajax({
-					url: form.attr('action') + '?' + $.serializeUrlVars(),
-					data: form.serialize(),
-					type: form.attr('method'),
-					success: function(data) {
-						if (data.substr(0, 4) == 'redi') {
-							document.location = data;
-						} else {
-							$.dialog({title: 'Aviso...', text: data});
+				if (valido) {
+					$.ajax({
+						url: form.attr('action') + '?' + $.serializeUrlVars(),
+						data: form.serialize(),
+						type: form.attr('method'),
+						success: function(data) {
+							if (data.substr(0, 4) == 'redi') {
+								$this.findNextMsg().slideUp('slow');
+								document.location = data;
+							} else {
+								$.dialog({text:data});
+							}
 						}
-					}
-				});
+					});
+				}
 			});
 		});
-		</script>
-	</head>
-	<body>
-		<div id="background_holder">
-			<div id="respiro">
-				<div id="content_container">
-					<?php require "header.php"; ?>
-					<div id="crumbs">
-						<a href="http://www.compreingressos.com">home</a> / <a href="#minha_conta" class="selected">minha conta</a>
+	</script>
+
+	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
+</head>
+<body>
+	<div id="pai">
+		<?php require "header.php"; ?>
+		<div id="content">
+			<div class="alert">
+				<div class="centraliza">
+					<img src="../images/ico_erro_notificacao.png">
+					<div class="container_erros"></div>
+					<a>fechar</a>
+				</div>
+			</div>
+
+			<div class="centraliza">
+				<div class="descricao_pag">
+					<div class="img">
+						<img src="">
 					</div>
-					<?php include "banners.php"; ?>
-					<div id="center">
-						<div id="center_left">
-							<h1>Operador</h1>
-							<p class="help_text">A troca de senha deve ser efetuada antes de prosseguir.</p>
-						</div>
-						<div id="center_right">
-							<form id="identificacaoForm" name="identificacao" method="post" action="autenticacaoOperador.php">
-								<div id="identificacao">
-									<img class="icone_id" src="../images/icon_naosou.jpg" alt="Sou cliente COMPREINGRESSOS.COM" title="Sou cliente COMPREINGRESSOS.COM"/>
-									<div id="id_left">
-										<h1>Troca de senha</h1>
-										<p class="help_text">Procure utilizar letras, n&uacute;meros e caracteres especiais para criar sua nova senha.</p>
-										<p class="help_text">A senha deve ter no mínimo 6 caracteres.</p>
-										<h2>Senha atual</h2>
-										<input name="senhaOld" type="password" id="senhaOld" size="15" maxlength="30"/>
-										<h2>Nova senha</h2>
-										<input name="senha1" type="password" id="senha1" size="15" maxlength="30"/>
-										<h2>Confirma&ccedil;&atilde;o da senha</h2>
-										<input name="senha2" type="password" id="senha2" size="15" maxlength="30"/>
-										<a id="logar" href="#">
-											<div class="botoes_ticket">continuar</div>
-										</a>
-									</div>
-								</div>
-							</form>
+					<div class="descricao">
+						<p class="nome">Troca de senha</p>
+						<p class="descricao">
+							Procure utilizar letras, n&uacute;meros e caracteres especiais para criar sua nova senha.<br/>
+							A senha deve ter no mínimo 6 caracteres.
+						</p>
+						<div class="sessao">
+							<p class="tempo" id="tempoRestante"></p>
+							<p class="mensagem"></p>
 						</div>
 					</div>
 				</div>
+
+				<form id="identificacaoForm" name="identificacao" method="post" action="autenticacaoOperador.php">
+					<div class="identificacao">
+						<input name="senhaOld" type="password" id="senhaOld" size="15" maxlength="30" placeholder="senha atual" />
+						<div class="erro_help">
+							<p class="erro">insira a senha atual</p>
+							<p class="help"></p>
+						</div>
+						<br/>
+
+						<input name="senha1" type="password" id="senha1" size="15" maxlength="30" placeholder="nova senha" />
+						<div class="erro_help">
+							<p class="erro">insira a nova senha</p>
+							<p class="help"></p>
+						</div>
+						<br/>
+
+						<input name="senha2" type="password" id="senha2" size="15" maxlength="30" placeholder="confirmação de senha" />
+						<div class="erro_help">
+							<p class="erro">insira a confirmação da nova senha</p>
+							<p class="help"></p>
+						</div>
+						<input type="button" class="submit avancar passo4" id="logar">
+					</div>
+				</form>
+
 			</div>
-			<!-- fim respiro -->
 		</div>
-		<!-- fim background -->
+
+		<div id="texts">
+			<div class="centraliza"></div>
+		</div>
+
 		<?php include "footer.php"; ?>
-	</body>
+
+		<?php include "selos.php"; ?>
+	</div>
+</body>
 </html>

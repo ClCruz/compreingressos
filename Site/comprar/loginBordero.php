@@ -46,7 +46,7 @@ require_once('../settings/functions.php');
 						success: function(data) {
 							if (data.substr(0, 4) == 'redi') {
 								$this.findNextMsg().slideUp('slow');
-								document.location = data;
+								document.location = '../admin/'+data;
 							} else {
 								$this.findNextMsg().slideUp('fast', function() {
 									$(this).html(data).slideDown('fast')

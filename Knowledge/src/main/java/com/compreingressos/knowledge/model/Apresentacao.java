@@ -36,6 +36,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Apresentacao.findAll", query = "SELECT a FROM Apresentacao a"),
+    @NamedQuery(name = "Apresentacao.findByDate", query = "SELECT a FROM Apresentacao a WHERE a.evento = :evento AND a.data = :data"),
+    @NamedQuery(name = "Apresentacao.findByEvent", query = "SELECT a FROM Apresentacao a WHERE a.evento = :evento"),
     @NamedQuery(name = "Apresentacao.findMinDate", query = "SELECT MIN(a.data) FROM Apresentacao a WHERE a.evento = :evento"),
     @NamedQuery(name = "Apresentacao.findMaxDate", query = "SELECT MAX(a.data) FROM Apresentacao a WHERE a.evento = :evento")
 })

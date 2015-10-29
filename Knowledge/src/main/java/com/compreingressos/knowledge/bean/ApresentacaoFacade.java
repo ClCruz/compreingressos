@@ -11,7 +11,9 @@ import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 /**
  *
@@ -19,6 +21,7 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 public class ApresentacaoFacade extends AbstractFacade<Apresentacao> {
+
     @PersistenceContext(unitName = "KnowledgePU")
     private EntityManager em;
 
@@ -29,6 +32,22 @@ public class ApresentacaoFacade extends AbstractFacade<Apresentacao> {
 
     public ApresentacaoFacade() {
         super(Apresentacao.class);
+    }
+
+    public Apresentacao find(Apresentacao a) {
+        try {
+            return (Apresentacao) getEntityManager().createNamedQuery("Apresentacao.findByDate").setParameter("evento", a.getEvento()).setParameter("data", a.getData()).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    public List<Apresentacao> find(Evento evento) {
+        try {
+            return getEntityManager().createNamedQuery("Apresentacao.findByEvent").setParameter("evento", evento).getResultList();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     @Override
@@ -43,9 +62,9 @@ public class ApresentacaoFacade extends AbstractFacade<Apresentacao> {
     public Date findMaxDate(Evento evento) {
         return (Date) getEntityManager().createNamedQuery("Apresentacao.findMaxDate").setParameter("evento", evento).getSingleResult();
     }
-    
-    public void remove(Evento evento){
-        getEntityManager().createNativeQuery("DELETE FATO_KBASE_APRESENTACAO WHERE ID_KBEV = "+ evento.getId()).executeUpdate();
+
+    public void remove(Evento evento) {
+        getEntityManager().createNativeQuery("DELETE FATO_KBASE_APRESENTACAO WHERE ID_KBEV = " + evento.getId()).executeUpdate();
     }
-    
+
 }

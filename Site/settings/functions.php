@@ -2043,6 +2043,57 @@ function sendConfirmationMail($id_cliente) {
     return $successMail;
 }
 
+function getPKPass($dados_pedido) {
+    global $is_teste;
+
+    foreach ($dados_pedido as $key => $value) {
+        $dados_pedido[$key] = utf8_encode($value);
+    }
+
+    $data = array(  
+        "number" => $dados_pedido['codigo_pedido'],
+        "date" => $dados_pedido['data'],
+        "total" => $dados_pedido['total'],
+        "espetaculo" => array(  
+            "titulo" => $dados_pedido['evento'],
+            "endereco" => $dados_pedido['endereco'],
+            "nome_teatro" => $dados_pedido['nome_teatro'],
+            "horario" => $dados_pedido['horario']
+        ),
+        "ingressos" => array(
+            array(  
+                "qrcode" => $dados_pedido['barcode'],
+                "local" => $dados_pedido['local_bilhete'],
+                "type" => $dados_pedido['tipo_bilhete'],
+                "price" => $dados_pedido['preco_bilhete'],
+                "service_price" => $dados_pedido['servico_bilhete'],
+                "total" => $dados_pedido['total_bilhete']
+            )
+        )
+    );
+
+    $data = json_encode($data);
+
+    $url = $is_teste == '1'
+        ? "https://mpassbook-homol.herokuapp.com/passes/v2/"
+        : "https://mpassbook.herokuapp.com/passes/v2/";
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url.'generate.json');
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+    $server_output = curl_exec($ch);
+    curl_close($ch);
+
+    $response = json_decode($server_output, true);
+
+    return $url.$response['passes'][0];
+}
+
 function pre() {
     echo '<pre>';
     print_r(func_get_args());

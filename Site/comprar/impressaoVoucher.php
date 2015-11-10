@@ -17,9 +17,9 @@ $result = executeSQL($mainConnection, $query, $params);
 $is_assinatura = hasRows($result);
 
 
-// checa se é um cliente extrangeiro
+// checa se é um cliente estrangeiro
 $query = "SELECT CD_RG, ID_DOC_ESTRANGEIRO FROM MW_CLIENTE WHERE ID_CLIENTE = ?";
-$rsExtrangeiro = executeSQL($mainConnection, $query, array($parametros['CustomerData']['CustomerIdentity']), true);
+$rsEstrangeiro = executeSQL($mainConnection, $query, array($parametros['CustomerData']['CustomerIdentity']), true);
 
 $dadosExtrasEmail['cpf_cnpj_cliente'] = $rsExtrangeiro['ID_DOC_ESTRANGEIRO'] ? $rsExtrangeiro['CD_RG'] : $dadosExtrasEmail['cpf_cnpj_cliente'];
 // ---------------------------------

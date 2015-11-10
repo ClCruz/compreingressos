@@ -112,23 +112,6 @@ session_start();
 				</div>
 			</div>
 
-			<div class="input_area telefones">
-				<div class="icone"></div>
-				<div class="inputs">
-					<p class="titulo">Telefones de contato</p>
-					<input type="text" name="fixo" id="fixo" placeholder="fixo/phone number/teléfono" maxlength="14" autocomplete="off" pattern=".{1,15}" value="<?php echo utf8_encode($rs['DS_DDD_TELEFONE'].$rs['DS_TELEFONE']); ?>">
-					<div class="erro_help">
-						<p class="erro">insira o telefone fixo</p>
-						<p class="help">(ddd + nº)</p>
-					</div>
-					<input type="text" name="celular" id="celular" placeholder="celular/mobile number" maxlength="14" autocomplete="off" value="<?php echo utf8_encode($rs['DS_DDD_CELULAR'].$rs['DS_CELULAR']); ?>">
-					<div class="erro_help">
-						<p class="erro"></p>
-						<p class="help">opcional</p>
-					</div>
-				</div>
-			</div>
-
 			<div class="input_area identificacao">
 				<div class="icone"></div>
 				<div class="inputs">
@@ -164,6 +147,23 @@ session_start();
 					<div class="erro_help">
 						<p class="erro">informe seu CPF</p>
 						<p class="help"></p>
+					</div>
+				</div>
+			</div>
+
+			<div class="input_area telefones">
+				<div class="icone"></div>
+				<div class="inputs">
+					<p class="titulo">Telefones de contato</p>
+					<input type="text" name="fixo" id="fixo" placeholder="fixo/phone number/teléfono" maxlength="14" autocomplete="off" pattern=".{1,15}" value="<?php echo utf8_encode($rs['DS_DDD_TELEFONE'].$rs['DS_TELEFONE']); ?>">
+					<div class="erro_help">
+						<p class="erro">insira o telefone fixo</p>
+						<p class="help">(ddd + nº)</p>
+					</div>
+					<input type="text" name="celular" id="celular" placeholder="celular/mobile number" maxlength="14" autocomplete="off" value="<?php echo utf8_encode($rs['DS_DDD_CELULAR'].$rs['DS_CELULAR']); ?>">
+					<div class="erro_help">
+						<p class="erro"></p>
+						<p class="help">opcional</p>
 					</div>
 				</div>
 			</div>

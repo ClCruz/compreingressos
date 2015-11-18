@@ -10,7 +10,7 @@ $cookieExpireTime = time() + 60 * 20; //20min
 
 $compraExpireTime = 150;//minutos
 
-$maxIngressos = 4;//maximo por compra
+$maxIngressos = 16;//maximo por compra
 
 $uploadPath = '../images/uploads/';
 
@@ -19,8 +19,8 @@ $isContagemAcessos = true;
 $is_manutencao = false;
 
 $merchant_id_homologacao = 'AEDAFDE0-83A5-869F-214B-C8501B9C8697';
-// $merchant_id_producao = 'BB478913-9023-931D-3EC9-D5DEA7DECD20'; // conta 1
-$merchant_id_producao = '77915E2A-EFE7-418E-9250-B99DA8227129'; // conta 2
+$merchant_id_producao = 'BB478913-9023-931D-3EC9-D5DEA7DECD20'; // conta 1
+// $merchant_id_producao = '77915E2A-EFE7-418E-9250-B99DA8227129'; // conta 2
 // $merchant_id_homologacao = $merchant_id_producao;
 
 $url_braspag_homologacao = 'https://homologacao.pagador.com.br/webservice/pagadorTransaction.asmx?WSDL';
@@ -30,6 +30,11 @@ $url_braspag_producao = 'https://transaction.pagador.com.br/webservice/pagadorTr
 $recaptcha = array(
 	'private_key' => 'bafa46035b840f10dc064ebae573bfd5c2959b78',
 	'public_key' => '7b7a9872fd5c7e434400b347ae315973579c21cc'
+);
+
+$recaptcha_cadastro = array(
+	'private_key' => '2ad59bf7ce630c07e311f04a95b5af57030eff39',
+	'public_key' => 'd4850db05abab66f0b86be092ad11c842883db9d'
 );
 
 $mail_mkt = array(

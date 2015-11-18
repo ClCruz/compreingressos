@@ -287,7 +287,7 @@ session_start();
 				<script type="text/javascript">var brandcaptchaOptions = {lang: 'pt'};</script>
 				<?php
 				require_once('../settings/brandcaptchalib.php');
-				echo brandcaptcha_get_html($recaptcha['public_key']);
+				echo brandcaptcha_get_html($recaptcha_cadastro['public_key']);
 				?>
 			</div>
 			<?php } ?>

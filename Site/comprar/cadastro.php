@@ -63,7 +63,7 @@ if (isset($_GET['action'])) {
 			require_once('../settings/settings.php');
 			require_once('../settings/brandcaptchalib.php');
 
-			$resp = brandcaptcha_check_answer($recaptcha['private_key'],
+			$resp = brandcaptcha_check_answer($recaptcha_cadastro['private_key'],
 			    $_SERVER["REMOTE_ADDR"],
 			    $_POST["brand_cap_challenge"],
 			    $_POST["brand_cap_answer"]);

@@ -121,7 +121,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
                         <th align="left">Status/Situação da Compra</th>
                         <th align="left">Rede Cartao</th>
                         <th align="left">Bandeira</th>
-                        <th align="left">NSU</th>
+                        <th align="left">Código de Autorização</th>
                         <th align="left">Forma de Pagamento</th>
                         <th align="left">Parcelas</th>
                         <th align="left">Qtde. Lugares</th>

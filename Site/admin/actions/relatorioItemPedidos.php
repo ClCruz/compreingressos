@@ -8,7 +8,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
         function getCanalLocal($conn, $codvenda, $indice) {
             $query = "SELECT
                             CV.DS_CANAL_VENDA,
-                            LE.DS_LOCAL_EVENTO
+                            LE.DS_LOCAL_EVENTO,
+                            TP.TIPPECA
                         FROM TABLUGSALA TLS
 
                         INNER JOIN TABCAIXA TC ON TC.CODCAIXA = TLS.CODCAIXA
@@ -17,6 +18,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
                         INNER JOIN TABAPRESENTACAO TA ON TA.CODAPRESENTACAO = TLS.CODAPRESENTACAO
                         INNER JOIN TABPECA TP ON TP.CODPECA = TA.CODPECA
                         INNER JOIN CI_MIDDLEWAY..MW_LOCAL_EVENTO LE ON LE.ID_LOCAL_EVENTO = TP.ID_LOCAL_EVENTO
+
+                        INNER JOIN TABTIPPECA G ON G.CODTIPPECA = TP.CODTIPPECA
 
                         WHERE TLS.CODVENDA = ? AND TLS.INDICE = ?";
             $params = array($codvenda, $indice);
@@ -124,6 +127,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
                 <td><?php echo utf8_encode($rs['NOME_CLIENTE']); ?></td>
                 <td class="text"><?php echo $rs['CD_CPF']; ?></td>
                 <td class="text"><?php echo $rs['CD_BIN_CARTAO']; ?></td>
+                <td><?php echo utf8_encode($info['TIPPECA']); ?></td>
             </tr>
         <?php
         }

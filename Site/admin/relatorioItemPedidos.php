@@ -131,6 +131,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
                         <th align="left">Cliente</th>
                         <th align="left">CPF</th>
                         <th align="left">Cartão  Cred.</th>
+                        <th align="left">Gênero</th>
                     </tr>
                 </thead>
                 <tbody id="registros">

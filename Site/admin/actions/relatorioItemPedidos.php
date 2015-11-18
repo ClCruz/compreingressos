@@ -9,7 +9,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
             $query = "SELECT
                             CV.DS_CANAL_VENDA,
                             LE.DS_LOCAL_EVENTO,
-                            TP.TIPPECA
+                            G.TIPPECA
                         FROM TABLUGSALA TLS
 
                         INNER JOIN TABCAIXA TC ON TC.CODCAIXA = TLS.CODCAIXA

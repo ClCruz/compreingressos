@@ -58,6 +58,7 @@ while ($rs = fetchResult($result)) {
 		<p class="endereco<?php echo $is_pacote ? ' hidden' : ''; ?>"><?php echo utf8_encode($evento_info['endereco'] . ' - ' . $evento_info['bairro'] . ' - ' . $evento_info['cidade'] . ', ' . $evento_info['sigla_estado']); ?></p>
 		<p class="teatro<?php echo $is_pacote ? ' hidden' : ''; ?>"><?php echo utf8_encode($evento_info['nome_teatro']); ?></p>
 		<p class="horario<?php echo $is_pacote ? ' hidden' : ''; ?>"><?php echo $rs['HR_APRESENTACAO']; ?></p>
+		<span class="meia_entrada"></span>
 	</div>
 	<table id="pedido_resumo">
 		<thead>

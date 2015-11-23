@@ -11,7 +11,7 @@ function atualizarCaixaMeiaEntrada(id) {
 		url: 'atualizarPedido.php',
 		data: 'action=atualizarCaixaMeiaEntrada&id=' + id,
 		success: function(data) {
-			var caixa = $('#cme').html(data);
+			var caixa = $('input[name=apresentacao\\[\\]][value='+id+']').closest('div.resumo_espetaculo').find('span.meia_entrada').html(data);
 
 			if (caixa.find('.contagem-meia').text() == '0') {
 				$('#pedido_resumo').find('.valorIngresso\\[\\] :not(:selected)[meia_estudante="1"]').attr('disabled','disabled');

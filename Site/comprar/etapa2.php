@@ -100,8 +100,6 @@ require('verificarServicosPedido.php');
 
 		<div id="texts">
 			<div class="centraliza">
-				<span id="cme"></span>
-				
 				<p>Confira o(s) assento(s) escolhido(s), o preço, a forma de entrega e clique em avançar para continuar com o processo de compra.</p>
 
 				<p>Formas de entrega:</p>

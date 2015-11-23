@@ -162,12 +162,13 @@ function obterValorServico($id_bilhete, $valor_pedido = false, $id_pedido = null
 
             $query = 'SELECT
                         AB.VL_LIQUIDO_INGRESSO,
-                        PC.ID_PROMOCAO_CONTROLE
+                        PC.ID_PROMOCAO_CONTROLE,
+                        PC.IN_VALOR_SERVICO
                       FROM
                         CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB
-                      LEFT JOIN TABTIPBILHETE TTB ON TTB.CODTIPBILHETE = AB.CODTIPBILHETE
+                      INNER JOIN TABTIPBILHETE TTB ON TTB.CODTIPBILHETE = AB.CODTIPBILHETE
                       LEFT JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = TTB.ID_PROMOCAO_CONTROLE
-                      	AND PC.IN_ATIVO = 1 AND PC.CODTIPPROMOCAO = 4
+                      	AND PC.IN_ATIVO = 1
                       WHERE
                         AB.IN_ATIVO = 1
                         AND AB.ID_APRESENTACAO_BILHETE = ?';
@@ -177,12 +178,50 @@ function obterValorServico($id_bilhete, $valor_pedido = false, $id_pedido = null
             $quantidade = executeSQL($mainConnection, 'SELECT COUNT(1) AS INGRESSOS FROM MW_RESERVA WHERE ID_SESSION = ?', array(session_id()), true);
 
             if ($taxa_por_pedido == 'S') {
+
+                // nao cobrar taxa de servico
+                if ($rs['IN_VALOR_SERVICO'] === 0) {
+
+                    $query = "SELECT DISTINCT R.ID_APRESENTACAO_BILHETE, E.ID_BASE
+                                FROM MW_RESERVA R
+                                INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+                                INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+                                WHERE R.ID_SESSION = ?";
+                    $params = array(session_id());
+                    $result = executeSQL($mainConnection, $query, $params);
+
+                    $query = "SELECT PC.IN_VALOR_SERVICO
+                              FROM CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB
+                              INNER JOIN TABTIPBILHETE TTB ON TTB.CODTIPBILHETE = AB.CODTIPBILHETE
+                              LEFT JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = TTB.ID_PROMOCAO_CONTROLE AND PC.IN_ATIVO = 1
+                              WHERE AB.IN_ATIVO = 1 AND AB.ID_APRESENTACAO_BILHETE = ?";
+                    $cobrar_servico = false;
+                    
+                    while ($rs2 = fetchResult($result)) {
+                        $conn = getConnection($rs2['ID_BASE']);
+                        $params = array($rs2['ID_APRESENTACAO_BILHETE']);
+                        $rs3 = executeSQL($conn, $query, $params, true);
+
+                        $cobrar_servico = ($cobrar_servico or ($rs3['IN_VALOR_SERVICO'] !== 0));
+                    }
+
+                    if (!$cobrar_servico) {
+                        return 0;
+                    }
+                }
+
                 if ($tipo == 'V') {
                     $valor = $valor_pedido ? ($quantidade['INGRESSOS'] == 1 ? $vl_um_ingresso : $normal) : 0;
                 } else {
                     $valor = $valor_pedido ? number_format(($quantidade['INGRESSOS'] == 1 ? ($vl_um_ingresso / 100) * $rs['VL_LIQUIDO_INGRESSO'] : obterValorPercentualServicoPorPedido()), 2) : 0;
                 }
             } else {
+
+                // nao cobrar taxa de servico
+                if ($rs['IN_VALOR_SERVICO'] === 0) {
+                    return 0;
+                }
+
                 $valor = $tipo == 'V'
                                 ? ($quantidade['INGRESSOS'] == 1 ? (is_null($rs['ID_PROMOCAO_CONTROLE']) ? $vl_um_ingresso : $vl_um_ingresso_promo) : (is_null($rs['ID_PROMOCAO_CONTROLE']) ? $normal : $promo))
                                 : (($quantidade['INGRESSOS'] == 1 ? (is_null($rs['ID_PROMOCAO_CONTROLE']) ? $vl_um_ingresso : $vl_um_ingresso_promo) : (is_null($rs['ID_PROMOCAO_CONTROLE']) ? $normal : $promo)) / 100) * $rs['VL_LIQUIDO_INGRESSO'];

@@ -537,6 +537,9 @@ function updateValorServicoPorPedido(bilhete, target) {
 			if (data.valor != '0,00') {
 				$('#servico_pedido').text(data.valor);
 				$('#servico_por_pedido').slideDown('fast');
+			} else {
+				$('#servico_por_pedido').slideUp('fast');
+				$('#servico_pedido').text(data.valor);
 			}
 			updateAllValues();
 		}

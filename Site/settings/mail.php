@@ -1,6 +1,14 @@
 <?php
 require("PHPMailer/class.phpmailer.php");
 
+function log_email($assunto, $de, $para, $conta, $sucesso, $erro) {
+	require_once('../settings/functions.php');
+	$mainConnection = mainConnection();
+	$query = "INSERT INTO MW_EMAIL_LOG (DT_ENVIO, DS_ASSUNTO, DS_DE, DS_PARA, DS_CONTA, IN_SUCESSO, DS_ERRO) VALUES (GETDATE(), ?, ?, ?, ?, ?, ?)";
+	$params = array($assunto, $de, $para, $conta, ($sucesso ? 1 : 0), $erro);
+	executeSQL($mainConnection, $query, $params);
+}
+
 function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copiesTo = array(), $hiddenCopiesTo = array(), $charset = 'utf8', $attachment = array()) {
 	
 	$mail = new PHPMailer();
@@ -68,6 +76,8 @@ function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copi
 	$mail->ClearAttachments();
 
 	$error = $mail->ErrorInfo;
+
+	log_email($mail->Subject, $mail->From, $to, $mail->Host, $enviado, $error);
 
 	if ($enviado) {
 		if (!empty($attachment)) {
@@ -158,6 +168,8 @@ function authSendEmail_alternativo($from, $namefrom, $to, $nameto, $subject, $me
 
 	$error = $mail->ErrorInfo;
 
+	log_email($mail->Subject, $mail->From, $to, $mail->Host, $enviado, $error);
+
 	if ($enviado) {
 		if (!empty($attachment)) {
 			foreach($attachment as $file) {
@@ -238,6 +250,8 @@ function authSendEmail_alternativo2($from, $namefrom, $to, $nameto, $subject, $m
 	$mail->ClearAttachments();
 
 	$error = $mail->ErrorInfo;
+
+	log_email($mail->Subject, $mail->From, $to, $mail->Host, $enviado, $error);
 
 	if ($enviado) {
 		if (!empty($attachment)) {
@@ -322,6 +336,8 @@ function authSendEmail_alternativo3($from, $namefrom, $to, $nameto, $subject, $m
 	//$mail->AltBody = 'plain text';
 	
 	$enviado = $mail->Send();
+
+	log_email($mail->Subject, $mail->From, $to, $mail->Host, $enviado, $error);
 
 	$mail->ClearAllRecipients();
 	$mail->ClearAttachments();

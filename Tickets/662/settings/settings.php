@@ -16,7 +16,7 @@ $uploadPath = '../images/uploads/';
 
 // $is_teste = '1';
 $isContagemAcessos = true;
-$is_manutencao = false;
+$is_manutencao = true;
 
 $recaptcha = array(
 	'private_key' => 'bafa46035b840f10dc064ebae573bfd5c2959b78',

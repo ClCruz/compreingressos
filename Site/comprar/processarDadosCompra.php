@@ -108,7 +108,10 @@ $dadosExtrasEmail['email_presente'] = $_POST['emailPresente'];
 $parametros['RequestId'] = $ri;
 $parametros['Version'] = '1.0';
 
-$parametros['OrderData']['MerchantId'] = $is_teste == '1' ? $merchant_id_homologacao : $merchant_id_producao;
+//--------------------
+$rs_gateway_pagamento = executeSQL($mainConnection, 'SELECT CD_GATEWAY_PAGAMENTO, DS_URL FROM MW_GATEWAY_PAGAMENTO WHERE IN_ATIVO = 1', null, true);
+$parametros['OrderData']['MerchantId'] = $rs_gateway_pagamento['CD_GATEWAY_PAGAMENTO'];
+//--------------------
 
 $parametros['OrderData']['OrderId'] = '';
 
@@ -415,7 +418,7 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
 
     $descricao_erro = '';
 
-    $url_braspag = $is_teste == '1' ? $url_braspag_homologacao : $url_braspag_producao;
+    $url_braspag = $rs_gateway_pagamento['DS_URL'];
 
 
     // ALTERACAO DOS DADOS DO CARTAO PARA GRAVACAO DO LOG

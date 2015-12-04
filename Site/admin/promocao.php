@@ -59,6 +59,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
 ?>
         <link rel="stylesheet" href="../javascripts/uploadify/uploadify.css"/>
 
+        <style type="text/css"> div#ui-datepicker-div { z-index: 9999 !important; } </style>
+
         <script type="text/javascript" src="../javascripts/uploadify/swfobject.js"></script>
         <script type="text/javascript" src="../javascripts/uploadify/jquery.uploadify.v2.1.0.min.js"></script>
 

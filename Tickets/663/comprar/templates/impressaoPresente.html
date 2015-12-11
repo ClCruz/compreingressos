@@ -52,9 +52,12 @@
     <tr>
         <td>
           <table width="560" border="0" align="center" cellpadding="0" cellspacing="0">
-                <tbody><tr>
+                <tbody>
+                <tr>
                     <td>
-                </td></tr><tr>
+                        <p style="font-family:Arial,Verdana;font-size:14px;font-weight:bold;color:#930606;line-height:20px;margin:0;padding:0;">Aqui está o seu Ingresso (e-ticket)</p>
+                        <p style="font-family:Arial,Verdana;font-size:9px;font-weight:normal;color:#930606;line-height:14px;margin:0;padding:0;">É obrigatório a apresentação deste voucher na bilheteria, <br>balcão ou diretamente no controle de acesso do local do evento.</p>
+                    </td>
                     <td>
                         <img src="http://www.compreingressos.com/newsletter/ingressos/compreingressos_logo.jpg" width="158" height="40" alt="" align="left">
                     </td>
@@ -63,18 +66,9 @@
                     <td height="6"></td>
                 </tr>
                 <tr>
-                    <td>
-                        <p style="font-family:Arial,Verdana;font-size:16px;font-weight:bold;color:#930606;line-height:20px;margin:0;padding:0;">Aqui está o seu Ingresso (e-ticket)</p>
-                        <p style="font-family:Arial,Verdana;font-size:11px;font-weight:normal;color:#930606;line-height:14px;margin:0;padding:0;">É obrigatório a apresentação deste voucher na bilheteria, <br>balcão ou diretamente no controle de acesso do local do evento.</p>
-                    </td>
-                </tr>
-                <tr>
-                    <td height="6"></td>
-                </tr>
-                <tr>
-                    <td>
-                        <p style="font-family:Arial,Verdana;font-size:12px;font-weight:normal;color:#000000;line-height:16px;margin:0;padding:0;">
-                            Olá <span style="font-size:15px;font-weight:bold;">{nome_presenteado}</span>, você foi presenteado através da <b>compreingressos.com</b>.<br />
+                    <td colspan="2">
+                        <p style="font-family:Arial,Verdana;font-size:10px;font-weight:normal;color:#000000;line-height:16px;margin:0;padding:0;">
+                            Olá <span style="font-size:11px;font-weight:bold;">{nome_presenteado}</span>, você foi presenteado através da <b>compreingressos.com</b>.<br />
                             Para adquirir seus ingressos, confira abaixo as informações sobre o espetáculo/evento, data, hora, setor e lugares escolhidos.
                         </p>
                     </td>
@@ -95,7 +89,7 @@
             <table width="560" border="0" align="center" cellpadding="0" cellspacing="0">
                 <tbody><tr>
                     <td>
-                        <p style="font-family:Arial,Verdana;font-size:16px;font-weight:bold;color:#000000;line-height:16px;margin:0;padding:0;text-transform:uppercase;">
+                        <p style="font-family:Arial,Verdana;font-size:14px;font-weight:bold;color:#000000;line-height:16px;margin:0;padding:0;text-transform:uppercase;">
                             LOCALIZADOR Nº {codigo_pedido}
                         </p>
                     </td>
@@ -117,19 +111,19 @@
                                             <table width="324" border="0" cellpadding="4" cellspacing="0">
                                                 <tbody><tr>
                                                     <td width="208" valign="middle">
-                                                        <p style="font-family:Arial,Verdana;font-size:11px;font-weight:normal;color:#000000;line-height:15px;margin:0;padding:0;text-transform:uppercase;">
+                                                        <p style="font-family:Arial,Verdana;font-size:10px;font-weight:normal;color:#000000;line-height:15px;margin:0;padding:0;text-transform:uppercase;">
                                                             <b>{item_evento}</b><br>
                                                             {item_teatro}<br>
                                                             {item_tipo_bilhete}<br>
                                                             {item_setor} - {item_cadeira}<br>
-                                                            <span style="font-size:16px;line-height:16px;">{item_data} {item_hora}</span>
+                                                            <span style="font-size:15px;line-height:16px;">{item_data} {item_hora}</span>
                                                         </p>
                                                     </td>
                                                     <td width="100" align="center" valign="middle">
-                                                        <p style="font-family:Arial,Verdana;font-size:14px;font-weight:bold;color:#000000;line-height:18px;margin:0;padding:0;text-transform:uppercase;">
+                                                        <p style="font-family:Arial,Verdana;font-size:13px;font-weight:bold;color:#000000;line-height:18px;margin:0;padding:0;text-transform:uppercase;">
                                                             {item_setor}
                                                         </p>
-                                                        <p style="font-family:Arial,Verdana;font-size:20px;font-weight:bold;color:#000000;line-height:22px;margin:0;padding:0;text-transform:uppercase;">
+                                                        <p style="font-family:Arial,Verdana;font-size:19px;font-weight:bold;color:#000000;line-height:22px;margin:0;padding:0;text-transform:uppercase;">
                                                             {item_cadeira}
                                                         </p>
                                                     </td>
@@ -163,11 +157,11 @@
                         <table width="560" border="0" cellspacing="0" cellpadding="0">
                             <tr>
                                 <td width="150" valign="top">
-                                    <p style="font-family:Arial,Verdana;font-size:11px;font-weight:bold;color:#000000;line-height:14px;margin:0;padding:0;text-transform:uppercase;">
+                                    <p style="font-family:Arial,Verdana;font-size:9px;font-weight:bold;color:#000000;line-height:14px;margin:0;padding:0;text-transform:uppercase;">
                                         DADOS DO PEDIDO
                                         <br />&nbsp;
                                     </p>
-                                    <p style="font-family:Arial,Verdana;font-size:11px;font-weight:normal;color:#000000;line-height:14px;margin:0;padding:0;">
+                                    <p style="font-family:Arial,Verdana;font-size:9px;font-weight:normal;color:#000000;line-height:14px;margin:0;padding:0;">
                                         <b>Localizador:</b> {codigo_pedido}<br />
                                         <b>Data e hora de venda:</b><br />
                                         {data_hora_status}<br />
@@ -186,11 +180,11 @@
                                 </td>
                                 <td width="10"></td>
                                 <td width="400" valign="top">
-                                  <p style="font-family:Arial,Verdana;font-size:9px;font-weight:bold;color:#000000;line-height:14px;margin:0;padding:0;text-transform:uppercase;">
+                                  <p style="font-family:Arial,Verdana;font-size:8px;font-weight:bold;color:#000000;line-height:14px;margin:0;padding:0;text-transform:uppercase;">
                                         OBSERVAÇÕES IMPORTANTES
                                         <br />&nbsp;
                                     </p>
-                                    <p style="font-family:Arial,Verdana;font-size:10px;font-weight:normal;color:#000000;line-height:14px;margin:0;padding:0;">
+                                    <p style="font-family:Arial,Verdana;font-size:8px;font-weight:normal;color:#000000;line-height:14px;margin:0;padding:0;">
                                         - O espetáculo começa rigorosamente no horário marcado. Não haverá troca de ingresso ou devoluções em caso de atraso de qualquer natureza. Seja pontual, poderá não ser permitida a entrada após o início do espetáculo.<br />
                                         - A taxa de serviço e os ingressos que forem adquiridos e pagos através desse canal não poderão ser devolvidos,
                                         trocado ou cancelados depois que a compra for efetuada pelo cliente e o pagamento confirmado pela
@@ -199,9 +193,9 @@
                                         - No caso de <b>meia-entrada</b> ou <b>promoção</b> é obrigatório a apresentação de documento que comprove o
                                         benefício no momento da retirada dos ingressos e na entrada do local.<br />
                                         - Caso você tenha alguma dúvida sobre o seu pedido, entre em contato conosco através do site:
-                                        <a href="suporte.compreingressos.com/support/login" style="font-size:10px;color:#000000;text-decoration:none;font-weight:bold;">suporte.compreingressos.com/support/login</a><br /><br />
+                                        <a href="suporte.compreingressos.com/support/login" style="font-size:8px;color:#000000;text-decoration:none;font-weight:bold;">suporte.compreingressos.com/support/login</a><br /><br />
                                     </p>
-                                    <p style="font-family:Arial,Verdana;font-size:10px;font-weight:bold;color:#000000;line-height:14px;margin:0;padding:0;text-transform:uppercase;">
+                                    <p style="font-family:Arial,Verdana;font-size:8px;font-weight:bold;color:#000000;line-height:14px;margin:0;padding:0;text-transform:uppercase;">
                                         ESTE É UM E-MAIL AUTOMÁTICO. NÃO É NECESSÁRIO RESPONDÊ-LO.
                                     </p>
                                 </td>
@@ -217,7 +211,7 @@
     </tr>
     <tr>
         <td height="13" valign="top">
-            <div style="height:1px;border-bottom:1px solid #EEEEEE;width:600px;"></div>
+            <div style="height:1px;border-bottom:1px solid #EEEEEE;width:600px;page-break-after: always;"></div>
         </td>
     </tr>
     <tr>

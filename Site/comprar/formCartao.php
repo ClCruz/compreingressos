@@ -153,10 +153,8 @@ if ($_POST) {
                 </div>
                 <?php
                 }
-
-                if (!isset($_SESSION['assinatura'])) {
                 ?>
-                <div class="linha">
+                <div class="linha <?php if (isset($_SESSION['assinatura'])) echo 'hidden'; ?>">
                     <div class="input presente nome hidden">
                         <p class="titulo">nome completo do presenteado</p>
                         <input type="text" name="nomePresente" maxlength="60">
@@ -178,9 +176,6 @@ if ($_POST) {
                         <p class="titulo"><img src="../images/gift.png" style="vertical-align: middle;" /> para enviar como presente clique <a href="#" class="presente_toggle">aqui</a></p>
                     </div>
                 </div>
-                <?php
-                }
-                ?>
     	</div>
 <?php
     }

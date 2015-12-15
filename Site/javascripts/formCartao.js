@@ -16,7 +16,7 @@ $(function(){
             }
         }
 
-	    $this.find(':input:not(.recaptcha :input, [name=nomePresente], [name=emailPresente])').each(function(i,e) {
+	    $this.find(':input:not(.compra_captcha :input, [name=nomePresente], [name=emailPresente])').each(function(i,e) {
     		var e = $(e);
     		if (e.val().length < e.attr('maxlength')/2 || e.val() == '') {
     		    e.addClass('erro');

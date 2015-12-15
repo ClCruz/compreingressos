@@ -176,6 +176,9 @@ if ($_POST) {
                         <p class="titulo"><img src="../images/gift.png" style="vertical-align: middle;" /> para enviar como presente clique <a href="#" class="presente_toggle">aqui</a></p>
                     </div>
                 </div>
+                <div class="linha">
+                    <p class="frase" style="margin-bottom: -10px;">5.3 Autenticidade</p>
+                </div>
     	</div>
 <?php
     }

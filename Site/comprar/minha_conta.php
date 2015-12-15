@@ -155,19 +155,21 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                     var status = $(this).attr('status');
 
                     if($(this).is(':checked')){
-                        $('input[name*=pacote]').filter(function(){ return $(this).attr('status') != status }).prop('disabled', true)
+                        $('input[name*=pacote]').filter(function(){ return $(this).attr('status') !== status }).prop('disabled', true)
                         .next('label').next('input').prop('disabled', true);
                     }else{
-                        $('input[name*=pacote]').prop('disabled', false).next('label').next('input').prop('disabled', false);
+                        if (!$('input[name*=pacote]:checked')[0]) {
+                            $('input[name*=pacote]').prop('disabled', false).next('label').next('input').prop('disabled', false);
+                        }
                     }
 
                     $('#acao').selectbox('detach');
                     $('#acao option').prop('disabled', false);
 
                     $('input[name*=pacote]:checked').each(function(i, e){
-                        var status = $(e).attr('status');
+                        var status = $(e).attr('status').split('');
 
-                        $('#acao option').filter(function(){ return $(this).attr('status') == status }).prop('disabled', true);
+                        $('#acao option').filter(function(){ return jQuery.inArray($(this).attr('status'), status) !== -1; }).prop('disabled', true);
                     });
 
                     $('#acao').selectbox('attach');

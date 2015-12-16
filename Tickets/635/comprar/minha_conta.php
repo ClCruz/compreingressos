@@ -182,7 +182,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                     $('.menu_conta a[href*="#frmAssinatura"]').click();
                 <?php } else {
                         if (isset($_GET['assinatura'])) {
-                            $msg_nao_assinante = 'Pacotes disponíveis apenas para assinantes, novas assinaturas consulte caderno de programação (<a href="http://www.compreingressos.com/assinaturas-2016.pdf" style="float: none; background: none; font-size: inherit;">http://www.compreingressos.com/assinaturas-2016.pdf</a>).';
+                            $msg_nao_assinante = 'Pacotes disponíveis apenas para assinantes, novas assinaturas consulte caderno de programação (<a href="http://www.compreingressos.com/theatromunicipaldesaopaulo/assinaturas" style="float: none; background: none; font-size: inherit;">http://www.compreingressos.com/theatromunicipaldesaopaulo/assinaturas</a>).';
                             echo "$.dialog({title: 'Alerta...', text: '$msg_nao_assinante'});";
                         }
                     }

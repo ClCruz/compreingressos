@@ -180,8 +180,14 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                 });
                 <?php if ($isAssinante) { ?>
                     $('.menu_conta a[href*="#frmAssinatura"]').click();
-                <?php } ?>
-            });                                              
+                <?php } else {
+                        if (isset($_GET['assinatura'])) {
+                            $msg_nao_assinante = 'Pacotes disponíveis apenas para assinantes, novas assinaturas consulte caderno de programação (<a href="http://www.compreingressos.com/assinaturas-2016.pdf" style="float: none; background: none; font-size: inherit;">http://www.compreingressos.com/assinaturas-2016.pdf</a>).';
+                            echo "$.dialog({title: 'Alerta...', text: '$msg_nao_assinante'});";
+                        }
+                    }
+                ?>
+            });
         </script>        
     </head>
     <body>

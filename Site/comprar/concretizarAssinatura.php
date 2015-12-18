@@ -307,7 +307,7 @@ if (!empty($dadosPedido)) {
 	}
 
 	// atualizar assinatura se o usuario estiver na fase 2 ou 3
-	if (!isset($_SESSION['assinatura']) or $_SESSION['assinatura']['tipo'] == 'troca') {
+	if ($_SESSION['assinatura']['tipo'] == 'nova' or $_SESSION['assinatura']['tipo'] == 'troca') {
 
 		//update para o caso de um usuario comprar novamente algo que ele cancelou/estornou
 		executeSQL($mainConnection,

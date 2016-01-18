@@ -1,6 +1,6 @@
 <?php
 function mainConnection() {
-	$host = 'localhost';
+	$host = 'localhost\\sql2008';
 	$port = '1433';
 	$dbname = 'CI_MIDDLEWAY';
 	$user = 'tsp';
@@ -13,7 +13,7 @@ function getConnection($teatroID) {
 	$mainConnection = mainConnection();
 	$rs = executeSQL($mainConnection, 'SELECT DS_NOME_BASE_SQL FROM MW_BASE WHERE ID_BASE = ?', array($teatroID), true);
 	
-	$host = 'localhost';
+	$host = 'localhost\\sql2008';
 	$port = '1433';
 	$user = 'tsp';
 	$pass = 'tsp';
@@ -22,7 +22,7 @@ function getConnection($teatroID) {
 }
 
 function getConnectionTsp() {
-	$host = 'localhost';
+	$host = 'localhost\\sql2008';
 	$port = '1433';
 	$dbname = 'tspweb';
 	$user = 'tsp';
@@ -32,7 +32,7 @@ function getConnectionTsp() {
 }
 
 function getConnectionDw() {
-    $host = 'localhost';
+    $host = 'localhost\\sql2008';
 	$port = '1433';
 	$dbname = 'CI_DW';
 	$user = 'sa';
@@ -42,9 +42,9 @@ function getConnectionDw() {
 }
 
 function getConnectionHome() {
-    $host = '177.153.8.59';
+    $host = '186.202.34.139';
 	$port = '3306';
-	$dbname = 'compreingressos_production';
+	$dbname = 'compreingressos_development';
 	$user = 'ccmenu';
 	$pass = 'GQMfwbGLnyuQ2Wur';
 

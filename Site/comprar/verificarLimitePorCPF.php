@@ -14,9 +14,10 @@ if (isset($_SESSION['user'])) {
 				GROUP BY E.ID_BASE, E.DS_EVENTO, A.DT_APRESENTACAO, A.HR_APRESENTACAO';
 	$result = executeSQL($mainConnection, $query, array(session_id()));
 	
-	$start = 'Caro Sr(a)., o(s) seguinte(s) evento(s) permite(m) apenas a compra de um número limitado de ingressos.<br><br>';
-	$start .= '<table class=\'ui-widget ui-widget-content\' style=\'width:100%; text-align:left\'><thead><th>Evento</th><th>Limite</th><th>Saldo Atual</th></thead><tbody>';
+	$start = 'Caro Sr(a)., o(s) seguinte(s) evento(s) permite(m) apenas a compra de um número limitado de ingressos.';
+	$start .= '<br><br><table class=\'ui-widget ui-widget-content\' style=\'width:100%; text-align:left\'><thead><th>Evento</th><th>Limite</th><th>Saldo Atual</th></thead><tbody>';
 	$limitePorCPF = $start;
+	$limitePorCPF_POS = array();
 	
 	while ($rs = fetchResult($result)) {
 		
@@ -46,6 +47,9 @@ if (isset($_SESSION['user'])) {
 			if ($rs['QT_INGRESSOS_POR_CPF'] != 0 and $rs['QT_INGRESSOS_POR_CPF'] < $rs['QTDVENDIDO'] + $comprando) {
 				$limitePorCPF .= '<tr><td>'.$evento.'</td><td>'.$rs['QT_INGRESSOS_POR_CPF'].'</td>';
 				$limitePorCPF .= '<td>'.($rs['QT_INGRESSOS_POR_CPF'] - $rs['QTDVENDIDO']).'</td></tr>';
+
+				$limitePorCPF_POS[] = "O evento $evento permite a compra de no máximo {$rs['QT_INGRESSOS_POR_CPF']} bilhete(s) por CPF. 
+										O saldo atual para esse cliente é ".($rs['QT_INGRESSOS_POR_CPF'] - $rs['QTDVENDIDO']).".";
 			}
 		}
 		

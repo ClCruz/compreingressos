@@ -5,7 +5,8 @@ if ($_GET['action'] != 'delete') {
 	$_POST['admin'] = $_POST['admin'] == 'on' ? 1 : 0;
 	$_POST['ativo'] = $_POST['ativo'] == 'on' ? 1 : 0;
 	$_POST['telemarketing'] = $_POST['telemarketing'] == 'on' ? 1 : 0;
-        $_POST['pdv'] = $_POST['pdv'] == 'on' ? 1 : 0;
+    $_POST['pdv'] = $_POST['pdv'] == 'on' ? 1 : 0;
+    $_POST['pos'] = $_POST['pos'] == 'on' ? 1 : 0;
 }
 
 if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
@@ -19,9 +20,9 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 	}
 	
 	$query = "INSERT INTO MW_USUARIO
-					(CD_LOGIN, DS_NOME, DS_EMAIL, IN_ATIVO, IN_ADMIN, IN_TELEMARKETING, IN_PDV, CD_PWW)
-					VALUES (?, ?, ?, ?, ?, ?, ?, '". md5('123456') . "')";
-	$params = array($_POST['login'], $_POST['nome'], $_POST['email'], $_POST['ativo'], $_POST['admin'], $_POST["telemarketing"], $_POST["pdv"]);
+					(CD_LOGIN, DS_NOME, DS_EMAIL, IN_ATIVO, IN_ADMIN, IN_TELEMARKETING, IN_PDV, IN_POS, CD_PWW)
+					VALUES (?, ?, ?, ?, ?, ?, ?, ?, '". md5('123456') . "')";
+	$params = array($_POST['login'], $_POST['nome'], $_POST['email'], $_POST['ativo'], $_POST['admin'], $_POST["telemarketing"], $_POST["pdv"], $_POST["pos"]);
 
         $log = new Log($_SESSION['admin']);
         $log->__set('funcionalidade', 'Usuários');
@@ -52,10 +53,11 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 					IN_ATIVO = ?,
 					IN_ADMIN = ?,
 					IN_TELEMARKETING = ?,
-                                        IN_PDV = ?
+                    IN_PDV = ?,
+                    IN_POS = ?
 				WHERE
 					ID_USUARIO = ?";
-	$params = array($_POST['nome'], $_POST['email'], $_POST['ativo'], $_POST['admin'], $_POST['telemarketing'], $_POST['pdv'], $_GET['codusuario']);
+	$params = array($_POST['nome'], $_POST['email'], $_POST['ativo'], $_POST['admin'], $_POST['telemarketing'], $_POST['pdv'], $_POST['pos'], $_GET['codusuario']);
 
         $log = new Log($_SESSION['admin']);
         $log->__set('funcionalidade', 'Usuários');

@@ -16,7 +16,7 @@ if (isset($_GET['action'])) {
 	$_GET['ativo'] = !isset($_GET['ativo']) ? 1 : $_GET['ativo'];
 	
 	$result = executeSQL($mainConnection,
-						"SELECT ID_USUARIO, CD_LOGIN, DS_NOME, DS_EMAIL, IN_ATIVO, IN_ADMIN, IN_TELEMARKETING, IN_PDV FROM MW_USUARIO WHERE IN_ATIVO = ? OR ? = 2 ORDER BY DS_NOME ASC",
+						"SELECT ID_USUARIO, CD_LOGIN, DS_NOME, DS_EMAIL, IN_ATIVO, IN_ADMIN, IN_TELEMARKETING, IN_PDV, IN_POS FROM MW_USUARIO WHERE IN_ATIVO = ? OR ? = 2 ORDER BY DS_NOME ASC",
 						array($_GET['ativo'], $_GET['ativo']));
 	
 ?>
@@ -50,13 +50,15 @@ $(function() {
 						var id = $.serializeUrlVars(data),
 							email = $.getUrlVar('email', data);
 						
-						tr.find('td:not(.button):eq(0)').html($('#nome').val());
-						tr.find('td:not(.button):eq(1)').html($('#email').val());
-						tr.find('td:not(.button):eq(2)').html($('#login').val());
-						tr.find('td:not(.button):eq(3)').html($('#admin').is(':checked') ? 'sim' : 'n&atilde;o');
-						tr.find('td:not(.button):eq(4)').html($('#ativo').is(':checked') ? 'sim' : 'n&atilde;o');
-						tr.find('td:not(.button):eq(5)').html($('#telemarketing').is(':checked') ? 'sim' : 'n&atilde;o');
-                                                tr.find('td:not(.button):eq(6)').html($('#pdv').is(':checked') ? 'sim' : 'n&atilde;o');
+						tr.find('td:not(.button):eq(0)').html($.getUrlVar('codusuario', data));
+						tr.find('td:not(.button):eq(1)').html($('#nome').val());
+						tr.find('td:not(.button):eq(2)').html($('#email').val());
+						tr.find('td:not(.button):eq(3)').html($('#login').val());
+						tr.find('td:not(.button):eq(4)').html($('#admin').is(':checked') ? 'sim' : 'n&atilde;o');
+						tr.find('td:not(.button):eq(5)').html($('#ativo').is(':checked') ? 'sim' : 'n&atilde;o');
+						tr.find('td:not(.button):eq(6)').html($('#telemarketing').is(':checked') ? 'sim' : 'n&atilde;o');
+                        tr.find('td:not(.button):eq(7)').html($('#pdv').is(':checked') ? 'sim' : 'n&atilde;o');
+                        tr.find('td:not(.button):eq(8)').html($('#pos').is(':checked') ? 'sim' : 'n&atilde;o');
 						
 						$this.text('Editar').attr('href', pagina + '?action=edit&' + id);
 						tr.find('td.button a:eq(1)').attr('href', pagina + '?action=reset&' + id);
@@ -111,13 +113,14 @@ $(function() {
 				values.push($(this).text());
 			});
 			
-			tr.find('td:not(.button):eq(0)').html('<input name="nome" type="text" class="inputStyle" id="nome" maxlength="100" value="' + values[0] + '" />');
-			tr.find('td:not(.button):eq(1)').html('<input name="email" type="text" class="inputStyle" id="email" maxlength="100" value="' + values[1] + '" />');
-			tr.find('td:not(.button):eq(2)').html('<input name="login" type="text" class="readonly inputStyle" id="login" maxlength="10" value="' + values[2] + '" readonly />');
-			tr.find('td:not(.button):eq(3)').html('<input name="admin" type="checkbox" class="inputStyle" id="admin" ' + (values[3] == 'sim' ? 'checked' : ''  )+ ' />');
-			tr.find('td:not(.button):eq(4)').html('<input name="ativo" type="checkbox" class="inputStyle" id="ativo" ' + (values[4] == 'sim' ? 'checked' : ''  )+ ' />');
-			tr.find('td:not(.button):eq(5)').html('<input name="telemarketing" type="checkbox" class="inputStyle" id="telemarketing" ' + (values[5] == 'sim' ? 'checked' : ''  )+ ' />');
-                        tr.find('td:not(.button):eq(6)').html('<input name="pdv" type="checkbox" class="inputStyle" id="pdv" ' + (values[6] == 'sim' ? 'checked' : ''  )+ ' />');
+			tr.find('td:not(.button):eq(1)').html('<input name="nome" type="text" class="inputStyle" id="nome" maxlength="100" value="' + values[1] + '" />');
+			tr.find('td:not(.button):eq(2)').html('<input name="email" type="text" class="inputStyle" id="email" maxlength="100" value="' + values[2] + '" />');
+			tr.find('td:not(.button):eq(3)').html('<input name="login" type="text" class="readonly inputStyle" id="login" maxlength="10" value="' + values[3] + '" readonly />');
+			tr.find('td:not(.button):eq(4)').html('<input name="admin" type="checkbox" class="inputStyle" id="admin" ' + (values[4] == 'sim' ? 'checked' : ''  )+ ' />');
+			tr.find('td:not(.button):eq(5)').html('<input name="ativo" type="checkbox" class="inputStyle" id="ativo" ' + (values[5] == 'sim' ? 'checked' : ''  )+ ' />');
+			tr.find('td:not(.button):eq(6)').html('<input name="telemarketing" type="checkbox" class="inputStyle" id="telemarketing" ' + (values[6] == 'sim' ? 'checked' : ''  )+ ' />');
+            tr.find('td:not(.button):eq(7)').html('<input name="pdv" type="checkbox" class="inputStyle" id="pdv" ' + (values[7] == 'sim' ? 'checked' : ''  )+ ' />');
+            tr.find('td:not(.button):eq(8)').html('<input name="pos" type="checkbox" class="inputStyle" id="pos" ' + (values[8] == 'sim' ? 'checked' : ''  )+ ' />');
 			
 			$this.text('Salvar').attr('href', pagina + '?action=update&' + id);
 			
@@ -172,13 +175,15 @@ $(function() {
 		if(!hasNewLine()) return false;
 		
 		var newLine = '<tr id="newLine">' +
+                                                    '<td></td>' +
                                                     '<td><input name="nome" type="text" class="inputStyle" id="nome" maxlength="100" /></td>' +
                                                     '<td><input name="email" type="text" class="inputStyle" id="email" maxlength="100" /></td>' +
                                                     '<td><input name="login" type="text" class="inputStyle" id="login" maxlength="10" /></td>' +
-                                                    '<td><input name="admin" type="checkbox" class="inputStyle" id="admin" /></td>' +
-                                                    '<td><input name="ativo" type="checkbox" class="inputStyle" id="ativo" /></td>' +
-                                                    '<td><input name="telemarketing" type="checkbox" class="inputStyle" id="telemarketing" /></td>' +
-                                                    '<td><input name="pdv" type="checkbox" class="inputStyle" id="pdv" /></td>' +
+                                                    '<td class="center"><input name="admin" type="checkbox" class="inputStyle" id="admin" /></td>' +
+                                                    '<td class="center"><input name="ativo" type="checkbox" class="inputStyle" id="ativo" /></td>' +
+                                                    '<td class="center"><input name="telemarketing" type="checkbox" class="inputStyle" id="telemarketing" /></td>' +
+                                                    '<td class="center"><input name="pdv" type="checkbox" class="inputStyle" id="pdv" /></td>' +
+                                                    '<td class="center"><input name="pos" type="checkbox" class="inputStyle" id="pos" /></td>' +
                                                     '<td class="button"><a href="' + pagina + '?action=add">Salvar</a></td>' +
                                                     '<td class="button"><a href="#reset">Restaurar Senha</a></td>' +
                                                     '<td class="button"><a href="#delete">Apagar</a></td>' +
@@ -227,14 +232,16 @@ $(function() {
 	<table class="ui-widget ui-widget-content">
 		<thead>
 			<tr class="ui-widget-header ">
+				<th width="1%">ID</th>
 				<th width="20%">Nome</th>
 				<th width="20%">E-mail</th>
 				<th width="10%">Login</th>
 				<th width="5%" class="center">Admin</th>
 				<th width="5%" class="center">Ativo</th>
-                                <th width="5%" class="center">Telemarketing</th>
-                                <th width="10%" class="center">Usuário PDV</th>
-				<th width="25%" class="center" colspan="3">A&ccedil;&otilde;es</th>
+                <th width="5%" class="center">Telemarketing</th>
+                <th width="10%" class="center">Usuário PDV</th>
+                <th width="10%" class="center">Usuário POS</th>
+				<th width="15%" class="center" colspan="3">A&ccedil;&otilde;es</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -243,13 +250,15 @@ $(function() {
 					$id = $rs['ID_USUARIO'];
 			?>
 			<tr>
+				<td><?php echo $rs['ID_USUARIO']; ?></td>
 				<td><?php echo $rs['DS_NOME']; ?></td>
 				<td><?php echo $rs['DS_EMAIL']; ?></td>
 				<td><?php echo $rs['CD_LOGIN']; ?></td>
 				<td class="center"><?php echo $rs['IN_ADMIN'] ? 'sim' : 'n&atilde;o'; ?></td>
 				<td class="center"><?php echo $rs['IN_ATIVO'] ? 'sim' : 'n&atilde;o'; ?></td>
-                                <td class="center"><?php echo $rs['IN_TELEMARKETING'] ? 'sim' : 'n&atilde;o'; ?></td>
-                                <td class="center"><?php echo $rs['IN_PDV'] ? 'sim' : 'n&atilde;o'; ?></td>
+                <td class="center"><?php echo $rs['IN_TELEMARKETING'] ? 'sim' : 'n&atilde;o'; ?></td>
+                <td class="center"><?php echo $rs['IN_PDV'] ? 'sim' : 'n&atilde;o'; ?></td>
+                <td class="center"><?php echo $rs['IN_POS'] ? 'sim' : 'n&atilde;o'; ?></td>
 				<td class="button"><a href="<?php echo $pagina; ?>?action=edit&codusuario=<?php echo $id; ?>">Editar</a></td>
 				<td class="button"><a href="<?php echo $pagina; ?>?action=reset&codusuario=<?php echo $id; ?>">Restaurar Senha</a></td>
 				<td class="button"><a href="<?php echo $pagina; ?>?action=delete&codusuario=<?php echo $id; ?>">Apagar</a></td>

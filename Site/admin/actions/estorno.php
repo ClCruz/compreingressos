@@ -51,6 +51,18 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
             die();
         }
 
+        if ($pedido_principal["BRASPAG_ID"] == 'POS' and !isset($_SESSION['pos_user']['serial'])) {
+            echo "Este pedido foi feito em um POS.<br />
+                    Não é possível o estorno por esse meio.<br /><br />
+                    Caso queira estornar este pedido, efetue o estorno utilizando um POS.";
+            die();
+        } elseif (isset($_SESSION['pos_user']['serial']) and $pedido_principal["BRASPAG_ID"] != 'POS') {
+            echo "Este pedido não foi feito em um POS.<br />
+                    Não é possível o estorno por esse meio.<br /><br />
+                    Caso queira estornar este pedido, efetue o estorno utilizando o sistema administrativo pelo site.";
+            die();
+        }
+
         // checa se alguma apresentacao do pedido já ocorreu
         $query = "SELECT TOP 1 1
                 FROM MW_PEDIDO_VENDA P
@@ -153,7 +165,14 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                         $request_valido = valido;
                     }
 
-                    if ($value['response']->TransactionDataCollection->TransactionDataResponse->Status == '0') {
+                    // se for um pedido feito no POS e estiver sendo estornado pelo POS
+                    if ($pedido_principal["BRASPAG_ID"] == 'POS' and !isset($_SESSION['pos_user']['serial'])) {
+                        $force_system_refund = true;
+                        $value['descricao_erro'] = "Pedido cancelado/estornado.";
+                        $retorno = 'ok';
+                        break;
+
+                    } elseif ($value['response']->TransactionDataCollection->TransactionDataResponse->Status == '0') {
                         $value['descricao_erro'] = "Pedido cancelado/estornado.";
                         $retorno = 'ok';
                         break;

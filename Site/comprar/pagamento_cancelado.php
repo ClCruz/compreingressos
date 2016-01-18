@@ -67,8 +67,10 @@ if (isset($_COOKIE['ipagareError'])) {
 	
 	$sqlErrors = sqlErrors();
 	if ($noErrors and empty($sqlErrors)) {
-		setcookie('pedido', '', -1);
-		setcookie('id_braspag', '', -1);
+		if (!isset($_SESSION['pos_user'])) {
+			setcookie('pedido', '', -1);
+			setcookie('id_braspag', '', -1);
+		}
 		commitTransaction($mainConnection);
 		foreach ($conn as $connection) {
 			commitTransaction($connection);
@@ -80,7 +82,8 @@ if (isset($_COOKIE['ipagareError'])) {
 		}
 	}
 	
-	setcookie('binItau', '', -1);
+	if (!isset($_SESSION['pos_user']))
+		setcookie('binItau', '', -1);
 
 	unset($_SESSION['assinatura']);
 	
@@ -94,174 +97,3 @@ if (isset($_COOKIE['ipagareError'])) {
 
 $campanha = get_campanha_etapa('etapa5');
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>COMPREINGRESSOS.COM - Finaliza&ccedil;&atilde;o</title>
-		<meta name="author" content="C&C - Computação e Comunicação" />
-		<link href="favicon.ico" rel="shortcut icon"/>
-		<link rel="stylesheet" href="../stylesheets/ci.css"/>
-		<link rel="stylesheet" href="../stylesheets/ajustes.css"/>
-		
-		<script type="text/javascript" src="../javascripts/jquery.js"></script>
-		<script type="text/javascript" src="../javascripts/jquery-ui.js"></script>
-
-		<script type="text/javascript">
-		  var _gaq = _gaq || [];
-		  _gaq.push(['_setAccount', 'UA-16656615-1']);
-		  _gaq.push(['_setDomainName', 'compreingressos.com']);
-		  _gaq.push(['_setAllowLinker', true]);
-		  _gaq.push(['_trackPageview']);
-
-		  (function() {
-		    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-		    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-		    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-		  })();
-		</script>
-	</head>
-	<body>
-		<div id="background_holder">
-			<div id="respiro">
-				<div id="content_container">
-					<?php require "header.php"; ?>
-					<div id="crumbs">
-						<a href="http://www.compreingressos.com">home</a> / <a href="#carrinho" class="selected">carrinho</a>
-					</div>
-					<?php include "banners.php"; ?>
-					<div id="center">
-						<div id="center_left">
-							<h1>Pedido cancelado</h1>
-							<?php include "seloCertificado.php"; ?>
-						</div>
-						<div id="ticket_net">
-							<div class="titulo">
-								<?php
-								if (isset($_COOKIE['ipagareError'])) {
-								?>
-									<h3>Seu pedido foi negado!</h3>
-									<p class="msg_ipagarert">Transação não autorizada. Verifique os dados do cartão.</p>
-									<p>Por favor, clique no botão abaixo para tentar novamente ou cancele esse pedido.</p>
-							</div>
-							<div id="footer_ticket">
-								<?php if ($_COOKIE['ipagareError']['codigo_erro'] != '201') { ?>
-							    <a href="etapa5.php?falha<?php echo $campanha['tag_voltar']; ?>">
-									<div class="botoes_ticket" id="botao_voltar">tentar novamente</div>
-								</a>
-								<a href="pagamento_cancelado.php?manualmente">
-									<div class="botoes_ticket" id="botao_avancar">cancelar</div>
-								</a>
-								<?php } else { ?>
-								    <?php if (!(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) { ?>
-									    <a href="http://www.compreingressos.com/">
-										    <div class="botoes_ticket" id="botao_avancar">home</div>
-									    </a>
-								    <?php } else { ?>
-									    <a href="etapa0.php">
-										    <div class="botoes_ticket" id="botao_avancar">nova venda</div>
-									    </a>
-								    <?php } ?>
-								<?php }?>
-							</div>
-								<?php
-								} else if (isset($_GET['captcha'])) {
-									?>
-									<h3>Seu pedido foi negado!</h3>
-									<p>O código informado não corresponde à imagem/áudio.</p>
-									<p>Por favor clique no botão abaixo para tentar novamente ou cancele esse pedido.</p>
-							</div>
-							<div id="footer_ticket">
-								<?php if ($_COOKIE['ipagareError']['codigo_erro'] != '201') { ?>
-							    <a href="etapa5.php?falha<?php echo $campanha['tag_voltar']; ?>">
-									<div class="botoes_ticket" id="botao_voltar">tentar novamente</div>
-								</a>
-								<a href="pagamento_cancelado.php?manualmente">
-									<div class="botoes_ticket" id="botao_avancar">cancelar</div>
-								</a>
-								<?php } else { ?>
-								    <?php if (!(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) { ?>
-									    <a href="http://www.compreingressos.com/">
-										    <div class="botoes_ticket" id="botao_avancar">home</div>
-									    </a>
-								    <?php } else { ?>
-									    <a href="etapa0.php">
-										    <div class="botoes_ticket" id="botao_avancar">nova venda</div>
-									    </a>
-								    <?php } ?>
-								<?php }?>
-							</div>
-									<?php
-								} else if (isset($_GET['erro'])) {
-									?>
-									<h3>Seu pedido foi negado!</h3>
-									<p>Prezado Cliente, por favor entre em contato com a nossa central de atendimento, através do número 11 2122 4070 
-										de segunda a domingo das 09h00 às 21h00, informando a seguinte mensagem: (erro 539)</p>
-									<p>Por favor clique no botão abaixo para tentar novamente ou cancele esse pedido.</p>
-							</div>
-							<div id="footer_ticket">
-								<?php if ($_COOKIE['ipagareError']['codigo_erro'] != '201') { ?>
-							    <a href="etapa5.php?falha<?php echo $campanha['tag_voltar']; ?>">
-									<div class="botoes_ticket" id="botao_voltar">tentar novamente</div>
-								</a>
-								<a href="pagamento_cancelado.php?manualmente">
-									<div class="botoes_ticket" id="botao_avancar">cancelar</div>
-								</a>
-								<?php } else { ?>
-								    <?php if (!(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) { ?>
-									    <a href="http://www.compreingressos.com/">
-										    <div class="botoes_ticket" id="botao_avancar">home</div>
-									    </a>
-								    <?php } else { ?>
-									    <a href="etapa0.php">
-										    <div class="botoes_ticket" id="botao_avancar">nova venda</div>
-									    </a>
-								    <?php } ?>
-								<?php }?>
-							</div>
-									<?php
-								} else {
-								    ?><h3>Seu pedido foi cancelado!</h3><?php
-									if (isset($_GET['manualmente'])) {
-								?>
-								<p>Voc&ecirc; pode recome&ccedil;ar clicando no bot&atilde;o "iniciar" ou continuar navegando no nosso portal clicando no bot&atilde;o "home".</p>
-							</div>
-							<div id="footer_ticket">
-							<?php if (!(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) { ?>
-								<a href="http://www.compreingressos.com/">
-									<div class="botoes_ticket" id="botao_voltar">home</div>
-								</a>
-								<a href="etapa1.php?<?php echo $_COOKIE['lastEvent']; ?>">
-									<div class="botoes_ticket" id="botao_avancar">iniciar</div>
-								</a>
-							<?php } else { ?>
-								<a href="etapa0.php">
-									<div class="botoes_ticket" id="botao_avancar">nova venda</div>
-								</a>
-							<?php } ?>
-							</div>
-								<?php
-									} else {
-								?>
-								<p>Voc&ecirc; excedeu o tempo limite de <?php echo $compraExpireTime; ?> minutos para completar a opera&ccedil;&atilde;o.</p>
-								<p>Por favor inicie e fa&ccedil;a seu pedido novamente.</p>
-							</div>
-							<div id="footer_ticket">
-								<a href="etapa1.php?<?php echo $_COOKIE['lastEvent']; ?>">
-									<div class="botoes_ticket" id="botao_avancar">iniciar</div>
-								</a>
-							</div>
-								<?php
-									}
-								}
-								?>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- fim respiro -->
-		</div>
-		<!-- fim background -->
-		<?php include "footer.php"; ?>
-	</body>
-</html>

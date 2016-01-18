@@ -507,6 +507,18 @@ if (isset($_GET['action'])) {
 		$query = 'SELECT SUM(1) FROM MW_RESERVA WHERE ID_SESSION = ?';
 		$params = array(session_id());
 		$rs = executeSQL($mainConnection, $query, $params, true);
+
+		if ($_GET['pos']) {
+			$cod_caixa = 255;
+			$cod_tip_bilhete = $_GET['codtipbilhete'];
+			$id_apresentacao_bilhete = $_GET['bilhete'];
+			$bin = isset($_GET['bin']) ? $_GET['bin'] : null;
+		} else {
+			$cod_caixa = 255;
+			$cod_tip_bilhete = NULL;
+			$id_apresentacao_bilhete = NULL;
+			$bin = null;
+		}
 		
 		if ($_POST['numIngressos'] + $rs[0] <= $maxIngressos) {
 			$conn = getConnection($_POST['teatro']);
@@ -530,17 +542,21 @@ if (isset($_GET['action'])) {
 				beginTransaction($conn);
 				$errors = true;
 				
-				$query = 'DELETE FROM MW_RESERVA WHERE ID_APRESENTACAO = ? AND ID_SESSION = ?';
-				$params = array($_POST['apresentacao'], session_id());
-				$result = executeSQL($mainConnection, $query, $params);
-				
-				$errors = $result and $errors;
-				
-				$query = 'DELETE FROM TABLUGSALA WHERE CODAPRESENTACAO = ? AND ID_SESSION = ?';
-				$params = array($_POST['codapresentacao'], session_id());
-				$result = executeSQL($conn, $query, $params);
-				
-				$errors = $result and $errors;
+				if ($_GET['pos']) {
+					// nao apagar nenhum registro, apenas adicionar
+				} else {
+					$query = 'DELETE FROM MW_RESERVA WHERE ID_APRESENTACAO = ? AND ID_SESSION = ?';
+					$params = array($_POST['apresentacao'], session_id());
+					$result = executeSQL($mainConnection, $query, $params);
+					
+					$errors = $result and $errors;
+					
+					$query = 'DELETE FROM TABLUGSALA WHERE CODAPRESENTACAO = ? AND ID_SESSION = ?';
+					$params = array($_POST['codapresentacao'], session_id());
+					$result = executeSQL($conn, $query, $params);
+					
+					$errors = $result and $errors;
+				}
 				
 				$query = 'SELECT TOP ' . $_POST['numIngressos'] . ' D.INDICE, D.NOMOBJETO, S.NOMSETOR FROM TABSALDETALHE D
 							INNER JOIN TABAPRESENTACAO A ON A.CODSALA = D.CODSALA
@@ -555,8 +571,10 @@ if (isset($_GET['action'])) {
 				$errors = $result and $errors;
 				
 				while ($rs = fetchResult($result)) {
-					$query = 'INSERT INTO MW_RESERVA (ID_APRESENTACAO,ID_CADEIRA,DS_CADEIRA,DS_SETOR,ID_SESSION,DT_VALIDADE) VALUES (?,?,?,?,?,DATEADD(MI, ?, GETDATE()))';
-					$params = array($_POST['apresentacao'], $rs['INDICE'], $rs['NOMOBJETO'], $rs['NOMSETOR'], session_id(), $compraExpireTime);
+					$codigo = ((isset($_GET['pos']) and !isset($_GET['bin']) and isset($_GET['codigo'])) ? array_pop($_GET['codigo']) : null);
+
+					$query = 'INSERT INTO MW_RESERVA (ID_APRESENTACAO,ID_CADEIRA,DS_CADEIRA,DS_SETOR,ID_SESSION,DT_VALIDADE,ID_APRESENTACAO_BILHETE,CD_BINITAU,NR_BENEFICIO) VALUES (?,?,?,?,?,DATEADD(MI, ?, GETDATE()),?,?,?)';
+					$params = array($_POST['apresentacao'], $rs['INDICE'], $rs['NOMOBJETO'], $rs['NOMSETOR'], session_id(), $compraExpireTime, $id_apresentacao_bilhete, $bin, $codigo);
 					$errors = executeSQL($mainConnection, $query, $params) and $errors;
 					
 					$query = 'INSERT INTO TABLUGSALA
@@ -572,7 +590,7 @@ if (isset($_GET['action'])) {
 										  ,ID_SESSION)
 								  VALUES
 										  (?,?,?,?,?,?,?,?,?,?)';
-					$params = array($_POST['codapresentacao'], $rs['INDICE'], NULL, 255, NULL, 0, 'T', NULL, NULL, session_id());
+					$params = array($_POST['codapresentacao'], $rs['INDICE'], $cod_tip_bilhete, $cod_caixa, NULL, 0, 'T', NULL, NULL, session_id());
 					$errors = executeSQL($conn, $query, $params) and $errors;
 				}
 				

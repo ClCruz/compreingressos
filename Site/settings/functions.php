@@ -714,7 +714,7 @@ function comboTipoLocalOptions($name, $selected, $isCombo = true) {
     return $isCombo ? $combo : $text;
 }
 
-function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NULL, $isCombo = true) {
+function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NULL, $isCombo = true, $isArray = false) {
     $mainConnection = mainConnection();
 
     $query = 'SELECT B.ID_BASE, E.ID_EVENTO
@@ -828,6 +828,8 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
     $combo = '<select name="' . $name . '" class="' . $name . ' inputStyle">';
     $first_selected = false;
 
+    $bilhetes = array();
+
     while ($rs = fetchResult($result)) {
 
     	if (
@@ -860,6 +862,11 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 						'" img1="' . $rs['IMG1PROMOCAO'] . '" img2="' . $rs['IMG2PROMOCAO'] . '" sizeBin="6"';
 				$promocao = '';
 
+                $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['qtBin'] = $rs['QT_PROMO_POR_CPF'];
+                $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['codeBin'] = $rs['ID_PROMOCAO_CONTROLE'];
+                $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['img1'] = $rs['IMG1PROMOCAO'];
+                $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['img2'] = $rs['IMG2PROMOCAO'];
+
 			// se for codigo promocional
 			} elseif ($rs['ID_PROMOCAO_CONTROLE'] != NULL) {
 				$rs['IMG1PROMOCAO'] = '../images/promocional/' . basename($rs['IMG1PROMOCAO']);
@@ -869,13 +876,21 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 				$promocao = 'qtPromocao="' . $rs['QT_PROMO_POR_CPF'] . '" codPromocao="'.$rs['ID_PROMOCAO_CONTROLE'] .
 							'" img1="' . $rs['IMG1PROMOCAO'] . '" img2="' . $rs['IMG2PROMOCAO'] . '" sizeBin="32"';
 
+                $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['qtPromocao'] = $rs['QT_PROMO_POR_CPF'];
+                $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['codPromocao'] = $rs['ID_PROMOCAO_CONTROLE'];
+                $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['img1'] = $rs['IMG1PROMOCAO'];
+                $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['img2'] = $rs['IMG2PROMOCAO'];
+
 			// nem bin itau e nem codigo promocional
 			} else {
 				$BIN = $promocao = '';
 			}
 
 			$meia_estudante = $rs['STATIPBILHMEIAESTUDANTE'] == 'S' ? ' meia_estudante="1"' : '';
+            $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['meia_estudante'] = ($rs['STATIPBILHMEIAESTUDANTE'] == 'S');
+
 			$lote = ($rs['QTDVENDAPORLOTE'] > 0 and $rs['STATIPBILHMEIAESTUDANTE'] == 'N') ? ' lote="1"' : '';
+            $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['lote'] = ($rs['QTDVENDAPORLOTE'] > 0 and $rs['STATIPBILHMEIAESTUDANTE'] == 'N');
 
 			if (($selected == $rs['ID_APRESENTACAO_BILHETE'])) {
 			    $isSelected = 'selected';
@@ -893,11 +908,14 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 
 			$combo .= '<option value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $isSelected . ' ' . $BIN . $promocao . $meia_estudante . $lote .
 					  ' valor="'.number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', '').'">' . utf8_encode($rs['DS_TIPO_BILHETE']) . '</option>';
+
+            $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['descricao'] = utf8_encode($rs['DS_TIPO_BILHETE']);
+            $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['valor'] = $rs['VL_LIQUIDO_INGRESSO'];
 		}
     }
     $combo .= '</select>';
 
-    return $isCombo ? $combo : $text;
+    return $isCombo ? $combo : ($isArray ? $bilhetes : $text);
 }
 
 function comboTeatro($name, $selected, $funcJavascript = "") {
@@ -1011,12 +1029,15 @@ function comboSituacao($name, $situacao = null, $isCombo = true) {
 }
 
 function comboFormaEntrega($forma = null) {
-    $dados = array("R" => "E-ticket");
+    $dados = array(
+        "R" => "E-ticket",
+        "E" => "no Endereço"
+    );
 
     foreach ($dados as $key => $valor) {
-	if ($key == $forma) {
-	    $return = $valor;
-	}
+    	if ($key == $forma) {
+    	    $return = $valor;
+    	}
     }
 
     return $return;

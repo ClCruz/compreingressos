@@ -15,7 +15,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 450, true)) {
         $result = executeSQL($mainConnection,
                 'SELECT ID, SERIAL, DESCRICAO,
                         CONVERT(VARCHAR(10), LAST_ACCESS, 103) LAST_ACCESS,
-                        CONVERT(VARCHAR(10), LAST_CONFIG, 103) LAST_CONFIG
+                        CONVERT(VARCHAR(10), LAST_CONFIG, 103) LAST_CONFIG,
+                        VENDA_DINHEIRO
                 FROM MW_POS ORDER BY DESCRICAO, SERIAL');
 ?>
         <style type="text/css">
@@ -48,6 +49,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 450, true)) {
                                     var id = $.serializeUrlVars(data);
 
                                     tr.find('td:not(.button):eq(1)').html($('#descricao').val());
+                                    tr.find('td:not(.button):eq(2)').html($('#venda_dinheiro').is(':checked') ? 'sim' : 'n&atilde;o');
+
 
                                     $this.text('Editar').attr('href', pagina + '?action=edit&' + id);
                                     tr.find('td.button a:last').attr('href', pagina + '?action=delete&' + id);
@@ -69,6 +72,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 450, true)) {
                         });
 
                         tr.find('td:not(.button):eq(1)').html('<input name="descricao" type="text" class="inputStyle" id="descricao" maxlength="100" value="' + values[1] + '" />');
+                        tr.find('td:not(.button):eq(2)').html('<input name="venda_dinheiro" type="checkbox" class="inputStyle" id="venda_dinheiro" ' + (values[2] == 'sim' ? 'checked' : ''  )+ ' />');
 
                         $this.text('Salvar').attr('href', pagina + '?action=update&' + id);
 
@@ -127,6 +131,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 450, true)) {
                     <tr class="ui-widget-header ">
                         <th>Serial</th>
                         <th>Descrição</th>
+                        <th>Venda em Dinheiro</th>
                         <th>Último Acesso</th>
                         <th>Última Atualização</th>
                         <th colspan="2">A&ccedil;&otilde;es</th>
@@ -140,6 +145,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 450, true)) {
             <tr>
                 <td><?php echo substr(chunk_split($rs['SERIAL'], 3, '-'), 0, -1); ?></td>
                 <td><?php echo utf8_encode($rs['DESCRICAO']); ?></td>
+                <td><?php echo $rs['VENDA_DINHEIRO'] ? 'sim' : 'não'; ?></td>
                 <td><?php echo $rs['LAST_ACCESS']; ?></td>
                 <td><?php echo $rs['LAST_CONFIG']; ?></td>
                 <td class="button"><a href="<?php echo $pagina; ?>?action=edit&id=<?php echo $id; ?>">Editar</a></td>

@@ -1,5 +1,5 @@
 <?php
-// print_order(620185);die();
+// print_order(620201, true);die();
 $mainConnection = mainConnection();
 echo_header();
 
@@ -13,15 +13,13 @@ if (isset($_GET["cpf"])) {
 
     $query ="SELECT DISTINCT PV.ID_PEDIDO_VENDA,                
                 PV.DT_PEDIDO_VENDA, 
-                PV.VL_TOTAL_PEDIDO_VENDA,
-                PV.IN_SITUACAO,
-                PV.ID_PEDIDO_PAI,
-                E.DS_EVENTO
+                PV.VL_TOTAL_PEDIDO_VENDA
             FROM MW_PEDIDO_VENDA PV
-            LEFT JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_PAI
-            LEFT JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO
-            LEFT JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
-            WHERE ID_CLIENTE = ? AND IN_SITUACAO = 'F'
+            INNER JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
+            INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO AND A.IN_ATIVO = 1
+            INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO AND E.IN_ATIVO = 1
+            WHERE ID_CLIENTE = 27226 AND IN_SITUACAO = 'F'
+            AND A.DT_APRESENTACAO >= GETDATE()
             ORDER BY 1 DESC";
     $params = array($id_cliente);
     $result = executeSQL($mainConnection, $query, $params);    
@@ -113,7 +111,7 @@ if (isset($_GET["cpf"])) {
     $log->__set('log', "Pedido ?");
     $log->save($mainConnection);
 	
-	print_order($_GET['id_pedido']);
+	print_order($_GET['id_pedido'], true);
 
 	echo "<GET TYPE=HIDDEN NAME=reset VALUE=1>";
 

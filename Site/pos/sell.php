@@ -287,8 +287,8 @@ if (isset($_GET['quantidade']) and $_GET['quantidade'] != '') {
 echo_header();
 
 
-// se o valor de bilhete for 888 entao finalizar a venda
-if ($_GET['bilhete'] == 888) {
+// se o valor de bilhete for 888 ou 777 entao finalizar a venda
+if ($_GET['bilhete'] == 888 or $_GET['bilhete'] == 777) {
 
 	$query = "SELECT
 					E.DS_EVENTO,
@@ -359,6 +359,9 @@ if ($_GET['bilhete'] == 888) {
 	echo_select('confirmacao', $confirmacao_options, 0, 10);
 
 	echo "<GET TYPE=HIDDEN NAME=ignore_history VALUE=1>";
+	if ($_GET['bilhete'] == 777) {
+		echo "<GET TYPE=HIDDEN NAME=venda_dinheiro VALUE=1>";
+	}
 
 	echo "<POST>";
 	die();
@@ -492,7 +495,7 @@ if (isset($_GET['confirmacao'])) {
 			$rs = executeSQL($mainConnection, $query, array(session_id()), true);
 			$is_promocional = ($rs[0] > 0);
 
-			if ($total_geral == 0 and $is_promocional) {
+			if (($total_geral == 0 and $is_promocional) or $_GET['venda_dinheiro'] == 1) {
 				echo "<GET TYPE=HIDDEN NAME=RESPAG VALUE=APROVADO>";
 				echo "<GET TYPE=HIDDEN NAME=BIN VALUE=000000>";
 				echo "<GET TYPE=HIDDEN NAME=NOMEINST VALUE=0>";
@@ -530,6 +533,10 @@ if (isset($_GET['confirmacao'])) {
 		echo "<WRITE_AT LINE=9 COLUMN=0>          Aguarde...</WRITE_AT>";
 
 		echo "<GET TYPE=HIDDEN NAME=confirmacao VALUE=1>";
+
+		if ($_GET['venda_dinheiro'] == 1) {
+			echo "<GET TYPE=HIDDEN NAME=venda_dinheiro VALUE=1>";
+		}
 	}
 
 	echo "<GET TYPE=HIDDEN NAME=ignore_history VALUE=1>";
@@ -796,6 +803,14 @@ switch ($_GET['subscreen']) {
 		
 		if ($rs[0] > 0) {
 			$bilhete_options[888] = 'Finalizar Venda';
+			
+			$query = "SELECT VENDA_DINHEIRO FROM MW_POS WHERE SERIAL = ?";
+			$rs = executeSQL($mainConnection, $query, array($_SESSION['pos_user']['serial']), true);
+			$venda_dinheiro = ($rs[0] == 1);
+
+			if ($venda_dinheiro) {
+				$bilhete_options[777] = 'Finalizar Venda em Dinheiro';
+			}
 		}
 
 		foreach (comboPrecosIngresso(null, $_GET['apresentacao'], null, null, false, true) as $key => $value) {

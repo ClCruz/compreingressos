@@ -34,7 +34,7 @@ foreach ($vars_to_go_back as $value) {
 
 
 // controle das telas principais - menu
-$menu_options	= array('Venda',	utf8_decode('Reimpressão'),	'Estorno',	'Sair');
+$menu_options	= array('Venda',	'Reimpressão',	'Estorno',	'Sair');
 $menu_pages		= array('sell',		'reprint',		'refund',	'logoff');
 
 if (isset($_GET['screen'])) {

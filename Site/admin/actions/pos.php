@@ -3,16 +3,19 @@
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 450, true)) {
 
     if ($_GET['action'] == 'update' and isset($_GET['id'])) { /* ------------ UPDATE ------------ */
-        $query = 'SELECT 1 FROM MW_POS WHERE DESCRICAO = ?';
-        $params = array($_POST['descricao']);
+        $query = 'SELECT 1 FROM MW_POS WHERE DESCRICAO = ? AND ID != ?';
+        $params = array($_POST['descricao'], $_GET['id']);
         $result = executeSQL($mainConnection, $query, $params);
         if (hasRows($result)) {
             echo 'Já existe um registro cadastrado com essa descrição.';
             exit();
         }
 
-        $query = "UPDATE MW_POS SET DESCRICAO = ? WHERE ID = ?";
-        $params = array(utf8_decode($_POST['descricao']), $_GET['id']);
+        $_POST['venda_dinheiro'] = $_POST['venda_dinheiro'] == 'on' ? 1 : 0;
+
+
+        $query = "UPDATE MW_POS SET DESCRICAO = ?, VENDA_DINHEIRO =? WHERE ID = ?";
+        $params = array(utf8_decode($_POST['descricao']), $_POST['venda_dinheiro'], $_GET['id']);
 
         if (executeSQL($mainConnection, $query, $params)) {
             $log = new Log($_SESSION['admin']);

@@ -13,8 +13,10 @@ function echo_header($scroll = true) {
 }
 
 function remove_especial_chars($string) {
-	$string = urlencode($string);
 
+	// porcentagem
+	$string = preg_replace('/\%/i', '%25', $string);
+	
 	// espaco
 	$string = preg_replace('/\+/i', '%20', $string);
 
@@ -200,7 +202,7 @@ function get_lugar($indice, $base){
 	return $rs['NomObjeto'];
 }
 
-function print_order($pedido){
+function print_order($pedido, $reprint = false){
 	require_once "../settings/functions.php";
 	$mainConnection = mainConnection();
 
@@ -241,21 +243,15 @@ function print_order($pedido){
 	$qtde = 1;
 	$total = numRows($mainConnection, $query, array($pedido));
 
-	// echo "<CHGPRNFNT SIZE=4 FACE=FONTE3 BOLD>";
-	echo "<CHGPRNFNT SIZE=4 FACE=FONTE1>";
 	$space = " ";
 	while ($rs = fetchResult($result)) {
+		echo "<CHGPRNFNT SIZE=4 FACE=FONTE1>";
+
 		echo "<PRINTER>";
 
 		echo str_pad("COMPREINGRESSOS.COM", 42, " ", STR_PAD_BOTH) ."<BR>";
 		echo substr($space ."Local: ". remove_accents($rs['DS_NOME_TEATRO'], false), 0, 42) ."<BR>";
-		echo substr($space ."Evento: ". remove_accents($rs['DS_EVENTO'], false), 0, 42) ."<BR>";
-		echo $space ."Data / Horario: ". $rs['DT_APRESENTACAO']->format('d/m/Y') ." ". $rs['HR_APRESENTACAO'] ."<BR>";
 		
-		echo substr(utf8_decode($space ."Setor / Portao: ". remove_accents($rs['DS_PISO'], false)), 0, 42) ."<BR>";
-		echo utf8_decode($space ."Fileira, Assento, Nr. Serie: ". get_lugar($rs['INDICE'], $rs['ID_BASE']) ."<BR>");		
-
-		echo $space ."Tipo: ". remove_accents($rs['DS_TIPO_BILHETE'],false) . " - R$ ". number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', '') ."<BR>";
 		echo $space ."Forma Pgto: ". remove_accents($rs['NM_CARTAO_EXIBICAO_SITE'], false) ."<BR>";
 
 		echo substr($space ."Emitido Para: ". remove_accents(utf8_decode($rs['DS_NOME']), false), 0, 42) ."<BR>";
@@ -267,12 +263,34 @@ function print_order($pedido){
 		
 		echo $space ."Nr. DOC: ". $rs['CD_NUMERO_AUTORIZACAO'] ."<BR>";
 		echo $space ."Vl. Total Pedido: R$ ". number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, ',', '') ."<BR>";
-		echo $space ."V:". $rs['DT_PEDIDO_VENDA']->format('d/m/y H:i:s') ." I:". date('d/m/y H:i:s  ') ."<BR>";
+		echo $space ."V:". $rs['DT_PEDIDO_VENDA']->format('d/m/y H:i:s') ." I:". date('d/m/y H:i:s') ."<BR><BR>";
 
 		echo "</PRINTER>";
+
+		if ($reprint) {
+			echo "<CHGPRNFNT SIZE=2 FACE=FONTE1 DBL_HEIGHT>";
+			echo "<PRINTER>";
+			echo str_pad("REIMPRESSAO", 24, " ", STR_PAD_BOTH);
+			echo "</PRINTER>";
+			echo "<CHGPRNFNT SIZE=4 FACE=FONTE1>";
+			echo "<PRINTER>";
+			echo "<BR>";
+			echo "</PRINTER>";
+		}
 		
 		$codbar = get_codbar($rs['CODAPRESENTACAO'], $rs['INDICE'], $rs['ID_BASE']);
 		print_qrcode($codbar);
+
+		echo "<CHGPRNFNT SIZE=2 FACE=FONTE1 DBL_HEIGHT>";
+		echo "<PRINTER><BR>";
+
+		echo str_pad(substr(remove_accents($rs['DS_EVENTO'], false), 0, 24), 24, " ", STR_PAD_BOTH) ."<BR>";
+		echo str_pad($rs['DT_APRESENTACAO']->format('d/m/Y') ." ". $rs['HR_APRESENTACAO'], 24, " ", STR_PAD_BOTH) ."<BR>";
+		echo str_pad(utf8_decode(remove_accents(substr(preg_replace('/\d+\s+.+?\s+/i', '', $rs['DS_PISO']), 0, 24), false)), 24, " ", STR_PAD_BOTH) ."<BR>";
+		echo str_pad(utf8_decode(get_lugar($rs['INDICE'], $rs['ID_BASE'])), 24, " ", STR_PAD_BOTH) ."<BR>";		
+		echo str_pad(substr(remove_accents($rs['DS_TIPO_BILHETE'],false) . " - R$ ". number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', ''), 0, 24), 24, " ", STR_PAD_BOTH) ."<BR>";
+		
+		echo "</PRINTER>";
 		
 		echo "<PRINTER><BR><BR><BR><BR><BR><BR></PRINTER>";
 		

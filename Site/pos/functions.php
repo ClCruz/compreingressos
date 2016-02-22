@@ -40,7 +40,7 @@ function echo_select($name, $list, $line, $select_lines = null){
 	}
 
 	foreach ($list as $key => $value) {
-		$list[$key] = remove_especial_chars(substr($value, 0, 28));
+		$list[$key] = remove_especial_chars(substr($value, 0, 29));
 	}
 
 	$line = $header_lines + $line + 1;
@@ -303,6 +303,8 @@ function print_order($pedido, $reprint = false){
 		}
 		$qtde++;
 	}
+
+	echo "<CHGPRNFNT SIZE=4 FACE=FONTE1>";
 }
 
 function unblock_words($string) {

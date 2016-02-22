@@ -13,11 +13,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 450, true)) {
     } else {
 
         $result = executeSQL($mainConnection,
-                'SELECT ID, SERIAL, DESCRICAO,
-                        CONVERT(VARCHAR(10), LAST_ACCESS, 103) LAST_ACCESS,
-                        CONVERT(VARCHAR(10), LAST_CONFIG, 103) LAST_CONFIG,
-                        VENDA_DINHEIRO
-                FROM MW_POS ORDER BY DESCRICAO, SERIAL');
+                "SELECT ID, SERIAL, DESCRICAO,
+                        CONVERT(VARCHAR, LAST_ACCESS, 103) + ' ' + CONVERT(VARCHAR, LAST_ACCESS, 108) LAST_ACCESS,
+                        CONVERT(VARCHAR, LAST_CONFIG, 103) + ' ' + CONVERT(VARCHAR, LAST_CONFIG, 108) LAST_CONFIG,
+                        VENDA_DINHEIRO,
+                        VENDA_PROMO_CONVITE
+                FROM MW_POS ORDER BY DESCRICAO, SERIAL");
 ?>
         <style type="text/css">
             .center{
@@ -50,6 +51,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 450, true)) {
 
                                     tr.find('td:not(.button):eq(1)').html($('#descricao').val());
                                     tr.find('td:not(.button):eq(2)').html($('#venda_dinheiro').is(':checked') ? 'sim' : 'n&atilde;o');
+                                    tr.find('td:not(.button):eq(3)').html($('#venda_promo_convite').is(':checked') ? 'sim' : 'n&atilde;o');
 
 
                                     $this.text('Editar').attr('href', pagina + '?action=edit&' + id);
@@ -73,6 +75,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 450, true)) {
 
                         tr.find('td:not(.button):eq(1)').html('<input name="descricao" type="text" class="inputStyle" id="descricao" maxlength="100" value="' + values[1] + '" />');
                         tr.find('td:not(.button):eq(2)').html('<input name="venda_dinheiro" type="checkbox" class="inputStyle" id="venda_dinheiro" ' + (values[2] == 'sim' ? 'checked' : ''  )+ ' />');
+                        tr.find('td:not(.button):eq(3)').html('<input name="venda_promo_convite" type="checkbox" class="inputStyle" id="venda_promo_convite" ' + (values[3] == 'sim' ? 'checked' : ''  )+ ' />');
 
                         $this.text('Salvar').attr('href', pagina + '?action=update&' + id);
 
@@ -132,6 +135,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 450, true)) {
                         <th>Serial</th>
                         <th>Descrição</th>
                         <th>Venda em Dinheiro</th>
+                        <th>Venda de Promoção Convite</th>
                         <th>Último Acesso</th>
                         <th>Última Atualização</th>
                         <th colspan="2">A&ccedil;&otilde;es</th>
@@ -146,6 +150,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 450, true)) {
                 <td><?php echo substr(chunk_split($rs['SERIAL'], 3, '-'), 0, -1); ?></td>
                 <td><?php echo utf8_encode($rs['DESCRICAO']); ?></td>
                 <td><?php echo $rs['VENDA_DINHEIRO'] ? 'sim' : 'não'; ?></td>
+                <td><?php echo $rs['VENDA_PROMO_CONVITE'] ? 'sim' : 'não'; ?></td>
                 <td><?php echo $rs['LAST_ACCESS']; ?></td>
                 <td><?php echo $rs['LAST_CONFIG']; ?></td>
                 <td class="button"><a href="<?php echo $pagina; ?>?action=edit&id=<?php echo $id; ?>">Editar</a></td>

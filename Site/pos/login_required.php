@@ -17,7 +17,7 @@ if (isset($_GET['user']) && isset($_GET['password'])) {
 
 			executeSQL($mainConnection, "UPDATE MW_POS SET LAST_ACCESS = GETDATE() WHERE SERIAL = ?", array($_SESSION['pos_user']['serial']));
 
-			// para permissao do uso de estorno
+			// para permissao do sistema administrativo
 			$_SESSION['admin'] = $rs['ID_USUARIO'];
 
 		} else {

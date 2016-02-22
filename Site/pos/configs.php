@@ -3,6 +3,9 @@ $total_lines = 19;
 $header_lines = 4;
 $body_lines = $total_lines - $header_lines;
 
+$ip_tef = '152.250.250.64';
+$porta_tef = '4096';
+
 if ($_GET['config']) {
 
 	if ($_GET['config'] == 2) {

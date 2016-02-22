@@ -14,9 +14,17 @@ function atualizarCaixaMeiaEntrada(id) {
 			var caixa = $('input[name=apresentacao\\[\\]][value='+id+']').closest('div.resumo_espetaculo').find('span.meia_entrada').html(data);
 
 			if (caixa.find('.contagem-meia').text() == '0') {
-				$('#pedido_resumo').find('.valorIngresso\\[\\] :not(:selected)[meia_estudante="1"]').attr('disabled','disabled');
+				$('#pedido_resumo').find('.valorIngresso\\[\\] :not(:selected)[meia_estudante="1"]').each(function(){
+					$(this).parent().selectbox('detach');
+					$(this).attr('disabled','disabled');
+					$(this).parent().selectbox('attach');
+				});
 			} else {
-				$('#pedido_resumo').find('.valorIngresso\\[\\] [meia_estudante="1"]').removeAttr('disabled');
+				$('#pedido_resumo').find('.valorIngresso\\[\\] [meia_estudante="1"]').each(function(){
+					$(this).parent().selectbox('detach');
+					$(this).removeAttr('disabled');
+					$(this).parent().selectbox('attach');
+				});
 			}
 		}
 	});

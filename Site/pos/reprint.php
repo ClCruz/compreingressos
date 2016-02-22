@@ -18,8 +18,8 @@ if (isset($_GET["cpf"])) {
             INNER JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
             INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO AND A.IN_ATIVO = 1
             INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO AND E.IN_ATIVO = 1
-            WHERE ID_CLIENTE = 27226 AND IN_SITUACAO = 'F'
-            AND A.DT_APRESENTACAO >= GETDATE()
+            WHERE ID_CLIENTE = ? AND IN_SITUACAO = 'F'
+            AND A.DT_APRESENTACAO <= GETDATE()
             ORDER BY 1 DESC";
     $params = array($id_cliente);
     $result = executeSQL($mainConnection, $query, $params);    
@@ -29,7 +29,7 @@ if (isset($_GET["cpf"])) {
     	die();
     }
 
-    $pedido_options = array(999 => 'Voltar');
+    $pedido_options = array(999999999 => 'Voltar');
 
 	while ($rs = fetchResult($result)) {
 		$pedido_options[$rs['ID_PEDIDO_VENDA']] = $rs['ID_PEDIDO_VENDA'] ." - ". $rs['DT_PEDIDO_VENDA']->format('d/m/y') . " - " . number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, ',', '');
@@ -91,8 +91,8 @@ if (isset($_GET["cpf"])) {
 	}
 
 	$confirmacao_options[] = ' ';
-	$confirmacao_options[999] = 'Voltar';
-	$confirmacao_options[888] = 'Confirmar';
+	$confirmacao_options[999999999] = 'Voltar';
+	$confirmacao_options[888888888] = 'Confirmar';
 
 	echo_select('confirmacao', $confirmacao_options, 0);
 

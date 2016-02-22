@@ -100,7 +100,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
         }
 
         for ($i=0; $i < $quantidade; $i++) {
-            if ($tipo_promocao == 1) {
+            if ($tipo_promocao == 1 or $tipo_promocao == 5) {
                 $codigo = $codigo_fixo;
             } elseif ($tipo_promocao == 2) {
                 $codigo = $codigo_array[$i];
@@ -233,9 +233,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                     SET DT_INICIO_PROMOCAO = ?,
                         DT_FIM_PROMOCAO = ?,
                         QT_PROMO_POR_CPF = ?,
-                        IN_VALOR_SERVICO = ?
+                        IN_VALOR_SERVICO = ?,
+                        IN_EXIBICAO = ?
                     WHERE ID_PROMOCAO_CONTROLE = ?';
-        $params = array($_POST['dt_inicio'], $_POST['dt_fim'], $_POST['qt_limite_cpf'], $_POST['in_servico'], $_POST['id']);
+        $params = array($_POST['dt_inicio'], $_POST['dt_fim'], $_POST['qt_limite_cpf'], $_POST['in_servico'], $_POST['cboExibicao'], $_POST['id']);
 
         executeSQL($mainConnection, $query, $params);
         
@@ -302,6 +303,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
         // adicionar codigos
         if ($_POST['qt_codigo'] > 0) {
             $codigo_fixo = $_POST['ds_codigo'] ? $_POST['ds_codigo'] : $rs['CD_PROMOCIONAL'];
+            $codigo_fixo = $codigo_fixo == null ? '' : $codigo_fixo;
 
             gerar_codigos($mainConnection, $_POST['id'], $rs['CODTIPPROMOCAO'], $_POST['qt_codigo'], $codigo_fixo);
         }
@@ -322,12 +324,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
 
     } elseif ($_GET['action'] == 'save') { /* ------------ SALVAR ------------ */
 
-        if (!file_exists($_POST['ds_img1']) and !file_exists('../images/promocional/'.basename($_POST['ds_img1']))) {
-            die('false?erro=A primeira imagem não existe.');
-        }
-        
-        if (!file_exists($_POST['ds_img2']) and !file_exists('../images/promocional/'.basename($_POST['ds_img2']))) {
-            die('false?erro=A segunda imagem não existe.');
+        // convites nao precisam de imagem
+        if ($_POST['cboPromo'] != 5) {
+            if (!file_exists($_POST['ds_img1']) and !file_exists('../images/promocional/'.basename($_POST['ds_img1']))) {
+                die('false?erro=A primeira imagem não existe.');
+            }
+            
+            if (!file_exists($_POST['ds_img2']) and !file_exists('../images/promocional/'.basename($_POST['ds_img2']))) {
+                die('false?erro=A segunda imagem não existe.');
+            }
         }
 
         $_POST['vl_desconto'] = str_replace(',', '.', str_replace('.', '', $_POST['vl_desconto']));
@@ -359,9 +364,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                     IN_HOT_SITE,
                     IN_VALOR_SERVICO,
                     ID_PATROCINADOR,
-                    QT_PROMO_POR_CPF
+                    QT_PROMO_POR_CPF,
+                    IN_EXIBICAO
                     )
-                VALUES (?,?,?,?,?,?,?,1,?,?,?,?,?,?,?,?,?);
+                VALUES (?,?,?,?,?,?,?,1,?,?,?,?,?,?,?,?,?,?);
                 SELECT SCOPE_IDENTITY() as ID;';
         $params = array($_POST['cboPromo'],
                         utf8_decode($_POST['ds_promo']),
@@ -378,7 +384,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                         $_POST['in_hotsite'],
                         $_POST['in_servico'],
                         $_POST['cboPatrocinador'],
-                        $_POST['qt_limite_cpf']);
+                        $_POST['qt_limite_cpf'],
+                        $_POST['cboExibicao']);
 
         $result = executeSQL($mainConnection, $query, $params);
 

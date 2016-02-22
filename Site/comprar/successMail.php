@@ -20,7 +20,7 @@ $is_assinatura = hasRows($result);
 $subject = utf8_decode('Pedido ' . $parametros['OrderData']['OrderId'] . ' - Pago');
 
 $namefrom = utf8_decode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS');
-$from = ($is_teste == '1') ? 'contato@cc.com.br' : 'compreingressos@gmail.com';
+$from = ($is_teste == '1') ? 'contato@intuiti.com.br' : 'compreingressos@gmail.com';
 
 $query = 'SELECT ds_meio_pagamento FROM mw_meio_pagamento WHERE cd_meio_pagamento = ?';
 $rs = executeSQL($mainConnection, $query, array($PaymentDataCollection['PaymentMethod']), true);

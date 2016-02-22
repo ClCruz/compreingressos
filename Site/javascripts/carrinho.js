@@ -265,6 +265,11 @@ $(function() {
 				$this.data('lastValue', $this.val());
 			}
 
+			if ($this.find('option:selected').attr('codigo') != undefined && !$this.closest('tr').next('tr').find('.icone_validador').is('.valido')) {
+				$this.closest('tr').next('.beneficio').find('.validador_itau').val($this.find('option:selected').attr('codigo'));
+				$this.closest('tr').next('.beneficio').find('.validarBin').trigger('click');
+			}
+
 			updateValorServico($this.val(), $target);
 		
 			combo_requests++;
@@ -282,7 +287,7 @@ $(function() {
 		$('#pedido').find('[name="trigger"]').val('')
 	}).trigger('change', ['automatico']);
 
-	$('.beneficio').on('click', '.validarBin', function(e, skipChanges) {
+	$('.beneficio').on('click', '.validarBin', function(e, skipChanges, selectLastValue) {
 		e.preventDefault();
 
 		var $tr = $(this).closest('tr'),
@@ -292,7 +297,7 @@ $(function() {
 			$tipoBin = $bin.next('input[name="tipoBin\\[\\]"]'),
 			reserva = $tr.prev('tr').find('[name="reserva\\[\\]"]').val();
 
-		if (($tipoBin.val() == 'itau' && $bin.val().length < $bin.attr('maxlength')) || $bin.val().length == 0) {
+		if ((($tipoBin.val() == 'itau' && $bin.val().length < $bin.attr('maxlength')) || $bin.val().length == 0) && $tr.find('img').eq(0).attr('src') != '') {
 			$bin.addClass('erro');
 		} else {
 			$bin.removeClass('erro');

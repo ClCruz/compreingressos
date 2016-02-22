@@ -98,7 +98,7 @@ if (isset($_GET['action'])) {
 									 INNER JOIN TABSETOR S ON S.CODSETOR = D.CODSETOR AND S.CODSALA = D.CODSALA
 									 WHERE D.NOMOBJETO = (SELECT NOMOBJETO FROM TABSALDETALHE WHERE CODSALA = ? AND INDICE = ?)
 									 AND D.TIPOBJETO = \'C\' AND D.CODSALA = ?';
-						$params = array($rs['CODSALA'], $_REQUEST['id'],$rs['CODSALA']);
+						$params = array($rs['CODSALA'], $_REQUEST['id'], $rs['CODSALA']);
 						$registros = executeSQL($conn, $query, $params);
 						
 						$idsCadeiras = '';
@@ -375,14 +375,16 @@ if (isset($_GET['action'])) {
 		$errors = sqlErrors();
 		if (empty($errors)) {
 			//commitTransaction($mainConnection);
-			if ($_POST['entrega']) {
-				setcookie('entrega', $_POST['entrega']);
-			} else {
-				setcookie('entrega', '', -1);
-			}
-			
-			if ($_POST['estado']) {
-				setcookie('entrega', '-2');
+			if (!isset($_GET['pos'])) {
+				if ($_POST['entrega']) {
+					setcookie('entrega', $_POST['entrega']);
+				} else {
+					setcookie('entrega', '', -1);
+				}
+				
+				if ($_POST['estado']) {
+					setcookie('entrega', '-2');
+				}
 			}
 			
 			//extenderTempo();
@@ -504,12 +506,12 @@ if (isset($_GET['action'])) {
 		
 	} else if ($_GET['action'] == 'noNum' and isset($_POST['numIngressos']) and is_numeric($_POST['numIngressos'])) {
 
-		$query = 'SELECT SUM(1) FROM MW_RESERVA WHERE ID_SESSION = ?';
-		$params = array(session_id());
+		$query = 'SELECT COUNT(1) FROM MW_RESERVA WHERE ID_SESSION = ? AND ID_APRESENTACAO != ?';
+		$params = array(session_id(), $_POST['apresentacao']);
 		$rs = executeSQL($mainConnection, $query, $params, true);
 
 		if ($_GET['pos']) {
-			$cod_caixa = 255;
+			$cod_caixa = 250;
 			$cod_tip_bilhete = $_GET['codtipbilhete'];
 			$id_apresentacao_bilhete = $_GET['bilhete'];
 			$bin = isset($_GET['bin']) ? $_GET['bin'] : null;
@@ -542,11 +544,49 @@ if (isset($_GET['action'])) {
 				beginTransaction($conn);
 				$errors = true;
 				
+				// se for pos apagar apenas os bilhetes iguais da mesma apresentacao
 				if ($_GET['pos']) {
-					// nao apagar nenhum registro, apenas adicionar
-				} else {
-					$query = 'DELETE FROM MW_RESERVA WHERE ID_APRESENTACAO = ? AND ID_SESSION = ?';
+					$query = 'UPDATE P
+								SET ID_SESSION = NULL
+								FROM MW_PROMOCAO P
+								WHERE P.ID_PROMOCAO IN (
+									SELECT P2.ID_PROMOCAO
+									FROM MW_PROMOCAO P2
+									INNER JOIN MW_RESERVA R ON R.ID_SESSION = P2.ID_SESSION AND R.NR_BENEFICIO = P2.CD_PROMOCIONAL
+									WHERE R.ID_APRESENTACAO = ? AND R.ID_APRESENTACAO_BILHETE = ? AND R.ID_SESSION = ?
+								)';
+					$params = array($_POST['apresentacao'], $id_apresentacao_bilhete, session_id());
+					$result = executeSQL($mainConnection, $query, $params);
+					
+					$errors = $result and $errors;
+
+					$query = 'DELETE FROM MW_RESERVA WHERE ID_APRESENTACAO = ? AND ID_APRESENTACAO_BILHETE = ? AND ID_SESSION = ?';
+					$result = executeSQL($mainConnection, $query, $params);
+					
+					$errors = $result and $errors;
+					
+					$query = 'DELETE FROM TABLUGSALA WHERE CODAPRESENTACAO = ? AND CODTIPBILHETE = ? AND ID_SESSION = ?';
+					$params = array($_POST['codapresentacao'], $cod_tip_bilhete, session_id());
+					$result = executeSQL($conn, $query, $params);
+					
+					$errors = $result and $errors;
+				}
+				// se nao for pos apagar todos os bilhetes da apresentacao
+				else {
+					$query = 'UPDATE P
+								SET ID_SESSION = NULL
+								FROM MW_PROMOCAO P
+								WHERE P.ID_PROMOCAO IN (
+									SELECT P2.ID_PROMOCAO
+									FROM MW_PROMOCAO P2
+									INNER JOIN MW_RESERVA R ON R.ID_SESSION = P2.ID_SESSION AND R.NR_BENEFICIO = P2.CD_PROMOCIONAL
+									WHERE R.ID_APRESENTACAO = ? AND R.ID_SESSION = ?
+								)';
 					$params = array($_POST['apresentacao'], session_id());
+					$result = executeSQL($mainConnection, $query, $params);
+					
+					$errors = $result and $errors;
+					$query = 'DELETE FROM MW_RESERVA WHERE ID_APRESENTACAO = ? AND ID_SESSION = ?';
 					$result = executeSQL($mainConnection, $query, $params);
 					
 					$errors = $result and $errors;

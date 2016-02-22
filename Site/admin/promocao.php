@@ -31,6 +31,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                                     PC.CODTIPPROMOCAO,
                                     PC.ID_BASE,
                                     PC.IN_HOT_SITE,
+                                    PC.IN_EXIBICAO,
                                     PC.IN_VALOR_SERVICO,
                                     PC.ID_PATROCINADOR,
                                     PC.QT_PROMO_POR_CPF,
@@ -158,7 +159,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                         $('table.ui-widget').show();
                     }
                     
-                    $(":input:not(.datePicker, [name=qt_limite_cpf], [name=limite_cpf\\[\\]], [name=ds_codigo], [name=qt_codigo], [type=checkbox], [type=hidden], [type=submit])").prop('disabled', true).prop('readonly', true);
+                    $(":input:not(.datePicker, [name=qt_limite_cpf], [name=limite_cpf\\[\\]], [name=cboExibicao], [name=ds_codigo], [name=qt_codigo], [type=checkbox], [type=hidden], [type=submit])").prop('disabled', true).prop('readonly', true);
                     $(":input[name=in_hotsite]").prop('disabled', true).prop('readonly', true);
 
                     if (abrangencia == 'especifico') {
@@ -200,9 +201,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                     var mostrar;
                     $('.ui-state-error').removeClass('ui-state-error');
 
-                    $('div[class*=promo_]').hide();
+                    $('[class*=promo_]').hide();
                     if ($('[name=id]').val() == '') {
-                        $('div[class*=promo_]').find(':input:not([type=hidden])').val('');
+                        $('[class*=promo_]').find(':input:not([type=hidden])').val('');
                     }
 
                     switch ($cboPromo.val()) {
@@ -226,9 +227,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
 
                             $('a.button.importar span').text('Importar Arq. BIN - CSV')
                         break;
+                        // Convite
+                        case '5':
+                            mostrar = 'convite';
+
+                            $('[name=ds_codigo]').val('CONVITE');
+                        break;
                     }
 
-                    $('div[class*=promo_'+mostrar+']').show();
+                    $('[class*=promo_'+mostrar+']').show();
 
                     if (mostrar == 'csv' || mostrar == 'bin') {
                         if ($('[name=diretorio_temp]').val() == '') {
@@ -430,6 +437,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                         case '4':
                             campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], [name=ds_codigo], [name=qt_codigo])');
                         break;
+                        // Convite
+                        case '5':
+                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], [name=cboPatrocinador], [name=ds_codigo], [name=qt_codigo], [name=ds_img1], [name=ds_img2])');
+                        break;
                         // inválido
                         default:
                             $cboPromo.parent().addClass('ui-state-error');
@@ -550,7 +561,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                         <b>Nome da Imagem Promocional 2:</b><br/>
                         <input type="text" name="ds_img2" size="50" maxlength="100" value="<?php echo $rs['IMAG2PROMOCAO']; ?>" />
                     </td>
-                    <td></td>
+                    <td>
+                        <b>Exibição:</b><br/>
+                        <?php echo comboExibicaoPromocao('cboExibicao', $rs['IN_EXIBICAO']);?>
+                    </td>
                 </tr>
                 <tr>
                     <td>
@@ -573,9 +587,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                         <?php echo comboTipoPromocao('cboPromo', $rs['CODTIPPROMOCAO']);?>
                     </td>
                     <td>
-                        <div class="promo_fixo">
+                        <div class="promo_fixo promo_convite">
                             <b>Código Fixo:</b><br/>
                             <input type="text" name="ds_codigo" size="30" maxlength="30" value="<?php echo utf8_encode($rs['CD_PROMOCIONAL']); ?>" />
+                            <a class="promo_convite button ui-icon ui-icon-help" href="#"
+                                title="Quando o código fixo for igual à 'CONVITE' o cliente não terá que efetuar a validação no momento da compra. Qualquer outro código fixo será necessário a digitação no momento da compra."></a>
                         </div>
                         <div class="promo_csv promo_bin">
                             <input type="hidden" name="diretorio_temp" value="" />
@@ -591,7 +607,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                         </div>
                     </td>
                     <td>
-                        <div class="promo_fixo promo_aleatorio">
+                        <div class="promo_fixo promo_aleatorio promo_convite">
                             <b>Qtde. de Códigos para Gerar:</b><br/>
                             <input type="text" name="qt_codigo" class="numbersOnly negative" value="" /><br/>
                             <?php if ($_GET['id']) { ?>

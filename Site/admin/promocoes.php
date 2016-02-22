@@ -20,7 +20,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                                 CASE 
                                     WHEN PC.ID_BASE IS NOT NULL THEN B.DS_NOME_TEATRO
                                     WHEN PC.IN_TODOS_EVENTOS = 1 THEN 'Geral'
-                                    ELSE 'Eventos Específicos'
+                                    ELSE '".utf8_decode('Eventos Específicos')."'
                                 END AS ABRANGENCIA,
                                 PC.DT_INICIO_PROMOCAO,
                                 PC.DT_FIM_PROMOCAO
@@ -70,6 +70,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
 
                     }
                 });
+
+                $('tr:not(.ui-widget-header)').hover(function() {
+                    $(this).addClass('ui-state-hover');
+                }, function() {
+                    $(this).removeClass('ui-state-hover');
+                });
             });
         </script>
         <h2>Gerar Promocões</h2>
@@ -91,7 +97,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                     ?>
                     <tr>
                         <td><?php echo utf8_encode($rs['DS_PROMOCAO']); ?></td>
-                        <td><?php echo $rs['ABRANGENCIA']; ?></td>
+                        <td><?php echo utf8_encode($rs['ABRANGENCIA']); ?></td>
                         <td><?php echo $rs['DT_INICIO_PROMOCAO']->format('d/m/Y'); ?></td>
                         <td><?php echo $rs['DT_FIM_PROMOCAO']->format('d/m/Y');; ?></td>
 

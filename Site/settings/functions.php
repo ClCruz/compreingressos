@@ -429,7 +429,7 @@ function getCaixaTotalMeiaEntrada($apresentacao) {
 
 	if ($rs['StaCalculoPorSala'] == 'S') {
 		$t = getTotalMeiaEntradaDisponivel($apresentacao);
-		//$t = $t < 0 ? 0 : $t;
+		$t = ($t < 0 ? 0 : $t);
 
 		$html = "<p>Existem <b><span class='contagem-meia'>" . $t . "</span></b> de <b><span>" . getTotalMeiaEntrada($apresentacao) . "</span></b> ingressos disponíveis para meia-entrada.</p>";
 	} else {
@@ -761,7 +761,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 					    AB.CODTIPBILHETE,
 					    AB.DS_TIPO_BILHETE,
 					    VL_LIQUIDO_INGRESSO,
-					    CASE WHEN PC.CODTIPPROMOCAO = 4 THEN 1 ELSE 0 END AS IN_BIN,
+					    PC.CODTIPPROMOCAO,
 					    ISNULL(CE.QT_PROMO_POR_CPF, ISNULL(PC.QT_PROMO_POR_CPF, 0)) AS QT_PROMO_POR_CPF,
 					    B.STATIPBILHMEIAESTUDANTE,
 					    B.QTDVENDAPORLOTE,
@@ -769,7 +769,8 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 					    B.IMG2PROMOCAO,
 					    A.ID_EVENTO,
 						B.ID_PROMOCAO_CONTROLE,
-					    B.IN_HOT_SITE
+					    B.IN_HOT_SITE,
+                        PC.IN_EXIBICAO
 				FROM
 				 CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB 
 				 INNER JOIN 
@@ -854,7 +855,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
     		or ($is_lote and $is_lote_no_carrinho)) {
 			
 			// se for bin itau
-			if ($rs['IN_BIN']) {
+			if ($rs['CODTIPPROMOCAO'] == 4) {
 				$rs['IMG1PROMOCAO'] = '../images/promocional/' . basename($rs['IMG1PROMOCAO']);
 				$rs['IMG2PROMOCAO'] = '../images/promocional/' . basename($rs['IMG2PROMOCAO']);
 
@@ -867,19 +868,42 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
                 $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['img1'] = $rs['IMG1PROMOCAO'];
                 $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['img2'] = $rs['IMG2PROMOCAO'];
 
-			// se for codigo promocional
-			} elseif ($rs['ID_PROMOCAO_CONTROLE'] != NULL) {
-				$rs['IMG1PROMOCAO'] = '../images/promocional/' . basename($rs['IMG1PROMOCAO']);
-				$rs['IMG2PROMOCAO'] = '../images/promocional/' . basename($rs['IMG2PROMOCAO']);
+			// outras promocoes
+			} elseif ($rs['CODTIPPROMOCAO'] != NULL) {
+
+                if ($rs['IMG1PROMOCAO'] === '') {
+                    $imgs = '';
+                } else {
+                    $imgs = 'img1="' . '../images/promocional/' . basename($rs['IMG1PROMOCAO']) .
+                            '" img2="' . '../images/promocional/' . basename($rs['IMG2PROMOCAO']) . '" ';
+                }
+
+                // se for promocao convite
+                if ($rs['CODTIPPROMOCAO'] == 5) {
+                    $rs_cod_convite = executeSQL($mainConnection,
+                        'SELECT TOP 1 P.CD_PROMOCIONAL
+                         FROM MW_PROMOCAO P
+                         WHERE P.ID_PROMOCAO_CONTROLE = ?
+                         ORDER BY P.ID_PEDIDO_VENDA, P.ID_SESSION, P.CD_PROMOCIONAL DESC', array($rs['ID_PROMOCAO_CONTROLE']), true);
+                    
+                    // se nao tiver mais cupons ignorar esse tipo de bilhete
+                    if ((!empty($rs['ID_SESSION']) or !empty($rs['ID_PEDIDO_VENDA'])) and $rs['ID_APRESENTACAO_BILHETE'] != $selected) {
+                        continue;
+                    }
+
+                    if ($rs_cod_convite['CD_PROMOCIONAL'] == 'CONVITE') {
+                        $imgs .= 'codigo="CONVITE" ';
+                        $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['codPreValidado'] = 'CONVITE';
+                    }
+                }
 
 				$BIN = '';
-				$promocao = 'qtPromocao="' . $rs['QT_PROMO_POR_CPF'] . '" codPromocao="'.$rs['ID_PROMOCAO_CONTROLE'] .
-							'" img1="' . $rs['IMG1PROMOCAO'] . '" img2="' . $rs['IMG2PROMOCAO'] . '" sizeBin="32"';
+				$promocao = 'qtPromocao="' . $rs['QT_PROMO_POR_CPF'] . '" codPromocao="'.$rs['ID_PROMOCAO_CONTROLE'] . '" sizeBin="32" ' . $imgs;
 
                 $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['qtPromocao'] = $rs['QT_PROMO_POR_CPF'];
                 $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['codPromocao'] = $rs['ID_PROMOCAO_CONTROLE'];
-                $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['img1'] = $rs['IMG1PROMOCAO'];
-                $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['img2'] = $rs['IMG2PROMOCAO'];
+                $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['img1'] = '../images/promocional/' . basename($rs['IMG1PROMOCAO']);
+                $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['img2'] = '../images/promocional/' . basename($rs['IMG2PROMOCAO']);
 
 			// nem bin itau e nem codigo promocional
 			} else {
@@ -906,11 +930,16 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 				$first_selected = true;
 			}
 
-			$combo .= '<option value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $isSelected . ' ' . $BIN . $promocao . $meia_estudante . $lote .
-					  ' valor="'.number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', '').'">' . utf8_encode($rs['DS_TIPO_BILHETE']) . '</option>';
+            // checar exibicao da promocao
+            if ($rs['IN_EXIBICAO'] == null or $rs['IN_EXIBICAO'] == 'T' or $rs['IN_EXIBICAO'] == 'W') {
+    			$combo .= '<option value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $isSelected . ' ' . $BIN . $promocao . $meia_estudante . $lote .
+    					  ' valor="'.number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', '').'">' . utf8_encode($rs['DS_TIPO_BILHETE']) . '</option>';
+            }
 
             $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['descricao'] = utf8_encode($rs['DS_TIPO_BILHETE']);
             $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['valor'] = $rs['VL_LIQUIDO_INGRESSO'];
+            $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['exibicao'] = $rs['IN_EXIBICAO'];
+            $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['codTipPromocao'] = $rs['CODTIPPROMOCAO'];
 		}
     }
     $combo .= '</select>';
@@ -1453,15 +1482,33 @@ function comboPromocoes($name, $selected, $isCombo = true) {
 
 function comboTipoPromocao($name, $selected) {
     $tipos = array(
-    	1 => 'Código Fixo',
-    	2 => 'Código Aleatório',
-    	3 => 'Arquivo CSV',
-    	4 => 'BIN'
+        1 => 'Código Fixo',
+        2 => 'Código Aleatório',
+        3 => 'Arquivo CSV',
+        4 => 'BIN',
+        5 => 'Convite'
     );
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione...</option>';
     foreach ($tipos as $key => $value) {
-		$combo .= '<option value="' . $key . '"' . (($selected == $key) ? ' selected' : '') . '>' . $value . '</option>';
+        $combo .= '<option value="' . $key . '"' . (($selected == $key) ? ' selected' : '') . '>' . $value . '</option>';
+    }
+    $combo .= '</select>';
+
+    return $combo;
+}
+
+function comboExibicaoPromocao($name, $selected) {
+    $tipos = array(
+        'T' => 'TODOS',
+        'N' => 'NENHUM',
+        'W' => 'WEB',
+        'P' => 'POS'
+    );
+
+    $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione...</option>';
+    foreach ($tipos as $key => $value) {
+        $combo .= '<option value="' . $key . '"' . (($selected == $key) ? ' selected' : '') . '>' . $value . '</option>';
     }
     $combo .= '</select>';
 
@@ -2047,11 +2094,11 @@ function getIdClienteBaseSelecionada($idBase){
 
 function sendErrorMail($subject, $message) {
 	$namefrom = 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS';
-	$from = 'contato@cc.com.br';
+	$from = 'contato@intuiti.com.br';
 
-	$cc = array('Jefferson => jefferson.ferreira@cc.com.br', 'Edicarlos => edicarlos.barbosa@cc.com.br');
+	$cc = array('Jefferson => jefferson.ferreira@intuiti.com.br', 'Edicarlos => edicarlos.barbosa@intuiti.com.br');
 
-	authSendEmail($from, $namefrom, 'gabriel.monteiro@cc.com.br', 'Gabriel', $subject, $message, $cc);
+	authSendEmail($from, $namefrom, 'gabriel.monteiro@intuiti.com.br', 'Gabriel', $subject, $message, $cc);
 }
 
 function sendConfirmationMail($id_cliente) {
@@ -2094,7 +2141,7 @@ function sendConfirmationMail($id_cliente) {
     $message = ob_get_clean();
 
     $namefrom = utf8_decode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS');
-    $from = ($is_teste == '1') ? 'contato@cc.com.br' : 'compreingressos@gmail.com';
+    $from = ($is_teste == '1') ? 'contato@intuiti.com.br' : 'compreingressos@gmail.com';
 
     $successMail = authSendEmail($from, $namefrom, $rs['CD_EMAIL_LOGIN'], $rs['DS_NOME'], $subject, utf8_decode($message), array(), array(), 'iso-8859-1');
 

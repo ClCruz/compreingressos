@@ -36,8 +36,13 @@ executeSQL($mainConnection, $query, array($braspag_transaction_id, $braspag_id, 
 
 //beginTransaction($mainConnection);
 
-$query = 'EXEC prc_vender_pedido ?';
-$params = array($pedido_id);
+if (isset($_SESSION['usuario_pdv']) and $_SESSION['usuario_pdv'] == 1) {
+	$query = 'EXEC prc_vender_pedido ?, ?';
+	$params = array($pedido_id, 249);
+} else {
+	$query = 'EXEC prc_vender_pedido ?';
+	$params = array($pedido_id);
+}
 
 executeSQL($mainConnection, 'INSERT INTO tab_log_gabriel (data, passo, parametros) VALUES (GETDATE(), ?, ?)', array('ANTES prc_vender_pedido', json_encode($params)));
 

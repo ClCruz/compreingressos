@@ -2335,7 +2335,7 @@ div.alert a{
 	border:1px solid #CCC;
 	color:#4D4D4D;
 	position: relative;
-	z-index:1;
+	z-index:initial;
 }
 .sbHolder a:hover{
 }

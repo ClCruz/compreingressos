@@ -30,8 +30,8 @@ if (!$resultiPagare or !empty($errorsiPagare)) {
 	//copy current buffer contents into $message variable and delete current output buffer
 	$message = ob_get_clean();
 	
-	$cc = array('Emerson => emerson@cc.com.br', 'Jefferson => jefferson.ferreira@cc.com.br', 'Edicarlos => edicarlos.barbosa@cc.com.br');
+	$cc = array('Emerson => emerson@intuiti.com.br', 'Jefferson => jefferson.ferreira@intuiti.com.br', 'Edicarlos => edicarlos.barbosa@intuiti.com.br');
 	
-	authSendEmail($from, $namefrom, 'gabriel.monteiro@cc.com.br', 'Gabriel', $subject, $message, $cc);
+	authSendEmail($from, $namefrom, 'gabriel.monteiro@intuiti.com.br', 'Gabriel', $subject, $message, $cc);
 }
 ?>

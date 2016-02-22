@@ -21,7 +21,7 @@ if (isset($_GET['email'])) {
 			
 			$namefrom = 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS';
 			// $from = 'lembrete@compreingressos.com';
-			$from = ($is_teste == '1') ? 'contato@cc.com.br' : 'lembrete@compreingressos.com';
+			$from = ($is_teste == '1') ? 'contato@intuiti.com.br' : 'lembrete@compreingressos.com';
 
 			//define the body of the message.
 			ob_start(); //Turn on output buffering

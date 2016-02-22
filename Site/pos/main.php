@@ -3,7 +3,7 @@ require_once '../settings/functions.php';
 require_once '../settings/settings.php';
 // error_reporting(E_ALL);
 session_start();
-
+echo "<HTMLDEBUG OFF>";
 require_once 'functions.php';
 
 require_once 'configs.php';
@@ -13,11 +13,11 @@ require_once 'login_required.php';
 // history - go back -------------- begin
 
 // todas as variaveis do GET que podem conter o comando de voltar
-$vars_to_go_back = array('history', 'evento', 'apresentacao', 'bilhete', 'confirmacao', 'pedido');
+$vars_to_go_back = array('history', 'evento', 'apresentacao', 'bilhete', 'confirmacao', 'pedido', 'fileira', 'cadeira');
 
 foreach ($vars_to_go_back as $value) {
 	if (in_array($value, array_keys($_GET))) {
-		if ($_GET[$value] == 999) {
+		if ($_GET[$value] == 999999999) {
 
 			// remove a tela atual da variavel de navegacao
 			array_pop($_SESSION['history']);
@@ -34,8 +34,8 @@ foreach ($vars_to_go_back as $value) {
 
 
 // controle das telas principais - menu
-$menu_options	= array('Venda',	'Reimpressão',	'Estorno',	'Sair');
-$menu_pages		= array('sell',		'reprint',		'refund',	'logoff');
+$menu_options	= array('Venda',	'Reimpressão',	'Estorno',	'Relatórios',	'Sair');
+$menu_pages		= array('sell',		'reprint',		'refund',	'reports',		'logoff');
 
 if (isset($_GET['screen'])) {
 

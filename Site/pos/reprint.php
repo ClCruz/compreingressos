@@ -44,6 +44,26 @@ if (isset($_GET["cpf"])) {
 
 } else if(isset($_GET["pedido"])) {	
 
+	$query = "SELECT DS_LOCALIZACAO FROM MW_ITEM_PEDIDO_VENDA WHERE ID_PEDIDO_VENDA = ?";
+	$result = executeSQL($mainConnection, $query, array($_GET['pedido']));
+
+	$lugares = array();
+	$linha = '';
+	while ($rs = fetchResult($result)) {
+		if (strlen($linha.$rs['DS_CADEIRA'].', ') <= 28) {
+			$linha .= $rs['DS_CADEIRA'].', ';
+		} else {
+			$lugares[] = $linha;
+			$linha = $rs['DS_CADEIRA'].', ';
+		}
+	}
+	$lugares[] = $linha;
+
+	end($lugares);
+	$key = key($lugares);
+	$lugares[$key] = preg_replace('/\,?\s?$/', '', $lugares[$key]);
+	reset($lugares);
+
 	$query ="SELECT
 				E.DS_EVENTO,
 				A.DT_APRESENTACAO,
@@ -88,6 +108,10 @@ if (isset($_GET["cpf"])) {
 		}
 
 		$confirmacao_options[] = utf8_encode(str_pad(substr($rs['DS_TIPO_BILHETE'], 0, 24), 24, ' ', STR_PAD_RIGHT).' x'.str_pad($rs['QTD_INGRESSOS'], 2, ' ', STR_PAD_LEFT));
+	}
+
+	foreach ($lugares as $key => $value) {
+		$confirmacao_options[] = $value;
 	}
 
 	$confirmacao_options[] = ' ';

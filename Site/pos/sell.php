@@ -381,11 +381,19 @@ if (isset($_GET['cadeira']) and isset($_GET['reservar'])) {
 	// reservar bilhetes/lugares
 	if ($reservar) {
 
+		$query = "SELECT S.NOMOBJETO, SE.NOMSETOR
+					FROM TABSALDETALHE S
+					INNER JOIN TABSETOR SE ON SE.CODSALA = S.CODSALA AND SE.CODSETOR = S.CODSETOR
+					INNER JOIN TABAPRESENTACAO A ON A.CODSALA = S.CODSALA
+					WHERE A.CODAPRESENTACAO = ? AND S.INDICE = ?";
+		$params = array($rs['CODAPRESENTACAO'], $_GET['cadeira']);
+		$rs2 = executeSQL($conn, $query, $params, true);
+
 		$_POST['apresentacao'] = $_GET['apresentacao'];
 		$_GET['action'] = 'add';
 		$_REQUEST['id'] = $_GET['cadeira'];
-		$_POST['name'] = 'pos';
-		$_POST['setor'] = 'pos';
+		$_POST['name'] = $rs2['NOMOBJETO'];
+		$_POST['setor'] = $rs2['NOMSETOR'];
 
 		ob_start();
 		require '../comprar/atualizarPedido.php';
@@ -427,6 +435,26 @@ echo_header();
 // se o valor de bilhete for 888888888 ou 777777777 entao finalizar a venda
 if ($_GET['bilhete'] == 888888888 or $_GET['bilhete'] == 777777777
 	or $_GET['fileira'] == 888888888 or $_GET['fileira'] == 777777777) {
+
+	$query = "SELECT DS_CADEIRA FROM MW_RESERVA WHERE ID_SESSION = ?";
+	$result = executeSQL($mainConnection, $query, array(session_id()));
+
+	$lugares = array();
+	$linha = '';
+	while ($rs = fetchResult($result)) {
+		if (strlen($linha.$rs['DS_CADEIRA'].', ') <= 28) {
+			$linha .= $rs['DS_CADEIRA'].', ';
+		} else {
+			$lugares[] = $linha;
+			$linha = $rs['DS_CADEIRA'].', ';
+		}
+	}
+	$lugares[] = $linha;
+
+	end($lugares);
+	$key = key($lugares);
+	$lugares[$key] = preg_replace('/\,?\s?$/', '', $lugares[$key]);
+	reset($lugares);
 
 	$query = "SELECT
 					E.DS_EVENTO,
@@ -481,6 +509,10 @@ if ($_GET['bilhete'] == 888888888 or $_GET['bilhete'] == 777777777
 		$total_servico += obterValorServico($rs['ID_APRESENTACAO_BILHETE']) * $rs['QTD_INGRESSOS'];
 
 		$last_bilhete = $rs['ID_APRESENTACAO_BILHETE'];
+	}
+
+	foreach ($lugares as $key => $value) {
+		$confirmacao_options[] = $value;
 	}
 
 	if ($total_servico == 0) {

@@ -1075,6 +1075,11 @@ switch ($_GET['subscreen']) {
 
 	case 'fileira':
 
+		display_error("A venda de lugares marcados não é permitida no momento. Favor selecionar outro setor.");
+		echo "<GET TYPE=HIDDEN NAME=history VALUE=999999999>";
+		echo "<POST>";
+		die();
+
 		echo utf8_decode("<WRITE_AT LINE=5 COLUMN=0> Selecione a fileira: </WRITE_AT>");
 
 		$query = "SELECT E.ID_BASE, A.CODAPRESENTACAO FROM MW_APRESENTACAO A INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO WHERE A.ID_APRESENTACAO = ?";

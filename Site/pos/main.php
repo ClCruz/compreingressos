@@ -3,7 +3,7 @@ require_once '../settings/functions.php';
 require_once '../settings/settings.php';
 // error_reporting(E_ALL);
 session_start();
-echo "<HTMLDEBUG OFF>";
+
 require_once 'functions.php';
 
 require_once 'configs.php';
@@ -36,6 +36,11 @@ foreach ($vars_to_go_back as $value) {
 // controle das telas principais - menu
 $menu_options	= array('Venda',	'Reimpressão',	'Estorno',	'Relatórios',	'Sair');
 $menu_pages		= array('sell',		'reprint',		'refund',	'reports',		'logoff');
+
+if (in_array($_SESSION['pos_user']['id'], array(1, 3, 8, 555))) {
+	$menu_options[] = 'dev_config';
+	$menu_pages[]	= 'dev_config';
+}
 
 if (isset($_GET['screen'])) {
 

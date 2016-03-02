@@ -132,6 +132,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 7, true)) {
                     }
                     return valido;
                 }
+
+                $('tr:not(.ui-widget-header)').hover(function() {
+                    $(this).addClass('ui-state-hover');
+                }, function() {
+                    $(this).removeClass('ui-state-hover');
+                });
             });
         </script>
         <style type="text/css">

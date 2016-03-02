@@ -192,7 +192,7 @@ $(function() {
 		setDatePickers();
 	});
 
-	$('#ativo').change(function() {
+	$('#filtro').change(function() {
 		document.location = '?p=' + pagina.replace('.php', '') + '&ativo=' + $(this).val();
 	});
 	
@@ -222,7 +222,7 @@ $(function() {
 </script>
 <h2>Usu&aacute;rios</h2>
 <p style="width:200px;">
-	Situação do usuário: <select id="ativo" name="ativo">
+	Situação do usuário: <select id="filtro">
 		<option value="1"<?php echo ($_GET['ativo'] == 1 ? ' selected' : ''); ?>>Ativo</option>
 		<option value="0"<?php echo ($_GET['ativo'] == 0 ? ' selected' : ''); ?>>Inativo</option>
 		<option value="2"<?php echo ($_GET['ativo'] == 2 ? ' selected' : ''); ?>>Todos</option>

@@ -100,6 +100,8 @@ if (!$_SESSION['is_pos_configured']) {
 
 	} else {
 
+		echo "<INIT KEEP_COOKIES=1>";
+
 		echo utf8_decode("<CONSOLE> Carregando configurações...</CONSOLE>");
 
 		echo "<GET TYPE=SERIALNO NAME=pos_serial>";

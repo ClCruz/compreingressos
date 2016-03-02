@@ -3,8 +3,10 @@ $total_lines = 19;
 $header_lines = 4;
 $body_lines = $total_lines - $header_lines;
 
-$ip_tef = '152.250.250.64';
-$porta_tef = '4096';
+$ip_tef = '0.0.0.0';
+$porta_tef = '0';
+$codloja_tef = '00000000';
+$idterm_tef = 'ID000001';
 
 if ($_GET['config']) {
 

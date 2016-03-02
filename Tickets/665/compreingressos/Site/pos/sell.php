@@ -672,7 +672,7 @@ if (isset($_GET['confirmacao'])) {
 				echo "<GET TYPE=HIDDEN NAME=TIPOTRANS VALUE=CHEQUE>";
 			} else {
 				$valor = number_format($total_geral * 100, 0);
-				echo "<PAGAMENTO IPTEF=$ip_tef PORTATEF=$porta_tef CODLOJA=00000000 IDTERM=ID000001 TIPO=MENU VALOR=$valor PAGRET=RESPAG BIN=BINCARTAO NINST=NOMEINST NSU=NSUAUT AUT=CAUT NPAR=PARC MODPAG=TIPOTRANS>";
+				echo "<PAGAMENTO IPTEF=$ip_tef PORTATEF=$porta_tef CODLOJA=$codloja_tef IDTERM=$idterm_tef TIPO=MENU VALOR=$valor PAGRET=RESPAG BIN=BINCARTAO NINST=NOMEINST NSU=NSUAUT AUT=CAUT NPAR=PARC MODPAG=TIPOTRANS>";
 			}
 		}
 		// se tiver algum problema, exibir o erro e voltar pelo historico
@@ -1057,9 +1057,12 @@ switch ($_GET['subscreen']) {
 	// lugares nao numerados/marcados
 	case 'quantidade':
 
-		echo utf8_decode("<WRITE_AT LINE=5 COLUMN=0> Informe a quantidade:</WRITE_AT>");
+		echo utf8_decode("<WRITE_AT LINE=5 COLUMN=0> Informe a quantidade</WRITE_AT>");
+		echo utf8_decode("<WRITE_AT LINE=6 COLUMN=0> (0 para apagar todos os</WRITE_AT>");
+		echo utf8_decode("<WRITE_AT LINE=7 COLUMN=0>  ingressos deste tipo já </WRITE_AT>");
+		echo utf8_decode("<WRITE_AT LINE=8 COLUMN=0>  selecionados):</WRITE_AT>");
 
-		echo "<GET TYPE=FIELD NAME=quantidade SIZE=2 COL=15 LIN=9>";
+		echo "<GET TYPE=FIELD NAME=quantidade SIZE=2 COL=15 LIN=12>";
 
 		echo "<GET TYPE=HIDDEN NAME=apresentacao VALUE={$_GET['apresentacao']}>";
 		echo "<GET TYPE=HIDDEN NAME=bilhete VALUE={$_GET['bilhete']}>";

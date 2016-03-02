@@ -1,4 +1,4 @@
-<?
+<?php
 $total_lines = 19;
 $header_lines = 4;
 $body_lines = $total_lines - $header_lines;

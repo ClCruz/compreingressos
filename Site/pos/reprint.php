@@ -107,7 +107,7 @@ if (isset($_GET["cpf"])) {
 			$confirmacao_options[] = ' ';
 		}
 
-		$confirmacao_options[] = utf8_encode(str_pad(substr($rs['DS_TIPO_BILHETE'], 0, 24), 24, ' ', STR_PAD_RIGHT).' x'.str_pad($rs['QTD_INGRESSOS'], 2, ' ', STR_PAD_LEFT));
+		$confirmacao_options[] = utf8_encode(str_pad(substr(remove_accents($rs['DS_TIPO_BILHETE'], false), 0, 24), 24, ' ', STR_PAD_RIGHT).' x'.str_pad($rs['QTD_INGRESSOS'], 2, ' ', STR_PAD_LEFT));
 	}
 
 	foreach ($lugares as $key => $value) {

@@ -206,21 +206,6 @@ if (isset($_GET['quantidade']) and $_GET['quantidade'] != '') {
 
 				}
 
-				// se for convite verificar se precisa de codigo
-				if ($rs['CODTIPPROMOCAO'] == 5) {
-					$rs_cod_convite = executeSQL($mainConnection,
-                        'SELECT TOP 1 P.CD_PROMOCIONAL
-                         FROM MW_PROMOCAO P
-                         WHERE P.ID_PROMOCAO_CONTROLE = ?
-                         AND P.ID_SESSION IS NULL AND P.ID_PEDIDO_VENDA IS NULL
-                         ORDER BY P.CD_PROMOCIONAL DESC', array($rs['ID_PROMOCAO_CONTROLE']), true);
-
-					// se nao tiver mais cupons ou se nao tiver codigo promocional para validar enviar codigo vazio
-                    if ($rs_cod_convite['CD_PROMOCIONAL'] === null or $rs_cod_convite['CD_PROMOCIONAL'] === '') {
-                        $hide_code = true;
-                    }
-				}
-
 				// se for convite checar pela necessidade de codigo promocional
 				if ($rs['CODTIPPROMOCAO'] == 5) {
 					$bilhetes = comboPrecosIngresso(null, $_GET['apresentacao'], null, $_GET['bilhete'], false, true);
@@ -282,7 +267,7 @@ if (isset($_GET['quantidade']) and $_GET['quantidade'] != '') {
 		// para bilhetes numerados/marcados
 		if (isset($_GET['cadeira'])) {
 
-			$query = "SELECT ID_RESERVA, CD_BINITAU, NR_BENEFICIO
+			$query = "SELECT ID_RESERVA
 						FROM MW_RESERVA
 						WHERE ID_SESSION = ? AND ID_CADEIRA = ? AND ID_APRESENTACAO_BILHETE IS NULL";
 
@@ -293,8 +278,8 @@ if (isset($_GET['quantidade']) and $_GET['quantidade'] != '') {
 			$_POST['cadeira'][0] = $_GET['cadeira'];
 			$_POST['reserva'][0] = $rs['ID_RESERVA'];
 			$_POST['valorIngresso'][0] = $_GET['bilhete'];
-			$_POST['bin'][0] = ($rs['CD_BINITAU'] == null ? ($rs['NR_BENEFICIO'] == null ? null : $rs['NR_BENEFICIO']) : $rs['CD_BINITAU']);
-			$_POST['tipoBin'][0] = ($rs['CD_BINITAU'] == null ? ($rs['NR_BENEFICIO'] == null ? null : 'promocao') : 'itau');
+			$_POST['bin'][0] = $_GET['bin'];
+			$_POST['tipoBin'][0] = ($_GET['bin'] == null ? (count($bilhetes_validos) > 0 ? 'promocao' : null) : 'itau');
 			$_GET['pos'] = 1;
 			$_POST['estado'] = '';
 
@@ -357,7 +342,19 @@ if (isset($_GET['quantidade']) and $_GET['quantidade'] != '') {
 				}
 			}
 
+		}
+	} else {
+		// para bilhetes numerados/marcados quando a selecao do tipo de bilhete falha
+		if (isset($_GET['cadeira'])) {
+			echo "<GET TYPE=HIDDEN NAME=apresentacao VALUE={$_GET['apresentacao']}>";
+			echo "<GET TYPE=HIDDEN NAME=ignore_history VALUE=1>";
+			echo "<GET TYPE=HIDDEN NAME=subscreen VALUE=bilhete>";
+			echo "<GET TYPE=HIDDEN NAME=cadeira VALUE={$_GET['cadeira']}>";
+			echo "<GET TYPE=HIDDEN NAME=bilhete_m VALUE=1>";
 
+			echo "<POST>";
+
+			die();
 		}
 	}
 }
@@ -501,7 +498,7 @@ if ($_GET['bilhete'] == 888888888 or $_GET['bilhete'] == 777777777
 			$confirmacao_options[] = ' ';
 		}
 
-		$valores = str_pad($rs['QTD_INGRESSOS'].'x', 8, ' ', STR_PAD_LEFT) . str_pad(number_format(($rs['VL_LIQUIDO_INGRESSO'] + obterValorServico($rs['ID_APRESENTACAO_BILHETE'])), 2, ',', '').' ', 22, ' ', STR_PAD_LEFT);
+		$valores = str_pad($rs['QTD_INGRESSOS'].'x', 8, ' ', STR_PAD_LEFT) . str_pad(number_format(($rs['VL_LIQUIDO_INGRESSO'] + obterValorServico($rs['ID_APRESENTACAO_BILHETE'])), 2, ',', '').' ', 21, ' ', STR_PAD_LEFT);
 		$confirmacao_options[] = utf8_encode($rs['DS_TIPO_BILHETE']);
 		$confirmacao_options[] = $valores;
 
@@ -1018,9 +1015,12 @@ switch ($_GET['subscreen']) {
 				$bilhete_options[888888888] = 'Finalizar Venda';
 				
 				// verifica se o pos pode vender em dinheiro
-				$query = "SELECT VENDA_DINHEIRO FROM MW_POS WHERE SERIAL = ?";
-				$rs = executeSQL($mainConnection, $query, array($_SESSION['pos_user']['serial']), true);
-				$venda_dinheiro = ($rs[0] == 1);
+				$query = "SELECT VENDA_DINHEIRO, CD_BINITAU
+							FROM MW_POS, MW_RESERVA
+							WHERE SERIAL = ? AND ID_SESSION = ?
+							ORDER BY CD_BINITAU DESC";
+				$rs = executeSQL($mainConnection, $query, array($_SESSION['pos_user']['serial'], session_id()), true);
+				$venda_dinheiro = ($rs['VENDA_DINHEIRO'] == 1 and $rs['CD_BINITAU'] == null);
 
 				if ($venda_dinheiro) {
 					$bilhete_options[777777777] = 'Finalizar Venda em Dinheiro';
@@ -1041,7 +1041,7 @@ switch ($_GET['subscreen']) {
 
 			if ($value['exibicao'] == null or $value['exibicao'] == 'T' or $value['exibicao'] == 'P') {
 				$valor = ' '.number_format(($value['valor'] + obterValorServico($key)), 2, ',', '');
-				$descricao = substr(substr($value['descricao'].str_repeat(" ", 28), 0, 28), 0, (strlen($valor)*-1)).$valor;
+				$descricao = substr(substr(remove_accents($value['descricao']).str_repeat(" ", 28), 0, 28), 0, (strlen($valor)*-1)).$valor;
 				$bilhete_options[$key] = $descricao;
 			}
 		}
@@ -1086,7 +1086,7 @@ switch ($_GET['subscreen']) {
 					AND D.INDICE NOT IN (SELECT L.INDICE FROM TABLUGSALA L WHERE L.CODAPRESENTACAO = A.CODAPRESENTACAO)
 					AND D.TIPOBJETO = 'C'
 					GROUP BY SUBSTRING(D.NOMOBJETO, 1, CHARINDEX('-', D.NOMOBJETO)-1)
-					ORDER BY INDICE";
+					ORDER BY FILEIRA";
 
 		$result = executeSQL($conn, $query, array($rs['CODAPRESENTACAO']));
 
@@ -1099,9 +1099,12 @@ switch ($_GET['subscreen']) {
 			$fileira_options[888888888] = 'Finalizar Venda';
 			
 			// verifica se o pos pode vender em dinheiro
-			$query = "SELECT VENDA_DINHEIRO FROM MW_POS WHERE SERIAL = ?";
-			$rs = executeSQL($mainConnection, $query, array($_SESSION['pos_user']['serial']), true);
-			$venda_dinheiro = ($rs[0] == 1);
+			$query = "SELECT VENDA_DINHEIRO, CD_BINITAU
+						FROM MW_POS, MW_RESERVA
+						WHERE SERIAL = ? AND ID_SESSION = ?
+						ORDER BY CD_BINITAU DESC";
+			$rs = executeSQL($mainConnection, $query, array($_SESSION['pos_user']['serial'], session_id()), true);
+			$venda_dinheiro = ($rs['VENDA_DINHEIRO'] == 1 and $rs['CD_BINITAU'] == null);
 
 			if ($venda_dinheiro) {
 				$fileira_options[777777777] = 'Finalizar Venda em Dinheiro';

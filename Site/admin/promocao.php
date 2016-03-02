@@ -235,7 +235,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                         break;
                     }
 
-                    $('[class*=promo_'+mostrar+']').show();
+                    $('[class*=promo_'+mostrar+'], .promo_geral').show();
 
                     if (mostrar == 'csv' || mostrar == 'bin') {
                         if ($('[name=diretorio_temp]').val() == '') {

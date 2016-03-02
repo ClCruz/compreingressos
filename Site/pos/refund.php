@@ -4,16 +4,27 @@ echo_header();
 
 if (isset($_GET['RESPAG'])) {
 
-	if ($_GET['RESPAG'] == 'APROVADO') {
-		$mainConnection = mainConnection();
+	$mainConnection = mainConnection();
 
-		executeSQL($mainConnection, "UPDATE MW_PEDIDO_VENDA SET DS_ESTORNO_POS = ? WHERE ID_PEDIDO_VENDA = ?", array(json_encode($_GET), $_GET['pedido']));
-		
-		echo "<GET TYPE=HIDDEN NAME=reset VALUE=1>";
+	$query = "SELECT M.CD_MEIO_PAGAMENTO FROM MW_PEDIDO_VENDA P INNER JOIN MW_MEIO_PAGAMENTO M ON M.ID_MEIO_PAGAMENTO = P.ID_MEIO_PAGAMENTO WHERE P.ID_PEDIDO_VENDA = ?";
+	$rs = executeSQL($mainConnection, $query, array($_GET['pedido']), true);
+
+	// se for cartao de credito ou debito usar o estorno do pos
+	if (in_array($rs['CD_MEIO_PAGAMENTO'], array(888, 889))) {
+		if ($_GET['RESPAG'] == 'APROVADO') {
+			executeSQL($mainConnection, "UPDATE MW_PEDIDO_VENDA SET DS_ESTORNO_POS = ? WHERE ID_PEDIDO_VENDA = ?", array(json_encode($_GET), $_GET['pedido']));
+			
+			echo "<GET TYPE=HIDDEN NAME=reset VALUE=1>";
+
+			echo "<CONSOLE><BR> Finalizado!</CONSOLE>";
+		} else {
+			echo "<PAGAMENTO IPTEF=$ip_tef PORTATEF=$porta_tef CODLOJA=00000000 IDTERM=ID000001 TIPO=ESTORNO VALOR= PAGRET=RESPAG BIN=BINCARTAO NINST=NOMEINST NSU=NSUAUT AUT=CAUT NPAR=PARC MODPAG=TIPOTRANS>";
+			echo "<GET TYPE=HIDDEN NAME=pedido VALUE={$_GET['pedido']}>";
+		}
 	} else {
-		echo "<PAGAMENTO IPTEF=$ip_tef PORTATEF=$porta_tef CODLOJA=00000000 IDTERM=ID000001 TIPO=ESTORNO VALOR= PAGRET=RESPAG BIN=BINCARTAO NINST=NOMEINST NSU=NSUAUT AUT=CAUT NPAR=PARC MODPAG=TIPOTRANS>";
-		echo "<GET TYPE=HIDDEN NAME=pedido VALUE={$_GET['pedido']}>";
+		echo "<CONSOLE><BR> Finalizado!</CONSOLE>";
 	}
+
 	echo "<POST>";
 
 } else {

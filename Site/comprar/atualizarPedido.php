@@ -369,6 +369,32 @@ if (isset($_GET['action'])) {
 				}
 				
 				$result = (executeSQL($mainConnection, $query, $params) and $result);
+
+				if ($_GET['pos'] and $_GET['bin']) {
+					$query = 'UPDATE MW_RESERVA SET CD_BINITAU = ?
+							WHERE ID_APRESENTACAO = ? AND ID_CADEIRA = ? AND ID_SESSION = ? AND ID_APRESENTACAO_BILHETE = ?';
+					$params = array(
+						$_GET['bin'],
+						$_POST['apresentacao'][$i],
+						$_POST['cadeira'][$i],
+						session_id(),
+						$_POST['valorIngresso'][$i],
+					);
+				} elseif ($_GET['pos'] and $_GET['codigo']) {
+					$query = 'UPDATE MW_RESERVA SET NR_BENEFICIO = ?
+							WHERE ID_APRESENTACAO = ? AND ID_CADEIRA = ? AND ID_SESSION = ? AND ID_APRESENTACAO_BILHETE = ?';
+					$params = array(
+						$_GET['codigo'][0],
+						$_POST['apresentacao'][$i],
+						$_POST['cadeira'][$i],
+						session_id(),
+						$_POST['valorIngresso'][$i],
+					);
+				}
+
+				if ($_GET['pos']) {
+					executeSQL($mainConnection, $query, $params);
+				}
 			}
 		}
 		

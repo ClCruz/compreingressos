@@ -90,8 +90,8 @@ if ($_GET['subscreen']) {
 				if ($result) {
 
 					echo "<CHGPRNFNT SIZE=4 FACE=FONTE3 BOLD>";
-
-					echo "<PRINTER>PDV - Vendas do Usuario Logado<BR><BR> Data inicial: $data_inicial<BR> Data final:   $data_final<BR><BR></PRINTER>";
+					echo "<PRINTER>".str_pad(date('d/m/Y H:i:s'), 41, ' ', STR_PAD_LEFT)."<BR><BR>";
+					echo "PDV - Vendas do Usuario Logado<BR><BR> Data inicial: $data_inicial<BR> Data final:   $data_final<BR><BR></PRINTER>";
 
 					echo "<CHGPRNFNT SIZE=4 FACE=FONTE1>";
 
@@ -219,11 +219,11 @@ if ($_GET['subscreen']) {
 
 				echo "<GET TYPE=HIDDEN NAME=subscreen VALUE=380>";
 
-				echo utf8_decode("<WRITE_AT LINE=5 COLUMN=0> Informe a data inicial</WRITE_AT>");
+				echo utf8_decode("<WRITE_AT LINE=5 COLUMN=0> Informe a dt inicial de venda</WRITE_AT>");
 				echo utf8_decode("<WRITE_AT LINE=6 COLUMN=0> (DD/MM/AAAA):</WRITE_AT>");
 				echo "<GET TYPE=DATA NAME=data_inicial SIZE=8 COL=10 LIN=9>";
 				
-				echo utf8_decode("<WRITE_AT LINE=10 COLUMN=0> Informe a data final</WRITE_AT>");
+				echo utf8_decode("<WRITE_AT LINE=10 COLUMN=0> Informe a dt final de venda</WRITE_AT>");
 				echo utf8_decode("<WRITE_AT LINE=11 COLUMN=0> (DD/MM/AAAA):</WRITE_AT>");
 				echo "<GET TYPE=DATA NAME=data_final SIZE=8 COL=10 LIN=14>";
 			}

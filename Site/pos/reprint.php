@@ -19,7 +19,7 @@ if (isset($_GET["cpf"])) {
             INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO AND A.IN_ATIVO = 1
             INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO AND E.IN_ATIVO = 1
             WHERE ID_CLIENTE = ? AND IN_SITUACAO = 'F'
-            AND A.DT_APRESENTACAO <= GETDATE()
+            AND CONVERT(DATETIME, CONVERT(VARCHAR, A.DT_APRESENTACAO, 112) + ' ' + LEFT(A.HR_APRESENTACAO,2) + ':' + RIGHT(A.HR_APRESENTACAO,2) + ':00') >= GETDATE()
             ORDER BY 1 DESC";
     $params = array($id_cliente);
     $result = executeSQL($mainConnection, $query, $params);    
@@ -32,7 +32,7 @@ if (isset($_GET["cpf"])) {
     $pedido_options = array(999999999 => 'Voltar');
 
 	while ($rs = fetchResult($result)) {
-		$pedido_options[$rs['ID_PEDIDO_VENDA']] = $rs['ID_PEDIDO_VENDA'] ." - ". $rs['DT_PEDIDO_VENDA']->format('d/m/y') . " - " . number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, ',', '');
+		$pedido_options[$rs['ID_PEDIDO_VENDA']] = $rs['ID_PEDIDO_VENDA'] ." - ". $rs['DT_PEDIDO_VENDA']->format('d/m/y') . str_pad(number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, ',', ''), 11, ' ', STR_PAD_LEFT);
 	}
 
     echo "<WRITE_AT LINE=5 COLUMN=0> $nome_cliente</WRITE_AT>";

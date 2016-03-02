@@ -61,6 +61,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                     Não é possível o estorno por esse meio.<br /><br />
                     Caso queira estornar este pedido, efetue o estorno utilizando o sistema administrativo pelo site.";
             die();
+        } else if ($pedido_principal["BRASPAG_ID"] == 'POS' and isset($_SESSION['pos_user']['serial'])) {
+            $retorno = 'ok';
+            $is_estorno_brasbag = false;
         }
 
         // checa se alguma apresentacao do pedido já ocorreu
@@ -113,8 +116,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
 
             $is_cancelamento = date('d', strtotime($pedido['DATA'])) == date('d');
 
-            // VENDAS PELO PDV, PEDIDOS FILHOS (DE ASSINATURAS) E PEDIDOS COM INGRESSOS PROMOCIONAIS E VALOR 0 NÃO SÃO ESTORNADAS DO BRASPAG
-            $is_estorno_brasbag = ($pedido["IN_TRANSACAO_PDV"] == 0 and !$pedido["FILHO"] and ($pedido['INGRESSOS_PROMOCIONAIS'] == 0 and $pedido['VALOR'] != 0));
+            // VENDAS PELO PDV, PEDIDOS FILHOS (DE ASSINATURAS), PEDIDOS COM INGRESSOS PROMOCIONAIS, VALOR 0 E FEITOS PELO POS NÃO SÃO ESTORNADAS DO BRASPAG
+            $is_estorno_brasbag = ($pedido["IN_TRANSACAO_PDV"] == 0 and !$pedido["FILHO"] and ($pedido['INGRESSOS_PROMOCIONAIS'] == 0 and $pedido['VALOR'] != 0)
+                                    and !($pedido_principal["BRASPAG_ID"] == 'POS' and isset($_SESSION['pos_user']['serial'])));
 
             $options = array(
                 'local_cert' => file_get_contents('../settings/cert.pem'),
@@ -165,14 +169,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                         $request_valido = valido;
                     }
 
-                    // se for um pedido feito no POS e estiver sendo estornado pelo POS
-                    if ($pedido_principal["BRASPAG_ID"] == 'POS' and !isset($_SESSION['pos_user']['serial'])) {
-                        $force_system_refund = true;
-                        $value['descricao_erro'] = "Pedido cancelado/estornado.";
-                        $retorno = 'ok';
-                        break;
-
-                    } elseif ($value['response']->TransactionDataCollection->TransactionDataResponse->Status == '0') {
+                    if ($value['response']->TransactionDataCollection->TransactionDataResponse->Status == '0') {
                         $value['descricao_erro'] = "Pedido cancelado/estornado.";
                         $retorno = 'ok';
                         break;

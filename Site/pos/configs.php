@@ -38,7 +38,7 @@ if (!$_SESSION['is_pos_configured']) {
 		}
 
 		if ($rs['ID'] == null or $rs['LAST_CONFIG'] == null or $rs['LAST_CONFIG']->format('U') < filemtime(__FILE__)) {
-			$imgs_dir = ( ? '/compreingressos2/pos' : '/pos');
+			$imgs_dir = ($is_teste == '1' ? '/compreingressos2/pos' : '/pos');
 
 			// envia logos
 			echo "<FILE NAME=logo_ci_colorida.bmp ADDR=$imgs_dir/logo_ci_colorida.bmp ERR=erroarq WRT=SIM>";

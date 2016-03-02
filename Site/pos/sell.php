@@ -1057,12 +1057,13 @@ switch ($_GET['subscreen']) {
 	// lugares nao numerados/marcados
 	case 'quantidade':
 
-		echo utf8_decode("<WRITE_AT LINE=5 COLUMN=0> Informe a quantidade</WRITE_AT>");
-		echo utf8_decode("<WRITE_AT LINE=6 COLUMN=0> (0 para apagar todos os</WRITE_AT>");
-		echo utf8_decode("<WRITE_AT LINE=7 COLUMN=0>  ingressos deste tipo já </WRITE_AT>");
-		echo utf8_decode("<WRITE_AT LINE=8 COLUMN=0>  selecionados):</WRITE_AT>");
+		echo utf8_decode("<WRITE_AT LINE=5 COLUMN=0> Informe a quantidade:</WRITE_AT>");
+		echo utf8_decode("<WRITE_AT LINE=11 COLUMN=0> Observação:</WRITE_AT>");
+		echo utf8_decode("<WRITE_AT LINE=12 COLUMN=0> (0 para apagar todos os</WRITE_AT>");
+		echo utf8_decode("<WRITE_AT LINE=13 COLUMN=0>  ingressos deste tipo já </WRITE_AT>");
+		echo utf8_decode("<WRITE_AT LINE=14 COLUMN=0>  selecionados)</WRITE_AT>");
 
-		echo "<GET TYPE=FIELD NAME=quantidade SIZE=2 COL=15 LIN=12>";
+		echo "<GET TYPE=FIELD NAME=quantidade SIZE=2 COL=15 LIN=9>";
 
 		echo "<GET TYPE=HIDDEN NAME=apresentacao VALUE={$_GET['apresentacao']}>";
 		echo "<GET TYPE=HIDDEN NAME=bilhete VALUE={$_GET['bilhete']}>";

@@ -2,6 +2,7 @@
 
 $mainConnection = mainConnection();
 
+echo "<GET TYPE=SERIALNO NAME=pos_serial>";
 
 // se a quantidade estiver definida entao selecionar os ingressos (nao numerados/marcados)
 if (isset($_GET['quantidade']) and $_GET['quantidade'] != '') {
@@ -825,7 +826,7 @@ if (isset($_GET['RESPAG'])) {
 			$params = array($newMaxId, $_SESSION['user'], $_SESSION['pos_user']['id'],
 							($totalIngressos + $totalConveniencia), $totalIngressos, $totalConveniencia,
 							$_GET['BINCARTAO'], $_SERVER["REMOTE_ADDR"], ($_GET['NPAR'] <= 1 ? 1 : $_GET['NPAR']),
-							$nr_beneficio, 'POS', $_SESSION['pos_user']['serial'], $_GET['CAUT'], $_GET['NSUAUT'], $id_meio_pagamento);
+							$nr_beneficio, 'POS', $_GET['pos_serial'], $_GET['CAUT'], $_GET['NSUAUT'], $id_meio_pagamento);
 			$result = executeSQL($mainConnection, $query, $params);
 
 			if ($result) {
@@ -1032,7 +1033,7 @@ switch ($_GET['subscreen']) {
 							FROM MW_POS, MW_RESERVA
 							WHERE SERIAL = ? AND ID_SESSION = ?
 							ORDER BY CD_BINITAU DESC";
-				$rs = executeSQL($mainConnection, $query, array($_SESSION['pos_user']['serial'], session_id()), true);
+				$rs = executeSQL($mainConnection, $query, array($_GET['pos_serial'], session_id()), true);
 				$venda_dinheiro = ($rs['VENDA_DINHEIRO'] == 1 and $rs['CD_BINITAU'] == null);
 
 				if ($venda_dinheiro) {
@@ -1045,7 +1046,7 @@ switch ($_GET['subscreen']) {
 
 		// verifica se o pos pode vender convite
 		$query = "SELECT VENDA_PROMO_CONVITE FROM MW_POS WHERE SERIAL = ?";
-		$rs = executeSQL($mainConnection, $query, array($_SESSION['pos_user']['serial']), true);
+		$rs = executeSQL($mainConnection, $query, array($_GET['pos_serial']), true);
 		$venda_convite = ($rs[0] == 1);
 
 		foreach (comboPrecosIngresso(null, $_GET['apresentacao'], (isset($_GET['cadeira']) ? $_GET['cadeira'] : null), null, false, true) as $key => $value) {
@@ -1125,7 +1126,7 @@ switch ($_GET['subscreen']) {
 						FROM MW_POS, MW_RESERVA
 						WHERE SERIAL = ? AND ID_SESSION = ?
 						ORDER BY CD_BINITAU DESC";
-			$rs = executeSQL($mainConnection, $query, array($_SESSION['pos_user']['serial'], session_id()), true);
+			$rs = executeSQL($mainConnection, $query, array($_GET['pos_serial'], session_id()), true);
 			$venda_dinheiro = ($rs['VENDA_DINHEIRO'] == 1 and $rs['CD_BINITAU'] == null);
 
 			if ($venda_dinheiro) {

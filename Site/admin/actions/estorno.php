@@ -48,13 +48,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
             die();
         }
 
-        if ($pedido_principal["BRASPAG_ID"] == 'POS' and !isset($_SESSION['pos_user']['serial'])) {
+        if ($pedido_principal["BRASPAG_ID"] == 'POS' and !isset($_POST['pos_serial'])) {
             echo "Este pedido foi feito em um POS.<br /> Não é possível o estorno por esse meio.<br /><br /> Caso queira estornar este pedido, efetue o estorno utilizando um POS.";
             die();
-        } elseif (isset($_SESSION['pos_user']['serial']) and $pedido_principal["BRASPAG_ID"] != 'POS') {
+        } elseif (isset($_POST['pos_serial']) and $pedido_principal["BRASPAG_ID"] != 'POS') {
             echo "Este pedido não foi feito em um POS.<br /> Não é possível o estorno por esse meio.<br /><br /> Caso queira estornar este pedido, efetue o estorno utilizando o sistema administrativo pelo site.";
             die();
-        } else if ($pedido_principal["BRASPAG_ID"] == 'POS' and isset($_SESSION['pos_user']['serial'])) {
+        } else if ($pedido_principal["BRASPAG_ID"] == 'POS' and isset($_POST['pos_serial'])) {
             $retorno = 'ok';
             $is_estorno_brasbag = false;
         }
@@ -110,7 +110,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
 
             // VENDAS PELO PDV, PEDIDOS FILHOS (DE ASSINATURAS), PEDIDOS COM INGRESSOS PROMOCIONAIS, VALOR 0 E FEITOS PELO POS NÃO SÃO ESTORNADAS DO BRASPAG
             $is_estorno_brasbag = ($pedido["IN_TRANSACAO_PDV"] == 0 and !$pedido["FILHO"] and ($pedido['INGRESSOS_PROMOCIONAIS'] == 0 and $pedido['VALOR'] != 0)
-                                    and !($pedido_principal["BRASPAG_ID"] == 'POS' and isset($_SESSION['pos_user']['serial'])));
+                                    and !($pedido_principal["BRASPAG_ID"] == 'POS' and isset($_POST['pos_serial'])));
 
             $options = array(
                 'local_cert' => file_get_contents('../settings/cert.pem'),

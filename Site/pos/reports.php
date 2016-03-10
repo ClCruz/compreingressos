@@ -191,6 +191,9 @@ if ($_GET['subscreen']) {
 					echo str_repeat("-=", 21);
 					echo "<BR><BR>";
 
+					echo "</PRINTER>";
+					echo "<PRINTER>";
+
 					echo " Total por Forma de Pagamento<BR><BR>";
 
 					foreach ($meio_pagamento as $key => $value) {

@@ -44,22 +44,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
         $pedido_principal = fetchResult($result, SQLSRV_FETCH_ASSOC);
 
         if ($pedido_principal["FILHO"]) {
-            echo "Este pedido pertence à uma assinatura.<br />
-                    Não é possível o estorno individualmente.<br /><br />
-                    Caso queira estornar este pedido, efetue o estorno utilizando o pedido principal da assinatura: ".$pedido_principal["ID_PEDIDO_PAI"].".<br /><br />
-                    <b>Atenção</b>: efetuando o estorno do pedido principal todos os lugares e todas as apresentações serão estornados.";
+            echo "Este pedido pertence à uma assinatura.<br /> Não é possível o estorno individualmente.<br /><br /> Caso queira estornar este pedido, efetue o estorno utilizando o pedido principal da assinatura: ".$pedido_principal["ID_PEDIDO_PAI"].".<br /><br /> <b>Atenção</b>: efetuando o estorno do pedido principal todos os lugares e todas as apresentações serão estornados.";
             die();
         }
 
         if ($pedido_principal["BRASPAG_ID"] == 'POS' and !isset($_SESSION['pos_user']['serial'])) {
-            echo "Este pedido foi feito em um POS.<br />
-                    Não é possível o estorno por esse meio.<br /><br />
-                    Caso queira estornar este pedido, efetue o estorno utilizando um POS.";
+            echo "Este pedido foi feito em um POS.<br /> Não é possível o estorno por esse meio.<br /><br /> Caso queira estornar este pedido, efetue o estorno utilizando um POS.";
             die();
         } elseif (isset($_SESSION['pos_user']['serial']) and $pedido_principal["BRASPAG_ID"] != 'POS') {
-            echo "Este pedido não foi feito em um POS.<br />
-                    Não é possível o estorno por esse meio.<br /><br />
-                    Caso queira estornar este pedido, efetue o estorno utilizando o sistema administrativo pelo site.";
+            echo "Este pedido não foi feito em um POS.<br /> Não é possível o estorno por esse meio.<br /><br /> Caso queira estornar este pedido, efetue o estorno utilizando o sistema administrativo pelo site.";
             die();
         } else if ($pedido_principal["BRASPAG_ID"] == 'POS' and isset($_SESSION['pos_user']['serial'])) {
             $retorno = 'ok';
@@ -77,8 +70,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
         $pedido_ocorreu = executeSQL($mainConnection, $query, array($_POST['pedido']), true);
 
         if ($pedido_ocorreu[0]) {
-            echo "Este pedido contém pelo menos uma apresentação que já ocorreu.<br /><br />
-                    Não é possível o estorno.";
+            echo "Este pedido contém pelo menos uma apresentação que já ocorreu.<br /><br /> Não é possível o estorno.";
             die();
         }
 

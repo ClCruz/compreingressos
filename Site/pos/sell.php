@@ -865,6 +865,10 @@ if (isset($_GET['RESPAG'])) {
 
 		executeSQL($mainConnection, 'DELETE MW_RESERVA WHERE ID_SESSION = ?', array(session_id()));
 
+		// limpa antes da impressao
+		echo_header();
+		echo "<WRITE_AT LINE=$header_lines COLUMN=0> </WRITE_AT>";
+
 		// imprimir
 		print_order($newMaxId);
 
@@ -988,23 +992,32 @@ switch ($_GET['subscreen']) {
 
 	case 'bilhete':
 
-		echo utf8_decode("<WRITE_AT LINE=5 COLUMN=0> Selecione o tipo de bilhete:</WRITE_AT>");
-
 		// bilhete numerado/marcado
 		if (isset($_GET['bilhete_m'])) {
 
-			echo "<GET TYPE=HIDDEN NAME=cadeira VALUE={$_GET['cadeira']}>";
+			$query = "SELECT COUNT(1) AS BILHETES, MIN(ID_CADEIRA) AS ID_CADEIRA FROM MW_RESERVA WHERE ID_APRESENTACAO_BILHETE IS NULL AND ID_SESSION = ?";
+			$params = array(session_id());
+			$rs = executeSQL($mainConnection, $query, $params, true);
+
+			echo "<GET TYPE=HIDDEN NAME=cadeira VALUE={$rs['ID_CADEIRA']}>";
 			echo "<GET TYPE=HIDDEN NAME=quantidade VALUE=1>";
 			
-			// echo utf8_decode("<WRITE_AT LINE=5 COLUMN=0> Você tem {$rs['BILHETES']} bilhete(s) para</WRITE_AT>");
-			// echo utf8_decode("<WRITE_AT LINE=6 COLUMN=0> selecionar o tipo:</WRITE_AT>");
+			echo utf8_decode("<WRITE_AT LINE=5 COLUMN=0> Você tem {$rs['BILHETES']} bilhete(s) para</WRITE_AT>");
+			echo utf8_decode("<WRITE_AT LINE=6 COLUMN=0> selecionar o tipo:</WRITE_AT>");
 
-			echo "<GET TYPE=HIDDEN NAME=subscreen VALUE=fileira>";
+			if ($rs['BILHETES'] > 1) {
+				echo "<GET TYPE=HIDDEN NAME=bilhete_m VALUE=1>";
+				echo "<GET TYPE=HIDDEN NAME=subscreen VALUE=bilhete>";
+			} else {
+				echo "<GET TYPE=HIDDEN NAME=subscreen VALUE=fileira>";
+			}
 
 		}
 
 		// bilhetes nao numerados/marcados
 		else {
+
+			echo utf8_decode("<WRITE_AT LINE=5 COLUMN=0> Selecione o tipo de bilhete:</WRITE_AT>");
 
 			$bilhete_options[999999999] = 'Voltar';
 
@@ -1075,10 +1088,10 @@ switch ($_GET['subscreen']) {
 
 	case 'fileira':
 
-		display_error("A venda de lugares marcados não é permitida no momento. Favor selecionar outro setor.");
+		/*display_error("A venda de lugares marcados não é permitida no momento. Favor selecionar outro setor.");
 		echo "<GET TYPE=HIDDEN NAME=history VALUE=999999999>";
 		echo "<POST>";
-		die();
+		die();*/
 
 		echo utf8_decode("<WRITE_AT LINE=5 COLUMN=0> Selecione a fileira: </WRITE_AT>");
 
@@ -1141,21 +1154,38 @@ switch ($_GET['subscreen']) {
 
 		$conn = getConnection($rs['ID_BASE']);
 
-		$query = "SELECT INDICE, SUBSTRING(D.NOMOBJETO, CHARINDEX('-', D.NOMOBJETO)+1, LEN(D.NOMOBJETO)) AS CADEIRA
-					FROM TABAPRESENTACAO A
-					INNER JOIN TABSALDETALHE D ON D.CODSALA = A.CODSALA
-					WHERE A.CODAPRESENTACAO = ?
-					AND SUBSTRING(D.NOMOBJETO, 1, CHARINDEX('-', D.NOMOBJETO)-1) IN (SELECT SUBSTRING(D2.NOMOBJETO, 1, CHARINDEX('-', D2.NOMOBJETO)-1) FROM TABSALDETALHE D2 WHERE D2.CODSALA = A.CODSALA AND D2.INDICE = ?)
-					AND D.INDICE NOT IN (SELECT L.INDICE FROM TABLUGSALA L WHERE L.CODAPRESENTACAO = A.CODAPRESENTACAO)
-					AND D.TIPOBJETO = 'C'
-					ORDER BY INDICE";
+		$query = 'SELECT S.IN_VENDA_MESA FROM TABAPRESENTACAO A INNER JOIN TABSALA S ON S.CODSALA = A.CODSALA  WHERE CODAPRESENTACAO = ?';
+		$params = array($rs['CODAPRESENTACAO']);
+		$rs2 = executeSQL($conn, $query, $params, true);
+
+		if ($rs2['IN_VENDA_MESA']) {
+			$query = "SELECT MIN(INDICE) AS INDICE, SUBSTRING(D.NOMOBJETO, CHARINDEX('-', D.NOMOBJETO)+1, LEN(D.NOMOBJETO)) AS CADEIRA, COUNT(1) AS LUGARES
+						FROM TABAPRESENTACAO A
+						INNER JOIN TABSALDETALHE D ON D.CODSALA = A.CODSALA
+						WHERE A.CODAPRESENTACAO = ?
+						AND SUBSTRING(D.NOMOBJETO, 1, CHARINDEX('-', D.NOMOBJETO)-1) IN (SELECT SUBSTRING(D2.NOMOBJETO, 1, CHARINDEX('-', D2.NOMOBJETO)-1) FROM TABSALDETALHE D2 WHERE D2.CODSALA = A.CODSALA AND D2.INDICE = ?)
+						AND D.INDICE NOT IN (SELECT L.INDICE FROM TABLUGSALA L WHERE L.CODAPRESENTACAO = A.CODAPRESENTACAO)
+						AND D.TIPOBJETO = 'C'
+						GROUP BY SUBSTRING(D.NOMOBJETO, CHARINDEX('-', D.NOMOBJETO)+1, LEN(D.NOMOBJETO))
+						ORDER BY CADEIRA";
+		} else {
+			$query = "SELECT INDICE, SUBSTRING(D.NOMOBJETO, CHARINDEX('-', D.NOMOBJETO)+1, LEN(D.NOMOBJETO)) AS CADEIRA
+						FROM TABAPRESENTACAO A
+						INNER JOIN TABSALDETALHE D ON D.CODSALA = A.CODSALA
+						WHERE A.CODAPRESENTACAO = ?
+						AND SUBSTRING(D.NOMOBJETO, 1, CHARINDEX('-', D.NOMOBJETO)-1) IN (SELECT SUBSTRING(D2.NOMOBJETO, 1, CHARINDEX('-', D2.NOMOBJETO)-1) FROM TABSALDETALHE D2 WHERE D2.CODSALA = A.CODSALA AND D2.INDICE = ?)
+						AND D.INDICE NOT IN (SELECT L.INDICE FROM TABLUGSALA L WHERE L.CODAPRESENTACAO = A.CODAPRESENTACAO)
+						AND D.TIPOBJETO = 'C'
+						ORDER BY INDICE";
+		}
 
 		$result = executeSQL($conn, $query, array($rs['CODAPRESENTACAO'], $_GET['fileira']));
 
 		$cadeira_options[999999999] = 'Voltar';
 
 		while ($rs = fetchResult($result)) {
-			$cadeira_options[$rs['INDICE']] = utf8_encode($rs['CADEIRA']);
+			$descricao = ($rs2['IN_VENDA_MESA'] ? utf8_encode($rs['CADEIRA']) . " (mesa para {$rs['LUGARES']})" : utf8_encode($rs['CADEIRA']));
+			$cadeira_options[$rs['INDICE']] = $descricao;
 		}
 
 		echo "<WRITE_AT LINE=5 COLUMN=0> Selecione a cadeira: </WRITE_AT>";

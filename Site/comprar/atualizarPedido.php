@@ -378,17 +378,17 @@ if (isset($_GET['action'])) {
 						$_POST['apresentacao'][$i],
 						$_POST['cadeira'][$i],
 						session_id(),
-						$_POST['valorIngresso'][$i],
+						$_POST['valorIngresso'][$i]
 					);
 				} elseif ($_GET['pos'] and $_GET['codigo']) {
 					$query = 'UPDATE MW_RESERVA SET NR_BENEFICIO = ?
 							WHERE ID_APRESENTACAO = ? AND ID_CADEIRA = ? AND ID_SESSION = ? AND ID_APRESENTACAO_BILHETE = ?';
 					$params = array(
-						$_GET['codigo'][0],
+						$_GET['codigo'][$i],
 						$_POST['apresentacao'][$i],
 						$_POST['cadeira'][$i],
 						session_id(),
-						$_POST['valorIngresso'][$i],
+						$_POST['valorIngresso'][$i]
 					);
 				}
 

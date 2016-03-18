@@ -30,6 +30,8 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
                     PV.IN_RETIRA_ENTREGA,
                     C.DS_DDD_TELEFONE,
                     C.DS_TELEFONE,
+                    C.DS_DDD_CELULAR,
+                    C.DS_CELULAR,
                     U.DS_NOME,
                     PV.ID_IP ";
 
@@ -53,6 +55,8 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
                   PV.IN_RETIRA_ENTREGA,
                   C.DS_DDD_TELEFONE,
                   C.DS_TELEFONE,
+                  C.DS_DDD_CELULAR,
+                  C.DS_CELULAR,
                   U.DS_NOME,
                   PV.ID_IP ";
 
@@ -83,6 +87,8 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
                             PV.IN_RETIRA_ENTREGA,
                             C.DS_DDD_TELEFONE,
                             C.DS_TELEFONE,
+                            C.DS_DDD_CELULAR,
+                            C.DS_CELULAR,
                             PV.ID_IP ";
 
                 $group = " GROUP BY
@@ -95,6 +101,8 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
                               PV.IN_RETIRA_ENTREGA,
                               C.DS_DDD_TELEFONE,
                               C.DS_TELEFONE,
+                              C.DS_DDD_CELULAR,
+                              C.DS_CELULAR,
                               PV.ID_IP ";
 
                 $from = "FROM MW_PEDIDO_VENDA PV INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE AND PV.ID_USUARIO_CALLCENTER IS NULL
@@ -296,7 +304,7 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
                     </td>
                     <td><?php echo $rs['DT_PEDIDO_VENDA'] ?></td>
                     <td><?php echo $rs['ID_IP'] ?></td>
-                    <td><?php echo utf8_encode($rs['CLIENTE'] . " " . $rs['DS_SOBRENOME']) . " / " . $rs['DS_DDD_TELEFONE'] . " " . $rs['DS_TELEFONE']; ?></td>
+                    <td><?php echo utf8_encode($rs['CLIENTE'] . " " . $rs['DS_SOBRENOME']) . " / " . $rs['DS_DDD_TELEFONE'] . " " . $rs['DS_TELEFONE'] . " / " . $rs['DS_DDD_CELULAR'] . " " . $rs['DS_CELULAR']; ?></td>
                     <td class="moeda"><?php echo str_replace(".", ",", $rs['TOTAL_UNIT']); ?></td>
                     <td><?php echo $rs["QUANTIDADE"];?></td>
                     <td><?php echo comboSituacao('situacao', $rs['IN_SITUACAO'], false)?></td>

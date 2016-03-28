@@ -250,7 +250,7 @@ limparCookies();
 						</p>
 					</div>
 				</div>
-				<div class="imprima_agora"><a href="reimprimirEmail.php?pedido=<?php echo $_GET['pedido']; ?>"><div class="icone"></div>Imprima agora seus ingressos.</a></div>
+				<div class="imprima_agora"><a href="reimprimirEmail.php?pedido=<?php echo $_GET['pedido']; ?>" target="_new"><div class="icone"></div>Imprima agora seus ingressos.</a></div>
 				<?php if ((isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) { ?>
 					<div class="imprima_agora nova_venda"><a href="etapa0.php">NOVA VENDA</a></div>
 				<?php } ?>

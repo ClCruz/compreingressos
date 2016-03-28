@@ -831,6 +831,7 @@ div.input_area.endereco .sbHolder, div.input_area.identificacao .sbHolder{
   div.container_cartoes div.container_cartao p.nome{
     width:80px;
     margin-top:0;
+    margin-left:0;
     font-size:14px;
   }
   div.container_cartoes div.container_cartao label.radio img{
@@ -1154,6 +1155,11 @@ div.input_area.endereco .sbHolder, div.input_area.identificacao .sbHolder{
   }
   div.resumo_carrinho{
     display:none;
+  }
+
+
+  #fastcashPaymentFrame {
+    margin: 150px 0 -40px 0;
   }
 }
 

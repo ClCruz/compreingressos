@@ -37,8 +37,10 @@ if (isset($_GET['quantidade']) and $_GET['quantidade'] != '') {
 
 	// se a quantidade nao for 0 continuar
 	else {
-		$query = "SELECT ISNULL(COUNT(DISTINCT R.ID_APRESENTACAO_BILHETE), 0) QT_TIPO_BILHETE FROM MW_RESERVA R WHERE ID_SESSION = ? AND R.ID_APRESENTACAO_BILHETE != ?";
+		$query = "SELECT COUNT(R.ID_APRESENTACAO_BILHETE) QT_TIPO_BILHETE FROM MW_RESERVA R WHERE ID_SESSION = ? AND R.ID_APRESENTACAO_BILHETE = ?";
 		$rs = executeSQL($mainConnection, $query, array(session_id(), $_GET['bilhete']), true);
+
+		$bilhetes_reservados = $rs['QT_TIPO_BILHETE'];
 			
 		// checar limites promocionais
 		$query = "SELECT E.ID_BASE
@@ -199,7 +201,16 @@ if (isset($_GET['quantidade']) and $_GET['quantidade'] != '') {
 			// se for um bilhete promocional
 			if (isset($rs['CODTIPPROMOCAO'])) {
 
-				if ($rs['QT_PROMO_POR_CPF'] < $_GET['quantidade']) {
+				// para bilhetes numerados/marcados
+				if (isset($_GET['cadeira']) and $rs['QT_PROMO_POR_CPF'] < $_GET['quantidade'] + $bilhetes_reservados) {
+
+    				$_GET['quantidade'] = 0;
+    				
+    				display_error("Devido ao limite da promoção você só pode selecionar {$rs['QT_PROMO_POR_CPF']} bilhetes desse tipo.", "Aviso");
+				}
+
+				// para bilhetes nao numerados/marcados
+				elseif ($rs['QT_PROMO_POR_CPF'] < $_GET['quantidade']) {
 
     				$_GET['quantidade'] = $rs['QT_PROMO_POR_CPF'];
     				
@@ -215,43 +226,44 @@ if (isset($_GET['quantidade']) and $_GET['quantidade'] != '') {
 				}
 
 				// se for bin pegar o codigo promocional apenas uma vez
-				$codes_to_get = ($rs['CODTIPPROMOCAO'] == 4 ? 1 : $_GET['quantidade']);
+				$codes_to_get = (($rs['CODTIPPROMOCAO'] == 4 and $_GET['quantidade'] > 0) ? 1 : $_GET['quantidade']);
 
-				for ($i=1; $i <= $codes_to_get; $i++) {
+				if ($codes_to_get > 0) {
+					for ($i=1; $i <= $codes_to_get; $i++) {
+						if (isset($codPreValidado)) {
+							echo "<GET TYPE=HIDDEN NAME=codigo[] VALUE=$codPreValidado>";
+						} else {
 
-					if (isset($codPreValidado)) {
-						echo "<GET TYPE=HIDDEN NAME=codigo[] VALUE=$codPreValidado>";
-					} else {
+							echo_header();
+							
+							$line = $header_lines;
+							echo utf8_decode("<WRITE_AT LINE=$line COLUMN=0> Código promocional/BIN:</WRITE_AT>");
 
-						echo_header();
-						
-						$line = $header_lines;
-						echo utf8_decode("<WRITE_AT LINE=$line COLUMN=0> Código promocional/BIN:</WRITE_AT>");
+							if ($rs[0] != 4) {
+								$line += 2;
+								echo utf8_decode("<WRITE_AT LINE=$line COLUMN=0> Bilhete $i:</WRITE_AT>");
+							}
 
-						if ($rs[0] != 4) {
-							$line += 2;
-							echo utf8_decode("<WRITE_AT LINE=$line COLUMN=0> Bilhete $i:</WRITE_AT>");
+							$line += 3;
+							echo "<GET TYPE=FIELD NAME=codigo[] SIZE=28 COL=1 LIN=$line>";
 						}
-
-						$line += 3;
-						echo "<GET TYPE=FIELD NAME=codigo[] SIZE=28 COL=1 LIN=$line>";
 					}
-				}
 
-				foreach ($_GET as $key => $value) {
-					if (is_array($value)) {
-						foreach ($value as $v) {
-							echo "<GET TYPE=HIDDEN NAME={$key}[] VALUE=$v>";
+					foreach ($_GET as $key => $value) {
+						if (is_array($value)) {
+							foreach ($value as $v) {
+								echo "<GET TYPE=HIDDEN NAME={$key}[] VALUE=$v>";
+							}
+						} else {
+							echo "<GET TYPE=HIDDEN NAME=$key VALUE=$value>";
 						}
-					} else {
-						echo "<GET TYPE=HIDDEN NAME=$key VALUE=$value>";
 					}
+
+					echo "<GET TYPE=HIDDEN NAME=validar_codigos VALUE=1>";
+
+					echo "<POST>";
+					die();
 				}
-
-				echo "<GET TYPE=HIDDEN NAME=validar_codigos VALUE=1>";
-
-				echo "<POST>";
-				die();
 			}
 
 			// se nao for um bilhete promocional
@@ -499,12 +511,12 @@ if ($_GET['bilhete'] == 888888888 or $_GET['bilhete'] == 777777777
 			$confirmacao_options[] = ' ';
 		}
 
-		$valores = str_pad($rs['QTD_INGRESSOS'].'x', 8, ' ', STR_PAD_LEFT) . str_pad(number_format(($rs['VL_LIQUIDO_INGRESSO'] + obterValorServico($rs['ID_APRESENTACAO_BILHETE'])), 2, ',', '').' ', 21, ' ', STR_PAD_LEFT);
+		$valores = str_pad($rs['QTD_INGRESSOS'].'x', 8, ' ', STR_PAD_LEFT) . str_pad(number_format(($rs['VL_LIQUIDO_INGRESSO'] + obterValorServico($rs['ID_APRESENTACAO_BILHETE'], false, null, true)), 2, ',', '').' ', 21, ' ', STR_PAD_LEFT);
 		$confirmacao_options[] = utf8_encode($rs['DS_TIPO_BILHETE']);
 		$confirmacao_options[] = $valores;
 
 		$total_ingressos += $rs['VL_LIQUIDO_INGRESSO'] * $rs['QTD_INGRESSOS'];
-		$total_servico += obterValorServico($rs['ID_APRESENTACAO_BILHETE']) * $rs['QTD_INGRESSOS'];
+		$total_servico += obterValorServico($rs['ID_APRESENTACAO_BILHETE'], false, null, true) * $rs['QTD_INGRESSOS'];
 
 		$last_bilhete = $rs['ID_APRESENTACAO_BILHETE'];
 	}
@@ -514,7 +526,7 @@ if ($_GET['bilhete'] == 888888888 or $_GET['bilhete'] == 777777777
 	}
 
 	if ($total_servico == 0) {
-		$total_servico += obterValorServico($last_bilhete, true);
+		$total_servico += obterValorServico($last_bilhete, true, null, true);
 	}
 
 	echo "<WRITE_AT LINE=15 COLUMN=0> TOTAL INGRESSOS".str_pad(number_format($total_ingressos, 2, ',', '').' ', 14, ' ', STR_PAD_LEFT)."</WRITE_AT>";
@@ -595,7 +607,7 @@ if (isset($_GET['confirmacao'])) {
 		$useragent = $_SERVER['HTTP_USER_AGENT'];
 		$strCookie = 'PHPSESSID=' . $_COOKIE['PHPSESSID'] . '; path=/';
 
-		$post_data = http_build_query(array('numCartao' => $bin));
+		$post_data = http_build_query(array('numCartao' => $bin, 'pos' => 1));
 		$url = 'http'.($_SERVER["HTTPS"] == "on" ? 's' : '').'://'.$_SERVER['SERVER_NAME'].($is_teste === '1' ? '/compreingressos2' : '').'/comprar/validarBin.php';
 		session_write_close();
 
@@ -648,13 +660,13 @@ if (isset($_GET['confirmacao'])) {
 
 			while ($rs = fetchResult($result)) {
 				$total_ingressos += $rs['VL_LIQUIDO_INGRESSO'] * $rs['QTD_INGRESSOS'];
-				$total_servico += obterValorServico($rs['ID_APRESENTACAO_BILHETE']) * $rs['QTD_INGRESSOS'];
+				$total_servico += obterValorServico($rs['ID_APRESENTACAO_BILHETE'], false, null, true) * $rs['QTD_INGRESSOS'];
 
 				$last_bilhete = $rs['ID_APRESENTACAO_BILHETE'];
 			}
 
 			if ($total_servico == 0) {
-				$total_servico += obterValorServico($last_bilhete, true);
+				$total_servico += obterValorServico($last_bilhete, true, null, true);
 			}
 
 			$total_geral = $total_ingressos + $total_servico;
@@ -773,15 +785,15 @@ if (isset($_GET['RESPAG'])) {
 		    
 		    if ($itensPedido == 1) {
 		        if ($rsServicos['IN_TAXA_POR_PEDIDO'] == 'S') {
-		            $valorConveniencia = $valorConvenienciaAUX = obterValorServico($itens['ID_APRESENTACAO_BILHETE'], true);
+		            $valorConveniencia = $valorConvenienciaAUX = obterValorServico($itens['ID_APRESENTACAO_BILHETE'], true, null, true);
 
 		            $valorConveniencia = 0;
 		            $itensPedido++;
 		        } else {
-		            $valorConveniencia = obterValorServico($itens['ID_APRESENTACAO_BILHETE']);
+		            $valorConveniencia = obterValorServico($itens['ID_APRESENTACAO_BILHETE'], false, null, true);
 		        }
 		    } else {
-		        $valorConveniencia = obterValorServico($itens['ID_APRESENTACAO_BILHETE']);
+		        $valorConveniencia = obterValorServico($itens['ID_APRESENTACAO_BILHETE'], false, null, true);
 		        $valorConvenienciaAUX = 0;
 		    }
 
@@ -865,6 +877,10 @@ if (isset($_GET['RESPAG'])) {
 		executeSQL($mainConnection, 'UPDATE MW_PROMOCAO SET ID_SESSION = NULL, ID_PEDIDO_VENDA = ? WHERE ID_SESSION = ?', array($newMaxId, session_id()));
 
 		executeSQL($mainConnection, 'DELETE MW_RESERVA WHERE ID_SESSION = ?', array(session_id()));
+
+		// assinatura
+		$parametros['OrderData']['OrderId'] = $newMaxId;
+		require('../comprar/concretizarAssinatura.php');
 
 		// limpa antes da impressao
 		echo_header();
@@ -999,18 +1015,23 @@ switch ($_GET['subscreen']) {
 			$query = "SELECT COUNT(1) AS BILHETES, MIN(ID_CADEIRA) AS ID_CADEIRA FROM MW_RESERVA WHERE ID_APRESENTACAO_BILHETE IS NULL AND ID_SESSION = ?";
 			$params = array(session_id());
 			$rs = executeSQL($mainConnection, $query, $params, true);
-
-			echo "<GET TYPE=HIDDEN NAME=cadeira VALUE={$rs['ID_CADEIRA']}>";
-			echo "<GET TYPE=HIDDEN NAME=quantidade VALUE=1>";
 			
 			echo utf8_decode("<WRITE_AT LINE=5 COLUMN=0> Você tem {$rs['BILHETES']} bilhete(s) para</WRITE_AT>");
 			echo utf8_decode("<WRITE_AT LINE=6 COLUMN=0> selecionar o tipo:</WRITE_AT>");
 
-			if ($rs['BILHETES'] > 1) {
+			if ($rs['BILHETES'] > 0) {
+				echo "<GET TYPE=HIDDEN NAME=cadeira VALUE={$rs['ID_CADEIRA']}>";
+				echo "<GET TYPE=HIDDEN NAME=quantidade VALUE=1>";
+
 				echo "<GET TYPE=HIDDEN NAME=bilhete_m VALUE=1>";
 				echo "<GET TYPE=HIDDEN NAME=subscreen VALUE=bilhete>";
 			} else {
+				echo_header();
+
+				echo "<GET TYPE=HIDDEN NAME=apresentacao VALUE={$_GET['apresentacao']}>";
 				echo "<GET TYPE=HIDDEN NAME=subscreen VALUE=fileira>";
+				echo "<POST>";
+				die();
 			}
 
 		}
@@ -1054,7 +1075,7 @@ switch ($_GET['subscreen']) {
 			if ($value['codTipPromocao'] == 5 and !$venda_convite) continue;
 
 			if ($value['exibicao'] == null or $value['exibicao'] == 'T' or $value['exibicao'] == 'P') {
-				$valor = ' '.number_format(($value['valor'] + obterValorServico($key)), 2, ',', '');
+				$valor = ' '.number_format(($value['valor'] + obterValorServico($key, false, null, true)), 2, ',', '');
 				$descricao = substr(substr(remove_accents($value['descricao']).str_repeat(" ", 28), 0, 28), 0, (strlen($valor)*-1)).$valor;
 				$bilhete_options[$key] = $descricao;
 			}

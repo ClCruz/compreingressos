@@ -3,10 +3,17 @@ $total_lines = 19;
 $header_lines = 4;
 $body_lines = $total_lines - $header_lines;
 
-$ip_tef = '0.0.0.0';
-$porta_tef = '0';
-$codloja_tef = '00000000';
-$idterm_tef = 'ID000001';
+if ($is_teste === '1') {
+	$ip_tef = '152.250.250.64';
+	$porta_tef = '4096';
+	$codloja_tef = '00000000';
+	$idterm_tef = 'ID000001';
+} else {
+	$ip_tef = '192.168.102.1';
+	$porta_tef = '10101';
+	$codloja_tef = '72850161';
+	$idterm_tef = 'ID000001';
+}
 
 if ($_GET['config']) {
 
@@ -46,6 +53,9 @@ if (!$_SESSION['is_pos_configured']) {
 			echo "<FILE NAME=logo_ci_colorida.bmp ADDR=$imgs_dir/logo_ci_colorida.bmp ERR=erroarq WRT=SIM>";
 			echo "<FILE NAME=logo_ci_mono.bmp ADDR=$imgs_dir/logo_ci_mono.bmp ERR=erroarq WRT=SIM>";
 			echo "<FILE NAME=logo_scroll.bmp ADDR=$imgs_dir/logo_scroll.bmp ERR=erroarq WRT=SIM>";
+
+			// envia arquivo de configuracao do <PAGAMENTO>
+			echo "<FILE NAME=CLSIT ADDR=/pos2/CLSIT.txt ERR=ERROARQ>";
 
 			// configuracoes gerais
 			echo "<CONFIG_NAVS RETURN=STS_ALTERA_SERVER>";

@@ -9,6 +9,7 @@ $parametros['OrderData']['OrderId'] = 357350;
 //*/
 
 $id_pedido = $parametros['OrderData']['OrderId'];
+$session_id = $id_pedido;
 
 $query = "SELECT TOP 1
 			E.ID_BASE, B.DS_NOME_BASE_SQL, PV.ID_CLIENTE, PV.ID_USUARIO_CALLCENTER, PV.DT_PEDIDO_VENDA, PV.VL_TOTAL_PEDIDO_VENDA,
@@ -38,7 +39,7 @@ if (!empty($dadosPedido)) {
 	$dadosPedido['VL_FRETE'] = 0;
 
 	// limpar reserva (evita que os itens do pai que sobraram na reserva sejam incluidos no primeiro filho)
-	executeSQL($mainConnection, 'DELETE MW_RESERVA WHERE ID_SESSION = ?', array(session_id()));
+	executeSQL($mainConnection, 'DELETE MW_RESERVA WHERE ID_SESSION = ?', array($session_id));
 
 	// marcar como um pedido de pacote
 	executeSQL($mainConnection, "UPDATE MW_PEDIDO_VENDA SET IN_PACOTE = 'S' WHERE ID_PEDIDO_VENDA = ?", array($id_pedido));
@@ -77,7 +78,7 @@ if (!empty($dadosPedido)) {
 		$apresentacoes[$rs['CODAPRESENTACAO']][] = array(
 			$rs['ID_APRESENTACAO'],
 			$rs['ID_CADEIRA'],
-			session_id(),
+			$session_id,
 			$rs['DS_CADEIRA'],
 			$rs['DS_SETOR'],
 			$rs['DT_VALIDADE']->format('Ymd'),
@@ -96,7 +97,7 @@ if (!empty($dadosPedido)) {
 
 			executeSQL($conn,
 						'INSERT INTO TABLUGSALA (CODAPRESENTACAO,INDICE,CODTIPBILHETE,CODCAIXA,CODVENDA,STAIMPRESSAO,STACADEIRA,CODUSUARIO,CODRESERVA,ID_SESSION) VALUES (?,?,?,?,?,?,?,?,?,?)',
-						array($codApresentacao, $params[1], NULL, 255, NULL, 0, 'T', NULL, NULL, session_id()));
+						array($codApresentacao, $params[1], NULL, 255, NULL, 0, 'T', NULL, NULL, $session_id));
 		}
 
 
@@ -148,7 +149,7 @@ if (!empty($dadosPedido)) {
 		            LEFT JOIN MW_LOCAL_EVENTO LE ON E.ID_LOCAL_EVENTO = LE.ID_LOCAL_EVENTO
 		            WHERE R.ID_SESSION = ? AND R.DT_VALIDADE >= GETDATE()
 		            ORDER BY E.DS_EVENTO, R.ID_APRESENTACAO, R.DS_CADEIRA";
-		$params = array(session_id());
+		$params = array($session_id);
 		$result = executeSQL($mainConnection, $query, $params);
 
 		$itensPedido = 0;
@@ -226,7 +227,7 @@ if (!empty($dadosPedido)) {
 		$return_code = -1;
 
 		$proc_assinatura = 'EXEC '.strtoupper($dadosPedido['DS_NOME_BASE_SQL']).'..SP_VEN_INS001_WEB ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?';
-		$params_proc_assinatura = array(session_id(), $dadosPedido['ID_BASE'], $dadosPedido['CD_MEIO_PAGAMENTO'], $codApresentacao,
+		$params_proc_assinatura = array($session_id, $dadosPedido['ID_BASE'], $dadosPedido['CD_MEIO_PAGAMENTO'], $codApresentacao,
 										 $dadosPedido['DS_DDD_TELEFONE'], $dadosPedido['DS_TELEFONE'], ($dadosPedido['DS_NOME'].' '.$dadosPedido['DS_SOBRENOME']),
 										 $dadosPedido['CD_CPF'], $dadosPedido['CD_RG'], $newMaxId, $dadosPedido['ID_PEDIDO_IPAGARE'],
 										 $dadosPedido['CD_NUMERO_AUTORIZACAO'], $dadosPedido['CD_NUMERO_TRANSACAO'], $dadosPedido['CD_BIN_CARTAO'],
@@ -256,7 +257,7 @@ if (!empty($dadosPedido)) {
 
 
 		// limpar reserva
-		executeSQL($mainConnection, 'DELETE MW_RESERVA WHERE ID_SESSION = ?', array(session_id()));
+		executeSQL($mainConnection, 'DELETE MW_RESERVA WHERE ID_SESSION = ?', array($session_id));
 	}
 
 

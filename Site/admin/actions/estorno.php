@@ -43,6 +43,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
         $result = executeSQL($mainConnection, $query, array($_POST['pedido']));
         $pedido_principal = fetchResult($result, SQLSRV_FETCH_ASSOC);
 
+        if ($pedido_principal['ID_PEDIDO_VENDA'] == null) {
+            echo "Pedido inexistente ou já estornado.";
+            die();
+        }
+
         if ($pedido_principal["FILHO"]) {
             echo "Este pedido pertence à uma assinatura.<br /> Não é possível o estorno individualmente.<br /><br /> Caso queira estornar este pedido, efetue o estorno utilizando o pedido principal da assinatura: ".$pedido_principal["ID_PEDIDO_PAI"].".<br /><br /> <b>Atenção</b>: efetuando o estorno do pedido principal todos os lugares e todas as apresentações serão estornados.";
             die();
@@ -110,7 +115,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
 
             // VENDAS PELO PDV, PEDIDOS FILHOS (DE ASSINATURAS), PEDIDOS COM INGRESSOS PROMOCIONAIS, VALOR 0 E FEITOS PELO POS NÃO SÃO ESTORNADAS DO BRASPAG
             $is_estorno_brasbag = ($pedido["IN_TRANSACAO_PDV"] == 0 and !$pedido["FILHO"] and ($pedido['INGRESSOS_PROMOCIONAIS'] == 0 and $pedido['VALOR'] != 0)
-                                    and !($pedido_principal["BRASPAG_ID"] == 'POS' and isset($_POST['pos_serial'])));
+                                    and !($pedido_principal["BRASPAG_ID"] == 'POS' and isset($_POST['pos_serial'])) and $pedido_principal["BRASPAG_ID"] != 'Fastcash');
 
             $options = array(
                 'local_cert' => file_get_contents('../settings/cert.pem'),
@@ -122,6 +127,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                 'cache_wsdl' => WSDL_CACHE_NONE
             );
 
+            // tratamento para braspag
             if ($is_estorno_brasbag) {
                 // $where = $is_teste == '1' ? ' WHERE IN_ATIVO = 1' : '';
                 $result_gateway_pagamento = executeSQL($mainConnection, 'SELECT ID_GATEWAY_PAGAMENTO, DS_GATEWAY_PAGAMENTO, CD_GATEWAY_PAGAMENTO, DS_URL FROM MW_GATEWAY_PAGAMENTO'.$where);
@@ -190,7 +196,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                     // se der a msg de erro "Refund is not enabled for this merchant" fazer o estorno pelo sistema do mesmo jeito
                     elseif ($value['response']->ErrorReportDataCollection->ErrorReportDataResponse->ErrorCode === "139") {
                         $force_system_refund = true;
-                        $value['descricao_erro'] = "<b>Não foi possível efetuar o estorno junto à Operadora</b>, 
+                        $value['descricao_erro'] = "<b>Não foi possível efetuar o estorno junto à Operadora (Braspag)</b>, 
                                                     por favor, efetue o procedimento de cancelamento junto a operadora manualmente.<br/><br/>
                                                     Os dados do sistema do Middleway foram atualizados com sucesso.";
 
@@ -208,6 +214,18 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                     $erros_resposta_braspag['count'] += count(get_object_vars($value['response']->ErrorReportDataCollection));
                     $erros_resposta_braspag['descr'] .= $value['response']->ErrorReportDataCollection->ErrorReportDataResponse->ErrorMessage;
                 }
+            }
+
+            // tratamento para outros meios de pagamento
+            else {
+                if ($pedido_principal["BRASPAG_ID"] == 'Fastcash') {
+                    $force_system_refund = true;
+                    $value['descricao_erro'] = "<b>Não foi possível efetuar o estorno junto à Operadora (Fastcash)</b>, 
+                                                por favor, efetue o procedimento de cancelamento junto a operadora manualmente.<br/><br/>
+                                                Os dados do sistema do Middleway foram atualizados com sucesso.";
+                }
+
+                $resposta_geral .= "{$value['descricao_erro']}<br/><br/>";
             }
 
 

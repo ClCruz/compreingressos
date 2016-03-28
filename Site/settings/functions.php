@@ -86,7 +86,7 @@ function verificarLimitePorCPF($conn, $codApresentacao, $user) {
     return NULL;
 }
 
-function obterValorServico($id_bilhete, $valor_pedido = false, $id_pedido = null) {
+function obterValorServico($id_bilhete, $valor_pedido = false, $id_pedido = null, $is_pos = false) {
 
 	$mainConnection = mainConnection();
         session_start();
@@ -94,7 +94,8 @@ function obterValorServico($id_bilhete, $valor_pedido = false, $id_pedido = null
             $query = 'SELECT TOP 1
                         TC.IN_TAXA_POR_PEDIDO,
                         PV.VL_TOTAL_TAXA_CONVENIENCIA,
-                        TC.IN_COBRAR_PDV
+                        TC.IN_COBRAR_PDV,
+                        TC.IN_COBRAR_POS
                       FROM
                         MW_TAXA_CONVENIENCIA TC
                       INNER JOIN MW_PEDIDO_VENDA PV ON PV.DT_PEDIDO_VENDA >= TC.DT_INICIO_VIGENCIA
@@ -107,6 +108,8 @@ function obterValorServico($id_bilhete, $valor_pedido = false, $id_pedido = null
                         TC.DT_INICIO_VIGENCIA DESC';
             $params = array($id_pedido);
             $rs = executeSQL($mainConnection, $query, $params, true);
+
+            if ($rs['IN_COBRAR_POS'] == 'N' and $is_pos) return number_format(0, 2);
 
             if ($rs['IN_TAXA_POR_PEDIDO'] == 'S') {
                     return $valor_pedido ? number_format($rs['VL_TOTAL_TAXA_CONVENIENCIA'], 2) : 0;
@@ -140,7 +143,8 @@ function obterValorServico($id_bilhete, $valor_pedido = false, $id_pedido = null
                         IN_TAXA_POR_PEDIDO,
                         VL_TAXA_UM_INGRESSO,
                         VL_TAXA_UM_INGRESSO_PROMOCIONAL,
-                        IN_COBRAR_PDV
+                        IN_COBRAR_PDV,
+                        IN_COBRAR_POS
                       FROM
                         MW_TAXA_CONVENIENCIA
                       WHERE
@@ -157,6 +161,8 @@ function obterValorServico($id_bilhete, $valor_pedido = false, $id_pedido = null
             $vl_um_ingresso_promo = $rs['VL_TAXA_UM_INGRESSO_PROMOCIONAL'];
             $taxa_por_pedido = $rs['IN_TAXA_POR_PEDIDO'];
             $is_cobrar_pdv = $rs['IN_COBRAR_PDV'];
+
+            if ($rs['IN_COBRAR_POS'] == 'N' and $is_pos) return number_format(0, 2);
 
             $conn = getConnection($id_base);
 
@@ -466,7 +472,7 @@ function getTotalLoteDisponivel ($bilhete) {
 	$mainConnection = mainConnection();
 	$total = 0;
 
-	$query = 'SELECT e.id_base, A.ID_EVENTO, A.DT_APRESENTACAO, A.HR_APRESENTACAO, AB.CODTIPBILHETE
+    $query = 'SELECT e.id_base, A.ID_EVENTO, CONVERT(VARCHAR, A.DT_APRESENTACAO, 112) DT_APRESENTACAO, A.HR_APRESENTACAO, AB.CODTIPBILHETE
 				from mw_evento e
 				inner join mw_apresentacao a on e.id_evento = a.id_evento
 				inner join mw_apresentacao_bilhete ab on ab.id_apresentacao = a.id_apresentacao
@@ -483,7 +489,7 @@ function getTotalLoteDisponivel ($bilhete) {
 				AND A.IN_ATIVO = 1 AND AB.IN_ATIVO = 1 AND TTB.CODTIPBILHETE = ?
 				AND TTB.QTDVENDAPORLOTE > 0 AND TTB.STATIPBILHMEIAESTUDANTE = 'N' AND TTB.STATIPBILHETE = 'A'";
 	$params = array($bilhete);
-	$rs = executeSQL($conn, $query, array($rs['ID_EVENTO'], $rs['DT_APRESENTACAO']->format('Ymd'), $rs['HR_APRESENTACAO'], $rs['CODTIPBILHETE']), true);
+	$rs = executeSQL($conn, $query, array($rs['ID_EVENTO'], $rs['DT_APRESENTACAO'], $rs['HR_APRESENTACAO'], $rs['CODTIPBILHETE']), true);
 
 	return getTotalLote($bilhete) - $rs['TOTAL'];
 }
@@ -2148,6 +2154,155 @@ function sendConfirmationMail($id_cliente) {
     return $successMail;
 }
 
+function sendSuccessMail($pedido_id) {
+    $mainConnection = mainConnection();
+
+    $query = "SELECT
+                    C.DS_NOME + ' ' + C.DS_SOBRENOME AS DS_NOME,
+                    CONVERT(VARCHAR(10), PV.DT_PEDIDO_VENDA, 103) AS DT_PEDIDO_VENDA,
+                    VL_TOTAL_PEDIDO_VENDA,
+                    MP.CD_MEIO_PAGAMENTO,
+                    C.CD_CPF,
+                    C.DS_DDD_TELEFONE,
+                    C.DS_TELEFONE,
+                    C.DS_DDD_CELULAR,
+                    C.DS_CELULAR,
+                    C.DS_ENDERECO,
+                    C.DS_COMPL_ENDERECO,
+                    C.DS_BAIRRO,
+                    C.DS_CIDADE,
+                    E.SG_ESTADO,
+                    C.CD_CEP,
+                    PV.DS_ENDERECO_ENTREGA,
+                    PV.DS_COMPL_ENDERECO_ENTREGA,
+                    PV.DS_BAIRRO_ENTREGA,
+                    PV.DS_CIDADE_ENTREGA,
+                    PV.CD_CEP_ENTREGA,
+                    PV.IN_RETIRA_ENTREGA,
+                    PV.NM_CLIENTE_VOUCHER,
+                    PV.DS_EMAIL_VOUCHER,
+                    C.CD_EMAIL_LOGIN
+                FROM MW_PEDIDO_VENDA PV
+                INNER JOIN MW_CLIENTE C ON PV.ID_CLIENTE = C.ID_CLIENTE
+                LEFT JOIN MW_MEIO_PAGAMENTO MP ON PV.ID_MEIO_PAGAMENTO = MP.ID_MEIO_PAGAMENTO
+                LEFT JOIN MW_ESTADO E ON C.ID_ESTADO = E.ID_ESTADO
+                WHERE PV.ID_PEDIDO_VENDA = ?";
+    $params = array($pedido_id);
+    $rsDados = executeSQL($mainConnection, $query, $params, true);
+
+    foreach ($rsDados as $key => $value) {
+        if (gettype($value) == 'string') {
+            $rsDados[$key] = utf8_encode($value);
+        }
+    }
+
+    $parametros['OrderData']['OrderId'] = $pedido_id;
+    $parametros['CustomerData']['CustomerName'] = $rsDados['DS_NOME'];
+    $valores['date'] = $rsDados['DT_PEDIDO_VENDA'];
+    $PaymentDataCollection['Amount'] = $rsDados['VL_TOTAL_PEDIDO_VENDA'] * 100;
+    $PaymentDataCollection['PaymentMethod'] = $rsDados['CD_MEIO_PAGAMENTO'];
+    $parametros['CustomerData']['CustomerIdentity'] = $rsDados['CD_CPF'];
+    $parametros['CustomerData']['CustomerEmail'] = $rsDados['CD_EMAIL_LOGIN'];
+    $dadosExtrasEmail['cpf_cnpj_cliente'] = $parametros['CustomerData']['CustomerIdentity'];
+
+    $dadosExtrasEmail['ddd_telefone1'] = $rsDados['DS_DDD_TELEFONE'];
+    $dadosExtrasEmail['numero_telefone1'] = $rsDados['DS_TELEFONE'];
+    $dadosExtrasEmail['ddd_telefone2'] = $rsDados['DS_DDD_CELULAR'];
+    $dadosExtrasEmail['numero_telefone2'] = $rsDados['DS_CELULAR'];
+
+    $dadosExtrasEmail['nome_presente'] = $rsDados['NM_CLIENTE_VOUCHER'];
+    $dadosExtrasEmail['email_presente'] = $rsDados['DS_EMAIL_VOUCHER'];
+
+    $parametros['CustomerData']['CustomerAddressData']['Street'] = $rsDados['DS_ENDERECO'];
+    $parametros['CustomerData']['CustomerAddressData']['Complement'] = $rsDados['DS_COMPL_ENDERECO'];
+    $parametros['CustomerData']['CustomerAddressData']['District'] = $rsDados['DS_BAIRRO'];
+    $parametros['CustomerData']['CustomerAddressData']['City'] = $rsDados['DS_CIDADE'];
+    $parametros['CustomerData']['CustomerAddressData']['State'] = $rsDados['SG_ESTADO'];
+    $parametros['CustomerData']['CustomerAddressData']['Country'] = 'Brasil';
+    $parametros['CustomerData']['CustomerAddressData']['ZipCode'] = $rsDados['CD_CEP'];
+
+    if ($rsDados['IN_RETIRA_ENTREGA'] == 'E') {
+        $parametros['CustomerData']['DeliveryAddressData']['Street'] = $rsDados['DS_ENDERECO_ENTREGA'];
+        $parametros['CustomerData']['DeliveryAddressData']['Complement'] = $rsDados['DS_COMPL_ENDERECO_ENTREGA'];
+        $parametros['CustomerData']['DeliveryAddressData']['District'] = $rsDados['DS_BAIRRO_ENTREGA'];
+        $parametros['CustomerData']['DeliveryAddressData']['City'] = $rsDados['DS_CIDADE_ENTREGA'];
+        $parametros['CustomerData']['DeliveryAddressData']['State'] = $rsDados['SG_ESTADO'];
+        $parametros['CustomerData']['DeliveryAddressData']['Country'] = 'Brasil';
+        $parametros['CustomerData']['DeliveryAddressData']['ZipCode'] = $rsDados['CD_CEP_ENTREGA'];
+    }
+
+    $query = "SELECT R.ID_RESERVA, R.ID_APRESENTACAO, R.ID_APRESENTACAO_BILHETE, R.DS_LOCALIZACAO AS DS_CADEIRA,
+                    R.DS_SETOR, E.ID_EVENTO, E.DS_EVENTO, ISNULL(LE.DS_LOCAL_EVENTO, B.DS_NOME_TEATRO) DS_NOME_TEATRO,
+                    CONVERT(VARCHAR(10), A.DT_APRESENTACAO, 103) DT_APRESENTACAO, A.HR_APRESENTACAO,
+                    AB.VL_LIQUIDO_INGRESSO, AB.DS_TIPO_BILHETE, E.ID_BASE, A.CodApresentacao, R.CodVenda
+                FROM MW_ITEM_PEDIDO_VENDA R
+                INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+                INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+                INNER JOIN MW_BASE B ON B.ID_BASE = E.ID_BASE
+                INNER JOIN MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
+                LEFT JOIN MW_LOCAL_EVENTO LE ON E.ID_LOCAL_EVENTO = LE.ID_LOCAL_EVENTO
+                WHERE R.ID_PEDIDO_VENDA = ? AND A.DT_APRESENTACAO >= CONVERT(VARCHAR, GETDATE(), 112)
+                ORDER BY E.DS_EVENTO, R.ID_APRESENTACAO, R.DS_LOCALIZACAO";
+    $params = array($pedido_id);
+    $result = executeSQL($mainConnection, $query, $params);
+
+    $queryServicos = "SELECT DISTINCT isnull(T.IN_TAXA_POR_PEDIDO, 'N') IN_TAXA_POR_PEDIDO FROM MW_ITEM_PEDIDO_VENDA I
+                        INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = I.ID_APRESENTACAO
+                        LEFT JOIN MW_TAXA_CONVENIENCIA T ON T.ID_EVENTO = A.ID_EVENTO AND T.DT_INICIO_VIGENCIA <= GETDATE() AND T.IN_TAXA_POR_PEDIDO = 'S'
+                        WHERE I.ID_PEDIDO_VENDA = ?";
+    $rsServicos = executeSQL($mainConnection, $queryServicos, array($pedido_id), true);
+
+    $itensPedido = array();
+    $i = -1;
+    while ($itens = fetchResult($result)) {
+        $i++;
+
+        if ($i == 0) {
+            if ($rsServicos['IN_TAXA_POR_PEDIDO'] == 'S') {
+                $valorConveniencia = obterValorServico($itens['ID_APRESENTACAO_BILHETE'], true, $pedido_id);
+
+                $itensPedido[$i]['descricao_item'] = 'Serviço';
+                $itensPedido[$i]['valor_item'] = $valorConveniencia;
+
+                $valorConveniencia = 0;
+                $i++;
+            } else {
+                $valorConveniencia = obterValorServico($itens['ID_APRESENTACAO_BILHETE'], false, $pedido_id);
+            }
+        } else {
+            $valorConveniencia = obterValorServico($itens['ID_APRESENTACAO_BILHETE'], false, $pedido_id);
+        }
+
+        $itensPedido[$i]['descricao_item']['evento'] = utf8_encode($itens['DS_EVENTO']);
+        $itensPedido[$i]['descricao_item']['data'] = $itens['DT_APRESENTACAO'];
+        $itensPedido[$i]['descricao_item']['hora'] = $itens['HR_APRESENTACAO'];
+        $itensPedido[$i]['descricao_item']['teatro'] = utf8_encode($itens['DS_NOME_TEATRO']);
+        $itensPedido[$i]['descricao_item']['setor'] = utf8_encode($itens['DS_SETOR']);
+        $itensPedido[$i]['descricao_item']['cadeira'] = utf8_encode($itens['DS_CADEIRA']);
+        $itensPedido[$i]['descricao_item']['bilhete'] = utf8_encode($itens['DS_TIPO_BILHETE']);
+
+        $itensPedido[$i]['valor_item'] = ($itens['VL_LIQUIDO_INGRESSO'] + $valorConveniencia);
+        $itensPedido[$i]['id_base'] = $itens['ID_BASE'];
+        $itensPedido[$i]['CodApresentacao'] = $itens['CodApresentacao'];
+        $itensPedido[$i]['CodVenda'] = $itens['CodVenda'];
+        $itensPedido[$i]['id_evento'] = $itens['ID_EVENTO'];
+    }
+
+    if ($i >= 0) {
+
+        require "../comprar/successMail.php";
+
+        if ($successMail === true) {
+            return true;
+        } else {
+            return "Erro ao enviar o e-mail.<br/><br/>".$successMail;
+        }
+
+    } else {
+        return "Não será possível reenviar o e-mail, pois a apresentação já ocorreu.";
+    }
+}
+
 function getPKPass($dados_pedido) {
     global $is_teste;
 
@@ -2197,6 +2352,50 @@ function getPKPass($dados_pedido) {
     $response = json_decode($server_output, true);
 
     return $url.$response['passes'][0];
+}
+
+function getFastcashPaymentURL($id_pedido) {
+    session_start();
+    $mainConnection = mainConnection();
+
+    $query = "SELECT P.VL_TOTAL_PEDIDO_VENDA, C.DS_NOME + ' ' + C.DS_SOBRENOME AS NOME, C.CD_CPF, C.DS_DDD_CELULAR + C.DS_CELULAR AS CELULAR, C.CD_EMAIL_LOGIN, M.CD_MEIO_PAGAMENTO
+            FROM MW_PEDIDO_VENDA P
+            INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = P.ID_CLIENTE
+            INNER JOIN MW_MEIO_PAGAMENTO M ON M.ID_MEIO_PAGAMENTO = P.ID_MEIO_PAGAMENTO AND M.DS_MEIO_PAGAMENTO LIKE '%FASTCASH%'
+            WHERE P.ID_PEDIDO_VENDA = ? AND P.IN_SITUACAO = 'P'";
+    $params = array($_GET['pedido']);
+    $rs = executeSQL($mainConnection, $query, $params, true);
+
+    // se nao encontrar nenhum registro pode ser
+    //  - meio de pagamento != fastcash
+    //  - um pedido que nao esta mais em processamento
+    if (empty($rs)) return false;
+
+    $prod = 'https://www.fastcash.com.br/paymentframe/2';
+    $homolog = 'https://h.fastcash.com.br/paymentframe/2';
+
+    $tid = $_GET['pedido'];//id_pedido
+    $pid = 232;
+    $prodid = 4691;//3500+
+    $valor = number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, ',', '');
+    $descricao = urlencode('Pedido '.$tid);
+    $nome = urlencode($rs['NOME']);
+    $cpf = $rs['CD_CPF'];
+    $celular = $rs['CELULAR'];
+    $email = urlencode($rs['CD_EMAIL_LOGIN']);
+    $paymentOptions = ($rs['CD_MEIO_PAGAMENTO'] == 892 ? 'transference' : 'deposit');//transference / deposit / creditcard
+    $showHeader = 'false';
+    $companyName = urlencode('Compreingressos.com');
+    $hideCompanyName = 'false';
+    $showValue = 'true';
+    $showDescription = 'true';
+    $hidelogo = 'false';
+    $urlLogo = urlencode('https://www.fastcash.com.br/br/imagens/header/logo.png');
+
+    $url = $prod;
+    $url .= '/?Tid=' . $tid . '&Pid=' . $pid . '&ProdId=' . $prodid . '&Price=' . $valor . '&Description=' . $descricao . '&Cellphone=' . $celular . '&Name=' . $nome . '&Email=' . $email . '&CPF=' . $cpf . '&PaymentOptions=' . $paymentOptions . '&HideCompanyName=' . $hideCompanyName . '&CompanyName=' . $companyName . '&HideCompanyName=' . $hideCompanyName . '&ShowDescription=' . $showDescription . '&HideLogo=' . $hidelogo . '&urlLogo=' . $urlLogo . '&ShowHeader=' . $showHeader . '&ShowValue=' . $showValue;
+
+    return $url;
 }
 
 function pre() {

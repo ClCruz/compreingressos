@@ -7,8 +7,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 260, true)) {
 
   if ($_GET['action'] == 'update' and isset($_GET['idMeioPagamento'])) { /* ------------ UPDATE ------------ */
 
-    $query = "UPDATE MW_MEIO_PAGAMENTO SET IN_ATIVO = ?, NM_CARTAO_EXIBICAO_SITE = ? WHERE ID_MEIO_PAGAMENTO = ?";
-    $params = array($_POST['in_ativo'], $nomeCartaoSite, $_GET['idMeioPagamento']);
+    $_POST['hr_anteced'] = (($_POST['hr_anteced'] == 0 or $_POST['hr_anteced'] == '') ? null : $_POST['hr_anteced']);
+
+    $query = "UPDATE MW_MEIO_PAGAMENTO SET IN_ATIVO = ?, NM_CARTAO_EXIBICAO_SITE = ?, QT_HR_ANTECED = ? WHERE ID_MEIO_PAGAMENTO = ?";
+    $params = array($_POST['in_ativo'], $nomeCartaoSite, $_POST['hr_anteced'], $_GET['idMeioPagamento']);
 
     if (executeSQL($mainConnection, $query, $params)) {
       $log = new Log($_SESSION['admin']);

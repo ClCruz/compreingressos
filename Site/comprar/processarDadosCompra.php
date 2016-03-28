@@ -3,14 +3,19 @@ require_once('../settings/functions.php');
 require_once('../settings/settings.php');
 require_once('../settings/Log.class.php');
 
+// verifica se o acesso via operador/pdv esta vendendo apenas aquilo que tem permissao
+require('acessoPermitido.php');
+
 require_once('../settings/brandcaptchalib.php');
 
-$resp = brandcaptcha_check_answer($recaptcha['private_key'],
-    $_SERVER["REMOTE_ADDR"],
-    $_POST["brand_cap_challenge"],
-    $_POST["brand_cap_answer"]);
+$resp = brandcaptcha_check_answer(
+            $recaptcha['private_key'],
+            $_SERVER["REMOTE_ADDR"],
+            $_POST["brand_cap_challenge"],
+            $_POST["brand_cap_answer"]
+        );
 
-if ($is_teste != '1') {
+if ($is_teste != '1' and !isset($_SESSION['operador'])) {
     if (!$resp->is_valid) {
         // set the error code so that we can display it
         $error = $resp->error;
@@ -30,6 +35,27 @@ if ($is_teste != '1' and $_POST['codCartao'] == 997) {
     echo "Nice try...";
     die();
 }
+
+// verifica se o meio de pagamento ainda pode ser utilizado
+$query = "SELECT TOP 1 DATEDIFF(HOUR, GETDATE(), CONVERT(DATETIME, CONVERT(VARCHAR, A.DT_APRESENTACAO, 112) + ' ' + LEFT(A.HR_APRESENTACAO,2) + ':' + RIGHT(A.HR_APRESENTACAO,2) + ':00')) HORAS
+            FROM MW_RESERVA R
+            INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+            WHERE R.ID_SESSION = ?
+            ORDER BY A.DT_APRESENTACAO";
+$params = array(session_id());
+$rs = executeSQL($mainConnection, $query, $params, true);
+$horas_antes_apresentacao = $rs['HORAS'];
+
+$query = "SELECT QT_HR_ANTECED FROM MW_MEIO_PAGAMENTO WHERE CD_MEIO_PAGAMENTO = ?";
+$params = array($_POST['codCartao']);
+$rs = executeSQL($mainConnection, $query, $params, true);
+$horas_antes_apresentacao_pagamento = $rs['QT_HR_ANTECED'];
+
+if ($horas_antes_apresentacao_pagamento != null and $horas_antes_apresentacao_pagamento > $horas_antes_apresentacao) {
+    echo "Esta forma de pagamento não pode ser utilizadas no momento. Por favor, seleciona outra.";
+    die();
+}
+
 
 $_POST['numCartao'] = preg_replace("/[^0-9]/", "", $_POST['numCartao']);
 
@@ -434,7 +460,7 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
     // echo "</pre>";
     // die(''.time());
     
-    if ($_SESSION['usuario_pdv'] !== 1 and $PaymentDataCollection['Amount'] != 0) {
+    if ($_SESSION['usuario_pdv'] !== 1 and $PaymentDataCollection['Amount'] != 0 and !in_array($_POST['codCartao'], array('892', '893'))) {
     	try {
             executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
                 array($_SESSION['user'], json_encode(array('descricao' => '3. inicialização do pedido ' . $parametros['OrderData']['OrderId'], 'url' => $url_braspag)))
@@ -469,14 +495,55 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
     if ($descricao_erro == '') {
         setcookie('id_braspag', $result->AuthorizeTransactionResult->OrderData->BraspagOrderId);
 
-        if(isset($_SESSION['usuario_pdv']) and $_SESSION['usuario_pdv'] == 1){
+        // se o meio de pagamento for fastcash
+        if(in_array($_POST['codCartao'], array('892', '893'))){
+            extenderTempo($horas_antes_apresentacao_pagamento);
+
+            $query = "UPDATE P SET ID_MEIO_PAGAMENTO = M.ID_MEIO_PAGAMENTO
+                        FROM MW_PEDIDO_VENDA P, MW_MEIO_PAGAMENTO M
+                        WHERE P.ID_PEDIDO_VENDA = ? AND M.CD_MEIO_PAGAMENTO = ?";
+            $params = array($parametros['OrderData']['OrderId'], $_POST['codCartao']);
+            $result = executeSQL($mainConnection, $query, $params);
+
+            $query = "SELECT DISTINCT E.ID_BASE FROM MW_RESERVA R
+                        INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+                        INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+                        WHERE R.ID_SESSION = ?";
+            $params = array(session_id());
+            $result = executeSQL($mainConnection, $query, $params);
+
+            $conn = array();
+            while ($rs = fetchResult($result)) {
+                $conn[$rs['ID_BASE']] = (isset($conn[$rs['ID_BASE']]) ? $conn[$rs['ID_BASE']] : getConnection($rs['ID_BASE']));
+            }
+            
+            $query = "UPDATE MW_PROMOCAO SET ID_SESSION = ? WHERE ID_SESSION = ?";
+            $params = array($parametros['OrderData']['OrderId'], session_id());
+            executeSQL($mainConnection, $query, $params);
+            
+            $query = "UPDATE MW_RESERVA SET ID_SESSION = ? WHERE ID_SESSION = ?";
+            executeSQL($mainConnection, $query, $params);
+            
+            $query = "UPDATE TABLUGSALA SET ID_SESSION = ? WHERE ID_SESSION = ?";
+            foreach ($conn as $key => $value) {
+                executeSQL($value, $query, $params);
+            }
+
+            limparCookies();
+
+            die("redirect.php?redirect=".urlencode("pagamento_fastcash.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : '')));
+        }
+        // se for um usuario do pdv
+        elseif(isset($_SESSION['usuario_pdv']) and $_SESSION['usuario_pdv'] == 1){
             require('concretizarCompra.php');
 
             // se necessario, replica os dados de assinatura e imprime url de redirecionamento
             require('concretizarAssinatura.php');
 
             die("redirect.php?redirect=".urlencode("pagamento_ok.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : '')));
-        }else{
+        }
+        // compra normal
+        else{
             if (($result->AuthorizeTransactionResult->CorrelationId == $ri and $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->Status == '0')
                 or ($PaymentDataCollection['Amount'] == 0 and $is_promocional)) {
 

@@ -19,7 +19,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 450, true)) {
 
         if (executeSQL($mainConnection, $query, $params)) {
             $log = new Log($_SESSION['admin']);
-            $log->__set('funcionalidade', 'POS');
+            $log->__set('funcionalidade', 'Máquinas POS');
             $log->__set('parametros', $params);
             $log->__set('log', $query);
             $log->save($mainConnection);
@@ -34,7 +34,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 450, true)) {
 
         if (executeSQL($mainConnection, $query, $params)) {
             $log = new Log($_SESSION['admin']);
-            $log->__set('funcionalidade', 'POS');
+            $log->__set('funcionalidade', 'Máquinas POS');
             $log->__set('parametros', $params);
             $log->__set('log', $query);
             $log->save($mainConnection);

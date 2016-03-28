@@ -5,7 +5,8 @@ require_once("../settings/Log.class.php");
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
 
     if ($_GET['action'] != 'delete') {
-	$_POST['cobrarNoPDV'] = $_POST['cobrarNoPDV'] == 'on' ? 'S' : 'N';
+    $_POST['cobrarNoPDV'] = $_POST['cobrarNoPDV'] == 'on' ? 'S' : 'N';
+	$_POST['cobrarNoPOS'] = $_POST['cobrarNoPOS'] == 'on' ? 'S' : 'N';
     }
 
     if (isset($_POST['valor'])) {
@@ -51,8 +52,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                   IN_TAXA_POR_PEDIDO,
                   VL_TAXA_UM_INGRESSO,
                   VL_TAXA_UM_INGRESSO_PROMOCIONAL,
-                  IN_COBRAR_PDV )
-                  VALUES (?, CONVERT(DATETIME, ?, 103), ?, ?, ?, ?, ?, ?, ?)";        
+                  IN_COBRAR_PDV,
+                  IN_COBRAR_POS )
+                  VALUES (?, CONVERT(DATETIME, ?, 103), ?, ?, ?, ?, ?, ?, ?, ?)";        
         $params = array($_POST['idEvento'],
                         $_POST['data'],
                         $_POST['valor'],
@@ -61,7 +63,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                         $_POST['cobrarPorPedido'],
                         $_POST['valor3'],
                         $_POST['valor4'],
-                        $_POST['cobrarNoPDV']);
+                        $_POST['cobrarNoPDV'],
+                        $_POST['cobrarNoPOS']);
 	$queryToLog = $query;
 	$paramsToLog = $params;
 
@@ -102,7 +105,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                         T.IN_TAXA_POR_PEDIDO = ?,
                         T.VL_TAXA_UM_INGRESSO = ?,
                         T.VL_TAXA_UM_INGRESSO_PROMOCIONAL = ?,
-                        T.IN_COBRAR_PDV = ?
+                        T.IN_COBRAR_PDV = ?,
+                        T.IN_COBRAR_POS = ?
                     FROM
                         MW_TAXA_CONVENIENCIA T
                         INNER JOIN MW_EVENTO R ON R.ID_EVENTO = T.ID_EVENTO
@@ -118,6 +122,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                             $_POST['valor3'],
                             $_POST['valor4'],
                             $_POST['cobrarNoPDV'],
+                            $_POST['cobrarNoPOS'],
                             $_GET['idEvento'],
                             $_GET['data']);
             $queryToLog = $query;

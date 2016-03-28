@@ -111,8 +111,8 @@ $(function() {
 		event.preventDefault();
 				
 		var $this = $(this),
-			 naoRequeridos = '#senha1,#senha2,#celular,#complemento,#checkbox_guia,#checkbox_sms,#cep,#checkbox_estrangeiro',
-			 especiais = ',#email1,#email2,#fixo,#rg,#estado,#cidade,#bairro,#endereco,#cpf,#tipo_documento',
+			 naoRequeridos = '#senha1,#senha2,#fixo,#complemento,#checkbox_guia,#checkbox_sms,#cep,#checkbox_estrangeiro,[name=sexo],#nascimento_dia,#nascimento_mes,#nascimento_ano',
+			 especiais = ',#email1,#email2,#rg,#estado,#cidade,#bairro,#endereco,#cpf,#tipo_documento',
 			 formulario = $('#form_cadastro'),
 			 campos = formulario.find(':input:not(' + naoRequeridos + especiais +')'),
 			 valido = true,
@@ -146,12 +146,7 @@ $(function() {
 
 		// estado != exterior?
 		if ($('#estado').val() != 28) {
-			if ($('#fixo').val().length < 13){
-				$('#fixo').addClass('erro').findNextMsg().slideDown('fast');
-				valido = false;
-			} else $('#fixo').removeClass('erro').findNextMsg().slideUp('slow');
-
-			if ($('#celular').val() != '' && $('#celular').val().length < 13){
+			if ($('#celular').val().length < 13){
 				$('#celular').addClass('erro').findNextMsg().slideDown('fast');
 				valido = false;
 			} else $('#celular').removeClass('erro').findNextMsg().slideUp('slow');

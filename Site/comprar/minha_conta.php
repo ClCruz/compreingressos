@@ -27,12 +27,14 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                 CONVERT(VARCHAR(10), PV.DT_PEDIDO_VENDA, 103) DT_PEDIDO_VENDA, 
                 PV.VL_TOTAL_PEDIDO_VENDA,
                 PV.IN_SITUACAO,
-                PV.ID_PEDIDO_PAI
+                PV.ID_PEDIDO_PAI,
+                M.CD_MEIO_PAGAMENTO
             FROM MW_PEDIDO_VENDA PV
             LEFT JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_PAI
             LEFT JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO
             LEFT JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
-            WHERE ID_CLIENTE = ? AND IN_SITUACAO <> 'P'
+            LEFT JOIN MW_MEIO_PAGAMENTO M ON M.ID_MEIO_PAGAMENTO = PV.ID_MEIO_PAGAMENTO
+            WHERE ID_CLIENTE = ? --AND IN_SITUACAO <> 'P'
             ORDER BY 1 DESC";
     $params = array($_SESSION['user']);
     $result = executeSQL($mainConnection, $query, $params);
@@ -179,7 +181,6 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                     }
                 });
                 <?php if ($isAssinante) { ?>
-                    $('.menu_conta a[href*="#frmAssinatura"]').click();
                 <?php } else {
                         if (isset($_GET['assinatura'])) {
                             $msg_nao_assinante = 'Pacotes disponíveis apenas para assinantes, novas assinaturas consulte caderno de programação (<a href="http://www.compreingressos.com/theatromunicipaldesaopaulo/assinaturas" style="float: none; background: none; font-size: inherit;">http://www.compreingressos.com/theatromunicipaldesaopaulo/assinaturas</a>).';
@@ -240,7 +241,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                                             <td width="170">Forma de Entrega</td>
                                             <td width="140">Data do Pedido</td>
                                             <td width="140">Total do Pedido</td>
-                                            <td width="180">Status</td>
+                                            <td width="190">Status</td>
                                             <?php if ($isAssinante) { ?>
                                             <td width="210">Assinatura</td>
                                             <?php } ?>
@@ -255,7 +256,14 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                                         <td><?php echo $rs['IN_RETIRA_ENTREGA']; ?></td>
                                         <td><?php echo $rs['DT_PEDIDO_VENDA']; ?></td>
                                         <td>R$ <?php echo number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, ',', ''); ?></td>
-                                        <td><?php echo comboSituacao('situacao', $rs['IN_SITUACAO'], false); ?></td>
+                                        <td>
+                                            <?php
+                                            echo comboSituacao('situacao', $rs['IN_SITUACAO'], false);
+                                            if (in_array($rs['CD_MEIO_PAGAMENTO'], array('892', '893')) and $rs['IN_SITUACAO'] == 'P') {
+                                                echo "<br/><a href='./pagamento_fastcash.php?pedido={$rs['ID_PEDIDO_VENDA']}'>Comprovar Pagamento</a>";
+                                            }
+                                            ?>
+                                        </td>
                                         <?php if ($isAssinante) { ?>
                                         <td><?php echo $rs['ID_PEDIDO_PAI'] ? 'ref. assinatura '.$rs['ID_PEDIDO_PAI'] : ''; ?></td>
                                         <?php } ?>                                        

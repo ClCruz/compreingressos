@@ -212,9 +212,9 @@ if ($_GET['carrinho']) {
                     $rs = executeSQL($conn, $query3, array($cpf, $data, $hora, $codpeca), true);
                     
                     if ($rs['TOTAL'] >= $limite) {
-                        $erro = 'Você atingiu o limite de ' . $limite . ' ingresso(s) promocional(is) para esse cartão em um ou mais eventos.<br><br>Favor revisar o pedido.';
+                        $erro = 'Você atingiu o limite de ' . $limite . ' ingresso(s) promocional(is) para esse cartão em um ou mais eventos.<br><br>'.($_POST['pos'] ? 'Favor cancelar a venda atual, refazendo-a com outro tipo de bilhete.' : 'Favor revisar o pedido.');
                     } else if ($rs['TOTAL'] + $comprando > $limite) {
-                        $erro = 'Você pode comprar apenas ' . $limite . ' ingresso(s) promocional(is) com este cartão.<br><br>Retorne ao passo 2 e selecione apenas 1 ingresso promocional por apresentação.';
+                        $erro = 'Você pode comprar apenas ' . $limite . ' ingresso(s) promocional(is) com este cartão.<br><br>'.($_POST['pos'] ? 'Favor cancelar a venda atual, refazendo-a com outro tipo de bilhete.' : 'Retorne ao passo 2 e selecione apenas 1 ingresso promocional por apresentação.');
                     }
                 } else {
                     $erro = 'Atenção! Este cartão não é participante da promoção vigente para esta apresentação!<br><br>Informe outro cartão ou indique outro tipo de ingresso não participante da promoção.';
@@ -285,9 +285,9 @@ if ($_GET['carrinho']) {
                 $rs = executeSQL($conn, $query5, array($cpf, $data, $hora, $codpeca, $id_promocao_controle), true);
 
                 if ($rs['TOTAL'] >= $limite) {
-                    $erro = 'Você atingiu o limite de ' . $limite . ' ingresso(s) promocional(is) em um ou mais eventos.<br><br>Favor revisar o pedido.';
+                    $erro = 'Você atingiu o limite de ' . $limite . ' ingresso(s) promocional(is) em um ou mais eventos.<br><br>'.($_POST['pos'] ? 'Favor cancelar a venda atual, refazendo-a com outro tipo de bilhete.' : 'Favor revisar o pedido.');
                 } else if ($rs['TOTAL'] + $comprando > $limite) {
-                    $erro = 'Você pode comprar apenas ' . ($limite - $rs['TOTAL']) . ' ingresso(s) promocional(is).<br><br>Retorne ao passo 2 e selecione outro tipo de ingresso.';
+                    $erro = 'Você pode comprar apenas ' . ($limite - $rs['TOTAL']) . ' ingresso(s) promocional(is).<br><br>'.($_POST['pos'] ? 'Favor cancelar a venda atual, refazendo-a com outro tipo de bilhete.' : 'Retorne ao passo 2 e selecione outro tipo de ingresso.');
                 }
             }
         }

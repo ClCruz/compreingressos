@@ -28,6 +28,15 @@ if ($_POST) {
 
     } else {
 
+        $query = "SELECT TOP 1 DATEDIFF(HOUR, GETDATE(), CONVERT(DATETIME, CONVERT(VARCHAR, A.DT_APRESENTACAO, 112) + ' ' + LEFT(A.HR_APRESENTACAO,2) + ':' + RIGHT(A.HR_APRESENTACAO,2) + ':00')) HORAS
+                    FROM MW_RESERVA R
+                    INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+                    WHERE R.ID_SESSION = ?
+                    ORDER BY A.DT_APRESENTACAO";
+        $params = array(session_id());
+        $rs = executeSQL($mainConnection, $query, $params, true);
+        $horas_antes_apresentacao = $rs['HORAS'];
+
         if(isset($_SESSION['usuario_pdv']) and $_SESSION['usuario_pdv'] == 1){
             $queryAux = " AND IN_TRANSACAO_PDV = 1 ";
         } else{
@@ -37,6 +46,7 @@ if ($_POST) {
     	$query = "SELECT cd_meio_pagamento, ds_meio_pagamento, nm_cartao_exibicao_site 
                       from mw_meio_pagamento
                       where in_ativo = 1 ". $queryAux ."
+                      and (qt_hr_anteced <= $horas_antes_apresentacao or qt_hr_anteced is null)
                       order by ds_meio_pagamento";
     	$result = executeSQL($mainConnection, $query);
 
@@ -57,7 +67,7 @@ if ($_POST) {
         <input type="hidden" name="usuario_pdv" value="<?php echo (isset($_SESSION["usuario_pdv"])) ? $_SESSION["usuario_pdv"] : 0; ?>" />
 
     	<div class="container_cartoes">
-    		<p class="frase">5.1 Escolha seu cartão</p>
+    		<p class="frase">5.1 Escolha o meio de pagamento</p>
     		<div class="inputs">
     			<?php
     			if ($is_teste == '1') {
@@ -73,6 +83,7 @@ if ($_POST) {
     			<?php
     			}
     			while ($rs = fetchResult($result)) {
+                    if ($bin != '' and in_array($rs['cd_meio_pagamento'], array('892', '893'))) continue;
     			?>
     			<div class="container_cartao">
     				<input id="<?php echo $rs['cd_meio_pagamento']; ?>" type="radio" name="codCartao" class="radio" value="<?php echo $rs['cd_meio_pagamento']; ?>"
@@ -176,9 +187,11 @@ if ($_POST) {
                         <p class="titulo"><img src="../images/gift.png" style="vertical-align: middle;" /> para enviar como presente clique <a href="#" class="presente_toggle">aqui</a></p>
                     </div>
                 </div>
+                <?php if (!isset($_SESSION['operador'])) { ?>
                 <div class="linha">
                     <p class="frase" style="margin-bottom: -10px;">5.3 Autenticidade</p>
                 </div>
+                <?php } ?>
     	</div>
 <?php
     }

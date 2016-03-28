@@ -354,6 +354,8 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
               <div class="centraliza">
                 <?php if ($_SESSION['assinatura']['tipo'] == 'troca') { ?>
                 <a href="selecionarTroca.php" class="botao voltar passo0">voltar</a>
+                <?php } elseif (isset($_SESSION['operador'])) { ?>
+                <a href="etapa0.php" class="botao voltar passo0">voltar</a>
                 <?php } ?>
                 <div class="resumo_carrinho">
                   <span class="quantidade"></span>

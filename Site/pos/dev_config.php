@@ -1,16 +1,30 @@
 <?php
-if ($_GET['STS_ALTERA_SERVER']) {
+if (isset($_GET['STS_ALTERA_SERVER']) or isset($_GET['ERROARQ'])) {
 	dump_get();
 	echo "<POST>";
 	die();
 }
 
+echo "<CONSOLE>alterando data/hora...</CONSOLE>";
+
+echo "<SET TYPE=TIME HOUR=".date('His')." DATE=".date('dmY')." HDSTS=STSSTT>";
+
+echo "<CONSOLE>alterando pagamento...</CONSOLE>";
+
+echo "<FILE NAME=verifone.zip ADDR=/compreingressos2/pos/verifone.zip ERR=ERROARQ>";
+
 echo "<CONSOLE>alterando configs...</CONSOLE>";
 
-// configuracoes gerais
+// mudar a senha caso ainda tenha a config de fabrica
 echo "<CONFIG_NAVS RETURN=STS_ALTERA_SERVER>";
 echo "PASSWORD_CONFIG= ;";
 echo "NEW_PASSWORD_CONFIG=159137;";
+echo "</CONFIG_NAVS>";
+
+// configuracoes gerais
+echo "<CONFIG_NAVS RETURN=STS_ALTERA_SERVER>";
+echo "PASSWORD_CONFIG=159137;";
+// echo "NEW_PASSWORD_CONFIG=159137;";
 // echo "CONECTION_TYPE=E;";
 // echo "WI_FI_SSID=skytefwifi;";
 // echo "WI_FI_PASSWORD=skytef;";
@@ -24,10 +38,12 @@ echo "NEW_PASSWORD_CONFIG=159137;";
 // echo "GPRS_APN=ZAP.VIVO.COM.BR;";
 // echo "GPRS_USER=VIVO;";
 // echo "GPRS_PASSWORD=VIVO;";
-// echo "SERVER_IP=200.160.80.90;";
-// echo "SERVER_PORT=6789;";
-// echo "SERVER_RESOURCE=/TESTE.PHP;";
-// echo "SERVER_HOST=200.160.80.90;";
+
+echo "SERVER_IP=compra.compreingressos.com;";
+echo "SERVER_PORT=80;";
+echo "SERVER_RESOURCE=/pos/main.php;";
+echo "SERVER_HOST=compra.compreingressos.com;";
+
 // echo "SERVER_HTTPS_ACTIVE=0;";
 // echo "SERVER_HTTPS_METHOD=1;";
 // echo "POSITION_STATUS_LINE=B;";
@@ -45,10 +61,6 @@ echo "NEW_PASSWORD_CONFIG=159137;";
 // echo "STOP_BITS_SERIAL=1;";
 // echo "TIMEOUT_SERIAL=5;";
 echo "</CONFIG_NAVS>";
-
-echo "<CONSOLE>alterando data/hora...</CONSOLE>";
-
-echo "<SET TYPE=TIME HOUR=".date('His')." DATE=".date('dmY')." HDSTS=STSSTT>";
 
 echo "<CONSOLE>obtendo resultado...</CONSOLE>";
 

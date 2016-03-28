@@ -1133,6 +1133,7 @@ div.container_cartoes div.inputs{
 div.container_cartoes div.inputs div.container_cartao{
 	float:left;
 	width:148px;
+	height:110px;
 }
 
 div.img_cod_cartao, div.explicacao_envio_presente{
@@ -1188,8 +1189,8 @@ div.container_cartoes div.container_cartao label.radio img{
 div.container_cartoes div.container_cartao  p.nome{
 	font-size:24px;
 	font-weight:300;
-	margin:10px 0 5px 0;
-	width:112px;
+	margin:10px 0 5px -8px;
+    width:128px;
 	text-align:center;
 }
 
@@ -2729,4 +2730,9 @@ div.resumo_carrinho span.frase{
   text-align:left;
   display:block;
   float:right;
+}
+
+#fastcashPaymentFrame {
+    margin: 150px 0 0 70px;
+    border: 3px solid #D3D3D3;
 }

@@ -16,16 +16,18 @@ $(function(){
             }
         }
 
-	    $this.find(':input:not(.compra_captcha :input, [name=nomePresente], [name=emailPresente])').each(function(i,e) {
-    		var e = $(e);
-    		if (e.val().length < e.attr('maxlength')/2 || e.val() == '') {
-    		    e.addClass('erro');
-    		    valido = false;
-    		} else e.removeClass('erro');
-	    });
+        if ($('[name=codCartao]:checked').next('label').next('p.nome').text().toLowerCase().indexOf('fastcash') == -1) {
+		    $this.find(':input:not(.compra_captcha :input, [name=nomePresente], [name=emailPresente])').each(function(i,e) {
+	    		var e = $(e);
+	    		if (e.val().length < e.attr('maxlength')/2 || e.val() == '') {
+	    		    e.addClass('erro');
+	    		    valido = false;
+	    		} else e.removeClass('erro');
+		    });
+		}
 
         if ($('input[name="usuario_pdv"]').val() == 0) {
-            if (trim(titular.val()).length < 3) {
+            if (trim(titular.val()).length < 3 && !titular.is(':hidden')) {
                 titular.addClass('erro');
                 valido = false;
             } else titular.removeClass('erro');
@@ -97,25 +99,35 @@ $(function(){
 	$('input[name=codCartao]').on('change', function(){
 		var $cartao = $('input[name=codCartao]:checked');
 
-		if (!$('div.img_cod_cartao').is(':hidden')) {
-			$('div.img_cod_cartao').fadeOut(200, function(){
-				$('a.meu_codigo_cartao').trigger('click');
-			});
-		}
+		if ($cartao.next('label').next('p.nome').text().toLowerCase().indexOf('fastcash') > -1) {
+			$('.container_dados').find('.linha').eq(0).slideUp().end()
+												.eq(1).slideUp().end().end()
+								.find('.frase').eq(0).text('5.2 Presente');
+		} else {
+			$('.container_dados').find('.linha').eq(0).slideDown().end()
+												.eq(1).slideDown().end().end()
+								.find('.frase').eq(0).text('5.2 Dados do cartão');
 
-		$('#validadeMes').selectbox('detach');
-		$('#validadeAno').selectbox('detach');
-		$('select[name=parcelas]').selectbox('detach');
-		$('.container_dados :input').val('');
-		$('select[name=parcelas]').val(1)
-		$('#validadeMes').selectbox('attach');
-		$('#validadeAno').selectbox('attach');
-		$('select[name=parcelas]').selectbox('attach');
+			if (!$('div.img_cod_cartao').is(':hidden')) {
+				$('div.img_cod_cartao').fadeOut(200, function(){
+					$('a.meu_codigo_cartao').trigger('click');
+				});
+			}
 
-		$('input[name=numCartao]').mask($cartao.attr('formatoCartao'));
-		$('input[name=numCartao]').next('.erro_help').find('.help').text($cartao.attr('formatoCartao').replace(/0/g, 'X'));
+			$('#validadeMes').selectbox('detach');
+			$('#validadeAno').selectbox('detach');
+			$('select[name=parcelas]').selectbox('detach');
+			$('.container_dados :input').val('');
+			$('select[name=parcelas]').val(1)
+			$('#validadeMes').selectbox('attach');
+			$('#validadeAno').selectbox('attach');
+			$('select[name=parcelas]').selectbox('attach');
 
-    	if ($cartao.attr('formatoCodigo')) $('input[name=codSeguranca]').mask($cartao.attr('formatoCodigo'));
+			$('input[name=numCartao]').mask($cartao.attr('formatoCartao'));
+			$('input[name=numCartao]').next('.erro_help').find('.help').text($cartao.attr('formatoCartao').replace(/0/g, 'X'));
+
+	    	if ($cartao.attr('formatoCodigo')) $('input[name=codSeguranca]').mask($cartao.attr('formatoCodigo'));
+	    }
 	});
 
 	$('a.presente_toggle').on('click', function(e){

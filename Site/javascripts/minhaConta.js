@@ -26,7 +26,7 @@ $(function() {
         });
     }).find('a:first').click();
 
-    $('#meus_pedidos').on('click', 'a', function(event) {
+    $('#meus_pedidos').on('click', '.npedido a', function(event) {
         event.preventDefault();
 
         var $this = $(this),

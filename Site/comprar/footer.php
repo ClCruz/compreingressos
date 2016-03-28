@@ -1,3 +1,36 @@
+<?php
+// botao de cancelar para os ooperadores
+$etapa_atual = basename($_SERVER['PHP_SELF'], '.php');
+$etapas_para_exibir = array('etapa1', 'etapa2', 'etapa4', 'etapa5');
+
+if (isset($_SESSION['operador']) and in_array($etapa_atual, $etapas_para_exibir)) {
+?>
+    <style>
+    a.botao.voltar.passo0.cancelar {background-image: url('../images/bot_cancelar.png'); margin: 0 0 0 5px;}
+    div.resumo_carrinho {width: 420px; margin: 0 195px 0 420px;}
+    div.resumo_carrinho span.quantidade {width: 90px;}
+    </style>
+    <script type='text/javascript'>
+        $(function(){
+            $('a.botao.voltar.passo0.cancelar').appendTo('.container_botoes_etapas .centraliza');
+
+            $('a.botao.voltar.passo0.cancelar').on('click', function(e){
+                var $this = $(this);
+                e.preventDefault();
+                $.ajax({
+                    url: 'pagamento_cancelado.php?tempoExpirado',
+                    success: function(){
+                        document.location = $this.attr('href');
+                    }
+                });
+            });
+        });
+    </script>
+    <a href="etapa0.php" class="botao voltar passo0 cancelar">cancelar</a>
+<?php
+}
+?>
+    
 <div id="footer">
     <div class="centraliza">
         <ul>

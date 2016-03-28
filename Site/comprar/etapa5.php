@@ -131,6 +131,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 					<div class="img_cod_cartao"><img src=""><p></p></div>
 					<div class="explicacao_envio_presente"><p>Um e-mail será enviado ao presenteado em seu nome, contendo um link para impressão do e-ticket</p></div>
 
+					<?php if (!isset($_SESSION['operador'])) { ?>
 					<div class="compra_captcha">
 						<script type="text/javascript">var brandcaptchaOptions = {lang: 'pt'};</script>
 						<?php
@@ -138,7 +139,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 						echo brandcaptcha_get_html($recaptcha['public_key']);
 						?>
 					</div>
-						
+					<?php } ?>
 				</div>
 			
 			</form>

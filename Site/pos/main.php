@@ -2,6 +2,8 @@
 require_once '../settings/functions.php';
 require_once '../settings/settings.php';
 // error_reporting(E_ALL);
+// echo "<HTMLDEBUG ON>";
+echo "<HTMLDEBUG OFF>";
 session_start();
 
 require_once 'functions.php';

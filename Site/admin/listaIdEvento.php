@@ -26,7 +26,7 @@ FROM CI_MIDDLEWAY.dbo.mw_evento AS A
 LEFT JOIN CI_MIDDLEWAY.dbo.mw_apresentacao AS B ON A.id_evento = B.id_evento 
 WHERE A.id_base = ?
 GROUP BY A.id_base, A.id_evento, A.ds_evento, A.in_ativo 
-HAVING MAX(B.dt_apresentacao) > GETDATE()
+HAVING MAX(B.dt_apresentacao) >= GETDATE()
 ORDER BY A.ds_evento, A.id_evento
 ';
 

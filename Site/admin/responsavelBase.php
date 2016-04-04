@@ -1,6 +1,7 @@
 <?php
 require_once('../settings/functions.php');
 include('../settings/Log.class.php');
+require_once('../settings/Paginator.php');
 $mainConnection = mainConnection();
 session_start();
 
@@ -15,16 +16,43 @@ if (isset($_GET['action'])) {
 } else {
 
 	$_GET['ativo'] = !isset($_GET['ativo']) ? 1 : $_GET['ativo'];
+
+	$queryNumRows = 'SELECT R.id_base 
+					FROM mw_respons_teatro R
+		  			INNER JOIN mw_usuario U ON R.id_usuario = U.id_usuario
+		  			INNER JOIN mw_base B ON R.id_base = B.id_base
+		  			WHERE (R.id_usuario = ? OR ? IS NULL)
+		  			and (U.in_ativo = ? OR ? = 2)';
 	
-	$result = executeSQL($mainConnection, "SELECT R.ID_BASE, R.ID_USUARIO, U.DS_NOME, B.DS_NOME_TEATRO
-										   FROM MW_RESPONS_TEATRO R
-										   INNER JOIN MW_USUARIO U ON R.ID_USUARIO = U.ID_USUARIO
-										   INNER JOIN MW_BASE B ON R.ID_BASE = B.ID_BASE
-										   WHERE (R.ID_USUARIO = ? OR ? IS NULL)
-										   and (U.IN_ATIVO = ? OR ? = 2)
-										   ORDER BY DS_NOME, DS_NOME_TEATRO",
-										   array($_GET['codUsuario'], $_GET['codUsuario'], $_GET['ativo'], $_GET['ativo']));
+	$paramnsNumRows = array($_GET['codUsuario'], $_GET['codUsuario'], $_GET['ativo'], $_GET['ativo']);
 	
+	$paramQueryNumRows = array(
+		'query' 	=> $queryNumRows,
+		'paramns' 	=> $paramnsNumRows
+	);
+
+	$link = '?p='.$_GET['p'].'&ativo='.$_GET['ativo'];
+	$obj = Paginator::__paginate($link, $paramQueryNumRows);
+
+	$between = 'WHERE row BETWEEN '.$obj['start'].' AND '.$obj['end'].' AND (id_usuario = ? OR ? IS NULL)';
+	$newQuery = 'WITH result AS (
+				SELECT 
+				R.id_base
+				, R.id_usuario
+				, U.ds_nome
+				, B.ds_nome_teatro
+				, ROW_NUMBER() OVER (ORDER BY ds_nome, ds_nome_teatro) row 
+				FROM mw_respons_teatro R
+				INNER JOIN mw_usuario U ON R.id_usuario = U.id_usuario
+				INNER JOIN mw_base B ON R.id_base = B.id_base
+				WHERE (R.id_usuario = ? OR ? IS NULL)
+				and (U.in_ativo = ? OR ? = 2)
+			)
+			SELECT * FROM result
+			'.$between.'
+			ORDER BY ds_nome, ds_nome_teatro';
+
+	$result = executeSQL( $mainConnection, $newQuery, array($_GET['codUsuario'], $_GET['codUsuario'], $_GET['ativo'], $_GET['ativo'], $_GET['codUsuario'], $_GET['codUsuario']) );
 ?>
 
 <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
@@ -154,21 +182,24 @@ $(function() {
 		</thead>
 		<tbody>
 			<?php
-				while($rs = fetchResult($result)) {
-					$codUsuario = $rs['ID_USUARIO'];
-					$idBase = $rs['ID_BASE'];
+				while($rs = fetchResult($result)):
+					$codUsuario = $rs['id_usuario'];
+					$idBase = $rs['id_base'];
 			?>
-			<tr>
-				<td><?php echo $rs['DS_NOME']; ?></td>
-				<td><?php echo utf8_encode($rs['DS_NOME_TEATRO']); ?></td>
-				<td>&nbsp;</td>
-				<td class="button"><a href="<?php echo $pagina; ?>?action=delete&codUsuario=<?php echo $codUsuario; ?>&idBase=<?php echo $idBase; ?>">Apagar</a></td>
-			</tr>
+				<tr>
+					<td><?php echo $rs['ds_nome']; ?></td>
+					<td><?php echo utf8_encode($rs['ds_nome_teatro']); ?></td>
+					<td>&nbsp;</td>
+					<td class="button"><a href="<?php echo $pagina; ?>?action=delete&codUsuario=<?php echo $codUsuario; ?>&idBase=<?php echo $idBase; ?>">Apagar</a></td>
+				</tr>
 			<?php
-				}
+				endwhile;
 			?>
 		</tbody>
 	</table>
+	<div id="paginacao">
+		<?php echo $obj['htmlpages']; ?>
+	</div>
 	<a id="new" href="#new">Novo</a>
 </form>
 <?php

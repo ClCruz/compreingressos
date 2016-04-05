@@ -34,6 +34,8 @@ session_start();
 	}
 </style>
 
+<?php $exibir_msg_obrigatorio = isset($_SESSION['operador']); ?>
+
 <div id="dados_conta">
 	<form id="form_cadastro" name="form_cadastro" method="POST" action="cadastro.php">
 		<?php if (isset($_GET['tag'])) { ?>
@@ -51,12 +53,12 @@ session_start();
 				<div class="icone"></div>
 				<div class="inputs">
 					<p class="titulo">Qual o seu nome?</p>
-					<input type="text" name="nome" id="nome" maxlength="50" placeholder="nome/name/nombre" pattern=".{1,50}" value="<?php echo utf8_encode($rs['DS_NOME']); ?>">
+					<input type="text" name="nome" id="nome" maxlength="50" placeholder="nome/name/nombre<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>" pattern=".{1,50}" value="<?php echo utf8_encode($rs['DS_NOME']); ?>">
 					<div class="erro_help">
 						<p class="erro">informe seu nome</p>
 						<p class="help"></p>
 					</div>
-					<input type="text" name="sobrenome" id="sobrenome" maxlength="50" placeholder="sobrenome/last name/apellido" pattern=".{1,50}" value="<?php echo utf8_encode($rs['DS_SOBRENOME']); ?>">
+					<input type="text" name="sobrenome" id="sobrenome" maxlength="50" placeholder="sobrenome/last name/apellido<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>" pattern=".{1,50}" value="<?php echo utf8_encode($rs['DS_SOBRENOME']); ?>">
 					<div class="erro_help">
 						<p class="erro">informe seu sobrenome</p>
 						<p class="help"></p>
@@ -143,7 +145,7 @@ session_start();
 						</p>
 						<p class="help"></p>
 					</div>
-					<input type="text" name="cpf" id="cpf" placeholder="C.P.F" maxlength="14" autocomplete="off" maxlength="11" pattern=".{14}" value="<?php echo utf8_encode($rs['CD_CPF']); ?>">
+					<input type="text" name="cpf" id="cpf" placeholder="C.P.F<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>" maxlength="14" autocomplete="off" maxlength="11" pattern=".{14}" value="<?php echo utf8_encode($rs['CD_CPF']); ?>">
 					<div class="erro_help">
 						<p class="erro">informe seu CPF</p>
 						<p class="help"></p>
@@ -160,7 +162,7 @@ session_start();
 						<p class="erro">insira o telefone fixo</p>
 						<p class="help">(ddd + nº)</p>
 					</div>
-					<input type="text" name="celular" id="celular" placeholder="celular/mobile number" maxlength="14" autocomplete="off" value="<?php echo utf8_encode($rs['DS_DDD_CELULAR'].$rs['DS_CELULAR']); ?>">
+					<input type="text" name="celular" id="celular" placeholder="celular/mobile number<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>" maxlength="14" autocomplete="off" value="<?php echo utf8_encode($rs['DS_DDD_CELULAR'].$rs['DS_CELULAR']); ?>">
 					<div class="erro_help">
 						<p class="erro"></p>
 						<p class="help">opcional</p>
@@ -220,12 +222,12 @@ session_start();
 				<div class="icone"></div>
 				<div class="inputs">
 					<p class="titulo">Login</p>
-					<input type="text" name="email1" id="email1" pattern=".{1,200}" placeholder="digite seu e-mail">
+					<input type="text" name="email1" id="email1" pattern=".{1,200}" placeholder="digite seu e-mail<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>">
 					<div class="erro_help">
 						<p class="erro">informe seu e-mail</p>
 						<p class="help"></p>
 					</div>
-					<input type="text" name="email2" id="email2" pattern=".{1,200}" placeholder="confirme seu e-mail">
+					<input type="text" name="email2" id="email2" pattern=".{1,200}" placeholder="confirme seu e-mail<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>">
 					<div class="erro_help">
 						<p class="erro">confirmação de e-mail não confere</p>
 						<p class="help"></p>
@@ -289,6 +291,15 @@ session_start();
 				require_once('../settings/brandcaptchalib.php');
 				echo brandcaptcha_get_html($recaptcha_cadastro['public_key']);
 				?>
+			</div>
+			<?php } ?>
+
+			<?php if ($exibir_msg_obrigatorio) { ?>
+			<div class="input_area">
+				<div class="icone"></div>
+				<div class="inputs">
+					<p>(*) Campos obrigatórios</p>
+				</div>
 			</div>
 			<?php } ?>
 			

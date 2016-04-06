@@ -40,12 +40,12 @@ if (isset($_GET['action'])) {
 				{
 					$('#teatros tbody').html('');
 					$('.btnSave').hide();
-					$('#selectAll').hide();
+					$('#selectAll').parent().hide();
 					return false;
 				}
 
 				changed = false;
-				$('#selectAll').show();
+				$('#selectAll').parent().show();
 				$('.btnSave').show();
 
 				$.ajax({
@@ -87,8 +87,18 @@ if (isset($_GET['action'])) {
 				});
 
 				$('#selectAll').click(function () {
+
+					status = this.checked.toString();
+
+					var txt = ( status == 'true' ) ? 'Desmarcar Todos' : 'Selecionar Todos';
+					$(this).parent().find('.txt').html(txt);
+
 					$('.check').each(function () {
-						this.click();
+						elementStatus = this.checked.toString();
+						if ( elementStatus != status)
+						{
+							this.click();
+						}
 					})
 				});
 			}
@@ -119,11 +129,14 @@ if (isset($_GET['action'])) {
 	<style>
 		.btnSave {  display: none; }
 		div.left { text-align: left; margin: 15px 0px; }
-		#selectAll { display: none; }
+		div.right { text-align: right; margin: 15px 0px; }
+		label.selectAll { display: none; font-size: 14px; }
+		.float.left { float: left; }
+		.float.right  { float: right; }
 	</style>
 <h2>Usuário Responsável pelo Teatro</h2>
 <form id="dados" name="dados" method="post">
-	<div class="left">
+	<div class="float left">
 		<select name="usuario" id="usuario">
 			<option value="">Escolha o usuário</option>
 			<?php
@@ -135,8 +148,11 @@ if (isset($_GET['action'])) {
 		<input type="button" class="btnSave" value="Salvar" />
 	</div>
 
-	<div>
-		<label>selecionar todos<input id="selectAll" type="checkbox"></label>
+	<div class="float right">
+		<label class="selectAll">
+			<span class="txt">selecionar todos</span>
+			<input id="selectAll" type="checkbox">
+		</label>
 	</div>
 
 	<table id="teatros" class="ui-widget ui-widget-content">
@@ -150,7 +166,7 @@ if (isset($_GET['action'])) {
 			<!-- conteúdo carregado via ajax ao selecionar o usuário -->
 		</tbody>
 	</table>
-	<div class="left">
+	<div class="right">
 		<input type="button" class="btnSave" value="Salvar" />
 	</div>
 </form>

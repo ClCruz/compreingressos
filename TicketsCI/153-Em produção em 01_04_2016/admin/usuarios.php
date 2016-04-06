@@ -1,4 +1,5 @@
 <?php
+require_once('../settings/Paginator.php');
 require_once('../settings/functions.php');
 include('../settings/Log.class.php');
 $mainConnection = mainConnection();
@@ -8,28 +9,27 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 9, true)) {
 $pagina = basename(__FILE__);
 
 if (isset($_GET['action'])) {
-	
+
 	require('actions/'.$pagina);
-	
+
 } else {
 
 	$_GET['ativo'] = !isset($_GET['ativo']) ? 1 : $_GET['ativo'];
 
 	//$oldQuery = "SELECT ID_USUARIO, CD_LOGIN, DS_NOME, DS_EMAIL, IN_ATIVO, IN_ADMIN, IN_TELEMARKETING, IN_PDV, IN_POS FROM MW_USUARIO WHERE IN_ATIVO = ? OR ? = 2 ORDER BY DS_NOME ASC";
-	$page 		= ( !isset($_GET['page']) ) ? 1 : (int)$_GET['page'];
-	$perPage 	= ( !isset($_GET['controle']) ) ? 10 : (int)$_GET['controle'];
+
 	$queryNumRows = 'SELECT id_usuario FROM mw_usuario WHERE in_ativo = ? OR ? = 2 ORDER BY ds_nome ASC';
-	$total = numRows( $mainConnection, $queryNumRows, array($_GET['ativo'], $_GET['ativo']) );
+	$paramnsQueryNumRows = array($_GET['ativo'], $_GET['ativo']);
 
-	if ($page > ceil($total / $perPage)) { $page = 1; $_GET['page'] = 1; }
-	
-	$total_reg 	= (!isset($_GET["controle"])) ? 10 : $_GET["controle"];
-	$end 		= ($page * $perPage);
-	$start 		= ($end - $perPage) + 1;
+	$paramns = array(
+		'query' 	=> $queryNumRows,
+		'paramns' 	=> $paramnsQueryNumRows
+	);
 
-	$maxPages = ceil($total / $perPage);
-	$between = 'WHERE row BETWEEN '.$start.' AND '.$end.' AND (in_ativo = ? OR ? = 2) ORDER BY ds_nome ASC';
+	$link = '?p='.$_GET['p'].'&ativo='.$_GET['ativo'];
+	$obj = Paginator::__paginate($link, $paramns);
 
+	$between = 'WHERE row BETWEEN '.$obj["start"].' AND '.$obj["end"].' AND (in_ativo = ? OR ? = 2) ORDER BY ds_nome ASC';
 	$newQuery = 'WITH results AS (
 					SELECT 
 						id_usuario
@@ -51,7 +51,7 @@ if (isset($_GET['action'])) {
 	$result = executeSQL($mainConnection,
 						$newQuery,
 						array($_GET['ativo'], $_GET['ativo']));
-	
+
 ?>
 
 <style type="text/css">
@@ -60,43 +60,22 @@ if (isset($_GET['action'])) {
 </style>
 <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
 <script>
-	var usuarios = {
-		init: function ()
-		{
-			this.setVars();
-			simples.init();
-			this.changeQttPerPage();
-		},
-
-		setVars: function ()
-		{
-			//alert('x');
-		},
-		
-		changeQttPerPage: function () 
-		{
-			$("#controle").change(function(){
-				simples.setParamns('controle', this.value)
-				simples.reloadWithParamns();
-			});
-		}
-	};
 $(function() {
-	usuarios.init();
+	//usuarios.init();
 
 	var pagina = '<?php echo $pagina; ?>';
-	
+
 	$('#app table').delegate('a', 'click', function(event) {
 		event.preventDefault();
-		
+
 		var $this = $(this),
 			 href = $this.attr('href'),
 			 id = 'codusuario=' + $.getUrlVar('codusuario', href),
 			 tr = $this.closest('tr');
-		
+
 		if (href.indexOf('?action=add') != -1 || href.indexOf('?action=update') != -1) {
 			if (!validateFields()) return false;
-			
+
 			$.ajax({
 				url: href,
 				type: 'post',
@@ -105,7 +84,7 @@ $(function() {
 					if (data.substr(0, 4) == 'true') {
 						var id = $.serializeUrlVars(data),
 							email = $.getUrlVar('email', data);
-						
+
 						tr.find('td:not(.button):eq(0)').html($.getUrlVar('codusuario', data));
 						tr.find('td:not(.button):eq(1)').html($('#nome').val());
 						tr.find('td:not(.button):eq(2)').html($('#email').val());
@@ -115,7 +94,7 @@ $(function() {
 						tr.find('td:not(.button):eq(6)').html($('#telemarketing').is(':checked') ? 'sim' : 'n&atilde;o');
                         tr.find('td:not(.button):eq(7)').html($('#pdv').is(':checked') ? 'sim' : 'n&atilde;o');
                         tr.find('td:not(.button):eq(8)').html($('#pos').is(':checked') ? 'sim' : 'n&atilde;o');
-						
+
 						$this.text('Editar').attr('href', pagina + '?action=edit&' + id);
 						tr.find('td.button a:eq(1)').attr('href', pagina + '?action=reset&' + id);
 						tr.find('td.button a:last').attr('href', pagina + '?action=delete&' + id);
@@ -160,15 +139,15 @@ $(function() {
 			});
 		} else if (href.indexOf('?action=edit') != -1) {
 			if(!hasNewLine()) return false;
-			
+
 			var values = new Array();
-			
+
 			tr.attr('id', 'newLine');
-			
+
 			$.each(tr.find('td:not(.button)'), function() {
 				values.push($(this).text());
 			});
-			
+
 			tr.find('td:not(.button):eq(1)').html('<input name="nome" type="text" class="inputStyle" id="nome" maxlength="100" value="' + values[1] + '" />');
 			tr.find('td:not(.button):eq(2)').html('<input name="email" type="text" class="inputStyle" id="email" maxlength="100" value="' + values[2] + '" />');
 			tr.find('td:not(.button):eq(3)').html('<input name="login" type="text" class="readonly inputStyle" id="login" maxlength="10" value="' + values[3] + '" readonly />');
@@ -177,9 +156,9 @@ $(function() {
 			tr.find('td:not(.button):eq(6)').html('<input name="telemarketing" type="checkbox" class="inputStyle" id="telemarketing" ' + (values[6] == 'sim' ? 'checked' : ''  )+ ' />');
             tr.find('td:not(.button):eq(7)').html('<input name="pdv" type="checkbox" class="inputStyle" id="pdv" ' + (values[7] == 'sim' ? 'checked' : ''  )+ ' />');
             tr.find('td:not(.button):eq(8)').html('<input name="pos" type="checkbox" class="inputStyle" id="pos" ' + (values[8] == 'sim' ? 'checked' : ''  )+ ' />');
-			
+
 			$this.text('Salvar').attr('href', pagina + '?action=update&' + id);
-			
+
 			setDatePickers();
 		} else if (href == '#delete') {
 			tr.remove();
@@ -224,12 +203,12 @@ $(function() {
 			});
 		}
 	});
-	
+
 	$('#new').button().click(function(event) {
 		event.preventDefault();
-		
+
 		if(!hasNewLine()) return false;
-		
+
 		var newLine = '<tr id="newLine">' +
                                                     '<td></td>' +
                                                     '<td><input name="nome" type="text" class="inputStyle" id="nome" maxlength="100" /></td>' +
@@ -251,14 +230,14 @@ $(function() {
 	$('#filtro').change(function() {
 		document.location = '?p=' + pagina.replace('.php', '') + '&ativo=' + $(this).val();
 	});
-	
+
 	function validateFields() {
 		var campos = $(':text'),
 			 valido = true;
-			 
+
 		$.each(campos, function() {
 			var $this = $(this);
-			
+
 			if ($this.val() == '') {
 				$this.parent().addClass('ui-state-error');
 				valido = false;
@@ -325,30 +304,12 @@ $(function() {
 		</tbody>
 	</table>
 
-	<style type="text/css">
-		#paginacao {
-			width: 100%;
-			text-align: center;
-			margin-top: 10px;
-		}
-		div#paginacao a {
-			display: inline-block;
-			margin: 0 5px;
-		}
-		div#paginacao label.pages {
-			margin-left: 15px;
-		}
-		div#paginacao label.qtt {
-			display: block;
-			margin-top: 10px;
-		}
-	</style>
 	<div id="paginacao">
 		<?php
-		require_once('../settings/Paginator.php');
 
-		$link = '?p='.$_GET['p'].'&ativo='.$_GET['ativo'];
-		Paginator::__paginate($page, $perPage, $total, $link, 5, true, true);
+		echo $obj['htmlpages'];
+
+		//Paginator::__paginate($page, $perPage, $total, $link, 5, true, true);
 		?>
 	</div>
 	<a id="new" href="#new">Novo</a>

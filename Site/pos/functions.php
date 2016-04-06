@@ -226,7 +226,8 @@ function print_order($pedido, $reprint = false){
 				R.CODVENDA,
 				UPPER(MP.NM_CARTAO_EXIBICAO_SITE) NM_CARTAO_EXIBICAO_SITE,
 				P.VL_TOTAL_PEDIDO_VENDA,
-				P.CD_NUMERO_AUTORIZACAO
+				P.CD_NUMERO_AUTORIZACAO,
+				GETDATE() AS DT_ATUAL
 			FROM MW_ITEM_PEDIDO_VENDA R
 			INNER JOIN MW_PEDIDO_VENDA P ON P.ID_PEDIDO_VENDA = R.ID_PEDIDO_VENDA
 			INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
@@ -263,7 +264,7 @@ function print_order($pedido, $reprint = false){
 		
 		echo $space ."Nr. DOC: ". $rs['CD_NUMERO_AUTORIZACAO'] ."<BR>";
 		echo $space ."Vl. Total Pedido: R$ ". number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, ',', '') ."<BR>";
-		echo $space ."V:". $rs['DT_PEDIDO_VENDA']->format('d/m/y H:i:s') ." I:". date('d/m/y H:i:s') ."<BR><BR>";
+		echo $space ."V:". $rs['DT_PEDIDO_VENDA']->format('d/m/y H:i:s') ." I:". $rs['DT_ATUAL']->format('d/m/y H:i:s') ."<BR><BR>";
 
 		echo "</PRINTER>";
 

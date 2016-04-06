@@ -56,6 +56,9 @@ if (isset($_GET['action'])) {
 					{
 						userid = e.value;
 						$('#teatros tbody').html(data);
+						$('#teatros tbody tr').hover(function () {
+							$(this).toggleClass('ui-state-hover');
+						});
 						cfgCheck();
 					},
 					error: function (error)
@@ -145,7 +148,6 @@ if (isset($_GET['action'])) {
 			}
 			?>
 		</select>
-		<input type="button" class="btnSave" value="Salvar" />
 	</div>
 
 	<div class="float right">
@@ -157,7 +159,7 @@ if (isset($_GET['action'])) {
 
 	<table id="teatros" class="ui-widget ui-widget-content">
 		<thead>
-			<tr class="ui-widget-header ">
+			<tr class="ui-widget-header">
 				<th>Teatro</th>
 				<th>Permissão</th>
 			</tr>

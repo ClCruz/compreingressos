@@ -92,12 +92,104 @@ if (isset($_GET['action'])) {
 			exit();
 		}
 		
-		$query = 'SELECT 1 FROM MW_CLIENTE WHERE CD_CPF = ?';
+		$query = 'SELECT id_cliente, ds_nome, ds_sobrenome FROM MW_CLIENTE WHERE CD_CPF = ?';
 		$params = array($_POST['cpf']);
-		$result = executeSQL($mainConnection, $query, $params);
-		
-		if (hasRows($result)) {
-			echo 'Já existe um usuário cadastrado com esse CPF.';
+		$result = fetchAssoc( executeSQL($mainConnection, $query, $params) );
+
+		function addPOSUser($reg)
+		{
+			$mainConnection = mainConnection();
+			//echo 'Função de add usuário pre cadastro via POS com CPF';
+			$query = 'UPDATE MW_CLIENTE SET
+							cd_password = ?,
+							DS_NOME = ?,
+							DS_SOBRENOME = ?,
+							DT_NASCIMENTO = CONVERT(DATETIME, ?, 103),
+							DS_DDD_TELEFONE = ?,
+							DS_DDD_CELULAR = ?,
+							DS_TELEFONE = ?,
+							DS_CELULAR = ?,
+							CD_RG = ?,
+							CD_CPF = ?,
+							DS_ENDERECO = ?,
+							DS_COMPL_ENDERECO = ?,
+							DS_BAIRRO = ?,
+							DS_CIDADE = ?,
+							ID_ESTADO = ?,
+							CD_CEP = ?,
+							CD_EMAIL_LOGIN = ?,
+							IN_RECEBE_INFO = ?,
+							IN_RECEBE_SMS = ?,
+							IN_SEXO = ?,
+							ID_DOC_ESTRANGEIRO = ?
+						WHERE ID_CLIENTE = ?';
+			$params = array(
+				$senha = isset($_SESSION['operador'])  ? '' : md5($_POST['senha1']),
+				$_POST['nome'],
+				$_POST['sobrenome'],
+				(($_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] != '//') ? $_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] : NULL),
+				$_POST['ddd1'],
+				$_POST['ddd2'],
+				$_POST['telefone'],
+				$_POST['celular'],
+				$_POST['rg'],
+				$_POST['cpf'],
+				$_POST['endereco'],
+				$_POST['complemento'],
+				$_POST['bairro'],
+				$_POST['cidade'],
+				$_POST['estado'],
+				$_POST['cep'],
+				$_POST['email1'],
+				$_POST['extra_info'],
+				$_POST['extra_sms'],
+				$_POST['sexo'],
+				$_POST['tipo_documento'],
+				$reg['id_cliente']
+			);
+
+			if (executeSQL($mainConnection, $query, $params)) {
+				$errors = sqlErrors();
+				if (empty($errors)) {
+
+					if (!(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) {
+						sendConfirmationMail($reg['id_cliente']);
+						$retorno = 'Seus dados foram atualizados com sucesso!';
+					}else{
+						dispararTrocaSenha($_POST['email1']);
+						$retorno = 'Usuário pré registrado em POS atualizado com sucesso.';
+					}
+					//$send_mailchimp = true;
+				} else {
+					$retorno = sqlErrors();
+				}
+			} else {
+				$retorno = sqlErrors();
+			}
+
+			if (is_array($retorno)) {
+				if ($retorno[0]['code'] == 242) {
+					echo 'Data de Nascimento inválida';
+				} else {
+					var_dump($query, $params, $retorno);
+				}
+			} else {
+				echo $retorno;
+			}
+		}
+
+		if ( !empty($result) )
+		{
+			$reg = $result[0];
+			if ( $reg['ds_nome'] == 'POS' && $reg['ds_sobrenome'] == 'POS' )
+			{
+				addPOSUser($reg);
+			}
+			else
+			{
+				echo 'Já existe um usuário cadastrado com esse CPF.';
+			}
+
 			exit();
 		}
 		

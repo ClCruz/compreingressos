@@ -268,7 +268,7 @@ $(function() {
 						if (data != 'true') {
     						if (typeof(BrandCaptcha) !== 'undefined') BrandCaptcha.reload();
 							
-							if (data == 'Seus dados foram atualizados com sucesso!') {
+							if (data == 'Seus dados foram atualizados com sucesso!' || data == 'Usuário pré registrado em POS atualizado com sucesso.') {
 								$this.next('.erro_help').find('.help').slideDown('fast').delay(3000).slideUp('slow');
 							} else {
 								$.dialog({text: data});

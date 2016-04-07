@@ -46,6 +46,8 @@ if (isset($_GET['action'])) {
 
 				changed = false;
 				$('#selectAll').parent().show();
+				$('#selectAll').prop('checked', false);
+				$('#selectAll').parent().find('.txt').html('Selecionar Todos');
 				$('.btnSave').show();
 
 				$.ajax({

@@ -61,8 +61,6 @@ if (isset($_GET['action'])) {
 <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
 <script>
 $(function() {
-	usuarios.init();
-
 	var pagina = '<?php echo $pagina; ?>';
 
 	$('#app table').delegate('a', 'click', function(event) {

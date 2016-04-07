@@ -1648,6 +1648,13 @@ function getCurrentUrl() {
     return $pageURL;
 }
 
+function printr($array, $titulo = '')
+{
+    echo $titulo.'<pre>';
+        print_r($array);
+    echo '</pre>';
+}
+
 function verificaCPF($cpf) {
     if (!is_numeric($cpf)) {
 	return false;

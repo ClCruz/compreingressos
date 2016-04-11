@@ -1,7 +1,7 @@
 <?php
 
 function getSiteLogo() {
-    echo "<img src='../images/menu_logo.jpg' height='60px' id='logo' />";
+    echo "<img src='../images/menu_logo.png' height='60px' id='logo' />";
 }
 
 function getSiteName() {
@@ -9,7 +9,6 @@ function getSiteName() {
 }
 
 /*  PEDIDOS  */
-
 function tempoRestante($stamp = false) {
     $mainConnection = mainConnection();
     $query = 'SELECT TOP 1

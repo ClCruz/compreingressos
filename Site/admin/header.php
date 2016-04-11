@@ -1,4 +1,5 @@
 <?php
+
 require_once('../settings/functions.php');
 session_start();
 ?>

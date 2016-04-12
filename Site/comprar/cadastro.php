@@ -68,7 +68,7 @@ if (isset($_GET['action'])) {
 			    $_POST["brand_cap_challenge"],
 			    $_POST["brand_cap_answer"]);
 
-			if ($is_teste != '1') {
+			if (!$_ENV['IS_TEST']) {
 				if (!$resp->is_valid) {
 				    // set the error code so that we can display it
 				    $error = $resp->error;

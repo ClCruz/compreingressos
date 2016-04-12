@@ -46,9 +46,8 @@ function array_to_xml($array, &$xml) {
 }
 
 function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
-	global $is_teste;
 
-	$wsdl_url = ($is_teste === '1' ? "http://homologacao.clearsale.com.br/integracaov2/service.asmx?WSDL" : "http://integracao.clearsale.com.br/service.asmx?WSDL");
+	$wsdl_url = ($_ENV['IS_TEST'] ? "http://homologacao.clearsale.com.br/integracaov2/service.asmx?WSDL" : "http://integracao.clearsale.com.br/service.asmx?WSDL");
 	$entityCode = 'A2150D50-C67F-4F3B-A675-CC79D89FD206';
 
 	session_start();
@@ -279,8 +278,8 @@ function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 	    'trace' => true,
 	    'exceptions' => true,
 	    'cache_wsdl' => WSDL_CACHE_NONE/*,
-	    'proxy_host'     => ($is_teste == '1' ? $proxy_homologacao['host'] : $proxy_producao['host']),
-	    'proxy_port'     => ($is_teste == '1' ? $proxy_homologacao['port'] : $proxy_producao['port'])*/
+	    'proxy_host'     => ($_ENV['IS_TEST'] ? $proxy_homologacao['host'] : $proxy_producao['host']),
+	    'proxy_port'     => ($_ENV['IS_TEST'] ? $proxy_homologacao['port'] : $proxy_producao['port'])*/
 	);
 
 	$tentativas = 3;

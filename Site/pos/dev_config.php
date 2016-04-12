@@ -11,7 +11,11 @@ echo "<SET TYPE=TIME HOUR=".date('His')." DATE=".date('dmY')." HDSTS=STSSTT>";
 
 echo "<CONSOLE>alterando pagamento...</CONSOLE>";
 
-echo "<FILE NAME=verifone.zip ADDR=/compreingressos2/pos/verifone.zip ERR=ERROARQ>";
+if ($_ENV['IS_TEST']) {
+	echo "<FILE NAME=CLSIT ADDR=/compreingressos2/pos/CLSIT.txt ERR=ERROARQ>";
+} else {
+	echo "<FILE NAME=CLSIT ADDR=/pos/CLSIT.txt ERR=ERROARQ>";
+}
 
 echo "<CONSOLE>alterando configs...</CONSOLE>";
 
@@ -39,10 +43,21 @@ echo "PASSWORD_CONFIG=159137;";
 // echo "GPRS_USER=VIVO;";
 // echo "GPRS_PASSWORD=VIVO;";
 
-echo "SERVER_IP=compra.compreingressos.com;";
-echo "SERVER_PORT=80;";
-echo "SERVER_RESOURCE=/pos/main.php;";
-echo "SERVER_HOST=compra.compreingressos.com;";
+
+// se estiver no ambiente de homologacao configura para producao
+if ($_ENV['IS_TEST']) {
+	echo "SERVER_IP=compra.compreingressos.com;";
+	echo "SERVER_PORT=80;";
+	echo "SERVER_RESOURCE=/pos/main.php;";
+	echo "SERVER_HOST=compra.compreingressos.com;";
+}
+// se estiver no ambiente de producao configura para homologacao
+else {
+	echo "SERVER_IP=186.237.201.150;";
+	echo "SERVER_PORT=8081;";
+	echo "SERVER_RESOURCE=/compreingressos2/pos/main.php;";
+	echo "SERVER_HOST=;";
+}
 
 // echo "SERVER_HTTPS_ACTIVE=0;";
 // echo "SERVER_HTTPS_METHOD=1;";

@@ -14,7 +14,6 @@ $maxIngressos = 16;//maximo por compra
 
 $uploadPath = '../images/uploads/';
 
-$is_teste = '1';
 $isContagemAcessos = true;
 $is_manutencao = false;
 

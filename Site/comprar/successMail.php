@@ -20,7 +20,7 @@ $is_assinatura = hasRows($result);
 $subject = utf8_decode('Pedido ' . $parametros['OrderData']['OrderId'] . ' - Pago');
 
 $namefrom = utf8_decode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS');
-$from = ($is_teste == '1') ? 'contato@intuiti.com.br' : 'compreingressos@gmail.com';
+$from = ($_ENV['IS_TEST'] ? 'contato@intuiti.com.br' : 'compreingressos@gmail.com');
 
 $query = 'SELECT ds_meio_pagamento FROM mw_meio_pagamento WHERE cd_meio_pagamento = ?';
 $rs = executeSQL($mainConnection, $query, array($PaymentDataCollection['PaymentMethod']), true);
@@ -142,9 +142,9 @@ foreach ($itensPedido as $item) {
     $valores['valor_servico'] = isset($valores['valor_servico']) ? $valores['valor_servico'] : '';
 }
 
-$valores['link_voucher'] = $is_teste == '1'
+$valores['link_voucher'] = ($_ENV['IS_TEST']
                                 ? 'http://186.237.201.150:8081/compreingressos2/comprar/reimprimirEmail.php?pedido='.$parametros['OrderData']['OrderId']
-                                : 'https://compra.compreingressos.com/comprar/reimprimirEmail.php?pedido='.$parametros['OrderData']['OrderId'];
+                                : 'https://compra.compreingressos.com/comprar/reimprimirEmail.php?pedido='.$parametros['OrderData']['OrderId']);
 
 $tpl = new Template('../comprar/templates/emailComprador.html');
 
@@ -169,9 +169,9 @@ $tpl->show();
 //copy current buffer contents into $message variable and delete current output buffer
 $message = ob_get_clean();
 
-$bcc = ($is_teste == '1')
+$bcc = ($_ENV['IS_TEST']
         ? array()
-        : array('Pedidos=>pedidos@compreingressos.com');
+        : array('Pedidos=>pedidos@compreingressos.com'));
 
 $successMail = authSendEmail($from, $namefrom, $parametros['CustomerData']['CustomerEmail'], $parametros['CustomerData']['CustomerName'], $subject, utf8_decode($message), array(), $bcc, 'iso-8859-1', $barcodes);
 
@@ -181,9 +181,9 @@ if (filter_var($valores['email_presenteado'], FILTER_VALIDATE_EMAIL)) {
     $cipher = new Cipher('1ngr3ss0s');
     $cipher_var = urlencode(base64_encode($cipher->encrypt($parametros['OrderData']['OrderId'].'|'.$valores['email_presenteado'])));
 
-    $valores['link_voucher'] = $is_teste == '1'
+    $valores['link_voucher'] = ($_ENV['IS_TEST']
                                 ? 'http://186.237.201.150:8081/compreingressos2/comprar/reimprimirEmail.php?pedido='.$cipher_var
-                                : 'https://compra.compreingressos.com/comprar/reimprimirEmail.php?pedido='.$cipher_var;
+                                : 'https://compra.compreingressos.com/comprar/reimprimirEmail.php?pedido='.$cipher_var);
 
     $tpl = new Template('../comprar/templates/emailPresente.html');
 

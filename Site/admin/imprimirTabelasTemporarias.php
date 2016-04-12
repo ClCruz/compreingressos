@@ -14,7 +14,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 330, true)) {
 		$dt_final = explode('/', $_GET["dt_final"]);
 		$dt_final = $dt_final[2].$dt_final[1].$dt_final[0];
 		
-		$conn = ($is_teste ? getConnection(137) : getConnection(139));
+		$conn = ($_ENV['IS_TEST'] ? getConnection(137) : getConnection(139));
 		$query = "SELECT
 					CONVERT(VARCHAR(10), [Data do Evento], 103) AS 'Data do Evento'
 			      ,CONVERT(VARCHAR(5), [Horario do Evento], 114) AS 'Horario do Evento'

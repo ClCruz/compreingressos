@@ -3,7 +3,7 @@ $total_lines = 19;
 $header_lines = 4;
 $body_lines = $total_lines - $header_lines;
 
-if ($is_teste === '1') {
+if ($_ENV['IS_TEST']) {
 	$ip_tef = '152.250.250.64';
 	$porta_tef = '4096';
 	$codloja_tef = '00000000';
@@ -47,7 +47,7 @@ if (!$_SESSION['is_pos_configured']) {
 		}
 
 		if ($rs['ID'] == null or $rs['LAST_CONFIG'] == null or $rs['LAST_CONFIG']->format('U') < filemtime(__FILE__)) {
-			$imgs_dir = ($is_teste == '1' ? '/compreingressos2/pos' : '/pos');
+			$imgs_dir = ($_ENV['IS_TEST'] ? '/compreingressos2/pos' : '/pos');
 
 			// envia logos
 			echo "<FILE NAME=logo_ci_colorida.bmp ADDR=$imgs_dir/logo_ci_colorida.bmp ERR=erroarq WRT=SIM>";

@@ -608,7 +608,7 @@ if (isset($_GET['confirmacao'])) {
 		$strCookie = 'PHPSESSID=' . $_COOKIE['PHPSESSID'] . '; path=/';
 
 		$post_data = http_build_query(array('numCartao' => $bin, 'pos' => 1));
-		$url = 'http'.($_SERVER["HTTPS"] == "on" ? 's' : '').'://'.$_SERVER['SERVER_NAME'].($is_teste === '1' ? '/compreingressos2' : '').'/comprar/validarBin.php';
+		$url = 'http'.($_SERVER["HTTPS"] == "on" ? 's' : '').'://'.$_SERVER['SERVER_NAME'].($_ENV['IS_TEST'] ? '/compreingressos2' : '').'/comprar/validarBin.php';
 		session_write_close();
 
 		$ch = curl_init(); 
@@ -624,7 +624,7 @@ if (isset($_GET['confirmacao'])) {
 			$error[] = $response;
 		}
 
-		$url = 'http'.($_SERVER["HTTPS"] == "on" ? 's' : '').'://'.$_SERVER['SERVER_NAME'].($is_teste === '1' ? '/compreingressos2' : '').'/comprar/validarLote.php';
+		$url = 'http'.($_SERVER["HTTPS"] == "on" ? 's' : '').'://'.$_SERVER['SERVER_NAME'].($_ENV['IS_TEST'] ? '/compreingressos2' : '').'/comprar/validarLote.php';
 		$ch = curl_init(); 
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_USERAGENT, $useragent);

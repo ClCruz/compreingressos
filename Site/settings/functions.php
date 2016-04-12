@@ -1639,9 +1639,9 @@ function getCurrentUrl() {
     $pageURL .= "://";
 
     if ($_SERVER["SERVER_PORT"] != "80") {
-		$pageURL .= ($is_teste == '1' ? $_SERVER["HTTP_HOST"] : $_SERVER["SERVER_NAME"] . ":" . $_SERVER["SERVER_PORT"]) . $_SERVER["REQUEST_URI"];
+		$pageURL .= ($_ENV['IS_TEST'] ? $_SERVER["HTTP_HOST"] : $_SERVER["SERVER_NAME"] . ":" . $_SERVER["SERVER_PORT"]) . $_SERVER["REQUEST_URI"];
     } else {
-		$pageURL .= ($is_teste == '1' ? $_SERVER["HTTP_HOST"] : $_SERVER["SERVER_NAME"]) . $_SERVER["REQUEST_URI"];
+		$pageURL .= ($_ENV['IS_TEST'] ? $_SERVER["HTTP_HOST"] : $_SERVER["SERVER_NAME"]) . $_SERVER["REQUEST_URI"];
     }
 
     return $pageURL;
@@ -2168,9 +2168,9 @@ function sendConfirmationMail($id_cliente) {
     $tpl = new Template('../comprar/templates/confirmacaoEmail.html');
     $tpl->nome = $rs['DS_NOME'];
     $tpl->codigo = $rs['CD_CONFIRMACAO'];
-    $tpl->link = $is_teste != '1'
+    $tpl->link = ($_ENV['IS_TEST']
                     ? 'https://compra.compreingressos.com/comprar/confirmacaoEmail.php?codigo='.urlencode($rs['CD_CONFIRMACAO'])
-                    : 'http://homolog.compreingressos.com:8081/compreingressos2/comprar/confirmacaoEmail.php?codigo='.urlencode($rs['CD_CONFIRMACAO']);
+                    : 'http://homolog.compreingressos.com:8081/compreingressos2/comprar/confirmacaoEmail.php?codigo='.urlencode($rs['CD_CONFIRMACAO']));
 
     if ($_REQUEST['redirect']) {
         $tpl->link .= '&redirect='.urlencode($_REQUEST['redirect']);
@@ -2183,7 +2183,7 @@ function sendConfirmationMail($id_cliente) {
     $message = ob_get_clean();
 
     $namefrom = utf8_decode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS');
-    $from = ($is_teste == '1') ? 'contato@intuiti.com.br' : 'compreingressos@gmail.com';
+    $from = ($_ENV['IS_TEST'] ? 'contato@intuiti.com.br' : 'compreingressos@gmail.com');
 
     $successMail = authSendEmail($from, $namefrom, $rs['CD_EMAIL_LOGIN'], $rs['DS_NOME'], $subject, utf8_decode($message), array(), array(), 'iso-8859-1');
 
@@ -2340,7 +2340,6 @@ function sendSuccessMail($pedido_id) {
 }
 
 function getPKPass($dados_pedido) {
-    global $is_teste;
 
     foreach ($dados_pedido as $key => $value) {
         $dados_pedido[$key] = utf8_encode($value);
@@ -2370,9 +2369,9 @@ function getPKPass($dados_pedido) {
 
     $data = json_encode($data);
 
-    $url = $is_teste == '1'
+    $url = ($_ENV['IS_TEST']
         ? "https://mpassbook-homol.herokuapp.com/passes/v2/"
-        : "https://mpassbook.herokuapp.com/passes/v2/";
+        : "https://mpassbook.herokuapp.com/passes/v2/");
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url.'generate.json');

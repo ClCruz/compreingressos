@@ -70,7 +70,7 @@ if ($_POST) {
     		<p class="frase">5.1 Escolha o meio de pagamento</p>
     		<div class="inputs">
     			<?php
-    			if ($is_teste == '1') {
+    			if ($_ENV['IS_TEST']) {
     			?>
     			<div class="container_cartao">
     				<input id="997" type="radio" name="codCartao" class="radio" value="997"

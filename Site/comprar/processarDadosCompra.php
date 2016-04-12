@@ -15,7 +15,7 @@ $resp = brandcaptcha_check_answer(
             $_POST["brand_cap_answer"]
         );
 
-if ($is_teste != '1' and !isset($_SESSION['operador'])) {
+if (!$_ENV['IS_TEST'] and !isset($_SESSION['operador'])) {
     if (!$resp->is_valid) {
         // set the error code so that we can display it
         $error = $resp->error;
@@ -31,7 +31,7 @@ if ($_POST['codCartao'] == '') {
 }
 
 // condicao que para uma tentativa de usar o cartao de teste no ambiente de producao
-if ($is_teste != '1' and $_POST['codCartao'] == 997) {
+if (!$_ENV['IS_TEST'] and $_POST['codCartao'] == 997) {
     echo "Nice try...";
     die();
 }
@@ -442,8 +442,8 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
         'trace' => true,
         'exceptions' => true,
         'cache_wsdl' => WSDL_CACHE_NONE/*,
-        'proxy_host'     => ($is_teste == '1' ? $proxy_homologacao['host'] : $proxy_producao['host']),
-        'proxy_port'     => ($is_teste == '1' ? $proxy_homologacao['port'] : $proxy_producao['port'])*/
+        'proxy_host'     => ($_ENV['IS_TEST'] ? $proxy_homologacao['host'] : $proxy_producao['host']),
+        'proxy_port'     => ($_ENV['IS_TEST'] ? $proxy_homologacao['port'] : $proxy_producao['port'])*/
     );
 
     $descricao_erro = '';

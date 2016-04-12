@@ -138,8 +138,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
     }
 
     function importar_conteudo_dos_arquivos($conn, $id_promocao, $folder, $cod_tip_promocao) {
-
-        global $is_teste;
         
         $files = array_diff(scandir('./temp/'.$folder), array('..', '.'));
 
@@ -149,7 +147,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
 
             $file_path = $folder."\\".$name;
             
-            if ($is_teste == '1') {
+            if ($_ENV['IS_TEST']) {
                 $path = realpath('./temp/'.$file_path);
             } else {
                 $path = "\\\\".$_SERVER['LOCAL_ADDR']."\\csv\\".$file_path;

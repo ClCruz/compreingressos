@@ -163,6 +163,10 @@ $PaymentDataCollection['TransactionType'] = 2;
 $PaymentDataCollection['NumberOfPayments'] = $_POST['parcelas'] > $parcelas ? $parcelas : ($_POST['parcelas'] < 1 ? 1 : $_POST['parcelas']);
 $PaymentDataCollection['PaymentPlan'] = $PaymentDataCollection['NumberOfPayments'] > 1 ? 1 : 0;
 
+// 1 Pré-Autorização
+// 2 Captura Automática
+$PaymentDataCollection['TransactionType'] = 1;
+
 //Dados do endereço de cobrança.
 $parametros['CustomerData']['CustomerAddressData']['Street'] = $rs['DS_ENDERECO'];
 $parametros['CustomerData']['CustomerAddressData']['Complement'] = $rs['DS_COMPL_ENDERECO'];
@@ -460,6 +464,7 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
     // echo "</pre>";
     // die(''.time());
     
+    
     if ($_SESSION['usuario_pdv'] !== 1 and $PaymentDataCollection['Amount'] != 0 and !in_array($_POST['codCartao'], array('892', '893'))) {
     	try {
             executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
@@ -482,6 +487,44 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
             $descricao_erro = $e->getMessage();
         } catch (Exception $e) {
             var_dump($e);
+        }
+
+
+        if ($result->AuthorizeTransactionResult->CorrelationId == $ri and $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->Status == '1') {    
+            // CHECAGEM PELO CLEARSALE
+            $query = "SELECT COUNT(1) AS IN_ANTI_FRAUDE FROM MW_RESERVA R
+                        INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+                        INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+                        WHERE R.ID_SESSION = ? AND E.IN_ANTI_FRAUDE = 1";
+            $rs = executeSQL($mainConnection, $query, array(session_id()), true);
+
+            require_once('../settings/antiFraude.php');
+
+            if ($rs['IN_ANTI_FRAUDE']) {
+                $array_dados_extra = array();
+
+                $array_dados_extra['Orders']['Order']['Payments']['Payment']['CardExpirationDate'] = $PaymentDataCollection['CardExpirationDate'];
+                $array_dados_extra['Orders']['Order']['Payments']['Payment']['Name'] = $PaymentDataCollection['CardHolder'];
+                $array_dados_extra['Orders']['Order']['Payments']['Payment']['Nsu'] = $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId;
+                
+                // se verificarAntiFraude = false negar a compra
+                if (!verificarAntiFraude($parametros['OrderData']['OrderId'], $array_dados_extra)) {
+
+                    cancelarPedido($result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId);
+
+                    echo "Transação não autorizada.";
+                    die();
+                }
+            }
+
+            if (confirmarPedido($result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId)) {
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->Status = '0';
+            } else {
+                cancelarPedido($result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId);
+
+                echo "Transação não autorizada.";
+                die();
+            }
         }
     }
 

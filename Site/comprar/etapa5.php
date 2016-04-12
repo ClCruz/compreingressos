@@ -156,5 +156,12 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 
 		<?php include "selos.php"; ?>
 	</div>
+
+	<script>
+		(function (a, b, c, d, e, f, g) {a['CsdpObject'] = e; a[e] = a[e] || function() {(a[e].q = a[e].q || []).push(arguments)}, a[e].l = 1 * new Date(); f = b.createElement(c), g = b.getElementsByTagName(c)[0]; f.async = 1; f.src = d; g.parentNode.insertBefore(f, g)})(window, document, 'script', '//device.clearsale.com.br/p/fp.js', 'csdp');
+		csdp('app', 'ae6af083e9');
+		csdp('sessionid', '<?php echo session_id(); ?>');
+	</script>
+	<?php var_dump($_COOKIE); ?>
 </body>
 </html>

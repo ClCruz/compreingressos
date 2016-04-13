@@ -34,7 +34,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
         echo $html;
     }
 
-    elseif ( $_GET['action'] == 'create' )
+    elseif ( $_GET['action'] == 'cad' )
     {
         $userid     = $_GET['userid'];
         $teatroid   = $_GET['teatroid'];
@@ -44,7 +44,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
         executeSQL( $mainConnection, $query, $paramns );
     }
 
-    elseif ( $_GET['action'] == 'delete' )
+    elseif ( $_GET['action'] == 'del' )
     {
         $userid     = $_GET['userid'];
         $teatroid   = $_GET['teatroid'];

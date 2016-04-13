@@ -1550,6 +1550,27 @@ function comboExibicaoPromocao($name, $selected) {
     return $combo;
 }
 
+function comboGenerico(array $dados, $selectedDados)
+{
+    $strValue           = $selectedDados['strValue'];
+    $regSelected        = $selectedDados['reg'];
+    $strShow            = $selectedDados['strToShow'];
+
+    $opt = '';
+    foreach ($dados as $dado)
+    {
+        $selected = '';
+        if ($dado[$strValue] == $regSelected)
+        {
+            $selected = 'selected="selected"';
+        }
+
+        $opt .= '<option value="'.$dado[$strValue].'" '.$selected.'>'.$dado[$strShow].'</option>';
+    }
+
+    return $opt;
+}
+
 // INICIO DOS COMBOS PARA O SISTEMA DE ASSINATURA ------------------------------------------
 
 // combo para os eventos que podem ser pacote

@@ -51,8 +51,21 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
 				<ul>
 			<?php
 			while ($rs = fetchResult($result)) {
+
+				$onclick 	= '';
+
+				$redirect = isset($_GET['redirect']) ? $_GET['redirect'] : ($_COOKIE['entrega'] ? 'etapa3_entrega.php' : 'etapa4.php');
+				$href 		= "autenticacao.php?id=".$rs['ID_CLIENTE']."&redirect=".$redirect;
+
+				if ($rs['DS_NOME'] == 'POS' && $rs['DS_SOBRENOME'] == 'POS')
+				{
+					$href = 'javascript:;';
+					$onclick = 'onclick="finalizaCadastroPOS(this)"';
+				}
+
+
 			?>
-				<a href="autenticacao.php?id=<?php echo $rs['ID_CLIENTE']; ?>&redirect=<?php echo isset($_GET['redirect']) ? $_GET['redirect'] : ($_COOKIE['entrega'] ? 'etapa3_entrega.php' : 'etapa4.php'); ?>" class="cliente">
+				<a <?php echo $onclick; ?> href="<?php echo $href; ?>" class="cliente">
 					<li>
 						<p>
 							Nome: <?php echo utf8_encode($rs['DS_NOME'] . ' ' . $rs['DS_SOBRENOME']); ?><br>

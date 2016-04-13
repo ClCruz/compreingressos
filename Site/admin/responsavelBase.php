@@ -183,10 +183,7 @@ if (isset($_GET['action'])) {
 		<select name="usuario" id="usuario">
 			<option value="">Escolha o usuário</option>
 			<?php
-			echo $options;
-//			while($rs = fetchResult($result)){
-//				print("<option value=\"". $rs["ID_USUARIO"] ."\">". $rs["DS_NOME"] ."</option>");
-//			}
+				echo $options;
 			?>
 		</select>
 	</div>

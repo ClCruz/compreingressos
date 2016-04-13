@@ -1,4 +1,13 @@
+/*
+* Função vai no onclick do nome do usuário quando for POS POS
+* */
+function finalizaCadastroPOS(e)
+{
+	$('.bt_cadastro').click();
+}
+
 $(function() {
+	
 	$('#dados_conta, p.erro').hide();
 	$('#cadastro').slideUp(1);//IE7 FIX
 	

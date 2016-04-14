@@ -157,7 +157,8 @@ if (isset($_GET['action'])) {
 						$retorno = 'true';
 					}else{
 						dispararTrocaSenha($_POST['email1']);
-						$retorno = 'Usuário pré registrado em POS atualizado com sucesso.';
+						//$retorno = 'Usuário pré registrado em POS atualizado com sucesso.';
+						$retorno = 'true';
 					}
 					//$send_mailchimp = true;
 				} else {

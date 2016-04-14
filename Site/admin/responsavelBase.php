@@ -135,7 +135,7 @@ if (isset($_GET['action'])) {
 					success: function ()
 					{
 						changed = true;
-						//updateBase(action, teatroid, userid);
+						updateBase(action, teatroid, userid);
 					},
 					error: function (error)
 					{

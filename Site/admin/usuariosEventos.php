@@ -16,9 +16,9 @@ if (isset($_GET['action'])) {
 
 	if ( isset($_POST['local']) )
 	{
-		$arrayBase = explode("*", $_POST["local"]);
-		$idBase = $arrayBase[0];
-		$nomeBase = $arrayBase[1];
+		$arrayBase 	= explode("*", $_POST["local"]);
+		$idBase 	= $arrayBase[0];
+		$nomeBase 	= $arrayBase[1];
 		$idUsuario  =$_POST['usuario'];
 	}
 	//Se vier da página responsvelBasem tudo é enviado via ajax get.
@@ -26,8 +26,8 @@ if (isset($_GET['action'])) {
 	{
 		$idBase 	= $_GET['base'];
 		$nomeBase 	= fetchAssoc( executeSQL($mainConnection, 'SELECT ds_nome_base_sql FROM mw_base WHERE id_base = '.$idBase) );
-		$nomeBase = $nomeBase[0]['ds_nome_base_sql'];
-		$idUsuario = $_GET['usuario'];
+		$nomeBase 	= $nomeBase[0]['ds_nome_base_sql'];
+		$idUsuario 	= $_GET['usuario'];
 	}
 
 	if (isset($_GET["action"]) && $_GET["action"] == "cad") {
@@ -41,12 +41,15 @@ if (isset($_GET['action'])) {
 
 	} else if (isset($_GET["action"]) && $_GET["action"] == "del") {
 
-		if(isset($_GET["tipo"]) && $_GET["tipo"] == "todos")
+		if(isset($_GET["tipo"]) && $_GET["tipo"] == "todos"){
 			echo deletarAcessoEvento($idUsuario, $idBase, $_POST["eventos"], $mainConnection);
-		else if(isset($_GET["tipo"]) && $_GET["tipo"] == "geral")
+		}
+		else if(isset($_GET["tipo"]) && $_GET["tipo"] == "geral"){
 			echo deletarAcessoEvento($idUsuario, $idBase, "geral", $mainConnection);
-		else
+		}
+		else{
 			echo deletarAcessoEvento($idUsuario, $idBase, $_GET["idevento"], $mainConnection);
+		}
 
 	} else if (isset($_GET["action"]) && $_GET["action"] == "notificar") {
 
@@ -86,80 +89,57 @@ if(isset($_GET["local"]) && isset($_GET["usuario"])){
 <script>
 $(function() {
 	var pagina = '<?php echo $pagina; ?>';
-	
-    $('.btnSelecionarGeral').click(function(){
-		var checkbox = $(this);
-		
-		if (validar()) {
-			if (checkbox.is(':checked')) {
-				var check = true;
-				var url = pagina + "?action=cad&tipo=geral";
-			} else {
-				var check = false;
-				var url = pagina + "?action=del&tipo=geral";
+	var checkboxes = document.getElementsByClassName('chm');
+
+	var btnSelecionarTodos = document.getElementsByClassName('btnSelecionarTodos')[0];
+	var btnSelecionarGeral = document.getElementsByClassName('btnSelecionarGeral')[0];
+
+	verificaCheckbox();
+
+	cfgChecks();
+	function cfgChecks()
+	{
+		for(var i = 0; i< checkboxes.length; i++)
+		{
+			var chm = checkboxes[i];
+			checkClick(chm);
+		}
+
+		function checkClick(check)
+		{
+			check.onclick = function ()
+			{
+				var action = ( this.checked ) ? 'cad' : 'del';
+				var url = pagina + "?action="+action+"&idevento=" + this.value;
+
+				$.ajax({
+					url: url,
+					method: 'post',
+					data: $('#dados').serialize(),
+					success: function(data) {
+						if (data != "OK")	$.dialog({text: data});
+					},
+					complete: function() {
+						//$('loadingIcon').fadeOut('slow');
+					}
+				});
+				verificaCheckbox();
 			}
-				
-			$(".chm").attr('checked', true);
-			$(".btnSelecionarTodos").attr('checked', check);
-			
-			$.ajax({
-				url: url,
-				type: 'post',
-				data: $('#dados').serialize(),
-				success: function(data){
-					if (data != "OK") $.dialog({text: data});
-				},
-				complete: function(){
-					$('loadingIcon').fadeOut('slow');	
-				}
-			}); 
-			if (!check) $(".chm").attr('checked', false);
 		}
-    });
-	
-	$('.chm').click(function(){
-		var checkbox = $(this);
-		
-		if (validar()) {
-			if (checkbox.is(':checked')) {
-				var check = true;
-				var url = pagina + "?action=cad&idevento=" + checkbox.val();
-			} else {
-				var check = false;
-				var url = pagina + "?action=del&idevento=" + checkbox.val();
-				$('.btnSelecionarGeral').attr('checked', false);
-			}
-			
-			$('loadingIcon').fadeIn('fast');
-			
-			$.ajax({
-				url: url,
-				type: 'post',
-				data: $('#dados').serialize(),
-				success: function(data) {
-					if (data != "OK")	$.dialog({text: data});
-				},
-				complete: function() {
-					$('loadingIcon').fadeOut('slow');
-				}
-			});
-			verificaCheckbox();
+	}
+
+	function verificaCheckbox()
+	{
+		var allChecked = true;
+		for(var i = 0; i < checkboxes.length; i++)
+		{
+			var cbox = checkboxes[i];
+			if ( !cbox.checked ) { allChecked = false }
 		}
-	});
-	
-	verificaCheckbox = function() {
-		var numCheckbox = $('.chm').length;
-		var chm = $('.chm').get();
-		var cont = 0;
-		for(i = 0; i < numCheckbox; i++){
-			if(chm[i].checked)
-				cont++;
-		}
-		if(cont == numCheckbox)
-			$('.btnSelecionarTodos').attr('checked', true);
-		else
-			$('.btnSelecionarTodos').attr('checked', false);		
-	}; verificaCheckbox();
+
+		btnSelecionarTodos.checked = allChecked;
+		if ( btnSelecionarGeral.checked && !allChecked )  { btnSelecionarGeral.checked = allChecked; }
+	}
 
 	$('.button').button();
 
@@ -168,8 +148,47 @@ $(function() {
 	}, function() {
 		$(this).removeClass('ui-state-hover');
 	});
-	
-	// Alterar permissão dos eventos
+
+	btnSelecionarTodos.onclick = function () { selectAllChecksCurPage(this, 'todos'); };
+	btnSelecionarGeral.onclick = function () { selectAllChecksCurPage(this, 'geral'); };
+
+	function selectAllChecksCurPage(allCheck, tipo)
+	{
+		if ( !validar() ) { return false; }
+
+		var action = ( allCheck.checked ) ? 'cad' : 'del';
+		if (action == 'cad') { changeCheck(); }
+
+		$.ajax({
+			url: pagina + "?action="+action+"&tipo="+tipo,
+			type: 'post',
+			data: $('#dados').serialize(),
+			success: function(data) {
+				if(data != "OK") $.dialog();
+			},
+			complete: function() {
+				$('loadingIcon').fadeOut('slow');
+				if (action == 'del') { changeCheck(); }
+				verificaCheckbox();
+			}
+		});
+
+		/*
+		* Função executada em momentos diferentes para cada action ('cad','del') por causa do serialize
+		* do form
+		* */
+		function changeCheck()
+		{
+			for(var i = 0; i < checkboxes.length; i++)
+			{
+				var checkEvento = checkboxes[i];
+				checkEvento.checked = allCheck.checked;
+			}
+		}
+
+	}
+
+	// Alterar permissão dos eventos e enviar e-mail
 	$('#btnAlterar').button({icons:{primary: "ui-icon-mail-closed"}}).click(function(){
 		$.ajax({
 			url: pagina + '?action=notificar',
@@ -184,46 +203,20 @@ $(function() {
 			}
 		});
 	});
-	
+
+	//Paginação
 	$("#controle").change(function(){
-		document.location = '?p=' + pagina.replace('.php', '') + '&controle=' + $("#controle").val() + '&usuario=' + $("#usuario").val() + '&local=' + $("#local").val() + '';		
+		document.location = '?p=' + pagina.replace('.php', '') + '&controle=' + $("#controle").val() + '&usuario=' + $("#usuario").val() + '&local=' + $("#local").val() + '';
 	});
-	
-	// Selecionar todos os eventos na página
-	$('.btnSelecionarTodos').click(function(){
-		if (validar()) {
-			if (this.checked) {
-				var v = true;
-				var url = pagina + "?action=cad&tipo=todos";
-			} else {
-				var v = false;
-				var url = pagina + "?action=del&tipo=todos";
-				$('.btnSelecionarGeral').attr('checked', false);
-			}	
-			
-			$('.chm').attr('checked', true);
-	
-			$.ajax({
-				url: url,
-				type: 'post',
-				data: $('#dados').serialize(),
-				success: function(data) {
-					if(data != "OK") $.dialog();
-				}, 
-				complete: function() {
-					$('loadingIcon').fadeOut('slow');
-				}
-			});
-			if (!v) $('.chm').attr('checked', false);
-		}
-	});
-		
+
 	// Executar busca de eventos
 	$('#btnProcurar').click(function(){
 		if(validar()){
 			window.document.location = '?p=' + pagina.replace('.php', '') + '&usuario='+ $('#usuario').val() + '&local=' + $('#local').val()+'';
 		}
 	});
+
+	//
 	$('#local').change(function() {$('#btnProcurar').click();});
 });
 

@@ -1,13 +1,9 @@
 /*
 * Função vai no onclick do nome do usuário quando for POS POS
 * */
-cpfpos = undefined;
-gotoEtapa4 = undefined;
 function finalizaCadastroPOS(e)
 {
 	$('.bt_cadastro').click();
-	cpfpos = $('input[name="cpfBusca"]').val();
-	cpfpos = ( cpfpos != '' && cpfpos != undefined ) ? $('input[name="cpf"]').val(cpfpos) : false;
 }
 
 $(function() {
@@ -42,10 +38,6 @@ $(function() {
 				$('#resultadoBusca').slideUp('fast', function() {
 					$(this).html(data);
 				}).slideDown('fast');
-
-				if (gotoEtapa4) {
-					$('a.cliente').click();
-				}
 			}
 		});
 	});
@@ -208,13 +200,13 @@ $(function() {
 							$.dialog({title: 'Aviso...', text: data, iconClass: ''});
 						}
 					} else {
-						gotoEtapa4 = true;
-
 						$('#nomeBusca').val($('#nome').val());
 						$('#sobrenomeBusca').val($('#sobrenome').val());
 						$('#telefoneBusca').val($('#fixo').val());
 						$('#cpfBusca').val($('#cpf').val());
 						$('#buscar').click();
+						
+						$('.bt_cadastro:first').click();
 					}
 				}
 			});

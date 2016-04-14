@@ -154,7 +154,7 @@ if (isset($_GET['action'])) {
 
 					if (!(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) {
 						sendConfirmationMail($reg['id_cliente']);
-						$retorno = 'Seus dados foram atualizados com sucesso!';
+						$retorno = 'true';
 					}else{
 						dispararTrocaSenha($_POST['email1']);
 						$retorno = 'Usuário pré registrado em POS atualizado com sucesso.';

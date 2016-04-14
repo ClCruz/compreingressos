@@ -2,7 +2,7 @@ $(function() {
 	$('#dados_conta, #esqueciForm, p.erro').hide();
 	
 	$('.number').onlyNumbers();
-	
+
 	var email_pattern = /\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/i;
 	
 	$('#logar').click(function(event) {

@@ -16,6 +16,14 @@ if (isset($_GET['action'])) {
 			ob_end_clean();
 		}
 	}
+
+	function validaNascimento(){
+		$dia = ( isset($_POST['nascimento_dia']) && !empty($_POST['nascimento_dia']) ) ? true : false;
+		$mes = ( isset($_POST['nascimento_mes']) && !empty($_POST['nascimento_mes']) ) ? true : false;
+		$ano = ( isset($_POST['nascimento_ano']) && !empty($_POST['nascimento_ano']) ) ? true : false;
+		
+		return ( $dia && $mes && $ano ) ? $_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] : NULL;
+	}
 	
 	foreach ($_POST as $key => $val) {
 		if (!is_array($_POST[$key])) {
@@ -127,7 +135,7 @@ if (isset($_GET['action'])) {
 				$senha = isset($_SESSION['operador'])  ? '' : md5($_POST['senha1']),
 				$_POST['nome'],
 				$_POST['sobrenome'],
-				(($_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] != '//') ? $_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] : NULL),
+				validaNascimento(),
 				$_POST['ddd1'],
 				$_POST['ddd2'],
 				$_POST['telefone'],
@@ -228,7 +236,7 @@ if (isset($_GET['action'])) {
 		$params = array(
 							$_POST['nome'],
 							$_POST['sobrenome'],
-							(($_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] != '//') ? $_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] : NULL),
+							validaNascimento(),
 							$_POST['ddd1'],
 							$_POST['telefone'],
 							$_POST['ddd2'],
@@ -319,7 +327,7 @@ if (isset($_GET['action'])) {
 		$params = array(
 							$_POST['nome'],
 							$_POST['sobrenome'],
-							(($_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] != '//') ? $_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] : NULL),
+							validaNascimento(),
 							$_POST['ddd1'],
 							$_POST['ddd2'],
 							$_POST['telefone'],
@@ -447,7 +455,7 @@ if (isset($_GET['action'])) {
 			'bairro' => $_POST['bairro'],
 			'cidade' => $_POST['cidade'],
 			'cep' => $_POST['cep'],
-			'dt_nascimento' => (($_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] != '//') ? $_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] : NULL),
+			'dt_nascimento' => validaNascimento(),
 			'sexo' => $_POST['sexo'],
 			'uf' => $rs['DS_ESTADO']
 		);

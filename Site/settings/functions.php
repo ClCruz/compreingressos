@@ -2190,8 +2190,9 @@ function sendConfirmationMail($id_cliente) {
     $tpl->nome = $rs['DS_NOME'];
     $tpl->codigo = $rs['CD_CONFIRMACAO'];
     $tpl->link = ($_ENV['IS_TEST']
-                    ? 'https://compra.compreingressos.com/comprar/confirmacaoEmail.php?codigo='.urlencode($rs['CD_CONFIRMACAO'])
-                    : 'http://homolog.compreingressos.com:8081/compreingressos2/comprar/confirmacaoEmail.php?codigo='.urlencode($rs['CD_CONFIRMACAO']));
+                    ? 'http://homolog.compreingressos.com:8081/compreingressos2/comprar/confirmacaoEmail.php?codigo='.urlencode($rs['CD_CONFIRMACAO'])
+                    : 'https://compra.compreingressos.com/comprar/confirmacaoEmail.php?codigo='.urlencode($rs['CD_CONFIRMACAO'])
+    );
 
     if ($_REQUEST['redirect']) {
         $tpl->link .= '&redirect='.urlencode($_REQUEST['redirect']);

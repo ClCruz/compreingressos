@@ -162,6 +162,5 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 		csdp('app', 'ae6af083e9');
 		csdp('sessionid', '<?php echo session_id(); ?>');
 	</script>
-	<?php var_dump($_COOKIE); ?>
 </body>
 </html>

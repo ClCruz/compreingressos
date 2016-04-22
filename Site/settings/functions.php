@@ -2053,7 +2053,7 @@ function getEnderecoCliente($id_cliente, $id_endereco) {
 	$mainConnection = mainConnection();
 
 	if ($id_endereco == -1) {
-		$query = 'SELECT DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO
+		$query = 'SELECT DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO, NR_ENDERECO
 					FROM MW_CLIENTE
 					WHERE ID_CLIENTE = ?';
 		$params = array($_SESSION['user']);
@@ -2071,6 +2071,7 @@ function getEnderecoCliente($id_cliente, $id_endereco) {
 
 	$retorno = array(
 		'endereco' => $rs['DS_ENDERECO'],
+        'numero_endereco' => $rs['NR_ENDERECO'],
 		'bairro' => $rs['DS_BAIRRO'],
 		'cidade' => $rs['DS_CIDADE'],
 		'estado' => $rs['ID_ESTADO'],

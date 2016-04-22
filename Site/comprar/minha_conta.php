@@ -11,7 +11,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
 
     $mainConnection = mainConnection();  
         
-    $query = "SELECT DS_NOME, DS_SOBRENOME, CONVERT(VARCHAR(10), DT_NASCIMENTO, 103) DT_NASCIMENTO, DS_TELEFONE, DS_CELULAR, DS_DDD_TELEFONE, DS_DDD_CELULAR, CD_CPF, CD_RG, ID_ESTADO, DS_CIDADE, DS_BAIRRO, DS_ENDERECO, DS_COMPL_ENDERECO, CD_CEP, CD_EMAIL_LOGIN, IN_RECEBE_INFO, IN_RECEBE_SMS, IN_SEXO, ID_DOC_ESTRANGEIRO, ISNULL(IN_ASSINANTE, 'N') AS IN_ASSINANTE FROM MW_CLIENTE WHERE ID_CLIENTE = ?";
+    $query = "SELECT DS_NOME, DS_SOBRENOME, CONVERT(VARCHAR(10), DT_NASCIMENTO, 103) DT_NASCIMENTO, DS_TELEFONE, DS_CELULAR, DS_DDD_TELEFONE, DS_DDD_CELULAR, CD_CPF, CD_RG, ID_ESTADO, DS_CIDADE, DS_BAIRRO, DS_ENDERECO, NR_ENDERECO, DS_COMPL_ENDERECO, CD_CEP, CD_EMAIL_LOGIN, IN_RECEBE_INFO, IN_RECEBE_SMS, IN_SEXO, ID_DOC_ESTRANGEIRO, ISNULL(IN_ASSINANTE, 'N') AS IN_ASSINANTE FROM MW_CLIENTE WHERE ID_CLIENTE = ?";
     $params = array($_SESSION['user']);
     $rs = executeSQL($mainConnection, $query, $params, true);
 
@@ -108,6 +108,55 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
         <script src="../javascripts/minhaConta.js" type="text/javascript"></script>
         <script src="../javascripts/identificacao_cadastro.js" type="text/javascript"></script>
         <script src="../javascripts/dadosEntrega.js" type="text/javascript"></script>
+
+        <?php if (isset($_GET['atualizar_dados']) || isset($_GET['atualizar_endereco'])) { ?>
+        <script>
+            $(function(){
+                var dados_atualizados = false,
+                    endereco_atualizado = false;
+
+                $('.menu_conta .botao').hide();
+
+                if ($.getUrlVar('atualizar_endereco') != undefined){
+                    $('.container_enderecos, .add_endereco').hide();
+
+                    $('.botao.enderecos').trigger('click');
+
+                    $('#enderecos a.end_editar[href*="id='+$.getUrlVar('atualizar_endereco')+'"]').trigger('click');
+                    $('#enderecos a.end_cancelar').hide();
+
+                    $('#enderecos').on('endereco_salvo', function(){
+                        sctop = 0;
+                        if (!dados_atualizados) {
+                            endereco_atualizado = true;
+                            $('.botao.dados_conta').trigger('click');
+                        } else {
+                            document.location = $.getUrlVar('redirect');
+                        }
+                    });
+                } else endereco_atualizado = true;
+
+                if ($.getUrlVar('atualizar_dados') != undefined){
+                    $('.botao.dados_conta').trigger('click');
+
+                    $('#form_cadastro').on('dados_salvos', function(){
+                        sctop = 0;
+                        if (!endereco_atualizado) {
+                            dados_atualizados = true;
+                            $('.botao.enderecos').trigger('click');
+                        } else {
+                            document.location = $.getUrlVar('redirect');
+                        }
+                    });
+                } else dados_atualizados = true;
+
+                if (!dados_atualizados || !endereco_atualizado) {
+                    $('.descricao_pag .descricao .descricao').text('Por favor, confirme os dados abaixo antes de continuar a compra.');
+                }
+            });
+        </script>
+        <?php } ?>
+
         <title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
         <style type="text/css">
             div.descricao_pag div.descricao{ float:left; width:840px; }            

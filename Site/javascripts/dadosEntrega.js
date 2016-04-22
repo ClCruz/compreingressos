@@ -3,6 +3,7 @@ $(function() {
 		cidade = $('#novo_cidade'),
 		bairro = $('#novo_bairro'),
 		endereco = $('#novo_endereco'),
+		numero_endereco = $('#novo_numero_endereco'),
 		complemento = $('#novo_complemento'),
 		cep = $('#novo_cep'),
 		nome = $('#novo_titulo_endereco'),
@@ -14,6 +15,8 @@ $(function() {
 
 		$(this).next('div').slideToggle();
 	});
+
+	simples.getCEP($('#novo_cep'), { prefix: 'novo_' });
 
 	$('.container_enderecos').on('change', 'input.radio', function(){
 		$.ajax({
@@ -52,6 +55,7 @@ $(function() {
 			valido = true;
 		
 		var	allFields = $([]).add(endereco)
+			.add(numero_endereco)
 			.add(bairro)
 			.add(cidade)
 			.add(estado)
@@ -83,6 +87,7 @@ $(function() {
 				url: 'cadastro.php?action=manageAddresses',
 				type: 'post',
 				data: 'endereco=' + endereco.val() +
+						'&numero_endereco=' + numero_endereco.val() +
 						'&complemento=' + complemento.val() +
 						'&bairro=' + bairro.val() +
 						'&cidade=' + cidade.val() +
@@ -109,7 +114,7 @@ $(function() {
 										'<div class="container_endereco">'+
 										'<p class="titulo">' + nome.val() + '</p>'+
 											'<p class="endereco">'+
-												endereco.val() + (complemento.val() ? complemento.val()+'<br>' : '') + '<br>'+
+												endereco.val() + ', ' + numero_endereco.val() + (complemento.val() ? complemento.val()+'<br>' : '') + '<br>'+
 												bairro.val() + ', ' + cidade.val() + ' - ' + estado.find(':selected').text() + '<br>'+
 												cep.val() +
 											'</p>'+

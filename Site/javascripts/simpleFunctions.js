@@ -239,6 +239,80 @@ var simples =
         //return str;
         // o resto
         return str.replace(/[^a-z0-9]/gi,'');
-    }
+    },
 
+    getCEP: function (element, paramns)
+    {
+        if ( typeof paramns != 'object' ) { paramns = { prefix: '' } }
+        var prefix = paramns.prefix;
+
+        $(element).keyup(function () {
+            var leng = this.value.length;
+            if (leng == 9)
+            {
+                $('.alert').hide();
+                var cep = this.value.replace('-', '');
+
+                $.ajax({
+                    url: 'http://api.postmon.com.br/v1/cep/'+cep,
+                    dataType: 'json',
+                    success: function (data) {
+                        SetFormEndereco(data);
+                    },
+                    error: function (error) {
+                        console.log(error);
+                        SetFormEndereco('reset');
+                        $.dialog({ text: 'CEP não encontrado. Por favor, verifique se foi digitado corretamente.', autoHide: { set: true, time: 6000 } });
+                    }
+                });
+            }else{
+                SetFormEndereco('reset');
+            }
+        });
+
+
+        function SetFormEndereco(data)
+        {
+            var cidade      = document.getElementById(prefix+"cidade");
+            var bairro      = document.getElementById(prefix+"bairro");
+            var endereco    = document.getElementById(prefix+"endereco");
+            var estado      = document.getElementById(prefix+'estado');
+
+            if ( typeof data == 'string' &&  data == 'reset')
+            {
+                estado.options.selectedIndex = 0;
+                $(estado).selectbox('detach');
+                $(estado).selectbox('attach');
+
+                $(cidade).val('');
+                $(bairro).val('');
+                $(endereco).val('');
+
+                return;
+            }
+
+            var opts = estado.getElementsByTagName('option');
+
+            for(var x = 0; x < opts.length; x++)
+            {
+                var opt = opts[x];
+                var optValue 	= simples.replaceSpecialChars(opt.text.toLocaleLowerCase());
+                var estadoNome 	= simples.replaceSpecialChars(data.estado_info.nome.toLowerCase());
+
+                if (optValue == estadoNome)  { opt.selected = true; }
+            }
+
+            $(estado).selectbox('detach');
+            $(estado).selectbox('attach');
+
+            $(cidade).val(data.cidade);
+            $(bairro).val(data.bairro);
+            $(endereco).val(data.logradouro);
+
+            //console.log(data.logradouro);
+            nextFocus = ( data.logradouro != undefined ) ? 'numero_endereco' : 'bairro';
+            $('#'+prefix+nextFocus).focus();
+
+        }
+    }
 };

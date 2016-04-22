@@ -120,6 +120,7 @@ if (isset($_GET['action'])) {
 							CD_RG = ?,
 							CD_CPF = ?,
 							DS_ENDERECO = ?,
+							NR_ENDERECO = ?,
 							DS_COMPL_ENDERECO = ?,
 							DS_BAIRRO = ?,
 							DS_CIDADE = ?,
@@ -143,6 +144,7 @@ if (isset($_GET['action'])) {
 				$_POST['rg'],
 				$_POST['cpf'],
 				$_POST['endereco'],
+				$_POST['numero_endereco'],
 				$_POST['complemento'],
 				$_POST['bairro'],
 				$_POST['cidade'],
@@ -218,6 +220,7 @@ if (isset($_GET['action'])) {
 							CD_RG,
 							CD_CPF,
 							DS_ENDERECO,
+							NR_ENDERECO,
 							DS_COMPL_ENDERECO,
 							DS_BAIRRO,
 							DS_CIDADE,
@@ -232,7 +235,7 @@ if (isset($_GET['action'])) {
 							ID_DOC_ESTRANGEIRO
 						)
 						VALUES
-						('.$newID.',?,?,' . (($_POST['nascimento_dia'].'/'.$_POST['nascimento_mes'].'/'.$_POST['nascimento_ano'] != '//') ? 'CONVERT(DATETIME, ?, 103)' : '?') . ',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+						('.$newID.',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
 		$params = array(
 							$_POST['nome'],
 							$_POST['sobrenome'],
@@ -244,6 +247,7 @@ if (isset($_GET['action'])) {
 							$_POST['rg'],
 							$_POST['cpf'],
 							$_POST['endereco'],
+							$_POST['numero_endereco'],
 							$_POST['complemento'],
 							$_POST['bairro'],
 							$_POST['cidade'],
@@ -314,6 +318,7 @@ if (isset($_GET['action'])) {
 							CD_RG = ?,
 							CD_CPF = ?,
 							DS_ENDERECO = ?,
+							NR_ENDERECO = ?,
 							DS_COMPL_ENDERECO = ?,
 							DS_BAIRRO = ?,
 							DS_CIDADE = ?,
@@ -335,6 +340,7 @@ if (isset($_GET['action'])) {
 							$_POST['rg'],
 							$_POST['cpf'],
 							$_POST['endereco'],
+							$_POST['numero_endereco'],
 							$_POST['complemento'],
 							$_POST['bairro'],
 							$_POST['cidade'],
@@ -408,26 +414,21 @@ if (isset($_GET['action'])) {
 			if ($rs['ENDERECOS_REGISTRADOS'] < 3) {
 
 				$_POST['cep'] = str_replace('-', '', $_POST['cep']);
-
 				$query = 'INSERT INTO MW_ENDERECO_CLIENTE
-								(DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO, ID_CLIENTE, NM_ENDERECO)
+								(DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO, ID_CLIENTE, NM_ENDERECO, NR_ENDERECO)
 								VALUES
-								(?, ?, ?, ?, ?, ?, ?, ?)';
-				$params = array($_POST['endereco'], $_POST['complemento'], $_POST['bairro'], $_POST['cidade'], $_POST['cep'], $_POST['estado'], $_SESSION['user'], $_POST['nome']);
-				
-				if (executeSQL($mainConnection, $query, $params)) {
-					$query = 'SELECT ID_ENDERECO_CLIENTE
-						    FROM MW_ENDERECO_CLIENTE
-						    WHERE
-						    DS_ENDERECO = ? '.($_POST['complemento'] ? 'AND DS_COMPL_ENDERECO = ?' : '').' AND DS_BAIRRO = ? AND DS_CIDADE = ? AND CD_CEP = ? AND ID_ESTADO = ? AND ID_CLIENTE = ? AND NM_ENDERECO = ?';
-					$params = ($_POST['complemento'])
-						    ? array($_POST['endereco'], $_POST['complemento'], $_POST['bairro'], $_POST['cidade'], $_POST['cep'], $_POST['estado'], $_SESSION['user'], $_POST['nome'])
-						    : array($_POST['endereco'], $_POST['bairro'], $_POST['cidade'], $_POST['cep'], $_POST['estado'], $_SESSION['user'], $_POST['nome']);
+								(?, ?, ?, ?, ?, ?, ?, ?, ?); SELECT SCOPE_IDENTITY();';
+				$params = array($_POST['endereco'], $_POST['complemento'], $_POST['bairro'], $_POST['cidade'], $_POST['cep'], $_POST['estado'], $_SESSION['user'], $_POST['nome'], $_POST['numero_endereco']);
 
-					$rs = executeSQL($mainConnection, $query, $params, true);
-					
-					$retorno = 'true?'.$rs[0];
-				} else {
+				$rs = executeSQL($mainConnection, $query, $params);
+
+				if ($rs)
+				{
+					$lastID = getLastID($rs);
+					$retorno = 'true?'.$lastID;
+				}
+				else
+				{
 					$retorno = sqlErrors();
 				}
 			} else {

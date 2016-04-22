@@ -39,6 +39,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	<script src="../javascripts/jquery.cookie.js" type="text/javascript"></script>
 	<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
 	<script src="../javascripts/common.js" type="text/javascript"></script>
+	<script src="../javascripts/simpleFunctions.js" type="text/javascript"></script>
 
 	<script type="text/javascript" src="../javascripts/identificacao_cadastro_operador.js"></script>
 	

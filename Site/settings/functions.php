@@ -549,6 +549,12 @@ function executeSQL($conn, $strSql, $params = array(), $returnRs = false) {
     }
 }
 
+function getLastID($resource){
+    sqlsrv_next_result($resource);
+    sqlsrv_fetch($resource);
+    return sqlsrv_get_field($resource, 0);
+}
+
 function fetchAssoc($result){
     $res = array();
     while($rs = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC))
@@ -1521,7 +1527,8 @@ function comboTipoPromocao($name, $selected) {
         2 => 'Código Aleatório',
         3 => 'Arquivo CSV',
         4 => 'BIN',
-        5 => 'Convite'
+        5 => 'Convite',
+        6 => 'WebService'
     );
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione...</option>';

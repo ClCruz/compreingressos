@@ -33,7 +33,7 @@ $rs = getEnderecoCliente($_SESSION['user'], -1);
 		</tbody>
 	</table>
 <?php
-$query = 'SELECT ID_ENDERECO_CLIENTE, DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO, NM_ENDERECO
+$query = 'SELECT ID_ENDERECO_CLIENTE, DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO, NM_ENDERECO, NR_ENDERECO
 				FROM MW_ENDERECO_CLIENTE
 				WHERE ID_CLIENTE = ?';
 $params = array($_SESSION['user']);
@@ -52,7 +52,7 @@ while ($rs = fetchResult($result)) {
 					<div class="container_endereco">
 					<p class="titulo"><?php echo utf8_encode($rs['NM_ENDERECO']); ?></p>
 						<p class="endereco">
-							<?php echo utf8_encode($rs['DS_ENDERECO']); ?><?php echo $rs['DS_COMPL_ENDERECO'] ? ' - '.$rs['DS_COMPL_ENDERECO'] : ''; ?><br>
+							<?php echo utf8_encode($rs['DS_ENDERECO']).', '.$rs['NR_ENDERECO']; ?><?php echo $rs['DS_COMPL_ENDERECO'] ? ' - '.$rs['DS_COMPL_ENDERECO'] : ''; ?><br>
 							<?php echo utf8_encode($rs['DS_BAIRRO']); ?>, <?php echo utf8_encode($rs['DS_CIDADE']); ?> - <?php echo comboEstado('estado', $rs['ID_ESTADO'], false, false); ?><br>
 							<?php echo $rs['ID_ESTADO'] != 28 ? substr($rs['CD_CEP'], 0, 5).'-'.substr($rs['CD_CEP'], -3) : $rs['CD_CEP']; ?>
 						</p>
@@ -103,6 +103,11 @@ while ($rs = fetchResult($result)) {
 				<p class="help"></p>
 			</div>
 			<input type="text" name="logradouro" placeholder="rua, avenida, praça..." id="novo_endereco">
+			<div class="erro_help">
+				<p class="erro"></p>
+				<p class="help"></p>
+			</div>
+			<input type="text" name="numero_endereco" placeholder="Número do Endereço" id="novo_numero_endereco">
 			<div class="erro_help">
 				<p class="erro"></p>
 				<p class="help"></p>

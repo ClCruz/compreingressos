@@ -205,6 +205,11 @@ session_start();
 						<p class="erro">informe seu logradouro</p>
 						<p class="help"></p>
 					</div>
+					<input type="text" name="numero_endereco" id="numero_endereco" placeholder="Número do Endereço/Address Number" maxlength="50" pattern=".{1,150}" value="<?php echo utf8_encode($rs['NR_ENDERECO']); ?>">
+					<div class="erro_help">
+						<p class="erro">Número</p>
+						<p class="help"></p>
+					</div>
 					<input type="text" name="complemento" id="complemento" placeholder="complemento/complement" maxlength="50" value="<?php echo utf8_encode($rs['DS_COMPL_ENDERECO']); ?>">
 					<div class="erro_help">
 						<p class="erro"></p>

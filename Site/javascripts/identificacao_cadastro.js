@@ -319,65 +319,74 @@ $(function() {
 			$area.removeClass('erro')
 		}
 	});
-
-	$("#cep").keyup(function (data) {
-		var leng = this.value.length;
-		if (leng == 9)
-		{
-			$('.alert').hide();
-			var cep = this.value.replace('-', '');
-
-			$.ajax({
-				url: 'http://api.postmon.com.br/v1/cep/'+cep,
-				dataType: 'json',
-				success: function (data) {
-					SetFormEndereco(data);
-				},
-				error: function (error) {
-					console.log(error);
-					SetFormEndereco('reset');
-					$.dialog({ text: 'CEP não encontrado. Por favor, verifique se foi digitado corretamente.', autoHide: { set: true, time: 6000 } });
-				}
-			});
-		}else{
-			SetFormEndereco('reset');
-		}
-	});
-
-
-	function SetFormEndereco(data)
-	{
-		var estado = document.getElementById('estado');
-		if ( typeof data == 'string' &&  data == 'reset')
-		{
-			estado.options.selectedIndex = 0;
-			$(estado).selectbox('detach');
-			$(estado).selectbox('attach');
-
-			$('#cidade').val('');
-			$('#bairro').val('');
-			$('#endereco').val('');
-
-			return;
-		}
-
-		var opts = estado.getElementsByTagName('option');
-
-		for(var x = 0; x < opts.length; x++)
-		{
-			var opt = opts[x];
-			var optValue 	= simples.replaceSpecialChars(opt.text.toLocaleLowerCase());
-			var estadoNome 	= simples.replaceSpecialChars(data.estado_info.nome.toLowerCase());
-
-			if (optValue == estadoNome)  { opt.selected = true; }
-		}
-
-		$(estado).selectbox('detach');
-		$(estado).selectbox('attach');
-
-		$('#cidade').val(data.cidade);
-		$('#bairro').val(data.bairro);
-		$('#endereco').val(data.logradouro);
-	}
+	
+	/*
+	* Atenção! Existe uma cópia desta função em "comprar/dadosEntrega.js" para a "etapa3_entrega.php"
+	* */
+	simples.getCEP($('#cep'));
+	// $("#cep").keyup(function (data) {
+	// 	var leng = this.value.length;
+	// 	if (leng == 9)
+	// 	{
+	// 		$('.alert').hide();
+	// 		var cep = this.value.replace('-', '');
+    //
+	// 		$.ajax({
+	// 			url: 'http://api.postmon.com.br/v1/cep/'+cep,
+	// 			dataType: 'json',
+	// 			success: function (data) {
+	// 				SetFormEndereco(data);
+	// 			},
+	// 			error: function (error) {
+	// 				console.log(error);
+	// 				SetFormEndereco('reset');
+	// 				$.dialog({ text: 'CEP não encontrado. Por favor, verifique se foi digitado corretamente.', autoHide: { set: true, time: 6000 } });
+	// 			}
+	// 		});
+	// 	}else{
+	// 		SetFormEndereco('reset');
+	// 	}
+	// });
+    //
+    //
+	// function SetFormEndereco(data)
+	// {
+	// 	var estado = document.getElementById('estado');
+	// 	if ( typeof data == 'string' &&  data == 'reset')
+	// 	{
+	// 		estado.options.selectedIndex = 0;
+	// 		$(estado).selectbox('detach');
+	// 		$(estado).selectbox('attach');
+    //
+	// 		$('#cidade').val('');
+	// 		$('#bairro').val('');
+	// 		$('#endereco').val('');
+    //
+	// 		return;
+	// 	}
+    //
+	// 	var opts = estado.getElementsByTagName('option');
+    //
+	// 	for(var x = 0; x < opts.length; x++)
+	// 	{
+	// 		var opt = opts[x];
+	// 		var optValue 	= simples.replaceSpecialChars(opt.text.toLocaleLowerCase());
+	// 		var estadoNome 	= simples.replaceSpecialChars(data.estado_info.nome.toLowerCase());
+    //
+	// 		if (optValue == estadoNome)  { opt.selected = true; }
+	// 	}
+    //
+	// 	$(estado).selectbox('detach');
+	// 	$(estado).selectbox('attach');
+    //
+	// 	$('#cidade').val(data.cidade);
+	// 	$('#bairro').val(data.bairro);
+	// 	$('#endereco').val(data.logradouro);
+    //
+	// 	//console.log(data.logradouro);
+	// 	nextFocus = ( data.logradouro != undefined ) ? 'numero_endereco' : 'bairro';
+	// 	$('#'+nextFocus).focus();
+    //
+	// }
 
 });

@@ -103,6 +103,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
         <script src="../javascripts/jquery.cookie.js" type="text/javascript"></script>
         <script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
         <script src="../javascripts/common.js" type="text/javascript"></script>
+        <script src="../javascripts/simpleFunctions.js" type="text/javascript"></script>
 
         <script src="../javascripts/minhaConta.js" type="text/javascript"></script>
         <script src="../javascripts/identificacao_cadastro.js" type="text/javascript"></script>

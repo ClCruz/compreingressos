@@ -396,10 +396,9 @@ if (isset($_GET['action'])) {
 	} else if ($_GET['action'] == 'manageAddresses' and isset($_SESSION['user'])) {
 
 		if ($_POST['id'] || $_GET['id']) {
-			$id_endereco = ($_POST['id'] ? $_POST['id'] : $_GET['id']);
 			$query = 'DELETE FROM MW_ENDERECO_CLIENTE
 						WHERE ID_CLIENTE = ? AND ID_ENDERECO_CLIENTE = ?';
-			$params = array($_SESSION['user'], $id_endereco);
+			$params = array($_SESSION['user'], ($_POST['id'] ? $_POST['id'] : $_GET['id']));
 			
 			if (executeSQL($mainConnection, $query, $params)) {
 				$retorno = 'true';
@@ -427,7 +426,6 @@ if (isset($_GET['action'])) {
 				{
 					$lastID = getLastID($rs);
 					$retorno = 'true?'.$lastID;
-					if ($_COOKIE['entrega'] == $id_endereco) setcookie('entrega', $lastID);
 				}
 				else
 				{

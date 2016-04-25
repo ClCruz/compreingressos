@@ -5,6 +5,11 @@ session_start();
 
 $mainConnection = mainConnection();
 
+if ( isset($_POST['ws']) )
+{
+    echo 'Here validando cpf ws...';
+}
+
 if ($_GET['carrinho']) {
 
     if ($_POST['tipoBin'] == 'itau') {
@@ -44,9 +49,13 @@ if ($_GET['carrinho']) {
         }
 
     }
-    // se nao for bin do itau é codigo promocional
+    else if ( !empty($_POST['wsid']) )
+    {
+        echo 'Validar WS aqui!';
+        printr($_POST);
+    }
+    // se nao for bin do itau e nem WEBSERVICE é codigo promocional
     else {
-
         $query = "SELECT TOP 1 E.ID_BASE
                     FROM MW_RESERVA R
                     INNER JOIN MW_APRESENTACAO A
@@ -79,6 +88,7 @@ if ($_GET['carrinho']) {
                         P.ID_PEDIDO_VENDA";
 
         $result = executeSQL($conn, $query, array($_POST['reserva'], $_POST['bin']));
+        printr( fetchAssoc( $result ) );
 
         if (hasRows($result)) {
             $rs = fetchResult($result);

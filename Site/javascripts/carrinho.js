@@ -1,3 +1,27 @@
+function validaWS() {
+	$cpf = $('input[name="ws_cpf"]').val();
+
+	if ( $cpf == '' )
+	{
+		alert('digite o cpf corretamente');
+		return false;
+	}
+
+	$.ajax({
+		url: 'validarBin.php',
+		method: 'post',
+		data: { ws: true, cpf: $cpf },
+		success: function (data) {
+			alert("ok!");
+			console.log(data);
+		},
+		error: function (error) {
+			alert('Erro ao conectar com o servidor');
+			console.log(error);
+		}
+	})
+}
+
 $(function() {
 	$('#forma_entrega_right, #dados_entrega, #identificacao, .err_msg').hide();
 	$('.number').onlyNumbers();
@@ -8,7 +32,6 @@ $(function() {
 							$(this).remove();
 							updateAllValues();
 						};
-
 	// complemento para etapa4
 	$('[type="hidden"][name="valorIngresso\\[\\]"]').each(function(){
 		var $this = $(this);
@@ -101,13 +124,17 @@ $(function() {
 	    //Store old value
 	    $(this).data('lastValue', $(this).val());
 	}).on('change', function(e, trigger) {
+		$WSID = '';
 		var $this = $(this),
 			$target = $this.closest('tr').find('.valorConveniencia'),
 			ids = [];
 
+		var containerWS = document.getElementById('validaws');
+		$(containerWS).hide();
 		// verifica se esta na etapa 2 ou etapa 4 (select = etapa 2)
 		if ($this.is('select')) {
 			// ingresso selecionado é bin itaucard? tem bin associado?
+
 			if ($this.find('option:selected').attr('codeBin') != undefined) {
 				$mesmoBinSelecionado = $('option:selected').filter(function(){
 					return $(this).attr('codeBin') != undefined && $(this).attr('codeBin') == $this.find('option:selected').attr('codeBin');
@@ -176,7 +203,14 @@ $(function() {
 				}
 
 			// ingresso selecionado é promocional?
-			} else if ($this.find('option:selected').attr('codpromocao') != undefined) {
+			}
+			else if($this.find('option:selected').attr('data-ws') != '' )
+			{
+				$WSID = $this.find('option:selected').attr('data-ws');
+				$('.beneficio').hide();
+				$(containerWS).show();
+			}
+			else if ($this.find('option:selected').attr('codpromocao') != undefined) {
 				var evento_id = $this.closest('.resumo_espetaculo').data('evento');
 				
 				$promocoesSelecionadas = $('.resumo_espetaculo').filter(function(){
@@ -305,7 +339,7 @@ $(function() {
 			ajax = $.ajax({
 				url: 'validarBin.php?carrinho=1',
 				type: 'post',
-				data: 'reserva=' + reserva + '&bin=' + $bin.val() + '&tipoBin=' + $tipoBin.val()
+				data: 'reserva=' + reserva + '&bin=' + $bin.val() + '&tipoBin=' + $tipoBin.val() + '&wsid=' + $WSID
 			});
 
 			if (!skipChanges) {

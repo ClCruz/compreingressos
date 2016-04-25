@@ -795,9 +795,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
     while ($rs = fetchResult($result)) {
     	$bilhetes_lote_no_carrinho[] = $rs['CODTIPBILHETE'];
     }
-
     $ocultarLote = (getTotalLoteDisponivel($apresentacaoID) <= 0 and $rs2['LOTE'] == 0) ? true : false;
-
     $query = "SELECT	ID_APRESENTACAO_BILHETE,
 					    AB.CODTIPBILHETE,
 					    AB.DS_TIPO_BILHETE,
@@ -811,7 +809,8 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 					    A.ID_EVENTO,
 						B.ID_PROMOCAO_CONTROLE,
 					    B.IN_HOT_SITE,
-                        PC.IN_EXIBICAO
+                        PC.IN_EXIBICAO,
+                        PC.id_webservices_promocao
 				FROM
 				 CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB 
 				 INNER JOIN 
@@ -871,6 +870,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
     $first_selected = false;
 
     $bilhetes = array();
+    $wbServiceCfg = null;
 
     while ($rs = fetchResult($result)) {
 
@@ -926,7 +926,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
                          FROM MW_PROMOCAO P
                          WHERE P.ID_PROMOCAO_CONTROLE = ?
                          ORDER BY P.ID_PEDIDO_VENDA, P.ID_SESSION, P.CD_PROMOCIONAL DESC', array($rs['ID_PROMOCAO_CONTROLE']), true);
-                    
+
                     // se nao tiver mais cupons ignorar esse tipo de bilhete
                     if ((!empty($rs['ID_SESSION']) or !empty($rs['ID_PEDIDO_VENDA'])) and $rs['ID_APRESENTACAO_BILHETE'] != $selected) {
                         continue;
@@ -936,6 +936,9 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
                         $imgs .= 'codigo="CONVITE" ';
                         $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['codPreValidado'] = 'CONVITE';
                     }
+                }
+                else if ($rs['CODTIPPROMOCAO'] == 6) {
+                    $webServiceCfg = '6';
                 }
 
 				$BIN = '';
@@ -973,7 +976,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 
             // checar exibicao da promocao
             if ($rs['IN_EXIBICAO'] == null or $rs['IN_EXIBICAO'] == 'T' or $rs['IN_EXIBICAO'] == 'W') {
-    			$combo .= '<option value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $isSelected . ' ' . $BIN . $promocao . $meia_estudante . $lote .
+    			$combo .= '<option data-ws="'.$webServiceCfg.'" value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $isSelected . ' ' . $BIN . $promocao . $meia_estudante . $lote .
     					  ' valor="'.number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', '').'">' . utf8_encode($rs['DS_TIPO_BILHETE']) . '</option>';
             }
 
@@ -2053,7 +2056,7 @@ function getEnderecoCliente($id_cliente, $id_endereco) {
 	$mainConnection = mainConnection();
 
 	if ($id_endereco == -1) {
-		$query = 'SELECT DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO, NR_ENDERECO
+		$query = 'SELECT DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO
 					FROM MW_CLIENTE
 					WHERE ID_CLIENTE = ?';
 		$params = array($_SESSION['user']);
@@ -2071,7 +2074,6 @@ function getEnderecoCliente($id_cliente, $id_endereco) {
 
 	$retorno = array(
 		'endereco' => $rs['DS_ENDERECO'],
-        'numero_endereco' => $rs['NR_ENDERECO'],
 		'bairro' => $rs['DS_BAIRRO'],
 		'cidade' => $rs['DS_CIDADE'],
 		'estado' => $rs['ID_ESTADO'],

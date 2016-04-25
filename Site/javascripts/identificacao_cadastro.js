@@ -266,7 +266,6 @@ $(function() {
 					type: formulario.attr('method'),
 					success: function(data) {
 						if (data != 'true') {
-							formulario.trigger('dados_salvos');
     						if (typeof(BrandCaptcha) !== 'undefined') BrandCaptcha.reload();
 							
 							if (data == 'Seus dados foram atualizados com sucesso!' || data == 'Usuário pré registrado em POS atualizado com sucesso.') {

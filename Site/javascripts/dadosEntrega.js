@@ -98,8 +98,6 @@ $(function() {
 				success: function(data) {
 				    if (data.substr(0, 4) == 'true') {
 				    	var new_id = data.split('?')[1];
-				    	
-				    	$('#enderecos').trigger('endereco_salvo');
 
 				    	if (id) {
 				    		$('#radio_endereco_'+id.val()).closest('.select_endereco').remove();
@@ -145,7 +143,6 @@ $(function() {
 		e.preventDefault();
 		estado.selectbox('detach');
 		$([]).add(endereco)
-			.add(numero_endereco)
 			.add(bairro)
 			.add(cidade)
 			.add(estado)
@@ -201,7 +198,6 @@ $(function() {
 				console.log(data);
 
 				endereco.val(data.endereco);
-				numero_endereco.val(data.numero_endereco);
 				bairro.val(data.bairro);
 				cidade.val(data.cidade);
 				estado.selectbox('detach');

@@ -69,7 +69,6 @@ function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 					CONVERT(VARCHAR(10),DT_NASCIMENTO, 120) AS DT_NASCIMENTO,
 					ISNULL(C.IN_SEXO, 'M') AS IN_SEXO,
 					C.DS_ENDERECO,
-					C.NR_ENDERECO,
 					C.DS_COMPL_ENDERECO,
 					C.DS_BAIRRO,
 					C.DS_CIDADE,
@@ -88,7 +87,6 @@ function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 					P.NM_CLIENTE_VOUCHER,
 					P.DS_EMAIL_VOUCHER,
 					P.DS_ENDERECO_ENTREGA,
-					P.NR_ENDERECO_ENTREGA,
 					P.DS_COMPL_ENDERECO_ENTREGA,
 					P.DS_BAIRRO_ENTREGA,
 					P.DS_CIDADE_ENTREGA,
@@ -180,7 +178,7 @@ function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 				'Gender' => $rs['IN_SEXO'],
 				'Address' => array(
 					'Street' => $rs['DS_ENDERECO'],
-					'Number' => $rs['NR_ENDERECO'],
+					'Number' => 0,
 					'Comp' => $rs['DS_COMPL_ENDERECO'],
 					'County' => $rs['DS_BAIRRO'],
 					'City' => $rs['DS_CIDADE'],
@@ -241,7 +239,7 @@ function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 			'Email' => ($rs['DS_EMAIL_VOUCHER'] ? $rs['DS_EMAIL_VOUCHER'] : $rs['CD_EMAIL_LOGIN']),
 			'Address' => array(
 				'Street' => $rs['DS_ENDERECO_ENTREGA'],
-				'Number' => $rs['NR_ENDERECO_ENTREGA'],
+				'Number' => 0,
 				'Comp' => $rs['DS_COMPL_ENDERECO_ENTREGA'],
 				'County' => $rs['DS_BAIRRO_ENTREGA'],
 				'City' => $rs['DS_CIDADE_ENTREGA'],
@@ -266,8 +264,6 @@ function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 				)
 			)
 		);
-	} else {
-		$array_dados['Orders']['Order']['ShippingData'] = $array_dados['Orders']['Order']['BillingData'];
 	}
 
 	polecat_array_replace($array_dados, $array_dados_extra);

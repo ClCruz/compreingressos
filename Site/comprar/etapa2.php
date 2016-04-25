@@ -28,6 +28,7 @@ require('verificarServicosPedido.php');
 	<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
 	<script src="../javascripts/common.js" type="text/javascript"></script>
 
+	<script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
 	<script type="text/javascript" src="../javascripts/contagemRegressiva.js?until=<?php echo tempoRestante(); ?>"></script>
 	<script type="text/javascript" src="../javascripts/carrinho.js"></script>
 	<script type="text/javascript" src="../javascripts/dadosEntrega.js"></script>

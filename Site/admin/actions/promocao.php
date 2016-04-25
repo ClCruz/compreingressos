@@ -191,7 +191,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
     }
 
 
-
+    /*
+     * !Bookmark - pegar os eventos
+     * */
     if ($_GET['action'] == 'getEventos' and isset($_GET['cboLocal'])) {
 
         $_GET['cboLocal'] = $_GET['cboLocal'] == 'TODOS' ? -1 : $_GET['cboLocal'];
@@ -333,6 +335,28 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
             }
         }
 
+        /*
+         * WebService
+         * */
+        $webServiceID = NULL;
+
+        if ($_POST['cboPromo'] == 6) {
+            $query      = 'INSERT INTO mw_webservices_promocao (ds_webservices_promocao, cd_url_ws, cd_tag_retorno, vl_validacao_positivo, ds_usuario_ws, ds_senha_ws) VALUES (?,?,?,?,?,?); SELECT SCOPE_IDENTITY();';
+            $paramns    = array(
+                utf8_decode($_POST['ds_promo']),
+                $_POST['ws_url'],
+                $_POST['ws_user'],
+                $_POST['ws_pass'],
+                $_POST['ws_tag'],
+                $_POST['ws_return'],
+            );
+
+            $rs = executeSQL($mainConnection, $query, $paramns);
+            $webServiceID = getLastID($rs);
+        }
+
+        echo 'WSID: '.$webServiceID;
+
         $_POST['vl_desconto'] = str_replace(',', '.', str_replace('.', '', $_POST['vl_desconto']));
         $_POST['vl_fixo'] = str_replace(',', '.', str_replace('.', '', $_POST['vl_fixo']));
 
@@ -363,29 +387,41 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                     IN_VALOR_SERVICO,
                     ID_PATROCINADOR,
                     QT_PROMO_POR_CPF,
-                    IN_EXIBICAO
+                    IN_EXIBICAO,
+                    ID_WEBSERVICES_PROMOCAO
                     )
-                VALUES (?,?,?,?,?,?,?,1,?,?,?,?,?,?,?,?,?,?);
+                VALUES (?,?,?,?,?,?,?,1,?,?,?,?,?,?,?,?,?,?,?);
                 SELECT SCOPE_IDENTITY() as ID;';
-        $params = array($_POST['cboPromo'],
-                        utf8_decode($_POST['ds_promo']),
-                        utf8_decode($_POST['ds_bilhete']),
-                        $_POST['vl_desconto'],
-                        ($_POST['cboLocal'] == 'TODOS' and $_POST['eventos'] == 'todos') ? 1 : 0,
-                        $_POST['dt_inicio'],
-                        $_POST['dt_fim'],
-                        ($_POST['cboLocal'] != 'TODOS' and $_POST['eventos'] == 'todos') ? $_POST['cboLocal'] : null,
-                        utf8_decode($_POST['ds_img1']),
-                        utf8_decode($_POST['ds_img2']),
-                        utf8_decode($_POST['ds_site']),
-                        $_POST['vl_fixo'],
-                        $_POST['in_hotsite'],
-                        $_POST['in_servico'],
-                        $_POST['cboPatrocinador'],
-                        $_POST['qt_limite_cpf'],
-                        $_POST['cboExibicao']);
+        $params = array(
+            $_POST['cboPromo'],
+            utf8_decode($_POST['ds_promo']),
+            utf8_decode($_POST['ds_bilhete']),
+            $_POST['vl_desconto'],
+            ($_POST['cboLocal'] == 'TODOS' and $_POST['eventos'] == 'todos') ? 1 : 0,
+            $_POST['dt_inicio'],
+            $_POST['dt_fim'],
+            ($_POST['cboLocal'] != 'TODOS' and $_POST['eventos'] == 'todos') ? $_POST['cboLocal'] : null,
+            utf8_decode($_POST['ds_img1']),
+            utf8_decode($_POST['ds_img2']),
+            utf8_decode($_POST['ds_site']),
+            $_POST['vl_fixo'],
+            $_POST['in_hotsite'],
+            $_POST['in_servico'],
+            $_POST['cboPatrocinador'],
+            $_POST['qt_limite_cpf'],
+            $_POST['cboExibicao'],
+            $webServiceID
+        );
 
         $result = executeSQL($mainConnection, $query, $params);
+
+        if ($result) {
+            echo 'Devia ter inserido...';
+        }
+        else{
+            echo 'Realmente... não está inserindo';
+            var_dump( fetchAssoc($result) );
+        }
 
         $log = new Log($_SESSION['admin']);
         $log->__set('funcionalidade', 'Gestão de Promoções');
@@ -419,6 +455,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
             $import = importar_conteudo_dos_arquivos($mainConnection, $id, $_POST['diretorio_temp'], $_POST['cboPromo']);
             $retorno = $import === true ? '' : 'true?id='.$id.'&msg=A promoção foi criada, porém o processo de importação encontrou problemas no(s) arquivo(s):<br/><br/>'.$import;
         }
+        else if( $_POST['cboPromo'] == 6 ){
+
+        }
         // gera os codigos dos cupons
         else {
             gerar_codigos($mainConnection, $id, $_POST['cboPromo'], $_POST['qt_codigo'], $_POST['ds_codigo']);
@@ -427,7 +466,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
         $retorno = $retorno
                     ? $retorno
                     : 'true?msg=Promoção gerada com sucesso!&id='.$id;
-
 
     } elseif ($_GET['action'] == 'diretorio_temp') {
 

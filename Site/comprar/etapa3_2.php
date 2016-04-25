@@ -41,6 +41,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	<script src="../javascripts/common.js" type="text/javascript"></script>
 
 	<script type="text/javascript" src="../javascripts/identificacao_cadastro_operador.js"></script>
+	<script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
 	<script type="text/javascript" src="../javascripts/contagemRegressiva.js?until=<?php echo tempoRestante(); ?>"></script>
 	
 	<script>

@@ -11,7 +11,8 @@ function finalizaCadastroPOS(e)
 }
 
 $(function() {
-	
+
+	simples.getCEP($('#cep'));
 	$('#dados_conta, p.erro').hide();
 	$('#cadastro').slideUp(1);//IE7 FIX
 	

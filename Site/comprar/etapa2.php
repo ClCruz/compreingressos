@@ -23,7 +23,7 @@ require('verificarServicosPedido.php');
 	<script src="../javascripts/jquery.selectbox-0.2.min.js" type="text/javascript"></script>
 	<script src="../javascripts/jquery.mask.min.js" type="text/javascript"></script>
 	<script src="../javascripts/cicompra.js" type="text/javascript"></script>
-
+	
 	<script src="../javascripts/jquery.cookie.js" type="text/javascript"></script>
 	<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
 	<script src="../javascripts/common.js" type="text/javascript"></script>

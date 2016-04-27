@@ -14,6 +14,7 @@ require('verificarServicosPedido.php');
 require('verificarLimitePorCPF.php');
 require('verificarEntrega.php');
 require('verificarAssinatura.php');
+require('verificarDadosCadastrais.php');
 
 if (isset($_COOKIE['entrega'])) {
     $action = "verificatempo";

@@ -8,7 +8,7 @@ function validaWS() {
 	}
 
 	$.ajax({
-		url: 'validarBin.php',
+		url: 'ValidarCpfWebService.php',
 		method: 'post',
 		data: { ws: true, cpf: $cpf },
 		success: function (data) {

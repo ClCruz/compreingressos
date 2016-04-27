@@ -396,9 +396,10 @@ if (isset($_GET['action'])) {
 	} else if ($_GET['action'] == 'manageAddresses' and isset($_SESSION['user'])) {
 
 		if ($_POST['id'] || $_GET['id']) {
+			$id_endereco = ($_POST['id'] ? $_POST['id'] : $_GET['id']);
 			$query = 'DELETE FROM MW_ENDERECO_CLIENTE
 						WHERE ID_CLIENTE = ? AND ID_ENDERECO_CLIENTE = ?';
-			$params = array($_SESSION['user'], ($_POST['id'] ? $_POST['id'] : $_GET['id']));
+			$params = array($_SESSION['user'], $id_endereco);
 			
 			if (executeSQL($mainConnection, $query, $params)) {
 				$retorno = 'true';
@@ -426,6 +427,7 @@ if (isset($_GET['action'])) {
 				{
 					$lastID = getLastID($rs);
 					$retorno = 'true?'.$lastID;
+					if ($_COOKIE['entrega'] == $id_endereco) setcookie('entrega', $lastID);
 				}
 				else
 				{
@@ -511,7 +513,15 @@ if (isset($_GET['action'])) {
 			var_dump($query, $params, $retorno);
 		}
 	} else {
-		echo $retorno;
+		if ( isset($_GET['redirect']) ) {
+			//echo 'Location: /comprar/'.$_GET['redirect'];
+			//header("Location: /comprar/".$_GET['redirect']);
+			$retorno = array('location' => 'reload', 'url' => $_GET['redirect']);
+			echo json_encode($retorno);
+		}
+		else{
+			echo $retorno;
+		}
 	}
 }
 ?>

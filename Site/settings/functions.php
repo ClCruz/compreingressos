@@ -2056,36 +2056,54 @@ function getEnderecoCliente($id_cliente, $id_endereco) {
 	$mainConnection = mainConnection();
 
 	if ($id_endereco == -1) {
-		$query = 'SELECT DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO
+		$query = 'SELECT DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO, NR_ENDERECO
 					FROM MW_CLIENTE
 					WHERE ID_CLIENTE = ?';
 		$params = array($_SESSION['user']);
 		$rs = executeSQL($mainConnection, $query, $params, true);
 
-		$rs['ID_ENDERECO_CLIENTE'] = -1;
-		$rs['NM_ENDERECO'] = 'Endere&ccedil;o do cadastro';
+        //Se algum dados do endereço realmente foi preenchido, exibir. Se nada foi, não irá exibir
+        $valida = false;
+        foreach ($rs as $field){
+            if ( !empty($field) ){ $valida = true; }
+        }
+
+        if ($valida) {
+            $rs['ID_ENDERECO_CLIENTE'] = -1;
+            $rs['NM_ENDERECO'] = 'Endere&ccedil;o do cadastro';
+        }else{
+            $rs = array();
+        }
+
 	} else {
-		$query = 'SELECT ID_ENDERECO_CLIENTE, DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO, NM_ENDERECO
+		$query = 'SELECT ID_ENDERECO_CLIENTE, DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO, NM_ENDERECO, NR_ENDERECO
 				FROM MW_ENDERECO_CLIENTE
 				WHERE ID_CLIENTE = ? AND ID_ENDERECO_CLIENTE = ?';
 		$params = array($id_cliente, $id_endereco);
 		$rs = executeSQL($mainConnection, $query, $params, true);
 	}
 
-	$retorno = array(
-		'endereco' => $rs['DS_ENDERECO'],
-		'bairro' => $rs['DS_BAIRRO'],
-		'cidade' => $rs['DS_CIDADE'],
-		'estado' => $rs['ID_ESTADO'],
-		'cep' => $rs['CD_CEP'],
-		'nome' => $rs['NM_ENDERECO'],
-		'complemento' => $rs['DS_COMPL_ENDERECO'],
-		'id' => $rs['ID_ENDERECO_CLIENTE']
-	);
+    if ( !empty($rs) )
+    {
+        $retorno = array(
+            'endereco' => $rs['DS_ENDERECO'],
+            'numero' => $rs['NR_ENDERECO'],
+            'bairro' => $rs['DS_BAIRRO'],
+            'cidade' => $rs['DS_CIDADE'],
+            'estado' => $rs['ID_ESTADO'],
+            'cep' => $rs['CD_CEP'],
+            'nome' => $rs['NM_ENDERECO'],
+            'complemento' => $rs['DS_COMPL_ENDERECO'],
+            'id' => $rs['ID_ENDERECO_CLIENTE']
+        );
 
-	foreach ($retorno as $key => $val) {
-		$retorno[$key] = utf8_encode($val);
-	}
+        foreach ($retorno as $key => $val) {
+            $retorno[$key] = utf8_encode($val);
+        }
+    }
+    else{
+        $retorno = $rs;
+    }
 
 	return $retorno;
 }

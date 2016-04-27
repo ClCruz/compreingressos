@@ -85,9 +85,9 @@ $rsParcelas = executeSQL($conn, $query, array($rsParcelas['codpeca']), true);
 $parcelas = $rsParcelas['qt_parcelas'];
 
 $query = 'SELECT
-            C.ID_CLIENTE,C.DS_NOME,C.DS_SOBRENOME,C.DS_DDD_TELEFONE,C.DS_TELEFONE,C.DS_DDD_CELULAR,C.DS_CELULAR,C.CD_CPF,C.DS_ENDERECO,C.DS_COMPL_ENDERECO,C.DS_BAIRRO,C.DS_CIDADE,C.CD_CEP,C.CD_EMAIL_LOGIN,C.ID_ESTADO,E.SG_ESTADO ';
+            C.ID_CLIENTE,C.DS_NOME,C.DS_SOBRENOME,C.DS_DDD_TELEFONE,C.DS_TELEFONE,C.DS_DDD_CELULAR,C.DS_CELULAR,C.CD_CPF,C.DS_ENDERECO,C.NR_ENDERECO,C.DS_COMPL_ENDERECO,C.DS_BAIRRO,C.DS_CIDADE,C.CD_CEP,C.CD_EMAIL_LOGIN,C.ID_ESTADO,E.SG_ESTADO';
 
-$query .= (($entrega and $enderecoDif) ? ', EC.DS_ENDERECO DS_ENDERECO2,EC.DS_COMPL_ENDERECO DS_COMPL_ENDERECO2,EC.DS_BAIRRO DS_BAIRRO2,EC.DS_CIDADE DS_CIDADE2,EC.CD_CEP CD_CEP2,EC.ID_ESTADO ID_ESTADO2,E2.SG_ESTADO SG_ESTADO2 ' : '');
+$query .= (($entrega and $enderecoDif) ? ', EC.DS_ENDERECO DS_ENDERECO2, EC.NR_ENDERECO NR_ENDERECO2, EC.DS_COMPL_ENDERECO DS_COMPL_ENDERECO2,EC.DS_BAIRRO DS_BAIRRO2,EC.DS_CIDADE DS_CIDADE2,EC.CD_CEP CD_CEP2,EC.ID_ESTADO ID_ESTADO2,E2.SG_ESTADO SG_ESTADO2 ' : '');
 
 $query .= 'FROM MW_CLIENTE C
                          LEFT JOIN MW_ESTADO E ON E.ID_ESTADO = C.ID_ESTADO ';
@@ -169,6 +169,7 @@ $PaymentDataCollection['TransactionType'] = 1;
 
 //Dados do endereço de cobrança.
 $parametros['CustomerData']['CustomerAddressData']['Street'] = $rs['DS_ENDERECO'];
+$parametros['CustomerData']['CustomerAddressData']['Number'] = $rs['NR_ENDERECO'];
 $parametros['CustomerData']['CustomerAddressData']['Complement'] = $rs['DS_COMPL_ENDERECO'];
 $parametros['CustomerData']['CustomerAddressData']['District'] = $rs['DS_BAIRRO'];
 $parametros['CustomerData']['CustomerAddressData']['ZipCode'] = $rs['CD_CEP'];
@@ -180,6 +181,7 @@ $parametros['CustomerData']['CustomerAddressData']['Country'] = 'Brasil';
 if ($entrega) {
     if ($enderecoDif) {
         $parametros['CustomerData']['DeliveryAddressData']['Street'] = $rs['DS_ENDERECO2'];
+        $parametros['CustomerData']['DeliveryAddressData']['Number'] = $rs['NR_ENDERECO2'];
         $parametros['CustomerData']['DeliveryAddressData']['Complement'] = $rs['DS_COMPL_ENDERECO2'];
         $parametros['CustomerData']['DeliveryAddressData']['District'] = $rs['DS_BAIRRO2'];
         $parametros['CustomerData']['DeliveryAddressData']['ZipCode'] = $rs['CD_CEP2'];
@@ -189,6 +191,7 @@ if ($entrega) {
         $idEstado = $rs['ID_ESTADO2'];
     } else {
         $parametros['CustomerData']['DeliveryAddressData']['Street'] = $rs['DS_ENDERECO'];
+        $parametros['CustomerData']['DeliveryAddressData']['Number'] = $rs['NR_ENDERECO'];
         $parametros['CustomerData']['DeliveryAddressData']['Complement'] = $rs['DS_COMPL_ENDERECO'];
         $parametros['CustomerData']['DeliveryAddressData']['District'] = $rs['DS_BAIRRO'];
         $parametros['CustomerData']['DeliveryAddressData']['ZipCode'] = $rs['CD_CEP'];
@@ -277,6 +280,7 @@ if (hasRows($resultIdPedidoVenda)) {
 								,VL_TOTAL_TAXA_CONVENIENCIA';
 		$query .= ($entrega) ?
 								',DS_ENDERECO_ENTREGA
+								,NR_ENDERECO_ENTREGA
 								,DS_COMPL_ENDERECO_ENTREGA
 								,DS_BAIRRO_ENTREGA
 								,DS_CIDADE_ENTREGA
@@ -291,6 +295,7 @@ if (hasRows($resultIdPedidoVenda)) {
 		if ($entrega) {
 			$params = array($newMaxId, $_SESSION['user'], $_SESSION['operador'], 0, 'P', ($entrega ? 'E' : 'R'), 0, $frete,
 							0, $parametros['CustomerData']['DeliveryAddressData']['Street'], $parametros['CustomerData']['DeliveryAddressData']['Complement'],
+                            $parametros['CustomerData']['DeliveryAddressData']['Complement'],
 							$parametros['CustomerData']['CustomerAddressData']['District'], $parametros['CustomerData']['DeliveryAddressData']['City'], $idEstado,
                             $parametros['CustomerData']['DeliveryAddressData']['ZipCode'],
 							($entrega ? $parametros['CustomerData']['CustomerName'] : ''), ($entrega ? 'D' : 'N'), $PaymentDataCollection['CardNumber']);

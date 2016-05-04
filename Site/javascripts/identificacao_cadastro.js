@@ -173,7 +173,7 @@ $(function() {
 		} else {
 			var $this = $(this),
 				 naoRequeridos = '#email,[id^=nascimento],[name=sexo],#celular,#complemento,#checkbox_guia,#checkbox_sms,#checkbox_estrangeiro',
-				 especiais = '#fixo,#email1,#email2,#senha1,#senha2,[name="tag"],.recaptcha :input,[type="button"],#cpf,#tipo_documento,#rg,#cep,#numero_endereco,#endereco'
+				 especiais = '#fixo,#email1,#email2,#senha1,#senha2,[name="tag"],.recaptcha :input,[type="button"],#cpf,#tipo_documento,#rg'
 				 formulario = $('#form_cadastro'),
 				 campos = formulario.find(':input:not(' + naoRequeridos + ',' + especiais +')'),
 				 valido = true;
@@ -264,17 +264,18 @@ $(function() {
 					type: formulario.attr('method'),
 					success: function(data) {
 						//Se retorno for em Json...
+						var res = data;
 						try {
-							data = JSON.parse(data);
-							data.location == 'reload' ? window.location = data.url : null;
+							res = JSON.parse(res);
+							res.location == 'reload' ? window.location = res.url : null;
 						}catch (e){
-							//Se não, continuar normalmente...
+
 						}
 
 						if (data != 'true') {
 							formulario.trigger('dados_salvos');
-    						if (typeof(BrandCaptcha) !== 'undefined') BrandCaptcha.reload();
-							
+							if (typeof(BrandCaptcha) !== 'undefined') BrandCaptcha.reload();
+
 							if (data == 'Seus dados foram atualizados com sucesso!') {
 								location.reload();
 								//$this.next('.erro_help').find('.help').slideDown('fast').delay(3000).slideUp('slow');

@@ -9,7 +9,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
 
     $pagina = basename(__FILE__);
 
-    if ($_GET['action'] == 'csv') {
+    if ( isset($_GET['action']) ) {
 
         require('actions/' . $pagina);
 
@@ -131,18 +131,53 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
                     return false;
                 }
 
-                var url = "gerarCSVLeitor.php?action=csv" +
-                          "&CodPeca=" + document.fPeca.cboPeca.value +
-                          "&CodTeatro=" + document.fPeca.cboTeatro.value +
-                          "&DatApresentacao=" + document.fPeca.cboApresentacao.value +
-                          "&HorSessao=" + document.fPeca.cboHorario.value;
+//                $("#loading").ajaxStart(function(){
+//                    $(this).show();
+//                });
+                var tipoExport = $('select[name="tipoExport"]').val();
 
-                $("#loading").ajaxStart(function(){
-                    $(this).show();
-                });
+                var action;
+                switch (tipoExport)
+                {
+                    case '01':
+                        action = 'csv';
+                        break;
 
-                document.location = url;
-            };
+                    case '02':
+                        action = 'defaultcsv';
+                        break;
+                }
+
+                var url = "gerarCSVLeitor.php?action=" + action +
+                    "&CodPeca=" + document.fPeca.cboPeca.value +
+                    "&CodTeatro=" + document.fPeca.cboTeatro.value +
+                    "&DatApresentacao=" + document.fPeca.cboApresentacao.value +
+                    "&HorSessao=" + document.fPeca.cboHorario.value;
+
+                //Testar em produção para validar erro
+                var TESTE = false;
+                if (TESTE)
+                {
+                    $.ajax({
+                        url: url,
+                        success: function (data) {
+                            alert("ok.");
+                        },
+                        error: function (error) {
+                            alert("erro.");
+                        }
+                    })
+                }
+                else
+                {
+                    if (tipoExport == '01' || tipoExport == '02') {
+                        document.location = url;
+                    } else {
+                        alert("Selecione um tipo de exportação válido");
+                    }
+                }
+
+            }
 
             function limpar()
             {
@@ -181,35 +216,45 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
 
                     echo $combo;
                     ?>
-                </td>
-                <td>
-                    <strong>Evento:</strong><br>
-                    <div name="divPeca" Id="divPeca">&nbsp;
-                    </div>
-                </td>
-            </tr>
+                    </td>
+                    <td>
+                        <strong>Evento:</strong><br>
+                        <div name="divPeca" Id="divPeca">&nbsp;
+                        </div>
+                    </td>
+                    <td>
+                        <strong>tipo de exportação</strong><br>
+                        <label>
+                            <select name="tipoExport">
+                                <option value="01">01-CSV-Modelo Específico</option>
+                                <option value="02">02-CSV-Modelo Padrão</option>
+                            </select>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <br>
+                        <div name="divApresent">
+                            <strong>Apresenta&ccedil;&atilde;o:</strong><br>
+                            <select name="cboApresentacao" id="cboApresentacao" onChange="CarregaHorario()">
+                                <option value="">Selecione...</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <br>
+                        <div name="divHorario">
+                            <strong>Hor&aacute;rio:</strong><br>
+                            <select name="cboHorario" id="cboHorario">
+                                <option value="">Selecione...</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>
             <tr>
-                <td>
-                    <br>
-                    <div name="divApresent">
-                        <strong>Apresenta&ccedil;&atilde;o:</strong><br>
-                        <select name="cboApresentacao" id="cboApresentacao" onChange="CarregaHorario()">
-                            <option value="">Selecione...</option>
-                        </select>
-                    </div>
-                </td>
-                <td>
-                    <br>
-                    <div name="divHorario">
-                        <strong>Hor&aacute;rio:</strong><br>
-                        <select name="cboHorario" id="cboHorario">
-                            <option value="">Selecione...</option>
-                        </select>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td ALIGN="CENTER" COLSPAN="2">
+                <td ALIGN="CENTER" COLSPAN="3">
                     <br>
                     <input type="button" class="button enviar" value="Gerar Arq. CSV" onclick="validar()" />&nbsp;
                     <input type="button" class="button limpar" value="Limpar Campos" onclick="limpar()" />&nbsp;

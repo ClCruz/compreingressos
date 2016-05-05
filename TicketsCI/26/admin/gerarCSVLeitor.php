@@ -154,11 +154,29 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
                     "&DatApresentacao=" + document.fPeca.cboApresentacao.value +
                     "&HorSessao=" + document.fPeca.cboHorario.value;
 
-                if (tipoExport == '01' || tipoExport == '02') {
-                    document.location = url;
-                } else {
-                    alert("Selecione um tipo de exportação válido");
+                //Testar em produção para validar erro
+                var TESTE = false;
+                if (TESTE)
+                {
+                    $.ajax({
+                        url: url,
+                        success: function (data) {
+                            alert("ok.");
+                        },
+                        error: function (error) {
+                            alert("erro.");
+                        }
+                    })
                 }
+                else
+                {
+                    if (tipoExport == '01' || tipoExport == '02') {
+                        document.location = url;
+                    } else {
+                        alert("Selecione um tipo de exportação válido");
+                    }
+                }
+
             }
 
             function limpar()

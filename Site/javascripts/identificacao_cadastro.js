@@ -129,6 +129,7 @@ $(function() {
 	
 	$('.salvar_dados').click(function(event) {
 		event.preventDefault();
+		
 		//alteração de senha
 		if ($.cookie('user') != null && $('#dados_conta').is(':hidden')) {
 			var form = $('#trocar_senha'),
@@ -171,6 +172,7 @@ $(function() {
 			return;
 
 		} else {
+		
 			var $this = $(this),
 				 naoRequeridos = '#email,[id^=nascimento],[name=sexo],#celular,#complemento,#checkbox_guia,#checkbox_sms,#checkbox_estrangeiro',
 				 especiais = '#fixo,#email1,#email2,#senha1,#senha2,[name="tag"],.recaptcha :input,[type="button"],#cpf,#tipo_documento,#rg'

@@ -4,6 +4,7 @@
 require_once('../settings/functions.php');
 require_once('../settings/settings.php');
 session_start();
+
 $mainConnection = mainConnection();
 $query = 'SELECT R.ID_APRESENTACAO, R.ID_APRESENTACAO_BILHETE, R.ID_CADEIRA, R.DS_CADEIRA, R.DS_SETOR, E.ID_EVENTO, E.DS_EVENTO, B.DS_NOME_TEATRO, A.DT_APRESENTACAO, A.HR_APRESENTACAO, E.IN_ENTREGA_INGRESSO, R.ID_RESERVA, R.CD_BINITAU, R.NR_BENEFICIO
 				FROM MW_RESERVA R
@@ -130,13 +131,6 @@ while ($rs = fetchResult($result)) {
 							<img class="<?php echo !($rs['CD_BINITAU'] || $rs['NR_BENEFICIO']) ? 'hidden' : 'notHidden'; ?>" src="">
 						</div>
 					</div>
-				</td>
-			</tr>
-			<tr id="validaws" class="hidden">
-				<td></td>
-				<td colspan="5">
-					<input type="text" name="ws_cpf" placeholder="Digite seu CPF">
-					<div class="btn" onclick="validaWS()">validar</div>
 				</td>
 			</tr>
 <?php

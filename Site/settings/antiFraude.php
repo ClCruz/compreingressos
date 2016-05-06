@@ -167,7 +167,7 @@ function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 			'IP' => $rs['ID_IP'],
 			'ShippingType' => ($rs['IN_RETIRA_ENTREGA'] == 'R' ? 13 : 1),
 			'Status' => 0,
-			'Origin' => 'site',
+			'Origin' => (isset($_SESSION['operador']) ? 'televendas' : 'site'),
 			'Product' => 16,
 			'BillingData' => array(
 				'ID' => $rs['ID_CLIENTE'],

@@ -795,7 +795,9 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
     while ($rs = fetchResult($result)) {
     	$bilhetes_lote_no_carrinho[] = $rs['CODTIPBILHETE'];
     }
+
     $ocultarLote = (getTotalLoteDisponivel($apresentacaoID) <= 0 and $rs2['LOTE'] == 0) ? true : false;
+
     $query = "SELECT	ID_APRESENTACAO_BILHETE,
 					    AB.CODTIPBILHETE,
 					    AB.DS_TIPO_BILHETE,
@@ -809,8 +811,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 					    A.ID_EVENTO,
 						B.ID_PROMOCAO_CONTROLE,
 					    B.IN_HOT_SITE,
-                        PC.IN_EXIBICAO,
-                        PC.id_webservices_promocao
+                        PC.IN_EXIBICAO
 				FROM
 				 CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB 
 				 INNER JOIN 
@@ -870,7 +871,6 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
     $first_selected = false;
 
     $bilhetes = array();
-    $wbServiceCfg = null;
 
     while ($rs = fetchResult($result)) {
 
@@ -937,9 +937,6 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
                         $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['codPreValidado'] = 'CONVITE';
                     }
                 }
-                else if ($rs['CODTIPPROMOCAO'] == 6) {
-                    $webServiceCfg = '6';
-                }
 
 				$BIN = '';
 				$promocao = 'qtPromocao="' . $rs['QT_PROMO_POR_CPF'] . '" codPromocao="'.$rs['ID_PROMOCAO_CONTROLE'] . '" sizeBin="32" ' . $imgs;
@@ -976,7 +973,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 
             // checar exibicao da promocao
             if ($rs['IN_EXIBICAO'] == null or $rs['IN_EXIBICAO'] == 'T' or $rs['IN_EXIBICAO'] == 'W') {
-    			$combo .= '<option data-ws="'.$webServiceCfg.'" value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $isSelected . ' ' . $BIN . $promocao . $meia_estudante . $lote .
+    			$combo .= '<option value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $isSelected . ' ' . $BIN . $promocao . $meia_estudante . $lote .
     					  ' valor="'.number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', '').'">' . utf8_encode($rs['DS_TIPO_BILHETE']) . '</option>';
             }
 

@@ -208,8 +208,6 @@ $(function() {
 		    url: $this.attr('href'),
 		    dataType: 'json',
 		    success: function(data) {
-				//console.log(data);
-
 				endereco.val(data.endereco);
 				numero_endereco.val(data.numero);
 				bairro.val(data.bairro);

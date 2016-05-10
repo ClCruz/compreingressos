@@ -115,6 +115,9 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                     var dados_atualizados = false,
                         endereco_atualizado = false;
 
+                    $.dialog({text: 'Por favor, para concluir a operação é necessário preencher o endereço completo'});
+                    gotoMainAddress();
+
                     $('.menu_conta .botao').hide();
 
                     if ($.getUrlVar('atualizar_endereco') != undefined){

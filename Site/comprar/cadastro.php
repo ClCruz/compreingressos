@@ -235,7 +235,7 @@ if (isset($_GET['action'])) {
 							ID_DOC_ESTRANGEIRO
 						)
 						VALUES
-						('.$newID.',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+						('.$newID.',?,?,CONVERT(DATETIME, ?, 103),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
 		$params = array(
 							$_POST['nome'],
 							$_POST['sobrenome'],
@@ -510,18 +510,11 @@ if (isset($_GET['action'])) {
 		if ($retorno[0]['code'] == 242) {
 			echo 'Data de Nascimento inválida';
 		} else {
-			var_dump($query, $params, $retorno);
+			// var_dump($query, $params, $retorno);
+			echo "Um erro inesperado ocorreu. Favor informar o suporte.";
 		}
 	} else {
-		if ( isset($_GET['redirect']) ) {
-			//echo 'Location: /comprar/'.$_GET['redirect'];
-			//header("Location: /comprar/".$_GET['redirect']);
-			$retorno = array('location' => 'reload', 'url' => $_GET['redirect']);
-			echo json_encode($retorno);
-		}
-		else{
-			echo $retorno;
-		}
+		echo $retorno;
 	}
 }
 ?>

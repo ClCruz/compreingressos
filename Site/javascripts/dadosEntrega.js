@@ -1,11 +1,15 @@
 function gotoMainAddress()
 {
-	$("#dados_conta").show(function () {
-		$('html, body').animate({
-			scrollTop: $(".endereco").offset().top
-		}, 1000, function () {
-			$('#cep').focus();
-		});
+	$('#form_cadastro').on('dados_salvos', function(){
+		document.location.reload();
+	});
+
+	$(".botao.dados_conta").trigger('click');
+
+	$('html, body').animate({
+		scrollTop: $(".endereco").offset().top
+	}, 1000, function () {
+		$('#cep').focus();
 	});
 }
 

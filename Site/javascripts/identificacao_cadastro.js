@@ -265,22 +265,12 @@ $(function() {
 					data: formulario.serialize(),
 					type: formulario.attr('method'),
 					success: function(data) {
-						//Se retorno for em Json...
-						var res = data;
-						try {
-							res = JSON.parse(res);
-							res.location == 'reload' ? window.location = res.url : null;
-						}catch (e){
-
-						}
-
 						if (data != 'true') {
 							formulario.trigger('dados_salvos');
 							if (typeof(BrandCaptcha) !== 'undefined') BrandCaptcha.reload();
 
 							if (data == 'Seus dados foram atualizados com sucesso!') {
-								location.reload();
-								//$this.next('.erro_help').find('.help').slideDown('fast').delay(3000).slideUp('slow');
+								$this.next('.erro_help').find('.help').slideDown('fast').delay(3000).slideUp('slow');
 							} else {
 								$.dialog({text: data});
 							}

@@ -254,7 +254,7 @@ var simples =
                 var cep = this.value.replace('-', '');
 
                 $.ajax({
-                    url: 'http://api.postmon.com.br/v1/cep/'+cep,
+                    url: 'https://api.postmon.com.br/v1/cep/'+cep,
                     dataType: 'json',
                     success: function (data) {
                         SetFormEndereco(data);

@@ -1,5 +1,5 @@
 <?php
-//se for operador ignorar as regras anti-fraude 
+//se for operador ignorar as regras anti-fraude
 if (!isset($_SESSION['operador'])) {
 
 	$cartao = $_POST['numCartao'];

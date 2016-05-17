@@ -20,7 +20,7 @@ $enderecoMain = getEnderecoCliente($_SESSION['user'], -1);
 					<div class="container_endereco">
 						<p class="titulo"><?php echo $enderecoMain['nome']; ?></p>
 						<p class="endereco">
-							<?php echo $enderecoMain['endereco']; ?><?php echo $enderecoMain['numero'] ? ' - '.$enderecoMain['complemento'] : ''; ?><br>
+							<?php echo $enderecoMain['endereco']; ?>, <?php echo $enderecoMain['numero'] ?><?php echo $enderecoMain['complemento'] ? ' - '.$enderecoMain['complemento'] : ''; ?><br>
 							<?php echo $enderecoMain['bairro']; ?>, <?php echo $enderecoMain['cidade']; ?> - <?php echo comboEstado('estado', $enderecoMain['estado'], false, false); ?><br>
 							<?php echo $enderecoMain['estado'] != 28 ? substr($enderecoMain['cep'], 0, 5).'-'.substr($enderecoMain['cep'], -3) : $enderecoMain['cep']; ?>
 						</p>

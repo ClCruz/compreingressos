@@ -48,7 +48,8 @@ function array_to_xml($array, &$xml) {
 function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 
 	$wsdl_url = ($_ENV['IS_TEST'] ? "http://homologacao.clearsale.com.br/integracaov2/service.asmx?WSDL" : "http://integracao.clearsale.com.br/service.asmx?WSDL");
-	$entityCode = 'A2150D50-C67F-4F3B-A675-CC79D89FD206';
+	$entityCode = ($_ENV['IS_TEST'] ? "A2150D50-C67F-4F3B-A675-CC79D89FD206" : "872A4AC5-9987-453F-A964-764EEF2C160B");
+
 
 	session_start();
 	$mainConnection = mainConnection();

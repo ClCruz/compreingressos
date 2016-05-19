@@ -173,7 +173,7 @@ $bcc = ($_ENV['IS_TEST']
         ? array()
         : array('Pedidos=>pedidos@compreingressos.com'));
 
-$successMail = authSendEmail($from, $namefrom, $parametros['CustomerData']['CustomerEmail'], $parametros['CustomerData']['CustomerName'], $subject, utf8_decode($message), array(), $bcc, 'iso-8859-1', $barcodes);
+$successMail = authSendEmail($from, $namefrom, $parametros['CustomerData']['CustomerEmail'], $parametros['CustomerData']['CustomerName'], $subject, utf8_decode($message), array(), $bcc, 'utf-8', $barcodes);
 
 if (filter_var($valores['email_presenteado'], FILTER_VALIDATE_EMAIL)) {
 
@@ -206,7 +206,7 @@ if (filter_var($valores['email_presenteado'], FILTER_VALIDATE_EMAIL)) {
     $tpl->show();
     $message = ob_get_clean();
 
-    $successMail = authSendEmail($from, $namefrom, $valores['email_presenteado'], $valores['nome_presenteado'], $subject, utf8_decode($message), array(), array(), 'iso-8859-1', $barcodes);
+    $successMail = authSendEmail($from, $namefrom, $valores['email_presenteado'], $valores['nome_presenteado'], $subject, utf8_decode($message), array(), array(), 'utf-8', $barcodes);
 
 }
 

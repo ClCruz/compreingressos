@@ -436,7 +436,7 @@ function getCaixaTotalMeiaEntrada($apresentacao) {
 		$t = getTotalMeiaEntradaDisponivel($apresentacao);
 		$t = ($t < 0 ? 0 : $t);
 
-		$html = "<p>Existem <b><span class='contagem-meia'>" . $t . "</span></b> de <b><span>" . getTotalMeiaEntrada($apresentacao) . "</span></b> ingressos disponíveis para meia-entrada.</p>";
+		$html = "<p>Existem <b><span class='contagem-meia'>" . $t . "</span></b> de <b><span>" . getTotalMeiaEntrada($apresentacao) . "</span></b> ingressos disponíveis para <a href='/meiaEntrada.html' target='_blank'>meia-entrada</a>.</p>";
 	} else {
 		$html = '';
 	}

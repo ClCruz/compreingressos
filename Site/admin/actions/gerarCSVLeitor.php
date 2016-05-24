@@ -25,11 +25,14 @@ function getTotal($fetch = false)
 {
 	$conn = getConnection($_GET['CodTeatro']);
 
-	$query = "SELECT A.CODAPRESENTACAO, L.CODSALA, L.CODSETOR, COUNT(INDICE) AS TOTAL FROM TABSALDETALHE L
+	$query = "SELECT A.CODAPRESENTACAO, L.CODSALA, L.CODSETOR, COUNT(INDICE) AS TOTAL, S.NomSala, SE.NomSetor FROM TABSALDETALHE L
 				  INNER JOIN TABAPRESENTACAO A ON L.CODSALA = A.CODSALA
+				  INNER JOIN tabSala AS S ON S.CodSala = L.CodSala
+				  INNER JOIN tabSetor AS SE ON SE.CodSetor = L.CodSetor AND SE.CodSala = L.CodSala
 				  WHERE A.CODPECA = ? AND A.DATAPRESENTACAO = ? AND A.HORSESSAO = ? AND TIPOBJETO <> 'I'
-				  GROUP BY A.CODAPRESENTACAO, L.CODSALA, L.CODSETOR";
+				  GROUP BY A.CODAPRESENTACAO, L.CODSALA, L.CODSETOR, S.NomSala, SE.NomSetor";
 	$params = array($_GET['CodPeca'], $_GET['DatApresentacao'], $_GET['HorSessao']);
+
 	$result = executeSQL($conn, $query, $params);
 
 	if ($fetch)
@@ -180,6 +183,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
 
 			exit();
 	}
+	/*
+	 * Gerar todos os codigos 2D possives para este evento conforme apresentação e local da aprensetação
+	 * */
 	else if ($_GET['action'] == 'defaultcsv')
 	{
 		$dadosPeca = getDadosPeca();
@@ -198,10 +204,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
 
 		foreach ($tipBilhete as $tip)
 		{
-			//echo 'Muda tip Bilhete<br>';
 			foreach ($Setores as $setor)
 			{
-				//echo 'Muda SETOR<br>';
 				$totalTipoSetor = (int)$setor['TOTAL'];
 				$totalFinalGerado += $totalTipoSetor;
 
@@ -217,7 +221,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
 					$Codigo .= validaDados($tip['CODTIPBILHETE'], 3);
 					$Codigo .= validaDados($i, 5);
 
-					fputcsv($FILE, array($Codigo.';'));
+					$filtro = $setor['NomSala'].';'.$setor['NomSetor'].';';
+
+					fputcsv($FILE, array($Codigo.';'.$filtro));
+					//fputcsv($FILE, array($Codigo.';'));
 					$i++;
 				}
 			}

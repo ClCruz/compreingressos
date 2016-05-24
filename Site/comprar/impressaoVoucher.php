@@ -165,10 +165,10 @@ foreach ($itensPedido as $item) {
 
         $valores['itens_pedido'][] = array(
             'item_qrcode' => $code2_img_src,
-
             'item_evento' => $item['descricao_item']['evento'],
             'item_teatro' => $item['descricao_item']['teatro'],
             'item_tipo_bilhete' => $item['descricao_item']['bilhete'],
+            'item_codvenda' => $item['descricao_item']['codvenda'],
             'item_valor' => number_format($item['valor_item'], 2, ',', ''),
             'item_setor' => $item['descricao_item']['setor'],
             'item_cadeira' => $item['descricao_item']['cadeira'],

@@ -1,8 +1,6 @@
 <?php
 require_once('../settings/functions.php');
 session_start();
-
-
 // require_once('../settings/Cypher.class.php');
 // $cipher = new Cipher('1ngr3ss0s');
 // echo urlencode(base64_encode($cipher->encrypt('436720|gabriel.monteiro@cc.com.br')));
@@ -73,12 +71,6 @@ $rsDados = executeSQL($mainConnection, $query, $params, true);
 
 if (!empty($rsDados)) {
 
-	foreach ($rsDados as $key => $value) {
-		if (gettype($value) == 'string') {
-			$rsDados[$key] = utf8_encode($value);
-		}
-	}
-
 	$parametros['OrderData']['OrderId'] = $id_pedido;
 	$parametros['CustomerData']['CustomerName'] = $rsDados['DS_NOME'];
 	$valores['date'] = $rsDados['DT_PEDIDO_VENDA'];
@@ -129,6 +121,7 @@ if (!empty($rsDados)) {
 				LEFT JOIN MW_LOCAL_EVENTO LE ON E.ID_LOCAL_EVENTO = LE.ID_LOCAL_EVENTO
 				WHERE R.ID_PEDIDO_VENDA = ?
 				ORDER BY E.DS_EVENTO, R.ID_APRESENTACAO, R.DS_LOCALIZACAO";
+
 	$params = array($id_pedido);
 	$result = executeSQL($mainConnection, $query, $params);
 
@@ -168,6 +161,7 @@ if (!empty($rsDados)) {
 	    $itensPedido[$i]['descricao_item']['setor'] = utf8_encode($itens['DS_SETOR']);
 	    $itensPedido[$i]['descricao_item']['cadeira'] = utf8_encode($itens['DS_CADEIRA']);
 	    $itensPedido[$i]['descricao_item']['bilhete'] = utf8_encode($itens['DS_TIPO_BILHETE']);
+	    $itensPedido[$i]['descricao_item']['codvenda'] = utf8_encode($itens['CodVenda']);
 
 	    $itensPedido[$i]['valor_item'] = ($itens['VL_LIQUIDO_INGRESSO'] + $valorConveniencia);
 	    $itensPedido[$i]['id_base'] = $itens['ID_BASE'];
@@ -180,16 +174,14 @@ if (!empty($rsDados)) {
 	require "../comprar/impressaoVoucher.php";
 
 	if ($_GET['pdf']) {
-
 		/*require "../settings/mpdf60/mpdf.php";
 
-		$mpdf=new mPDF(); 
+		$mpdf=new mPDF();
 
 		$mpdf->WriteHTML($successMail);
 		$mpdf->Output();*/
 
 	} elseif ($_GET['allinmail']) {
-
 		/*$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, "http://transacional01.postmatic.com.br/api/?method=get_token&output=json&username=Tcompreingressos&password=30042015XXYR");
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);

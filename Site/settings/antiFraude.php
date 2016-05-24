@@ -142,7 +142,7 @@ function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 				'Event' => array(
 					'ID' => $rs2['ID_APRESENTACAO'],
 					'Name' => $rs2['DS_EVENTO'],
-					'Local' => $evento_info['nome_teatro'],
+					'Local' => utf8_encode($evento_info['nome_teatro']),
 					'Date' => $rs2['DT_APRESENTACAO']
 				),
 				'People' => array(
@@ -316,9 +316,8 @@ function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 				$xml_response = new SimpleXMLElement(preg_replace('/(<\?xml[^?]+?)utf-16/i', '$1utf-8', $result->GetOrderStatusResult));
 			} catch (SoapFault $e) {
 				$descricao_erro = $e->getMessage();
-				var_dump($e);
 			} catch (Exception $e) {
-				var_dump($e);
+				$descricao_erro = $e->getMessage();
 			}
 
 			executeSQL($mainConnection, 'INSERT INTO MW_PEDIDO_CLEARSALE VALUES (?, GETDATE(), ?)', array($id_pedido, (isset($descricao_erro) ? $descricao_erro : $xml_response->asXML())));
@@ -338,6 +337,8 @@ function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 }
 
 function cancelarPedido($braspagTransactionId) {
+	global $descricao_erro;
+	
 	$mainConnection = mainConnection();
 
 	//RequestID
@@ -374,15 +375,16 @@ function cancelarPedido($braspagTransactionId) {
 
     } catch (SoapFault $e) {
 		$descricao_erro = $e->getMessage();
-		var_dump($e);
 	} catch (Exception $e) {
-		var_dump($e);
+		$descricao_erro = $e->getMessage();
 	}
 
 	return ($response->TransactionDataCollection->TransactionDataResponse->Status == '0');
 }
 
 function confirmarPedido($braspagTransactionId) {
+	global $descricao_erro;
+	
 	$mainConnection = mainConnection();
 
 	//RequestID
@@ -420,9 +422,8 @@ function confirmarPedido($braspagTransactionId) {
 
     } catch (SoapFault $e) {
 		$descricao_erro = $e->getMessage();
-		var_dump($e);
 	} catch (Exception $e) {
-		var_dump($e);
+		$descricao_erro = $e->getMessage();
 	}
 
 	return ($response->TransactionDataCollection->TransactionDataResponse->Status == '0');

@@ -436,7 +436,7 @@ function getCaixaTotalMeiaEntrada($apresentacao) {
 		$t = getTotalMeiaEntradaDisponivel($apresentacao);
 		$t = ($t < 0 ? 0 : $t);
 
-		$html = "<p>Existem <b><span class='contagem-meia'>" . $t . "</span></b> de <b><span>" . getTotalMeiaEntrada($apresentacao) . "</span></b> ingressos disponíveis para meia-entrada.</p>";
+		$html = "<p>Existem <b><span class='contagem-meia'>" . $t . "</span></b> de <b><span>" . getTotalMeiaEntrada($apresentacao) . "</span></b> ingressos disponíveis para <a href='http://www.compreingressos.com/meia_entrada.html' target='_blank'>meia-entrada</a>.</p>";
 	} else {
 		$html = '';
 	}
@@ -2223,16 +2223,16 @@ function sendConfirmationMail($id_cliente) {
         $tpl->link .= '&redirect='.urlencode($_REQUEST['redirect']);
     }
 
-    $subject = utf8_decode('Confirmação de e-mail');
+    $subject = ('=?UTF-8?b?'. base64_encode('Confirmação de e-mail') . '?=');
 
     ob_start();
     $tpl->show();
     $message = ob_get_clean();
 
-    $namefrom = utf8_decode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS');
+    $namefrom = '=?UTF-8?b?'.base64_encode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS').'?=';
     $from = ($_ENV['IS_TEST'] ? 'contato@intuiti.com.br' : 'compreingressos@gmail.com');
 
-    $successMail = authSendEmail($from, $namefrom, $rs['CD_EMAIL_LOGIN'], $rs['DS_NOME'], $subject, utf8_decode($message), array(), array(), 'iso-8859-1');
+    $successMail = authSendEmail($from, $namefrom, $rs['CD_EMAIL_LOGIN'], $rs['DS_NOME'], $subject, utf8_decode($message));
 
     return $successMail;
 }
@@ -2275,7 +2275,7 @@ function sendSuccessMail($pedido_id) {
 
     foreach ($rsDados as $key => $value) {
         if (gettype($value) == 'string') {
-            $rsDados[$key] = utf8_encode($value);
+            $rsDados[$key] = $value;
         }
     }
 
@@ -2356,13 +2356,13 @@ function sendSuccessMail($pedido_id) {
             $valorConveniencia = obterValorServico($itens['ID_APRESENTACAO_BILHETE'], false, $pedido_id);
         }
 
-        $itensPedido[$i]['descricao_item']['evento'] = utf8_encode($itens['DS_EVENTO']);
+        $itensPedido[$i]['descricao_item']['evento'] = $itens['DS_EVENTO'];
         $itensPedido[$i]['descricao_item']['data'] = $itens['DT_APRESENTACAO'];
         $itensPedido[$i]['descricao_item']['hora'] = $itens['HR_APRESENTACAO'];
-        $itensPedido[$i]['descricao_item']['teatro'] = utf8_encode($itens['DS_NOME_TEATRO']);
-        $itensPedido[$i]['descricao_item']['setor'] = utf8_encode($itens['DS_SETOR']);
-        $itensPedido[$i]['descricao_item']['cadeira'] = utf8_encode($itens['DS_CADEIRA']);
-        $itensPedido[$i]['descricao_item']['bilhete'] = utf8_encode($itens['DS_TIPO_BILHETE']);
+        $itensPedido[$i]['descricao_item']['teatro'] = $itens['DS_NOME_TEATRO'];
+        $itensPedido[$i]['descricao_item']['setor'] = $itens['DS_SETOR'];
+        $itensPedido[$i]['descricao_item']['cadeira'] = $itens['DS_CADEIRA'];
+        $itensPedido[$i]['descricao_item']['bilhete'] = $itens['DS_TIPO_BILHETE'];
 
         $itensPedido[$i]['valor_item'] = ($itens['VL_LIQUIDO_INGRESSO'] + $valorConveniencia);
         $itensPedido[$i]['id_base'] = $itens['ID_BASE'];

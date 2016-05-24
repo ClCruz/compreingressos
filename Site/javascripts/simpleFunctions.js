@@ -237,7 +237,7 @@ var simples =
         str = str.replace(/[ç]/,"c");
 
         //return str;
-        // o resto
+        // o resto 
         return str.replace(/[^a-z0-9]/gi,'');
     },
 

@@ -1388,11 +1388,17 @@ div#detalhes_busca{
 #selos{
 	float:left;
 	width:100%;
-  margin-bottom:96px;
+  	margin-bottom:96px;
+	margin-top: 30px;
+}
+
+#selos .selo {
+	display: inline-block;
+	margin: 0px 10px;
 }
 
 #selos div.centraliza{
-	width:400px;
+	width:410px;
 	margin:0 auto;
 }
 

@@ -63,6 +63,20 @@ if ($_GET['Small'] == '1') {
   }
 }
 
+if ( !empty($CodSala) && $CodSala != 'TODOS' ) {
+
+    $query = 'SELECT B.Imagem FROM tabLogoSala AS A
+              INNER JOIN tabImagem AS B ON B.CodImagem = A.CodImagem 
+              WHERE CodSala = '.$CodSala;
+}else{
+    $query = 'SELECT TOP 1 B.Imagem FROM tabLogoSala AS A
+              INNER JOIN tabImagem AS B ON A.CodImagem = B.CodImagem
+              WHERE B.CodImagem > 0 ORDER BY B.CodImagem DESC';
+}
+
+$imagem = fetchAssoc( executeSQL($connBase, $query) );
+$imagem = $imagem[0]['Imagem'];
+
 if (isset($err) && $err != "") {
   echo $err . "<br>";
   print_r(sqlErrors());
@@ -85,7 +99,10 @@ if (isset($err) && $err != "") {
     </script>
     <table width=650 class="tabela" border="0">
       <tr>
-        <td colspan="1" rowspan="2"><img align="left" border="0" src="../images/logo.jpg"></td>
+        <td colspan="1" rowspan="2">
+            <img align="left" border="0" src="http://www.compreingressos.com/images/logo_compre_2015.jpg">
+            <div class="logot" style="background-image: url(data:img/jpeg;base64,<?php echo base64_encode($imagem); ?>); width: 200px;height: 50px;display: inline-block;background-size: auto 100%;background-repeat: no-repeat;background-position: 50%;margin-top: 13px;;"></div>
+        </td>
         <td colspan="1" height="15"></td>
       </tr>
       <tr>

@@ -27,6 +27,32 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 7, true)) {
                     if (href.indexOf('?action=add') != -1 || href.indexOf('?action=update') != -1) {
                         if (!validateFields()) return false;
 
+                        var formDados       = document.forms.dados;
+                        var meioPgto        = formDados.idMeioPagamento;
+                        var formaPgto       = formDados.idFormaPagamento;
+                        var meioSelected    = meioPgto[meioPgto.selectedIndex];
+                        var formaSelected   = formaPgto[formaPgto.selectedIndex];
+
+                        var diffPgto = { status: true };
+                        var preventDeleteId = false;
+                        switch (meioSelected.value)
+                        {
+                            /*
+                             #69 - Não permitir POS e PDV cadastrados com formas diferentes. Isso já é um padrão que vem do VB é deve se manter assim.
+                             * */
+                            case '65': case '66': case '67': case '69': case '70': case '71':
+                            diffPgto = validaPgtoWebVB(meioSelected, formaSelected);
+                            break;
+                        }
+
+                        if (!diffPgto.status)
+                        {
+                            $.dialog({ text: diffPgto.msg });
+                            //alert(diffPgto.msg);
+                            return false;
+                        }
+
+
                         $.ajax({
                             url: href,
                             type: 'post',
@@ -139,6 +165,40 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 7, true)) {
                     $(this).removeClass('ui-state-hover');
                 });
             });
+
+            function validaPgtoWebVB(web, vb)
+            {
+                var error = false;
+                var msg = '';
+
+                var charsWeb = web.innerHTML.slice(0,3);
+                var charsVB = vb.innerHTML.slice(0,3);
+
+                if (charsWeb != charsVB)
+                {
+                    error = true;
+                    msg = "Relacionamento POS/PDV incorreto. Em caso de dúvida, entre em contato com o administrador.";
+                }
+
+                if ( !error )
+                {
+                    var webHTML = simples.replaceSpecialChars(web.innerHTML).toLowerCase();
+                    var vbHTML  = simples.replaceSpecialChars(vb.innerHTML).toLowerCase();
+
+                    var tipos = ['debito', 'credito', 'dinheiro'];
+                    for(var t in tipos)
+                    {
+                        var tip = tipos[t];
+                        if ( webHTML.search(tip) >= 0 && vbHTML.search(tip) < 0 )
+                        {
+                            error = true;
+                            msg = 'Relacionamento incorreto. Verifique tipos de pagamento (Crédito/Débito/Dinheiro)';
+                        }
+                    }
+                }
+
+                return { status: !error, msg: msg };
+            }
         </script>
         <style type="text/css">
             .center{text-align: center;}

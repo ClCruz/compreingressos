@@ -363,6 +363,7 @@ $query = 'UPDATE MW_PEDIDO_VENDA SET
                         ,NM_CLIENTE_VOUCHER = ?
                         ,DS_EMAIL_VOUCHER = ?
                         ,CD_BIN_CARTAO = ?
+                        ,ID_ORIGEM = ?
 			WHERE ID_PEDIDO_VENDA = ?
 				AND ID_CLIENTE = ?';
 
@@ -377,6 +378,7 @@ if ($_POST['nomePresente']) {
 $params = array(($totalIngressos + $frete + $totalConveniencia), $totalIngressos, $totalConveniencia,
                 $_SERVER["REMOTE_ADDR"], $PaymentDataCollection['NumberOfPayments'],
                 $nr_beneficio, $nome_presente, $email_presente, $PaymentDataCollection['CardNumber'],
+                $_SESSION['origem'],
                 $newMaxId, $_SESSION['user']);
 
 if ($itensPedido > 0) {

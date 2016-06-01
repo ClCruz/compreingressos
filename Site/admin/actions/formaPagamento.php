@@ -82,7 +82,7 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
         return $retorno;
     }
 
-    function deleteReg()
+    function deleteReg($mainConnection)
     {
         $query = 'DELETE FROM MW_MEIO_PAGAMENTO_FORMA_PAGAMENTO WHERE ID_BASE = ? AND ID_MEIO_PAGAMENTO = ?';
         $params = array($_GET['idBase'], $_GET['idMeioPagamento']);
@@ -112,7 +112,7 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
         break;
 
         default:
-            $retorno = deleteReg();
+            $retorno = deleteReg($mainConnection);
     }
 }
 

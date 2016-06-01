@@ -62,19 +62,7 @@ if ($_GET['Small'] == '1') {
   }
 }
 
-if ( !empty($CodSala) && $CodSala != 'TODOS' ) {
-
-    $query = 'SELECT B.Imagem FROM tabLogoSala AS A
-              INNER JOIN tabImagem AS B ON B.CodImagem = A.CodImagem 
-              WHERE CodSala = '.$CodSala;
-}else{
-    $query = 'SELECT TOP 1 B.Imagem FROM tabLogoSala AS A
-              INNER JOIN tabImagem AS B ON A.CodImagem = B.CodImagem
-              WHERE B.CodImagem > 0 ORDER BY B.CodImagem DESC';
-}
-
-$imagem = fetchAssoc( executeSQL($connBase, $query) );
-$imagem = $imagem[0]['Imagem'];
+$imagem = getSalaImg($CodSala, $connBase);
 
 if (isset($err) && $err != "") {
   echo $err . "<br>";

@@ -14,6 +14,8 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
     die();
   }
 
+  require_once('origem.php');
+
   $mainConnection = mainConnection();
 
   $query = 'SELECT A.CODAPRESENTACAO, E.ID_BASE, E.ID_EVENTO,E.DS_EVENTO,

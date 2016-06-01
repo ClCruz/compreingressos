@@ -86,6 +86,7 @@ if (isset($_COOKIE['ipagareError'])) {
 		setcookie('binItau', '', -1);
 
 	unset($_SESSION['assinatura']);
+	unset($_SESSION['origem']);
 	
 	if (isset($_SESSION['operador'])) {
 		unset($_SESSION['user']);

@@ -105,23 +105,27 @@ if (isset($err) && $err != "") {
       }
     </script>
     <table width="650" class="tabela" border="0">
-      <tr>
-        <td colspan="1" rowspan="2" height="40">
-            <?php if(isset($_GET["exportar"]) && $_GET["exportar"] == "true") { ?>
+      <tr class="logos">
+
+          <?php if(isset($_GET["exportar"]) && $_GET["exportar"] == "true") { ?>
+              <td colspan="2">
                 <center><b><font size="3" face="tahoma,verdana,arial">Compreingressos.com</font></b></center>
-            <?php }else{ ?>
-                <img alt="Compreingressos.com" align="left" border="0" src="http://www.compreingressos.com/images/logo_compre_2015.jpg" />
-            <?php } ?>
-            <div class="logot" style="background-image: url(data:img/jpeg;base64,<?php echo base64_encode($imagem); ?>); width: 200px;height: 50px;display: inline-block;background-size: auto 100%;background-repeat: no-repeat;background-position: 50%;margin-top: 13px;;"></div>
-        </td>
-        <td colspan="1">
-        </td>
+              </td>
+          <?php }else{ ?>
+              <td width="80">
+                  <img alt="Compreingressos.com" align="left" border="0" src="http://www.compreingressos.com/images/logo_compre_2015.jpg" />
+              </td>
+              <td>
+                  <div class="logoTeatro">
+                      <img src="data:img/jpeg;base64,<?php echo base64_encode($imagem); ?>" alt="" />
+                  </div>
+              </td>
+          <?php } ?>
+
+        <td width="317" class="tabela" align="center" bgcolor="LightGrey"><b><font size=2 face="tahoma,verdana,arial">Borderô Completo</font><br/>Contabilização dos Ingressos</b></td>
       </tr>
       <tr>
-        <td class="tabela" align="center" bgcolor="LightGrey"><b><font size=2 face="tahoma,verdana,arial">Borderô Completo</font><br/>Contabilização dos Ingressos</b></td>
-      </tr>
-      <tr>
-        <td colspan="2">
+        <td colspan="3">
           <table class="tabela" width="648">
             <tr>
               <td align="right" width="70"><font size=1 face="tahoma,verdana,arial"><b>Local:</b></font></td>

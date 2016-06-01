@@ -5,6 +5,19 @@ $mainConnection = mainConnection();
 
 session_start();
 
+$updateimg = false;
+
+if ($updateimg)
+{
+    $conn = getConnection(139);
+
+    //echo file_get_contents('../images/theatro-antigo.jpg');
+    $query = 'UPDATE tabImagem SET Imagem = ? WHERE CodImagem = 68';
+    $img = array(file_get_contents('../images/theatro-antigo.jpg'));
+
+    $res = executeSQL($conn, $query, $img);
+}
+
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 305, true)) {
 
     $pagina = basename(__FILE__);

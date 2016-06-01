@@ -35,15 +35,17 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 460, true)) {
 
         $_GET['cboLocal'] = $_GET['cboLocal'] == 'TODOS' ? -1 : $_GET['cboLocal'];
 
-        $query = "SELECT DISTINCT
+        $query = "SELECT
                         E.ID_EVENTO,
                         E.DS_EVENTO,
-                        B.DS_NOME_TEATRO
+                        B.DS_NOME_TEATRO, MIN(A.DT_APRESENTACAO) DT_INICIO, MAX(A.DT_APRESENTACAO) DT_FIM
                     FROM MW_EVENTO E
                     INNER JOIN MW_ACESSO_CONCEDIDO AC ON AC.ID_BASE = E.ID_BASE AND AC.CODPECA = E.CODPECA
                     INNER JOIN MW_BASE B ON B.ID_BASE = E.ID_BASE
+                    INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
                     WHERE (E.ID_BASE = ? OR ? = -1) AND AC.ID_USUARIO = ? AND E.IN_ATIVO = 1
-                    ORDER BY DS_EVENTO";
+                    GROUP BY E.ID_EVENTO, E.DS_EVENTO, B.DS_NOME_TEATRO HAVING CONVERT(VARCHAR, MAX(A.DT_APRESENTACAO), 112) >= CONVERT(VARCHAR, GETDATE(), 112)
+                    ORDER BY DS_EVENTO, DS_NOME_TEATRO";
 
         $result = executeSQL($mainConnection, $query, array($_GET['cboLocal'], $_GET['cboLocal'], $_SESSION['admin']));
 
@@ -55,6 +57,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 460, true)) {
             <tr>
                 <td><?php echo utf8_encode($rs['DS_EVENTO']); ?></td>
                 <td><?php echo utf8_encode($rs['DS_NOME_TEATRO']); ?></td>
+                <td><?php echo $rs['DT_INICIO']->format('d/m/Y'); ?></td>
+                <td><?php echo $rs['DT_FIM']->format('d/m/Y'); ?></td>
                 <td class="chk_evento"><input type="checkbox" name="evento[]" value="<?php echo $rs['ID_EVENTO']; ?>" /></td>
             </tr>
         <?php

@@ -16,10 +16,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 460, true)) {
     } else {
 
         $result_selecionados = executeSQL($mainConnection,
-                                "SELECT E.ID_EVENTO, E.DS_EVENTO, B.DS_NOME_TEATRO
+                                "SELECT E.ID_EVENTO, E.DS_EVENTO, B.DS_NOME_TEATRO, MIN(A.DT_APRESENTACAO) DT_INICIO, MAX(A.DT_APRESENTACAO) DT_FIM
                                     FROM MW_EVENTO E
                                     INNER JOIN MW_BASE B ON B.ID_BASE = E.ID_BASE
+                                    INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
                                     WHERE E.IN_ANTI_FRAUDE = 1
+                                    GROUP BY E.ID_EVENTO, E.DS_EVENTO, B.DS_NOME_TEATRO
                                     ORDER BY DS_EVENTO, DS_NOME_TEATRO");
 ?>
         <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
@@ -137,13 +139,16 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 460, true)) {
             overflow-y: scroll;
         }
         .nm_evento {
-            width: 50%;
+            width: 34%;
         }
         .nm_local {
-            width: 35%;
+            width: 33%;
+        }
+        .data {
+            width: 10%;
         }
         .chk_evento {
-            width: 15%;
+            width: 13%;
             text-align: right;
         }
         .nm_evento, .nm_local {
@@ -172,13 +177,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 460, true)) {
                     <tr class="ui-widget-header">
                         <th class="nm_evento">Eventos Disponíveis / Fora do Anti-fraude</th>
                         <th class="nm_local">Local</th>
+                        <th class="data">Data Início</th>
+                        <th class="data">Data Término</th>
                         <th class="chk_evento"><label>Selecionar Todos <input type="checkbox" class="selecionar_todos" /></label></th>
                     </tr>
                 </thead>
             </table>
             <div class="disponiveis">
                 <table>
-                    <thead><tr><th class="nm_evento"></th><th class="nm_local"></th><th class="chk_evento"></th></tr></thead>
+                    <thead><tr><th class="nm_evento"></th><th class="nm_local"><th class="data"></th><th class="data"></th></th><th class="chk_evento"></th></tr></thead>
                     <tbody id="registros"></tbody>
                 </table>
             </div>
@@ -189,13 +196,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 460, true)) {
                     <tr class="ui-widget-header">
                         <th class="nm_evento">Eventos Selecionados</th>
                         <th class="nm_local">Local</th>
+                        <th class="data">Data Início</th>
+                        <th class="data">Data Término</th>
                         <th class="chk_evento"><label>Selecionar Todos <input type="checkbox" class="selecionar_todos" checked="true" /></label></th>
                     </tr>
                 </thead>
             </table>
             <div class="selecionados">
                 <table>
-                    <thead><tr><th class="nm_evento"></th><th class="nm_local"></th><th class="chk_evento"></th></tr></thead>
+                    <thead><tr><th class="nm_evento"></th><th class="nm_local"></th><th class="data"></th><th class="data"></th><th class="chk_evento"></th></tr></thead>
                     <tbody id="selecionados">
                         <?php
                             $eventos_atuais = array();
@@ -205,6 +214,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 460, true)) {
                         <tr>
                             <td><?php echo utf8_encode($rs['DS_EVENTO']); ?></td>
                             <td><?php echo utf8_encode($rs['DS_NOME_TEATRO']); ?></td>
+                            <td><?php echo $rs['DT_INICIO']->format('d/m/Y'); ?></td>
+                            <td><?php echo $rs['DT_FIM']->format('d/m/Y'); ?></td>
                             <td class="chk_evento"><input type="checkbox" name="evento[]" value="<?php echo $rs['ID_EVENTO']; ?>" checked="true" /></td>
                         </tr>
                         <?php } ?>

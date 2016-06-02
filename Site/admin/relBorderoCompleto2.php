@@ -105,7 +105,9 @@ if (isset($err) && $err != "") {
               </td>
               <td>
                   <div class="logoTeatro">
+                      <?php if( !empty($imagem) ): ?>
                       <img src="data:img/jpeg;base64,<?php echo base64_encode($imagem); ?>" alt="" />
+                      <?php endif; ?>
                   </div>
               </td>
           <?php } ?>

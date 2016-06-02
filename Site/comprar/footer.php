@@ -56,7 +56,7 @@ if (isset($_SESSION['operador']) and in_array($etapa_atual, $etapas_para_exibir)
         </ul>
         <ul>
             <li class="title">Ajuda</li>
-            <li><a href="https://compreingressos.webdesklw.com.br/user_sessions/new" target="_blank">Sac & Suporte</a>
+            <li><a href="http://suporte.compreingressos.com/" target="_blank">Sac & Suporte</a>
             </li>
             <li><a href="https://compra.compreingressos.com/comprar/loginBordero.php?redirect=..%2Fadmin%2F%3Fp%3DrelatorioBordero">Borderô web</a>
             </li>

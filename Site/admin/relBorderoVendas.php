@@ -91,7 +91,9 @@ if (isset($err) && $err != "") {
         </td>
         <td>
           <div class="logoTeatro">
+              <?php if( !empty($imagem) ): ?>
               <img src="data:img/jpeg;base64,<?php echo base64_encode($imagem); ?>" alt="" />
+              <?php endif; ?>
           </div>
         </td>
         <td width="300" class="tabela" align="center" bgcolor="LightGrey"><b><font size=2 face="tahoma,verdana,arial">Borderô - Simplificado</font><br/>Contabilização dos Ingressos</b></td>

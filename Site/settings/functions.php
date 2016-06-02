@@ -2492,7 +2492,7 @@ function getSalaImg($codSala, $conn)
     
     $query = 'SELECT B.Imagem FROM tabLogoSala AS A
               INNER JOIN tabImagem AS B ON B.CodImagem = A.CodImagem 
-              WHERE A.CodSala = '.$codSala.' AND A.ExibirLogoBordero = 1';
+              WHERE A.CodSala = '.$codSala.' AND ISNULL(A.ExibirLogoBordero, 0) = 1';
     
     $imagem = fetchAssoc( executeSQL($conn, $query) );
     $imagem = $imagem[0]['Imagem'];

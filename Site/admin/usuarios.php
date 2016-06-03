@@ -283,6 +283,7 @@ $(function() {
 			return false;
 		}
 
+		simples.setParamns('ativo', status);
 		simples.setParamns('search', string, { reload: true });
 	});
 
@@ -311,6 +312,7 @@ $(function() {
 });
 
 function limparPesquisa() {
+	simples.setParamns('ativo', 1);
 	simples.setParamns('search', { action: 'delete', reload: true });
 }
 </script>
@@ -330,10 +332,10 @@ function limparPesquisa() {
 
 	<div class="boxSearch">
 		Pesquisar (Nome, login ou e-mail)
-		<input id="porNome" type="text" name="porNome" placeholder="<?php echo ( isset($_GET['search']) ? $_GET['search'] : 'Pesquisar...' ) ?>">
+		<input id="porNome" type="text" name="porNome" placeholder="Pesquisar..." value="<?php echo ( isset($_GET['search']) ? $_GET['search'] : '' ) ?>">
 		<button id="search" type="submit" name="search">Pesquisar</button>
 		<?php if( !empty($_GET['search']) ): ?>
-			<button type="button" onclick="limparPesquisa();">limpar pesquisa</button>
+			<button type="button" onclick="limparPesquisa();">Limpar pesquisa</button>
 		<?php endif; ?>
 	</div>
 	<div style="clear: both"></div>

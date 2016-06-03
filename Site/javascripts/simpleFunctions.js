@@ -184,17 +184,41 @@ var simples =
     {
         paramns = ( typeof paramns == 'object' ) ? paramns : {};
 
-        if (eval('simples.urlParamns.'+paramn))
+        //Caso não envie value, apenas PARAMN e PARAMNS...
+        if ( typeof value == 'object') { paramns = value }
+
+        paramns.action = ( !paramns.action ) ? 'new' : paramns.action ;
+
+        console.log(paramns);
+
+        if (paramns.action == 'new')
         {
-            eval('simples.urlParamns.'+paramn+'.value = "'+value+'"');
+            if ( simples.urlParamns[paramn] )
+            {
+                simples.urlParamns[paramn].value = value;
+            }
+            else
+            {
+                simples.urlParamns[paramn] = {};
+                simples.urlParamns[paramn].value = value;
+            }
         }
-        else
+        else if (paramns.action == 'delete')
         {
-            eval("simples.urlParamns['"+paramn+"'] = {}");
-            eval("simples.urlParamns['"+paramn+"'].value = '"+value+"';");
+            simples.deleteParam(paramn)
         }
 
         if ( paramns.reload == true ) { simples.reloadWithParamns(); }
+    },
+
+    deleteParam: function (param)
+    {
+        console.log(simples.urlParamns);
+        if ( simples.urlParamns[param] )
+        {
+            console.log(param+" deletado");
+            delete simples.urlParamns[param];
+        }
     },
 
     reloadWithParamns: function()

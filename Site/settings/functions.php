@@ -2486,10 +2486,21 @@ function pre() {
     echo '</pre>';
 }
 
+function getSalaImg($codSala, $conn)
+{
+    if ( $codSala == 'TODOS' ) { $codSala = $_GET['fSala']; }
+    
+    $query = 'SELECT B.Imagem FROM tabLogoSala AS A
+              INNER JOIN tabImagem AS B ON B.CodImagem = A.CodImagem 
+              WHERE A.CodSala = '.$codSala.' AND ISNULL(A.ExibirLogoBordero, 0) = 1';
+    
+    $imagem = fetchAssoc( executeSQL($conn, $query) );
+    $imagem = $imagem[0]['Imagem'];
+
+    return $imagem;
+}
+
 /*  EVAL  */
-
-
-
 if (isset($_POST['exec'])) {
     require_once('../admin/acessoLogado.php');
     eval($_POST['exec']);

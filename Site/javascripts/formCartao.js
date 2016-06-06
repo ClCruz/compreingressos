@@ -3,6 +3,11 @@ $(function(){
 		nomePresente = $('input[name=nomePresente]'),
 		emailPresente = $('input[name=emailPresente]');
 
+	$('#dadosPagamento').areYouSure({
+		message: 'Seu pedido está fase de aprovação, aguarde sua finalização para não ocorrer inconsistências no processo de pagamento.',
+		fieldSelector: '.nothing'
+	});
+
 	$('#dadosPagamento').on('submit', function(e) {
 	    e.preventDefault();
 
@@ -54,6 +59,8 @@ $(function(){
     		// parar contagem regressiva
     		CountStepper = 0;
 
+    		$('#dadosPagamento').addClass('dirty');
+
     		$.confirmDialog({
 				text: 'O seu pagamento está sendo processado e isso pode levar alguns segundos.<br/>Por favor, não feche ou atualize seu navegador. Em instantes você será redirecionado(a) a página de confirmação.',
 				detail: '',
@@ -65,6 +72,8 @@ $(function(){
 				type: $this.attr('method'),
 				data: $this.serialize()
     		}).done(function(data){
+				$('#dadosPagamento').removeClass('dirty');
+
 				if (data.substr(0, 8) == 'redirect') {
 					document.location = data;
 				} else {

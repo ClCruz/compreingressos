@@ -76,7 +76,7 @@ if (isset($_GET['action'])) {
 						, in_pdv
 						, in_pos
 						FROM mw_usuario
-						WHERE '.$like.' '.$ifAtivo;
+						WHERE '.$like.' '.$ifAtivo.' ORDER BY ds_nome';
 
 		$result = executeSQL($mainConnection, $query);
 		return $result;

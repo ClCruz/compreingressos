@@ -288,7 +288,7 @@ $(function() {
 	});
 
 	function validateFields() {
-		var campos = $(':text'),
+		var campos = $(':text:not(.notrequired)'),
 			 valido = true;
 
 		$.each(campos, function() {
@@ -332,7 +332,7 @@ function limparPesquisa() {
 
 	<div class="boxSearch">
 		Pesquisar (Nome, login ou e-mail)
-		<input id="porNome" type="text" name="porNome" placeholder="Pesquisar..." value="<?php echo ( isset($_GET['search']) ? $_GET['search'] : '' ) ?>">
+		<input class="notrequired" id="porNome" type="text" name="porNome" placeholder="Pesquisar..." value="<?php echo ( isset($_GET['search']) ? $_GET['search'] : '' ) ?>">
 		<button id="search" type="submit" name="search">Pesquisar</button>
 		<?php if( !empty($_GET['search']) ): ?>
 			<button type="button" onclick="limparPesquisa();">Limpar pesquisa</button>

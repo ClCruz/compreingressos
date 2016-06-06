@@ -4,7 +4,7 @@ include('../settings/Log.class.php');
 $mainConnection = mainConnection();
 session_start();
 
-if (acessoPermitido($mainConnection, $_SESSION['admin'], 450, true)) {
+if (acessoPermitido($mainConnection, $_SESSION['admin'], 470, true)) {
     $pagina = basename(__FILE__);
 
     if (isset($_GET['action'])) {
@@ -111,7 +111,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 450, true)) {
                 }
             });
         </script>
-        <h2>Origem</h2>
+        <h2>Origem URL Parceiros</h2>
         <form id="dados" name="dados" method="post">
             <table class="ui-widget ui-widget-content">
                 <thead>

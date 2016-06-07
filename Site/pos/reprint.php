@@ -76,8 +76,9 @@ switch ($_GET['tipo']) {
 
 	    echo "<WRITE_AT LINE=5 COLUMN=0> $nome_cliente</WRITE_AT>";
 	    echo "<WRITE_AT LINE=7 COLUMN=0> Selecione o Pedido:</WRITE_AT>";
-	    
-	    echo_select('pedido', $pedido_options, 5);
+		echo "<WRITE_AT LINE=9 COLUMN=0> Pedido | Dt. Apres. | Valor</WRITE_AT>";
+
+	    echo_select('pedido', $pedido_options, 7);
 
 	} else if(isset($_GET["pedido"])) {	
 

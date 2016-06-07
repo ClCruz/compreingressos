@@ -332,9 +332,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                     $query = "UPDATE MW_PEDIDO_VENDA SET
                                     IN_SITUACAO = 'S',
                                     ID_USUARIO_ESTORNO = ?,
-                                    DS_MOTIVO_CANCELAMENTO = ?
+                                    DS_MOTIVO_CANCELAMENTO = ?,
+                                    DT_HORA_CANCELAMENTO = ?
                             WHERE ID_PEDIDO_VENDA = ?";
-                    $params = array($_SESSION['admin'], $_POST['justificativa'], $pedido['ID_PEDIDO_VENDA']);
+                    $params = array($_SESSION['admin'], $_POST['justificativa'], date('d/m/Y H:i:s'), $pedido['ID_PEDIDO_VENDA']);
                     executeSQL($mainConnection, $query, $params);
 
                     $sqlErrors = sqlErrors();

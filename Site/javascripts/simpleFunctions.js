@@ -184,17 +184,41 @@ var simples =
     {
         paramns = ( typeof paramns == 'object' ) ? paramns : {};
 
-        if (eval('simples.urlParamns.'+paramn))
+        //Caso não envie value, apenas PARAMN e PARAMNS...
+        if ( typeof value == 'object') { paramns = value }
+
+        paramns.action = ( !paramns.action ) ? 'new' : paramns.action ;
+
+        console.log(paramns);
+
+        if (paramns.action == 'new')
         {
-            eval('simples.urlParamns.'+paramn+'.value = "'+value+'"');
+            if ( simples.urlParamns[paramn] )
+            {
+                simples.urlParamns[paramn].value = value;
+            }
+            else
+            {
+                simples.urlParamns[paramn] = {};
+                simples.urlParamns[paramn].value = value;
+            }
         }
-        else
+        else if (paramns.action == 'delete')
         {
-            eval("simples.urlParamns['"+paramn+"'] = {}");
-            eval("simples.urlParamns['"+paramn+"'].value = '"+value+"';");
+            simples.deleteParam(paramn)
         }
 
         if ( paramns.reload == true ) { simples.reloadWithParamns(); }
+    },
+
+    deleteParam: function (param)
+    {
+        console.log(simples.urlParamns);
+        if ( simples.urlParamns[param] )
+        {
+            console.log(param+" deletado");
+            delete simples.urlParamns[param];
+        }
     },
 
     reloadWithParamns: function()
@@ -237,7 +261,7 @@ var simples =
         str = str.replace(/[ç]/,"c");
 
         //return str;
-        // o resto
+        // o resto 
         return str.replace(/[^a-z0-9]/gi,'');
     },
 
@@ -254,10 +278,15 @@ var simples =
                 var cep = this.value.replace('-', '');
 
                 $.ajax({
-                    url: 'http://api.postmon.com.br/v1/cep/'+cep,
+                    url: 'https://api.postmon.com.br/v1/cep/'+cep,
                     dataType: 'json',
                     success: function (data) {
-                        SetFormEndereco(data);
+                        try{
+                            SetFormEndereco(data);
+                        } catch (e){
+                            console.log({e:e});
+                            $.dialog({ text: 'O CEP foi encontrado, mas ocorreu algum erro ao preencher o formulário de endereço. Favor entrar em contato com o administrador do Sistema e preencher o endereço manualmente.' });
+                        }
                     },
                     error: function (error) {
                         console.log(error);
@@ -269,7 +298,47 @@ var simples =
                 SetFormEndereco('reset');
             }
         });
+        
+        function setData(data, param, from) {
+            
+        }
+        
+        function verificaEstadoSigla(sigla)
+        {
+            sigla = sigla.toLowerCase();
 
+            var estados = {
+                ac: 'Acre',
+                al: 'Alagoas',
+                ap: 'Amapá',
+                am: 'Amazonas',
+                ba: 'Bahia',
+                ce: 'Ceará',
+                df: 'Distrito Federal',
+                es: 'Espírito Santo',
+                go: 'Goiás',
+                ma: 'Maranhão',
+                mt: 'Mato Grosso',
+                ms: 'Mato Grosso do Sul',
+                mg: 'Minas Gerais',
+                pa: 'Pará',
+                pb: 'Paraíba',
+                pr: 'Paraná',
+                pe: 'Pernambuco',
+                pi: 'Piauí',
+                rj: 'Rio de Janeiro',
+                rn: 'Rio Grande do Norte',
+                rs: 'Rio Grande do Sul',
+                ro: 'Rondônia',
+                rr: 'Roraima',
+                sc: 'Santa Catarina',
+                sp: 'São Paulo',
+                se: 'Sergipe',
+                to: 'Tocantins'
+            };
+
+            return estados[sigla];
+        }
 
         function SetFormEndereco(data)
         {
@@ -297,8 +366,14 @@ var simples =
             {
                 var opt = opts[x];
                 var optValue 	= simples.replaceSpecialChars(opt.text.toLocaleLowerCase());
-                var estadoNome 	= simples.replaceSpecialChars(data.estado_info.nome.toLowerCase());
 
+                /*Em alguns casos, estado info não é trazido. Pegar a SIGLA e substituir por nome para encontrar no form*/
+                if (data.estado_info == undefined || data.estado_info.nome == undefined) {
+                    data.estado_info = ( !data.estado_info ) ? {} : data.estado_info;
+                    data.estado_info.nome = verificaEstadoSigla(data.estado);
+                }
+                
+                var estadoNome 	= simples.replaceSpecialChars(data.estado_info.nome.toLowerCase());
                 if (optValue == estadoNome)  { opt.selected = true; }
             }
 

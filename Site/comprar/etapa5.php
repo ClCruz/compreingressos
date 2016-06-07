@@ -15,6 +15,8 @@ require('verificarLimitePorCPF.php');
 require('verificarEntrega.php');
 require('verificarAssinatura.php');
 
+require('verificarDadosCadastrais.php');
+
 if (isset($_COOKIE['entrega'])) {
     $action = "verificatempo";
     $etapa = 4;
@@ -162,6 +164,5 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 		csdp('app', 'ae6af083e9');
 		csdp('sessionid', '<?php echo session_id(); ?>');
 	</script>
-	<?php var_dump($_COOKIE); ?>
 </body>
 </html>

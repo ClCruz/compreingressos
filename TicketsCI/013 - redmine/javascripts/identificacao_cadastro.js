@@ -129,7 +129,6 @@ $(function() {
 	
 	$('.salvar_dados').click(function(event) {
 		event.preventDefault();
-		
 		//alteração de senha
 		if ($.cookie('user') != null && $('#dados_conta').is(':hidden')) {
 			var form = $('#trocar_senha'),
@@ -172,7 +171,6 @@ $(function() {
 			return;
 
 		} else {
-		
 			var $this = $(this),
 				 naoRequeridos = '#email,[id^=nascimento],[name=sexo],#celular,#complemento,#checkbox_guia,#checkbox_sms,#checkbox_estrangeiro',
 				 especiais = '#fixo,#email1,#email2,#senha1,#senha2,[name="tag"],.recaptcha :input,[type="button"],#cpf,#tipo_documento,#rg'
@@ -265,11 +263,22 @@ $(function() {
 					data: formulario.serialize(),
 					type: formulario.attr('method'),
 					success: function(data) {
+						//Se retorno for em Json...
+						var res = data;
+						try {
+							res = JSON.parse(res);
+							res.location == 'reload' ? window.location = res.url : null;
+						}catch (e){
+
+						}
+
 						if (data != 'true') {
-    						if (typeof(BrandCaptcha) !== 'undefined') BrandCaptcha.reload();
-							
-							if (data == 'Seus dados foram atualizados com sucesso!' || data == 'Usuário pré registrado em POS atualizado com sucesso.') {
-								$this.next('.erro_help').find('.help').slideDown('fast').delay(3000).slideUp('slow');
+							formulario.trigger('dados_salvos');
+							if (typeof(BrandCaptcha) !== 'undefined') BrandCaptcha.reload();
+
+							if (data == 'Seus dados foram atualizados com sucesso!') {
+								location.reload();
+								//$this.next('.erro_help').find('.help').slideDown('fast').delay(3000).slideUp('slow');
 							} else {
 								$.dialog({text: data});
 							}
@@ -319,65 +328,7 @@ $(function() {
 			$area.removeClass('erro')
 		}
 	});
+	
 
-	$("#cep").keyup(function (data) {
-		var leng = this.value.length;
-		if (leng == 9)
-		{
-			$('.alert').hide();
-			var cep = this.value.replace('-', '');
-
-			$.ajax({
-				url: 'http://api.postmon.com.br/v1/cep/'+cep,
-				dataType: 'json',
-				success: function (data) {
-					SetFormEndereco(data);
-				},
-				error: function (error) {
-					console.log(error);
-					SetFormEndereco('reset');
-					$.dialog({ text: 'CEP não encontrado. Por favor, verifique se foi digitado corretamente.', autoHide: { set: true, time: 6000 } });
-				}
-			});
-		}else{
-			SetFormEndereco('reset');
-		}
-	});
-
-
-	function SetFormEndereco(data)
-	{
-		var estado = document.getElementById('estado');
-		if ( typeof data == 'string' &&  data == 'reset')
-		{
-			estado.options.selectedIndex = 0;
-			$(estado).selectbox('detach');
-			$(estado).selectbox('attach');
-
-			$('#cidade').val('');
-			$('#bairro').val('');
-			$('#endereco').val('');
-
-			return;
-		}
-
-		var opts = estado.getElementsByTagName('option');
-
-		for(var x = 0; x < opts.length; x++)
-		{
-			var opt = opts[x];
-			var optValue 	= simples.replaceSpecialChars(opt.text.toLocaleLowerCase());
-			var estadoNome 	= simples.replaceSpecialChars(data.estado_info.nome.toLowerCase());
-
-			if (optValue == estadoNome)  { opt.selected = true; }
-		}
-
-		$(estado).selectbox('detach');
-		$(estado).selectbox('attach');
-
-		$('#cidade').val(data.cidade);
-		$('#bairro').val(data.bairro);
-		$('#endereco').val(data.logradouro);
-	}
-
+	simples.getCEP($('#cep'));
 });

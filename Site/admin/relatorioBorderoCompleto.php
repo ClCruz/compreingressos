@@ -127,6 +127,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 261, true)) {
 
             function validar()
             {
+                var primeiraSala = ''; //Primeiro option do combo após "SELECIONE" e "TODOS".
+
                 if(document.fPeca.cboPeca.value == "")
                 {
                     $.dialog({title: 'Alerta...',text: 'Selecione o evento'});
@@ -157,6 +159,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 261, true)) {
                     document.fPeca.cboSala.focus();
                     return;
                 }
+                else
+                {
+                    primeiraSala = document.fPeca.cboSala.options[2].value;
+                }
 
                 if((document.fPeca.txtData1.value == ""
                     || document.fPeca.txtData2.value == "")
@@ -179,7 +185,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 261, true)) {
                 var url = "relBorderoCompleto.php";
                 url += "?CodPeca=" + document.fPeca.cboPeca.value;
                 url += "&logo=imagem";
-
+                url += "&fSala=" + primeiraSala;
                 url += "&Resumido=0";
                 url += "&Small=" + ((document.fPeca.chkSmall.checked) ? '1' : '0');
                 url += "&DataIni=" + data1;

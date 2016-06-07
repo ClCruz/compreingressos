@@ -5,9 +5,10 @@ session_start();
 
 $mainConnection = mainConnection();
 
-$rs = getEnderecoCliente($_SESSION['user'], -1);
+$enderecoMain = getEnderecoCliente($_SESSION['user'], -1);
 ?>
 <div class="container_enderecos">
+	<?php if (!empty($enderecoMain)): ?>
 	<table class="select_endereco">
 		<tbody>
 			<tr>
@@ -17,21 +18,22 @@ $rs = getEnderecoCliente($_SESSION['user'], -1);
 				</td>
 				<td>
 					<div class="container_endereco">
-					<p class="titulo"><?php echo $rs['nome']; ?></p>
+						<p class="titulo"><?php echo $enderecoMain['nome']; ?></p>
 						<p class="endereco">
-							<?php echo $rs['endereco']; ?><?php echo $rs['complemento'] ? ' - '.$rs['complemento'] : ''; ?><br>
-							<?php echo $rs['bairro']; ?>, <?php echo $rs['cidade']; ?> - <?php echo comboEstado('estado', $rs['estado'], false, false); ?><br>
-							<?php echo $rs['estado'] != 28 ? substr($rs['cep'], 0, 5).'-'.substr($rs['cep'], -3) : $rs['cep']; ?>
+							<?php echo $enderecoMain['endereco']; ?>, <?php echo $enderecoMain['numero'] ?><?php echo $enderecoMain['complemento'] ? ' - '.$enderecoMain['complemento'] : ''; ?><br>
+							<?php echo $enderecoMain['bairro']; ?>, <?php echo $enderecoMain['cidade']; ?> - <?php echo comboEstado('estado', $enderecoMain['estado'], false, false); ?><br>
+							<?php echo $enderecoMain['estado'] != 28 ? substr($enderecoMain['cep'], 0, 5).'-'.substr($enderecoMain['cep'], -3) : $enderecoMain['cep']; ?>
 						</p>
 					</div>
 				</td>
 			</tr>
-		<tr>
-			<td class="input"></td>
-			<td>&nbsp;</td>
-		</tr>
+			<tr>
+				<td class="input"></td>
+				<td>&nbsp;</td>
+			</tr>
 		</tbody>
 	</table>
+	<?php endif; ?>
 <?php
 $query = 'SELECT ID_ENDERECO_CLIENTE, DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO, NM_ENDERECO, NR_ENDERECO
 				FROM MW_ENDERECO_CLIENTE
@@ -51,7 +53,7 @@ while ($rs = fetchResult($result)) {
 				<td>
 					<div class="container_endereco">
 					<p class="titulo"><?php echo utf8_encode($rs['NM_ENDERECO']); ?></p>
-						<p class="endereco">
+						<p class="endereco"> 
 							<?php echo utf8_encode($rs['DS_ENDERECO']).', '.$rs['NR_ENDERECO']; ?><?php echo $rs['DS_COMPL_ENDERECO'] ? ' - '.$rs['DS_COMPL_ENDERECO'] : ''; ?><br>
 							<?php echo utf8_encode($rs['DS_BAIRRO']); ?>, <?php echo utf8_encode($rs['DS_CIDADE']); ?> - <?php echo comboEstado('estado', $rs['ID_ESTADO'], false, false); ?><br>
 							<?php echo $rs['ID_ESTADO'] != 28 ? substr($rs['CD_CEP'], 0, 5).'-'.substr($rs['CD_CEP'], -3) : $rs['CD_CEP']; ?>
@@ -70,7 +72,11 @@ while ($rs = fetchResult($result)) {
 	</table>
 <?php } ?>
 </div>
-<a href="#" class="add_endereco" id="bt_novo_endereco">cadastrar um novo endereço</a>
+	<?php if ( !empty($enderecoMain) ): ?>
+		<a href="#" class="add_endereco" id="bt_novo_endereco">cadastrar um novo endereço</a>
+	<?php else: ?>
+		<a style="margin-left: 120px;" href="#" onclick="gotoMainAddress()">Cadastre um endereço principal</a>
+	<?php endif; ?>
 <div class="coluna hidden">
 	<input type="hidden" id="id" value="">
 	<div class="input_area endereco">

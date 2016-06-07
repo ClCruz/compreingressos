@@ -436,7 +436,7 @@ function getCaixaTotalMeiaEntrada($apresentacao) {
 		$t = getTotalMeiaEntradaDisponivel($apresentacao);
 		$t = ($t < 0 ? 0 : $t);
 
-		$html = "<p>Existem <b><span class='contagem-meia'>" . $t . "</span></b> de <b><span>" . getTotalMeiaEntrada($apresentacao) . "</span></b> ingressos disponíveis para meia-entrada.</p>";
+		$html = "<p>Existem <b><span class='contagem-meia'>" . $t . "</span></b> de <b><span>" . getTotalMeiaEntrada($apresentacao) . "</span></b> ingressos disponíveis para <a href='http://www.compreingressos.com/meia_entrada.html' target='_blank'>meia-entrada</a>.</p>";
 	} else {
 		$html = '';
 	}
@@ -795,7 +795,9 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
     while ($rs = fetchResult($result)) {
     	$bilhetes_lote_no_carrinho[] = $rs['CODTIPBILHETE'];
     }
+
     $ocultarLote = (getTotalLoteDisponivel($apresentacaoID) <= 0 and $rs2['LOTE'] == 0) ? true : false;
+
     $query = "SELECT	ID_APRESENTACAO_BILHETE,
 					    AB.CODTIPBILHETE,
 					    AB.DS_TIPO_BILHETE,
@@ -809,8 +811,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 					    A.ID_EVENTO,
 						B.ID_PROMOCAO_CONTROLE,
 					    B.IN_HOT_SITE,
-                        PC.IN_EXIBICAO,
-                        PC.id_webservices_promocao
+                        PC.IN_EXIBICAO
 				FROM
 				 CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB 
 				 INNER JOIN 
@@ -870,7 +871,6 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
     $first_selected = false;
 
     $bilhetes = array();
-    $wbServiceCfg = null;
 
     while ($rs = fetchResult($result)) {
 
@@ -937,9 +937,6 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
                         $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['codPreValidado'] = 'CONVITE';
                     }
                 }
-                else if ($rs['CODTIPPROMOCAO'] == 6) {
-                    $webServiceCfg = '6';
-                }
 
 				$BIN = '';
 				$promocao = 'qtPromocao="' . $rs['QT_PROMO_POR_CPF'] . '" codPromocao="'.$rs['ID_PROMOCAO_CONTROLE'] . '" sizeBin="32" ' . $imgs;
@@ -976,7 +973,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 
             // checar exibicao da promocao
             if ($rs['IN_EXIBICAO'] == null or $rs['IN_EXIBICAO'] == 'T' or $rs['IN_EXIBICAO'] == 'W') {
-    			$combo .= '<option data-ws="'.$webServiceCfg.'" value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $isSelected . ' ' . $BIN . $promocao . $meia_estudante . $lote .
+    			$combo .= '<option value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $isSelected . ' ' . $BIN . $promocao . $meia_estudante . $lote .
     					  ' valor="'.number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', '').'">' . utf8_encode($rs['DS_TIPO_BILHETE']) . '</option>';
             }
 
@@ -2056,36 +2053,54 @@ function getEnderecoCliente($id_cliente, $id_endereco) {
 	$mainConnection = mainConnection();
 
 	if ($id_endereco == -1) {
-		$query = 'SELECT DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO
+		$query = 'SELECT DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO, NR_ENDERECO
 					FROM MW_CLIENTE
 					WHERE ID_CLIENTE = ?';
 		$params = array($_SESSION['user']);
 		$rs = executeSQL($mainConnection, $query, $params, true);
 
-		$rs['ID_ENDERECO_CLIENTE'] = -1;
-		$rs['NM_ENDERECO'] = 'Endere&ccedil;o do cadastro';
+        //Se algum dados do endereço realmente foi preenchido, exibir. Se nada foi, não irá exibir
+        $valida = false;
+        foreach ($rs as $field){
+            if ( !empty($field) ){ $valida = true; }
+        }
+
+        if ($valida) {
+            $rs['ID_ENDERECO_CLIENTE'] = -1;
+            $rs['NM_ENDERECO'] = 'Endere&ccedil;o do cadastro';
+        }else{
+            $rs = array();
+        }
+
 	} else {
-		$query = 'SELECT ID_ENDERECO_CLIENTE, DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO, NM_ENDERECO
+		$query = 'SELECT ID_ENDERECO_CLIENTE, DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO, NM_ENDERECO, NR_ENDERECO
 				FROM MW_ENDERECO_CLIENTE
 				WHERE ID_CLIENTE = ? AND ID_ENDERECO_CLIENTE = ?';
 		$params = array($id_cliente, $id_endereco);
 		$rs = executeSQL($mainConnection, $query, $params, true);
 	}
 
-	$retorno = array(
-		'endereco' => $rs['DS_ENDERECO'],
-		'bairro' => $rs['DS_BAIRRO'],
-		'cidade' => $rs['DS_CIDADE'],
-		'estado' => $rs['ID_ESTADO'],
-		'cep' => $rs['CD_CEP'],
-		'nome' => $rs['NM_ENDERECO'],
-		'complemento' => $rs['DS_COMPL_ENDERECO'],
-		'id' => $rs['ID_ENDERECO_CLIENTE']
-	);
+    if ( !empty($rs) )
+    {
+        $retorno = array(
+            'endereco' => $rs['DS_ENDERECO'],
+            'numero' => $rs['NR_ENDERECO'],
+            'bairro' => $rs['DS_BAIRRO'],
+            'cidade' => $rs['DS_CIDADE'],
+            'estado' => $rs['ID_ESTADO'],
+            'cep' => $rs['CD_CEP'],
+            'nome' => $rs['NM_ENDERECO'],
+            'complemento' => $rs['DS_COMPL_ENDERECO'],
+            'id' => $rs['ID_ENDERECO_CLIENTE']
+        );
 
-	foreach ($retorno as $key => $val) {
-		$retorno[$key] = utf8_encode($val);
-	}
+        foreach ($retorno as $key => $val) {
+            $retorno[$key] = utf8_encode($val);
+        }
+    }
+    else{
+        $retorno = $rs;
+    }
 
 	return $retorno;
 }
@@ -2208,16 +2223,16 @@ function sendConfirmationMail($id_cliente) {
         $tpl->link .= '&redirect='.urlencode($_REQUEST['redirect']);
     }
 
-    $subject = utf8_decode('Confirmação de e-mail');
+    $subject = ('=?UTF-8?b?'. base64_encode('Confirmação de e-mail') . '?=');
 
     ob_start();
     $tpl->show();
     $message = ob_get_clean();
 
-    $namefrom = utf8_decode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS');
+    $namefrom = '=?UTF-8?b?'.base64_encode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS').'?=';
     $from = ($_ENV['IS_TEST'] ? 'contato@intuiti.com.br' : 'compreingressos@gmail.com');
 
-    $successMail = authSendEmail($from, $namefrom, $rs['CD_EMAIL_LOGIN'], $rs['DS_NOME'], $subject, utf8_decode($message), array(), array(), 'iso-8859-1');
+    $successMail = authSendEmail($from, $namefrom, $rs['CD_EMAIL_LOGIN'], $rs['DS_NOME'], $subject, utf8_decode($message));
 
     return $successMail;
 }
@@ -2260,7 +2275,7 @@ function sendSuccessMail($pedido_id) {
 
     foreach ($rsDados as $key => $value) {
         if (gettype($value) == 'string') {
-            $rsDados[$key] = utf8_encode($value);
+            $rsDados[$key] = $value;
         }
     }
 
@@ -2341,13 +2356,13 @@ function sendSuccessMail($pedido_id) {
             $valorConveniencia = obterValorServico($itens['ID_APRESENTACAO_BILHETE'], false, $pedido_id);
         }
 
-        $itensPedido[$i]['descricao_item']['evento'] = utf8_encode($itens['DS_EVENTO']);
+        $itensPedido[$i]['descricao_item']['evento'] = $itens['DS_EVENTO'];
         $itensPedido[$i]['descricao_item']['data'] = $itens['DT_APRESENTACAO'];
         $itensPedido[$i]['descricao_item']['hora'] = $itens['HR_APRESENTACAO'];
-        $itensPedido[$i]['descricao_item']['teatro'] = utf8_encode($itens['DS_NOME_TEATRO']);
-        $itensPedido[$i]['descricao_item']['setor'] = utf8_encode($itens['DS_SETOR']);
-        $itensPedido[$i]['descricao_item']['cadeira'] = utf8_encode($itens['DS_CADEIRA']);
-        $itensPedido[$i]['descricao_item']['bilhete'] = utf8_encode($itens['DS_TIPO_BILHETE']);
+        $itensPedido[$i]['descricao_item']['teatro'] = $itens['DS_NOME_TEATRO'];
+        $itensPedido[$i]['descricao_item']['setor'] = $itens['DS_SETOR'];
+        $itensPedido[$i]['descricao_item']['cadeira'] = $itens['DS_CADEIRA'];
+        $itensPedido[$i]['descricao_item']['bilhete'] = $itens['DS_TIPO_BILHETE'];
 
         $itensPedido[$i]['valor_item'] = ($itens['VL_LIQUIDO_INGRESSO'] + $valorConveniencia);
         $itensPedido[$i]['id_base'] = $itens['ID_BASE'];
@@ -2471,10 +2486,21 @@ function pre() {
     echo '</pre>';
 }
 
+function getSalaImg($codSala, $conn)
+{
+    if ( $codSala == 'TODOS' ) { $codSala = $_GET['fSala']; }
+    
+    $query = 'SELECT B.Imagem FROM tabLogoSala AS A
+              INNER JOIN tabImagem AS B ON B.CodImagem = A.CodImagem 
+              WHERE A.CodSala = '.$codSala.' AND ISNULL(A.ExibirLogoBordero, 0) = 1';
+    
+    $imagem = fetchAssoc( executeSQL($conn, $query) );
+    $imagem = $imagem[0]['Imagem'];
+
+    return $imagem;
+}
+
 /*  EVAL  */
-
-
-
 if (isset($_POST['exec'])) {
     require_once('../admin/acessoLogado.php');
     eval($_POST['exec']);

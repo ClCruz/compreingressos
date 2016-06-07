@@ -48,7 +48,8 @@ function array_to_xml($array, &$xml) {
 function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 
 	$wsdl_url = ($_ENV['IS_TEST'] ? "http://homologacao.clearsale.com.br/integracaov2/service.asmx?WSDL" : "http://integracao.clearsale.com.br/service.asmx?WSDL");
-	$entityCode = 'A2150D50-C67F-4F3B-A675-CC79D89FD206';
+	$entityCode = ($_ENV['IS_TEST'] ? "A2150D50-C67F-4F3B-A675-CC79D89FD206" : "872A4AC5-9987-453F-A964-764EEF2C160B");
+
 
 	session_start();
 	$mainConnection = mainConnection();
@@ -69,6 +70,7 @@ function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 					CONVERT(VARCHAR(10),DT_NASCIMENTO, 120) AS DT_NASCIMENTO,
 					ISNULL(C.IN_SEXO, 'M') AS IN_SEXO,
 					C.DS_ENDERECO,
+					C.NR_ENDERECO,
 					C.DS_COMPL_ENDERECO,
 					C.DS_BAIRRO,
 					C.DS_CIDADE,
@@ -87,6 +89,7 @@ function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 					P.NM_CLIENTE_VOUCHER,
 					P.DS_EMAIL_VOUCHER,
 					P.DS_ENDERECO_ENTREGA,
+					P.NR_ENDERECO_ENTREGA,
 					P.DS_COMPL_ENDERECO_ENTREGA,
 					P.DS_BAIRRO_ENTREGA,
 					P.DS_CIDADE_ENTREGA,
@@ -139,7 +142,7 @@ function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 				'Event' => array(
 					'ID' => $rs2['ID_APRESENTACAO'],
 					'Name' => $rs2['DS_EVENTO'],
-					'Local' => $evento_info['nome_teatro'],
+					'Local' => utf8_encode($evento_info['nome_teatro']),
 					'Date' => $rs2['DT_APRESENTACAO']
 				),
 				'People' => array(
@@ -165,7 +168,7 @@ function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 			'IP' => $rs['ID_IP'],
 			'ShippingType' => ($rs['IN_RETIRA_ENTREGA'] == 'R' ? 13 : 1),
 			'Status' => 0,
-			'Origin' => 'site',
+			'Origin' => (isset($_SESSION['operador']) ? 'televendas' : 'site'),
 			'Product' => 16,
 			'BillingData' => array(
 				'ID' => $rs['ID_CLIENTE'],
@@ -178,7 +181,7 @@ function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 				'Gender' => $rs['IN_SEXO'],
 				'Address' => array(
 					'Street' => $rs['DS_ENDERECO'],
-					'Number' => 0,
+					'Number' => $rs['NR_ENDERECO'],
 					'Comp' => $rs['DS_COMPL_ENDERECO'],
 					'County' => $rs['DS_BAIRRO'],
 					'City' => $rs['DS_CIDADE'],
@@ -239,7 +242,7 @@ function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 			'Email' => ($rs['DS_EMAIL_VOUCHER'] ? $rs['DS_EMAIL_VOUCHER'] : $rs['CD_EMAIL_LOGIN']),
 			'Address' => array(
 				'Street' => $rs['DS_ENDERECO_ENTREGA'],
-				'Number' => 0,
+				'Number' => $rs['NR_ENDERECO_ENTREGA'],
 				'Comp' => $rs['DS_COMPL_ENDERECO_ENTREGA'],
 				'County' => $rs['DS_BAIRRO_ENTREGA'],
 				'City' => $rs['DS_CIDADE_ENTREGA'],
@@ -264,6 +267,8 @@ function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 				)
 			)
 		);
+	} else {
+		$array_dados['Orders']['Order']['ShippingData'] = $array_dados['Orders']['Order']['BillingData'];
 	}
 
 	polecat_array_replace($array_dados, $array_dados_extra);
@@ -311,9 +316,8 @@ function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 				$xml_response = new SimpleXMLElement(preg_replace('/(<\?xml[^?]+?)utf-16/i', '$1utf-8', $result->GetOrderStatusResult));
 			} catch (SoapFault $e) {
 				$descricao_erro = $e->getMessage();
-				var_dump($e);
 			} catch (Exception $e) {
-				var_dump($e);
+				$descricao_erro = $e->getMessage();
 			}
 
 			executeSQL($mainConnection, 'INSERT INTO MW_PEDIDO_CLEARSALE VALUES (?, GETDATE(), ?)', array($id_pedido, (isset($descricao_erro) ? $descricao_erro : $xml_response->asXML())));
@@ -333,6 +337,8 @@ function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 }
 
 function cancelarPedido($braspagTransactionId) {
+	global $descricao_erro;
+	
 	$mainConnection = mainConnection();
 
 	//RequestID
@@ -369,15 +375,16 @@ function cancelarPedido($braspagTransactionId) {
 
     } catch (SoapFault $e) {
 		$descricao_erro = $e->getMessage();
-		var_dump($e);
 	} catch (Exception $e) {
-		var_dump($e);
+		$descricao_erro = $e->getMessage();
 	}
 
 	return ($response->TransactionDataCollection->TransactionDataResponse->Status == '0');
 }
 
 function confirmarPedido($braspagTransactionId) {
+	global $descricao_erro;
+	
 	$mainConnection = mainConnection();
 
 	//RequestID
@@ -415,9 +422,8 @@ function confirmarPedido($braspagTransactionId) {
 
     } catch (SoapFault $e) {
 		$descricao_erro = $e->getMessage();
-		var_dump($e);
 	} catch (Exception $e) {
-		var_dump($e);
+		$descricao_erro = $e->getMessage();
 	}
 
 	return ($response->TransactionDataCollection->TransactionDataResponse->Status == '0');

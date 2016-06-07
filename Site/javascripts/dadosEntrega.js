@@ -1,3 +1,18 @@
+function gotoMainAddress()
+{
+	$('#form_cadastro').on('dados_salvos', function(){
+		document.location.reload();
+	});
+
+	$(".botao.dados_conta").trigger('click');
+
+	$('html, body').animate({
+		scrollTop: $(".endereco").offset().top
+	}, 1000, function () {
+		$('#cep').focus();
+	});
+}
+
 $(function() {
     var estado = $('#novo_estado'),
 		cidade = $('#novo_cidade'),
@@ -98,6 +113,7 @@ $(function() {
 				success: function(data) {
 				    if (data.substr(0, 4) == 'true') {
 				    	var new_id = data.split('?')[1];
+						$('#enderecos').trigger('endereco_salvo');
 
 				    	if (id) {
 				    		$('#radio_endereco_'+id.val()).closest('.select_endereco').remove();
@@ -114,7 +130,7 @@ $(function() {
 										'<div class="container_endereco">'+
 										'<p class="titulo">' + nome.val() + '</p>'+
 											'<p class="endereco">'+
-												endereco.val() + ', ' + numero_endereco.val() + (complemento.val() ? complemento.val()+'<br>' : '') + '<br>'+
+												endereco.val() + ', ' + numero_endereco.val() + ' - ' + (complemento.val() ? complemento.val() : '') + '<br>'+
 												bairro.val() + ', ' + cidade.val() + ' - ' + estado.find(':selected').text() + '<br>'+
 												cep.val() +
 											'</p>'+
@@ -143,6 +159,7 @@ $(function() {
 		e.preventDefault();
 		estado.selectbox('detach');
 		$([]).add(endereco)
+			.add(numero_endereco)
 			.add(bairro)
 			.add(cidade)
 			.add(estado)
@@ -195,9 +212,8 @@ $(function() {
 		    url: $this.attr('href'),
 		    dataType: 'json',
 		    success: function(data) {
-				console.log(data);
-
 				endereco.val(data.endereco);
+				numero_endereco.val(data.numero);
 				bairro.val(data.bairro);
 				cidade.val(data.cidade);
 				estado.selectbox('detach');

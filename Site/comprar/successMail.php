@@ -17,9 +17,9 @@ $result = executeSQL($mainConnection, $query, $params);
 $is_assinatura = hasRows($result);
 
 
-$subject = utf8_decode('Pedido ' . $parametros['OrderData']['OrderId'] . ' - Pago');
+$subject = 'Pedido ' . $parametros['OrderData']['OrderId'] . ' - Pago';
 
-$namefrom = utf8_decode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS');
+$namefrom = 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS';
 $from = ($_ENV['IS_TEST'] ? 'contato@intuiti.com.br' : 'compreingressos@gmail.com');
 
 $query = 'SELECT ds_meio_pagamento FROM mw_meio_pagamento WHERE cd_meio_pagamento = ?';
@@ -105,8 +105,8 @@ foreach ($itensPedido as $item) {
             'data' => ($is_assinatura ? '' : strftime("%a %d %b", strtotime($data_parts[2].$data_parts[1].$data_parts[0]))),
             'total' => $valores['valor_total'],
             'evento' => $item['descricao_item']['evento'],
-            'endereco' => utf8_encode($evento_info['endereco'] . ' - ' . $evento_info['bairro'] . ' - ' . $evento_info['cidade'] . ', ' .$evento_info['sigla_estado']),
-            'nome_teatro' => utf8_encode($evento_info['nome_teatro']),
+            'endereco' => $evento_info['endereco'] . ' - ' . $evento_info['bairro'] . ' - ' . $evento_info['cidade'] . ', ' .$evento_info['sigla_estado'],
+            'nome_teatro' => $evento_info['nome_teatro'],
             'horario' => ($is_assinatura ? '' : $item['descricao_item']['hora']),
             'barcode' => $code,
             'local_bilhete' => $item['descricao_item']['setor'] . ' ' . $item['descricao_item']['cadeira'],
@@ -129,9 +129,9 @@ foreach ($itensPedido as $item) {
             'item_data' => ($is_assinatura ? '' : $item['descricao_item']['data']),
             'item_hora' => ($is_assinatura ? '' : $item['descricao_item']['hora']),
 
-            'item_nome_teatro' => utf8_encode($evento_info['nome_teatro']),
-            'item_teatro_estado' => utf8_encode($evento_info['sigla_estado']),
-            'item_teatro_cidade' => utf8_encode($evento_info['cidade']),
+            'item_nome_teatro' => $evento_info['nome_teatro'],
+            'item_teatro_estado' => $evento_info['sigla_estado'],
+            'item_teatro_cidade' => $evento_info['cidade'],
 
             'pkpass_url' => $pkpass_url
         );
@@ -173,7 +173,7 @@ $bcc = ($_ENV['IS_TEST']
         ? array()
         : array('Pedidos=>pedidos@compreingressos.com'));
 
-$successMail = authSendEmail($from, $namefrom, $parametros['CustomerData']['CustomerEmail'], $parametros['CustomerData']['CustomerName'], $subject, utf8_decode($message), array(), $bcc, 'iso-8859-1', $barcodes);
+$successMail = authSendEmail($from, $namefrom, $parametros['CustomerData']['CustomerEmail'], $parametros['CustomerData']['CustomerName'], $subject, $message, array(), $bcc, 'utf-8', $barcodes);
 
 if (filter_var($valores['email_presenteado'], FILTER_VALIDATE_EMAIL)) {
 
@@ -200,13 +200,13 @@ if (filter_var($valores['email_presenteado'], FILTER_VALIDATE_EMAIL)) {
         }
     }
 
-    $subject = utf8_decode('Você recebeu um presente!');
+    $subject = 'Você recebeu um presente!';
 
     ob_start();
     $tpl->show();
     $message = ob_get_clean();
 
-    $successMail = authSendEmail($from, $namefrom, $valores['email_presenteado'], $valores['nome_presenteado'], $subject, utf8_decode($message), array(), array(), 'iso-8859-1', $barcodes);
+    $successMail = authSendEmail($from, $namefrom, $valores['email_presenteado'], $valores['nome_presenteado'], $subject, $message, array(), array(), 'utf-8', $barcodes);
 
 }
 

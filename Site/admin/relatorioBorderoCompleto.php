@@ -161,7 +161,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 261, true)) {
                 }
                 else
                 {
-                    primeiraSala = document.fPeca.cboSala.options[2].value;
+                    var borderoSimples = document.getElementById('chkSmall');
+                    console.log({e:document.fPeca});
+                    if ( !borderoSimples.checked ) {
+                        primeiraSala = document.fPeca.cboSala.options[2].value;
+                    }
                 }
 
                 if((document.fPeca.txtData1.value == ""

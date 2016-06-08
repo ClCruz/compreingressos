@@ -162,7 +162,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 261, true)) {
                 else
                 {
                     var borderoSimples = document.getElementById('chkSmall');
-                    console.log({e:document.fPeca});
                     if ( !borderoSimples.checked ) {
                         primeiraSala = document.fPeca.cboSala.options[2].value;
                     }

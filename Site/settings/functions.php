@@ -2488,12 +2488,20 @@ function pre() {
 
 function getSalaImg($codSala, $conn)
 {
-    if ( $codSala == 'TODOS' ) { $codSala = $_GET['fSala']; }
-    
-    $query = 'SELECT B.Imagem FROM tabLogoSala AS A
-              INNER JOIN tabImagem AS B ON B.CodImagem = A.CodImagem 
-              WHERE A.CodSala = '.$codSala.' AND ISNULL(A.ExibirLogoBordero, 0) = 1';
-    
+    if ( $codSala == 'TODOS' )
+    {
+        $query = 'SELECT TOP 1 C.Imagem FROM tabSala AS A
+                  INNER JOIN tabLogoSala AS B ON A.CodSala = B.CodSala
+                  INNER JOIN tabImagem AS C ON C.CodImagem = B.CodImagem
+                  WHERE B.CodImagem > 0';
+    }
+    else
+    {
+        $query = 'SELECT TOP 1 Imagem FROM tabLogoSala AS A
+                  INNER JOIN tabImagem AS B ON A.CodImagem = B.CodImagem
+                  WHERE CodSala = '.$codSala;
+    }
+
     $imagem = fetchAssoc( executeSQL($conn, $query) );
     $imagem = $imagem[0]['Imagem'];
 

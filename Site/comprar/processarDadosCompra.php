@@ -3,6 +3,8 @@ require_once('../settings/functions.php');
 require_once('../settings/settings.php');
 require_once('../settings/Log.class.php');
 
+require_once('../settings/antiFraude.php');
+
 // verifica se o acesso via operador/pdv esta vendendo apenas aquilo que tem permissao
 require('acessoPermitido.php');
 
@@ -493,7 +495,7 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
         } catch (SoapFault $e) {
             $descricao_erro = $e->getMessage();
         } catch (Exception $e) {
-            var_dump($e);
+            $descricao_erro = $e->getMessage();
         }
 
 
@@ -504,8 +506,6 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
                         INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
                         WHERE R.ID_SESSION = ? AND E.IN_ANTI_FRAUDE = 1";
             $rs = executeSQL($mainConnection, $query, array(session_id()), true);
-
-            require_once('../settings/antiFraude.php');
 
             if ($rs['IN_ANTI_FRAUDE']) {
                 $array_dados_extra = array();
@@ -594,6 +594,28 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
         }
         // compra normal
         else{
+            if ($result->AuthorizeTransactionResult->ErrorReportDataCollection->ErrorReportDataResponse->ErrorCode == '135') {
+                $dados = obterDadosPedidoPago($parametros['OrderData']['OrderId']);
+
+                $result->AuthorizeTransactionResult->OrderData->BraspagOrderId = $dados->BraspagOrderId;
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId = $dados->BraspagTransactionId;
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId = $dados->AcquirerTransactionId;
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AuthorizationCode = $dados->AuthorizationCode;
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->PaymentMethod = $dados->PaymentMethod;
+
+                $result->AuthorizeTransactionResult->CorrelationId = $ri;
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->Status = '0';
+
+                // email temporario para checar novo tratamento de erro (nao é possivel forcar o erro em homologacao)
+                ob_start();
+                echo "[ErrorCode] => 135<br/>[ErrorMessage] => OrderId was already registered<br/><br/>";
+                echo "Não é um erro grave. Apenas checar os dados abaixo:<br/><br/>";
+                echo "<pre>"; var_dump($dados); echo "</pre>";
+                $message = ob_get_clean();
+
+                sendErrorMail('Erro no Sistema COMPREINGRESSOS.COM', $message);
+            }
+
             if (($result->AuthorizeTransactionResult->CorrelationId == $ri and $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->Status == '0')
                 or ($PaymentDataCollection['Amount'] == 0 and $is_promocional)) {
 

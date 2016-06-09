@@ -127,7 +127,14 @@ foreach ($itensPedido as $item) {
             }
             $CodApresentacao = $item['CodApresentacao'];
         } else {
-            $rsCodigo = fetchResult($codigos);
+            // remover esse codigo depois do dia 31/07/2016 -------------- issue #129
+            if ($rsCodigo = fetchResult($codigos)) {}
+            else {
+                $codigos = executeSQL($conn, $queryCodigos, array($item['CodApresentacao'], $item['CodVenda']));
+                $rsCodigo = fetchResult($codigos);
+            }
+            // adicionar esse codigo depois do dia 31/07/2016 ------------ issue #129
+            // $rsCodigo = fetchResult($codigos)
         }
 
         $code = $rsCodigo['codbar'];

@@ -244,8 +244,18 @@ function print_order($pedido, $reprint = false){
 	$qtde = 1;
 	$total = numRows($mainConnection, $query, array($pedido));
 
+	$query = 'SELECT SE.NOMSETOR
+				FROM TABSALDETALHE S
+				INNER JOIN TABSETOR SE ON SE.CODSALA = S.CODSALA AND SE.CODSETOR = S.CODSETOR
+				INNER JOIN TABAPRESENTACAO A ON A.CODSALA = S.CODSALA
+				WHERE A.CODAPRESENTACAO = ? AND S.INDICE = ?';
+
 	$space = " ";
 	while ($rs = fetchResult($result)) {
+
+		$conn = getConnection($rs['ID_BASE']);
+		$rsAux = executeSQL($conn, $query, array($rs['CODAPRESENTACAO'], $rs['INDICE']), true);
+
 		echo "<CHGPRNFNT SIZE=4 FACE=FONTE1>";
 
 		echo "<PRINTER>";
@@ -287,7 +297,7 @@ function print_order($pedido, $reprint = false){
 
 		echo str_pad(substr(remove_accents($rs['DS_EVENTO'], false), 0, 24), 24, " ", STR_PAD_BOTH) ."<BR>";
 		echo str_pad($rs['DT_APRESENTACAO']->format('d/m/Y') ." ". $rs['HR_APRESENTACAO'], 24, " ", STR_PAD_BOTH) ."<BR>";
-		echo str_pad(utf8_decode(remove_accents(substr(preg_replace('/\d+\s+.+?\s+/i', '', $rs['DS_PISO']), 0, 24), false)), 24, " ", STR_PAD_BOTH) ."<BR>";
+		echo str_pad(utf8_decode(remove_accents(substr(preg_replace('/\d+\s+.+?\s+/i', '', $rsAux['NOMSETOR']), 0, 24), false)), 24, " ", STR_PAD_BOTH) ."<BR>";
 		echo str_pad(utf8_decode(get_lugar($rs['INDICE'], $rs['ID_BASE'])), 24, " ", STR_PAD_BOTH) ."<BR>";		
 		echo str_pad(substr(remove_accents($rs['DS_TIPO_BILHETE'],false) . " - R$ ". number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', ''), 0, 24), 24, " ", STR_PAD_BOTH) ."<BR>";
 		

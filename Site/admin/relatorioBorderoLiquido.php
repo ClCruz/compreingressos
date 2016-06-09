@@ -159,13 +159,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 251, true)) {
                     document.fPeca.cboSala.focus();
                     return;
                 }
-                else
-                {
-                    var borderoSimples = document.getElementById('chkSmall');
-                    if ( !borderoSimples.checked ) {
-                        primeiraSala = document.fPeca.cboSala.options[2].value;
-                    }
-                }
 
                 if((document.fPeca.txtData1.value == ""
                     || document.fPeca.txtData2.value == "")
@@ -188,7 +181,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 251, true)) {
                 var url = "relBorderoVendasLiquidas.php";
                 url += "?CodPeca=" + document.fPeca.cboPeca.value;
                 url += "&logo=imagem";
-                url += "&fSala=" + primeiraSala;
+
                 url += "&Resumido=0";
                 url += "&Small=" + ((document.fPeca.chkSmall.checked) ? '1' : '0');
                 url += "&DataIni=" + data1;

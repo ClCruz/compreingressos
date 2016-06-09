@@ -131,6 +131,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 310, true)) {
 		    $itensPedido[$i]['descricao_item']['setor'] = utf8_encode($itens['DS_SETOR']);
 		    $itensPedido[$i]['descricao_item']['cadeira'] = utf8_encode($itens['DS_CADEIRA']);
 		    $itensPedido[$i]['descricao_item']['bilhete'] = utf8_encode($itens['DS_TIPO_BILHETE']);
+	    	$itensPedido[$i]['descricao_item']['codvenda'] = utf8_encode($itens['CodVenda']);
 
 		    $itensPedido[$i]['valor_item'] = ($itens['VL_LIQUIDO_INGRESSO'] + $valorConveniencia);
 		    $itensPedido[$i]['id_base'] = $itens['ID_BASE'];

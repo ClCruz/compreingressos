@@ -14,6 +14,7 @@ require('verificarServicosPedido.php');
 require('verificarLimitePorCPF.php');
 require('verificarEntrega.php');
 require('verificarAssinatura.php');
+
 require('verificarDadosCadastrais.php');
 
 if (isset($_COOKIE['entrega'])) {
@@ -52,6 +53,8 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	<script src="../javascripts/jquery.cookie.js" type="text/javascript"></script>
 	<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
 	<script src="../javascripts/common.js" type="text/javascript"></script>
+
+	<script src="../javascripts/jquery.are-you-sure.js" type="text/javascript"></script>
 
 	<script type="text/javascript" src="../javascripts/contagemRegressiva.js?until=<?php echo tempoRestante(); ?>"></script>
 	<script type="text/javascript" src="../javascripts/formCartao.js"></script>
@@ -163,6 +166,5 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 		csdp('app', 'ae6af083e9');
 		csdp('sessionid', '<?php echo session_id(); ?>');
 	</script>
-	<?php var_dump($_COOKIE); ?>
 </body>
 </html>

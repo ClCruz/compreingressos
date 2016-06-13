@@ -6,6 +6,7 @@ $mainConnection = mainConnection();
 session_start();
 
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
+
     $pagina = basename(__FILE__);
 
     if (isset($_GET['action'])) {
@@ -122,9 +123,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                         }
                     }
 
-                    /*
-                    * !Bookmark - requisição ajax que retorna o novo form
-                    * */
                     if ($cboLocal.val()) {
                         $('#loading').dialog('open');
 
@@ -235,18 +233,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
 
                             $('[name=ds_codigo]').val('CONVITE');
                         break;
-
-                        case '6':
-                            mostrar = 'webservice';
-                            break;
                     }
 
                     $('[class*=promo_'+mostrar+'], .promo_geral').show();
 
-                    $('.ws_cfg').hide();
-                    /*
-                    * !Bookmark - ajax para ler novos campos
-                    * */
                     if (mostrar == 'csv' || mostrar == 'bin') {
                         if ($('[name=diretorio_temp]').val() == '') {
                             $.get(pagina, {
@@ -309,8 +299,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
 
                         if ($('option[value=TODOS]').is(':selected'))
                             $('option[value=TODOS]').next().prop('selected', true);
-                    } else if( mostrar == 'webservice' ){
-                        $('.ws_cfg').show();
                     } else {
                         $('option[value=TODOS]').prop('disabled', false);
                     }
@@ -360,10 +348,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                 $('#dados').on('submit', function(e){
                     e.preventDefault();
 
-                    if (!validacao()) { return false }
-//                    else{ alert('Valid ok!'); }
-//
-//                    return false;
+                    if (!validacao()) return false;
 
                     $('#loading').dialog('open');
 
@@ -438,28 +423,23 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                     switch ($cboPromo.val().substring(0,1)) {
                         // Código Fixo
                         case '1':
-                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], [name=cboPatrocinador], [name*=ws_])');
+                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], [name=cboPatrocinador])');
                         break;
                         // Código Aleatório
                         case '2':
-                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], [name=cboPatrocinador], [name=ds_codigo], [name*=ws_])');
+                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], [name=cboPatrocinador], [name=ds_codigo])');
                         break;
                         // Código de Arquivo CSV
                         case '3':
-                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], [name=cboPatrocinador], [name=ds_codigo], [name=qt_codigo], [name*=ws_])');
+                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], [name=cboPatrocinador], [name=ds_codigo], [name=qt_codigo])');
                         break;
                         // BINs CSV
                         case '4':
-                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], [name=ds_codigo], [name=qt_codigo], [name*=ws_])');
+                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], [name=ds_codigo], [name=qt_codigo])');
                         break;
                         // Convite
                         case '5':
-                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], [name=cboPatrocinador], [name=ds_codigo], [name=qt_codigo], [name=ds_img1], [name=ds_img2], [name*=ws_])');
-                        break;
-                        // Convite
-                        case '6':
-                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], [name=cboPatrocinador], [name=ds_img1], [name=ds_img2], [name=ds_codigo], [name=qt_codigo] )');
-                            //$campos = $( '#dados input:not:([type=file], [type=hidden]), [name*=ws_]' );
+                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], [name=cboPatrocinador], [name=ds_codigo], [name=qt_codigo], [name=ds_img1], [name=ds_img2])');
                             break;
                         // inválido
                         default:
@@ -531,22 +511,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
         #dados.geral .disponiveis,
         #dados.geral .ui-widget .chk_evento {
             display: none;
-        }
-        div.ws_cfg {
-            box-sizing: border-box;
-            margin-top: 15px;
-            padding-bottom: 25px;
-            display: none;
-        }
-
-        div.ws_cfg label input {
-            width: 100%;
-        }
-        div.ws_cfg label {
-            width: 20%;
-            float: left;
-            padding: 8px;
-            box-sizing: border-box;
         }
         </style>
         <div title="Processando..." id="loading">
@@ -672,13 +636,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                     </td>
                 </tr>
             </table>
-            <div class="ws_cfg">
-                <label><input value="url" type="text" placeholder="url" name="ws_url"></label>
-                <label><input value="user" type="text" placeholder="user" name="ws_user"></label>
-                <label><input value="pass" type="text" placeholder="pass" name="ws_pass"></label>
-                <label><input value="tag" type="text" placeholder="tag" name="ws_tag"></label>
-                <label><input value="boolean" type="text" placeholder="return" name="ws_return"></label>
-            </div>
             <br/>
 
             <table class="ui-widget ui-widget-content disponiveis">
@@ -691,9 +648,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
             </table>
             <div class="disponiveis">
                 <table class="ui-widget ui-widget-content">
-                    <!--
-                    !Bookmark - div onde é impresso o form retornado do ajax
-                    -->
                     <tbody id="registros"></tbody>
                 </table>
             </div>

@@ -74,20 +74,45 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
     } else {
         $retorno = sqlErrors();
     }
-} else if ($_GET['action'] == 'delete' and isset($_GET['idMeioPagamento']) and isset($_GET['idBase'])) { /*------------ DELETE ------------*/	
-    $query = 'DELETE FROM MW_MEIO_PAGAMENTO_FORMA_PAGAMENTO WHERE ID_BASE = ? AND ID_MEIO_PAGAMENTO = ?';
-    $params = array($_GET['idBase'], $_GET['idMeioPagamento']);
+} else if ($_GET['action'] == 'delete' and isset($_GET['idMeioPagamento']) and isset($_GET['idBase'])) {
 
-    if (executeSQL($mainConnection, $query, $params)) {
+    function preventDelete()
+    {
+        $retorno = 'Este registro não pode ser deletado. Favor entrar em contato com o Administrador.';
+        return $retorno;
+    }
+
+    function deleteReg($mainConnection)
+    {
+        $query = 'DELETE FROM MW_MEIO_PAGAMENTO_FORMA_PAGAMENTO WHERE ID_BASE = ? AND ID_MEIO_PAGAMENTO = ?';
+        $params = array($_GET['idBase'], $_GET['idMeioPagamento']);
+
+        if (executeSQL($mainConnection, $query, $params)) {
             $log = new Log($_SESSION['admin']);
             $log->__set('funcionalidade', 'Formas de Pagamento');
             $log->__set('parametros', $params);
             $log->__set('log', $query);
             $log->save($mainConnection);
-            
+
             $retorno = 'true';
-    } else {
+        } else {
             $retorno = sqlErrors();
+        }
+
+        return $retorno;
+    }
+
+    /*
+     * Previnir o DELETE de coisas que ja vem do VB para WEB
+     * */
+    switch ($_GET['idMeioPagamento'])
+    {
+        case '65': case '66': case '67': case '69': case '70': case '71':
+        $retorno = preventDelete();
+        break;
+
+        default:
+            $retorno = deleteReg($mainConnection);
     }
 }
 

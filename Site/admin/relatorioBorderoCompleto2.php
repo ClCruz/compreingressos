@@ -5,6 +5,19 @@ $mainConnection = mainConnection();
 
 session_start();
 
+$updateimg = false;
+
+if ($updateimg)
+{
+    $conn = getConnection(139);
+
+    //echo file_get_contents('../images/theatro-antigo.jpg');
+    $query = 'UPDATE tabImagem SET Imagem = ? WHERE CodImagem = 68';
+    $img = array(file_get_contents('../images/theatro-antigo.jpg'));
+
+    $res = executeSQL($conn, $query, $img);
+}
+
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 305, true)) {
 
     $pagina = basename(__FILE__);
@@ -127,6 +140,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 305, true)) {
 
             function validar()
             {
+                var primeiraSala = ''; //Primeiro option do combo após "SELECIONE" e "TODOS".
                 if(document.fPeca.cboPeca.value == "")
                 {
                     $.dialog({title: 'Alerta...',text: 'Selecione o evento'});
@@ -179,7 +193,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 305, true)) {
                 var url = "relBorderoCompleto2.php";
                 url += "?CodPeca=" + document.fPeca.cboPeca.value;
                 url += "&logo=imagem";
-
+                
                 url += "&Resumido=0";
                 url += "&Small=" + ((document.fPeca.chkSmall.checked) ? '1' : '0');
                 url += "&DataIni=" + data1;

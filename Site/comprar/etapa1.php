@@ -14,11 +14,14 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
     die();
   }
 
+  require_once('origem.php');
+
   $mainConnection = mainConnection();
 
   $query = 'SELECT A.CODAPRESENTACAO, E.ID_BASE, E.ID_EVENTO,E.DS_EVENTO,
               B.DS_NOME_TEATRO, CONVERT(VARCHAR(10), A.DT_APRESENTACAO, 103) DT_APRESENTACAO,
-              A.HR_APRESENTACAO, LE.DS_LOCAL_EVENTO, M.DS_MUNICIPIO, ES.SG_ESTADO, A.DS_PISO
+              A.HR_APRESENTACAO, LE.DS_LOCAL_EVENTO, M.DS_MUNICIPIO, ES.SG_ESTADO, A.DS_PISO,
+              E.QT_INGR_POR_PEDIDO
             FROM MW_APRESENTACAO A
             INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO AND E.IN_ATIVO = \'1\'
             INNER JOIN MW_BASE B ON B.ID_BASE = E.ID_BASE AND B.IN_ATIVO = \'1\'
@@ -28,6 +31,8 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
             WHERE A.ID_APRESENTACAO = ? AND A.IN_ATIVO = \'1\'';
   $params = array($_GET['apresentacao']);
   $rs = executeSQL($mainConnection, $query, $params, true);
+
+  $maxIngressos = $rs['QT_INGR_POR_PEDIDO'];
 
   $evento_info = getEvento($rs['ID_EVENTO']);
   $is_pacote = is_pacote($_GET['apresentacao']);

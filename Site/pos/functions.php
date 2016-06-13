@@ -39,16 +39,21 @@ function echo_select($name, $list, $line, $select_lines = null){
 		$list = array_slice($list, 0, -1, true);	
 	}
 
+	$index = '';
+	$items = '';
+
 	foreach ($list as $key => $value) {
-		$list[$key] = remove_especial_chars(substr($value, 0, 29));
+		$temp  = explode('_', $key);
+
+		$index .= $temp[0].',';
+		$items .= remove_especial_chars(substr($value, 0, 29)).',';
 	}
 
 	$line = $header_lines + $line + 1;
 
-	$index = implode(",", array_keys($list));
-	$items = implode(",", $list);
+	$items = substr($items, 0, -1);
 	$select_lines = $select_lines ? $select_lines : $total_lines - $line;
-	echo "<SELECT LIN=$line COL=2 SIZE=29 QTD=$select_lines UP=B1 DOWN=B4 LEFT=34 RIGHT=36 NAME=$name TYPE_RETURN=3 INDEX=$index,>";
+	echo "<SELECT LIN=$line COL=2 SIZE=29 QTD=$select_lines UP=B1 DOWN=B4 LEFT=34 RIGHT=36 NAME=$name TYPE_RETURN=3 INDEX=$index>";
 	echo utf8_decode($items);
 	echo "</SELECT>";
 
@@ -235,7 +240,7 @@ function print_order($pedido, $reprint = false){
 			INNER JOIN MW_BASE B ON B.ID_BASE = E.ID_BASE
 			INNER JOIN MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
 			INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = P.ID_CLIENTE
-			INNER JOIN MW_USUARIO U ON U.ID_USUARIO = P.ID_USUARIO_CALLCENTER
+			LEFT JOIN MW_USUARIO U ON U.ID_USUARIO = P.ID_USUARIO_CALLCENTER
 			INNER JOIN MW_MEIO_PAGAMENTO MP ON MP.ID_MEIO_PAGAMENTO = P.ID_MEIO_PAGAMENTO
 			WHERE R.ID_PEDIDO_VENDA = ?
 			ORDER BY E.DS_EVENTO, A.DT_APRESENTACAO, AB.DS_TIPO_BILHETE";
@@ -244,8 +249,18 @@ function print_order($pedido, $reprint = false){
 	$qtde = 1;
 	$total = numRows($mainConnection, $query, array($pedido));
 
+	$query = 'SELECT SE.NOMSETOR
+				FROM TABSALDETALHE S
+				INNER JOIN TABSETOR SE ON SE.CODSALA = S.CODSALA AND SE.CODSETOR = S.CODSETOR
+				INNER JOIN TABAPRESENTACAO A ON A.CODSALA = S.CODSALA
+				WHERE A.CODAPRESENTACAO = ? AND S.INDICE = ?';
+
 	$space = " ";
 	while ($rs = fetchResult($result)) {
+
+		$conn = getConnection($rs['ID_BASE']);
+		$rsAux = executeSQL($conn, $query, array($rs['CODAPRESENTACAO'], $rs['INDICE']), true);
+
 		echo "<CHGPRNFNT SIZE=4 FACE=FONTE1>";
 
 		echo "<PRINTER>";
@@ -287,7 +302,7 @@ function print_order($pedido, $reprint = false){
 
 		echo str_pad(substr(remove_accents($rs['DS_EVENTO'], false), 0, 24), 24, " ", STR_PAD_BOTH) ."<BR>";
 		echo str_pad($rs['DT_APRESENTACAO']->format('d/m/Y') ." ". $rs['HR_APRESENTACAO'], 24, " ", STR_PAD_BOTH) ."<BR>";
-		echo str_pad(utf8_decode(remove_accents(substr(preg_replace('/\d+\s+.+?\s+/i', '', $rs['DS_PISO']), 0, 24), false)), 24, " ", STR_PAD_BOTH) ."<BR>";
+		echo str_pad(utf8_decode(remove_accents(substr(preg_replace('/\d+\s+.+?\s+/i', '', $rsAux['NOMSETOR']), 0, 24), false)), 24, " ", STR_PAD_BOTH) ."<BR>";
 		echo str_pad(utf8_decode(get_lugar($rs['INDICE'], $rs['ID_BASE'])), 24, " ", STR_PAD_BOTH) ."<BR>";		
 		echo str_pad(substr(remove_accents($rs['DS_TIPO_BILHETE'],false) . " - R$ ". number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', ''), 0, 24), 24, " ", STR_PAD_BOTH) ."<BR>";
 		

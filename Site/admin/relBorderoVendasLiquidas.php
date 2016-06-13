@@ -63,6 +63,8 @@ if ($_GET['Small'] == '1') {
   }
 }
 
+$imagem = getSalaImg($CodSala, $connBase);
+
 if (isset($err) && $err != "") {
   echo $err . "<br>";
   print_r(sqlErrors());
@@ -85,14 +87,20 @@ if (isset($err) && $err != "") {
     </script>
     <table width=650 class="tabela" border="0">
       <tr>
-        <td colspan="1" rowspan="2"><img align="left" border="0" src="../images/logo.jpg"></td>
-        <td colspan="1" height="15"></td>
+        <td width="80">
+          <img alt="Compreingressos.com" align="left" border="0" src="http://www.compreingressos.com/images/logo_compre_2015.jpg" />
+        </td>
+        <td>
+          <div class="logoTeatro">
+              <?php if( !empty($imagem) ): ?>
+              <img src="data:img/jpeg;base64,<?php echo base64_encode($imagem); ?>" alt="" />
+              <?php endif; ?>
+          </div>
+        </td>
+        <td width="300" class="tabela" align="center" bgcolor="LightGrey"><b><font size=2 face="tahoma,verdana,arial">Borderô - Fechamento em Dinheiro</font><br/>Contabilização dos Ingressos</b></td>
       </tr>
       <tr>
-        <td class="tabela" align="center" bgcolor="LightGrey"><b><font size=2 face="tahoma,verdana,arial">Borderô - Fechamento em Dinheiro</font><br/>Contabilização dos Ingressos</b></td>
-      </tr>
-      <tr>
-        <td colspan="2">
+        <td colspan="3">
           <table class="tabela" width="648">
             <tr>
               <td align="right" width="70"><font size=1 face="tahoma,verdana,arial"><b>Local:</b></font></td>

@@ -84,7 +84,7 @@ function validaDados($str, $qtdeCaracteres)
 function locationFile($fileName)
 {
 	header('Content-Description: File Transfer');
-	header('Content-Type: application/zip');
+	header('Content-Type: text/csv');
 	header('Content-Disposition: attachment; filename="' . $fileName . '"');
 	header('Content-Transfer-Encoding: binary');
 	header('Expires: 0');
@@ -183,19 +183,16 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
 	else if ($_GET['action'] == 'defaultcsv')
 	{
 		$dadosPeca = getDadosPeca();
+		
+		$fileName = 'ING';
+		$fileName .= $_GET['DatApresentacao'];
+		$fileName .= $hora = str_replace(':','',$_GET['HorSessao']);
+		$fileName .= $nome = substr($dadosPeca['NOMPECA'], 0, 14);
 
-		//Gerar nome do arquivo logo abaixo
-			$fileName = 'ING';
-			$fileName .= $_GET['DatApresentacao'];
-			$fileName .= $hora = str_replace(':','',$_GET['HorSessao']);
-			$fileName .= $nome = substr($dadosPeca['NOMPECA'], 0, 14);
-			$fileName .= '.csv';
-
-			$caminhoArquivo = $fileName;
-			$FILE = fopen($caminhoArquivo, 'x');
-		//END
+		$FILE = fopen('temp/'.$fileName.'.csv', 'x');
 
 		$Setores = getTotal(true);
+
 		$totalFinalGerado = 0;
 		$tipBilhete = getTiposBilhete(true);
 
@@ -220,7 +217,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
 					$Codigo .= validaDados($tip['CODTIPBILHETE'], 3);
 					$Codigo .= validaDados($i, 5);
 
-					//fwrite($FILE, $Codigo.';');
 					fputcsv($FILE, array($Codigo.';'));
 					$i++;
 				}
@@ -229,10 +225,32 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
 
 		fclose($FILE);
 
+		$zip_file = 'temp/'.$fileName.'.zip';
+		$zip = new ZipArchive;
+		$zip->open($zip_file, ZipArchive::CREATE);
+		$zip->addFile("temp/$fileName.csv");
+		$zip->close();
+
 		/*
 		 * Abrir arquivo na URL para disponibilizar download
 		 * */
-		locationFile($caminhoArquivo);
+		//locationFile($caminhoArquivo);
+		header('Content-Description: File Transfer');
+		header('Content-Type: application/zip');
+		header('Content-Disposition: attachment; filename="' . $fileName . '.zip"');
+		header('Content-Transfer-Encoding: binary');
+		header('Expires: 0');
+		header('Cache-Control: must-revalidate');
+		header('Pragma: public');
+		header('Content-Length: ' . filesize($zip_file));
+
+		ob_clean();
+		flush();
+
+		readfile($zip_file);
+
+		unlink($zip_file);
+		unlink("temp/$fileName.csv");
 
 		exit();
 	}

@@ -109,20 +109,14 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
         <script src="../javascripts/identificacao_cadastro.js" type="text/javascript"></script>
         <script src="../javascripts/dadosEntrega.js" type="text/javascript"></script>
 
-        <?php if ( isset($_GET['atualizar_dados']) && $_GET['atualizar_dados'] == '1' ): ?>
-            <script type="text/javascript">
-//                $(document).ready(function () {
-//                    $.dialog({text: 'Por favor, para concluir a operação é necessário preencher o endereço completo'});
-//                    gotoMainAddress();
-//                })
-            </script>
-        <?php endif; ?>
-
         <?php if (isset($_GET['atualizar_dados']) || isset($_GET['atualizar_endereco'])) { ?>
             <script type="text/javascript">
                 $(function(){
                     var dados_atualizados = false,
                         endereco_atualizado = false;
+
+                    $.dialog({text: 'Por favor, para concluir a operação é necessário preencher o endereço completo'});
+                    gotoMainAddress();
 
                     $('.menu_conta .botao').hide();
 

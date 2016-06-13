@@ -14,23 +14,27 @@ if (isset($_GET['action'])) {
 
 } else {
 
-	$_GET['ativo'] = !isset($_GET['ativo']) ? 1 : $_GET['ativo'];
+	function paginarResultados($mainConnection)
+	{
+		global $obj;
 
-	//$oldQuery = "SELECT ID_USUARIO, CD_LOGIN, DS_NOME, DS_EMAIL, IN_ATIVO, IN_ADMIN, IN_TELEMARKETING, IN_PDV, IN_POS FROM MW_USUARIO WHERE IN_ATIVO = ? OR ? = 2 ORDER BY DS_NOME ASC";
+		$_GET['ativo'] = !isset($_GET['ativo']) ? 1 : $_GET['ativo'];
 
-	$queryNumRows = 'SELECT id_usuario FROM mw_usuario WHERE in_ativo = ? OR ? = 2 ORDER BY ds_nome ASC';
-	$paramnsQueryNumRows = array($_GET['ativo'], $_GET['ativo']);
+		//$oldQuery = "SELECT ID_USUARIO, CD_LOGIN, DS_NOME, DS_EMAIL, IN_ATIVO, IN_ADMIN, IN_TELEMARKETING, IN_PDV, IN_POS FROM MW_USUARIO WHERE IN_ATIVO = ? OR ? = 2 ORDER BY DS_NOME ASC";
 
-	$paramns = array(
-		'query' 	=> $queryNumRows,
-		'paramns' 	=> $paramnsQueryNumRows
-	);
+		$queryNumRows = 'SELECT id_usuario FROM mw_usuario WHERE in_ativo = ? OR ? = 2 ORDER BY ds_nome ASC';
+		$paramnsQueryNumRows = array($_GET['ativo'], $_GET['ativo']);
 
-	$link = '?p='.$_GET['p'].'&ativo='.$_GET['ativo'];
-	$obj = Paginator::__paginate($link, $paramns);
+		$paramns = array(
+			'query' 	=> $queryNumRows,
+			'paramns' 	=> $paramnsQueryNumRows
+		);
 
-	$between = 'WHERE row BETWEEN '.$obj["start"].' AND '.$obj["end"].' AND (in_ativo = ? OR ? = 2) ORDER BY ds_nome ASC';
-	$newQuery = 'WITH results AS (
+		$link = '?p='.$_GET['p'].'&ativo='.$_GET['ativo'];
+		$obj = Paginator::__paginate($link, $paramns);
+
+		$between = 'WHERE row BETWEEN '.$obj["start"].' AND '.$obj["end"].' AND (in_ativo = ? OR ? = 2) ORDER BY ds_nome ASC';
+		$newQuery = 'WITH results AS (
 					SELECT 
 						id_usuario
 						, cd_login
@@ -48,10 +52,44 @@ if (isset($_GET['action'])) {
 				SELECT * FROM results 
 				 '.$between;
 
-	$result = executeSQL($mainConnection,
-						$newQuery,
-						array($_GET['ativo'], $_GET['ativo']));
+		$result = executeSQL($mainConnection,
+			$newQuery,
+			array($_GET['ativo'], $_GET['ativo']));
 
+		return $result;
+	}
+
+	function pesquisaNome($mainConnection)
+	{
+		$like = "(ds_nome LIKE '%".$_GET['search']."%' OR ds_email LIKE '%".$_GET['search']."%' OR cd_login LIKE '%".$_GET['search']."%')";
+
+		$ifAtivo = ( $_GET['ativo'] == '0' || $_GET['ativo'] == '1' ) ? "AND (in_ativo = ".(int)$_GET['ativo'].")" : '';
+
+		$query = 'SELECT 
+						id_usuario
+						, cd_login
+						, ds_nome
+						, ds_email
+						, in_ativo
+						, in_admin
+						, in_telemarketing
+						, in_pdv
+						, in_pos
+						FROM mw_usuario
+						WHERE '.$like.' '.$ifAtivo.' ORDER BY ds_nome';
+
+		$result = executeSQL($mainConnection, $query);
+		return $result;
+	}
+
+	if ( isset($_GET['search']) && !empty($_GET['search']) )
+	{
+		$result = pesquisaNome($mainConnection);
+	}
+	else
+	{
+		$result = paginarResultados($mainConnection);
+	}
 ?>
 
 <style type="text/css">
@@ -226,11 +264,31 @@ $(function() {
 	});
 
 	$('#filtro').change(function() {
-		document.location = '?p=' + pagina.replace('.php', '') + '&ativo=' + $(this).val();
+		simples.setParamns('ativo', $(this).val(), { reload: true });
+	});
+
+	var porNome = document.getElementById('porNome');
+	porNome.onkeydown = function (e) {
+		if (e.keyCode == 13 /*enter*/) {
+			$('#search').click();
+		}
+	};
+
+	$('#search').click(function () {
+		var status = $('#filtro').val();
+		var string = porNome.value;
+
+		if (string == '' || string.length < 3) {
+			$.dialog({ text: 'Digite ao menos 3 caracteres' });
+			return false;
+		}
+
+		simples.setParamns('ativo', status);
+		simples.setParamns('search', string, { reload: true });
 	});
 
 	function validateFields() {
-		var campos = $(':text'),
+		var campos = $(':text:not(.notrequired)'),
 			 valido = true;
 
 		$.each(campos, function() {
@@ -252,15 +310,37 @@ $(function() {
         $(this).removeClass('ui-state-hover');
     });
 });
+
+function limparPesquisa() {
+	simples.setParamns('ativo', 1);
+	simples.setParamns('search', { action: 'delete', reload: true });
+}
 </script>
-<h2>Usu&aacute;rios</h2>
-<p style="width:200px;">
-	Situação do usuário: <select id="filtro">
-		<option value="1"<?php echo ($_GET['ativo'] == 1 ? ' selected' : ''); ?>>Ativo</option>
-		<option value="0"<?php echo ($_GET['ativo'] == 0 ? ' selected' : ''); ?>>Inativo</option>
-		<option value="2"<?php echo ($_GET['ativo'] == 2 ? ' selected' : ''); ?>>Todos</option>
-	</select>
-</p><br/>
+	<style>
+		.boxSearch { float: left; margin-right: 45px; }
+	</style>
+<h2>Usuários</h2>
+<div>
+	<div class="boxSearch">
+		Situação do usuário:
+		<select id="filtro">
+			<option value="1"<?php echo ($_GET['ativo'] == 1 ? ' selected' : ''); ?>>Ativo</option>
+			<option value="0"<?php echo ($_GET['ativo'] == 0 ? ' selected' : ''); ?>>Inativo</option>
+			<option value="2"<?php echo ($_GET['ativo'] == 2 ? ' selected' : ''); ?>>Todos</option>
+		</select>
+	</div>
+
+	<div class="boxSearch">
+		Pesquisar (Nome, login ou e-mail)
+		<input class="notrequired" id="porNome" type="text" name="porNome" placeholder="Pesquisar..." value="<?php echo ( isset($_GET['search']) ? $_GET['search'] : '' ) ?>">
+		<button id="search" type="submit" name="search">Pesquisar</button>
+		<?php if( !empty($_GET['search']) ): ?>
+			<button type="button" onclick="limparPesquisa();">Limpar pesquisa</button>
+		<?php endif; ?>
+	</div>
+	<div style="clear: both"></div>
+</div>
+	<br/>
 <form id="dados" name="dados" method="post">
 	<table class="ui-widget ui-widget-content">
 		<thead>

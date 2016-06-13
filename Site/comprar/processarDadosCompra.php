@@ -85,7 +85,7 @@ $rsParcelas = executeSQL($conn, $query, array($rsParcelas['codpeca']), true);
 $parcelas = $rsParcelas['qt_parcelas'];
 
 $query = 'SELECT
-            C.ID_CLIENTE,C.DS_NOME,C.DS_SOBRENOME,C.DS_DDD_TELEFONE,C.DS_TELEFONE,C.DS_DDD_CELULAR,C.DS_CELULAR,C.CD_CPF,C.DS_ENDERECO,C.NR_ENDERECO,C.DS_COMPL_ENDERECO,C.DS_BAIRRO,C.DS_CIDADE,C.CD_CEP,C.CD_EMAIL_LOGIN,C.ID_ESTADO,E.SG_ESTADO';
+            C.ID_CLIENTE,C.DS_NOME,C.DS_SOBRENOME,C.DS_DDD_TELEFONE,C.DS_TELEFONE,C.DS_DDD_CELULAR,C.DS_CELULAR,C.CD_CPF,C.DS_ENDERECO,C.NR_ENDERECO,C.DS_COMPL_ENDERECO,C.DS_BAIRRO,C.DS_CIDADE,C.CD_CEP,C.CD_EMAIL_LOGIN,C.ID_ESTADO,E.SG_ESTADO ';
 
 $query .= (($entrega and $enderecoDif) ? ', EC.DS_ENDERECO DS_ENDERECO2, EC.NR_ENDERECO NR_ENDERECO2, EC.DS_COMPL_ENDERECO DS_COMPL_ENDERECO2,EC.DS_BAIRRO DS_BAIRRO2,EC.DS_CIDADE DS_CIDADE2,EC.CD_CEP CD_CEP2,EC.ID_ESTADO ID_ESTADO2,E2.SG_ESTADO SG_ESTADO2 ' : '');
 
@@ -363,6 +363,7 @@ $query = 'UPDATE MW_PEDIDO_VENDA SET
                         ,NM_CLIENTE_VOUCHER = ?
                         ,DS_EMAIL_VOUCHER = ?
                         ,CD_BIN_CARTAO = ?
+                        ,ID_ORIGEM = ?
 			WHERE ID_PEDIDO_VENDA = ?
 				AND ID_CLIENTE = ?';
 
@@ -377,6 +378,7 @@ if ($_POST['nomePresente']) {
 $params = array(($totalIngressos + $frete + $totalConveniencia), $totalIngressos, $totalConveniencia,
                 $_SERVER["REMOTE_ADDR"], $PaymentDataCollection['NumberOfPayments'],
                 $nr_beneficio, $nome_presente, $email_presente, $PaymentDataCollection['CardNumber'],
+                $_SESSION['origem'],
                 $newMaxId, $_SESSION['user']);
 
 if ($itensPedido > 0) {

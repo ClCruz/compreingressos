@@ -333,9 +333,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                                     IN_SITUACAO = 'S',
                                     ID_USUARIO_ESTORNO = ?,
                                     DS_MOTIVO_CANCELAMENTO = ?,
-                                    DT_HORA_CANCELAMENTO = ?
+                                    DT_HORA_CANCELAMENTO = CONVERT(DATETIME, ?, 120)
                             WHERE ID_PEDIDO_VENDA = ?";
-                    $params = array($_SESSION['admin'], $_POST['justificativa'], date('d/m/Y H:i:s'), $pedido['ID_PEDIDO_VENDA']);
+                    //$params = array($_SESSION['admin'], $_POST['justificativa'], date('d/m/Y H:i:s'), $pedido['ID_PEDIDO_VENDA']);
+                    $params = array($_SESSION['admin'], $_POST['justificativa'], date('Y-m-d H:i:s'), $pedido['ID_PEDIDO_VENDA']);
                     executeSQL($mainConnection, $query, $params);
 
                     $sqlErrors = sqlErrors();

@@ -302,7 +302,7 @@ function print_order($pedido, $reprint = false){
 
 		echo str_pad(substr(remove_accents($rs['DS_EVENTO'], false), 0, 24), 24, " ", STR_PAD_BOTH) ."<BR>";
 		echo str_pad($rs['DT_APRESENTACAO']->format('d/m/Y') ." ". $rs['HR_APRESENTACAO'], 24, " ", STR_PAD_BOTH) ."<BR>";
-		echo str_pad(utf8_decode(remove_accents(substr(preg_replace('/\d+\s+.+?\s+/i', '', $rsAux['NOMSETOR']), 0, 24), false)), 24, " ", STR_PAD_BOTH) ."<BR>";
+		echo str_pad(utf8_decode(remove_accents(substr($rsAux['NOMSETOR'], 0, 24), false)), 24, " ", STR_PAD_BOTH) ."<BR>";
 		echo str_pad(utf8_decode(get_lugar($rs['INDICE'], $rs['ID_BASE'])), 24, " ", STR_PAD_BOTH) ."<BR>";		
 		echo str_pad(substr(remove_accents($rs['DS_TIPO_BILHETE'],false) . " - R$ ". number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', ''), 0, 24), 24, " ", STR_PAD_BOTH) ."<BR>";
 		

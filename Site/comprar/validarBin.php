@@ -147,6 +147,10 @@ if ($_GET['carrinho']) {
     $bin = executeSQL($conn, $query, array($codTipBilhete), true);
     $codTipPromocao = $bin['CODTIPPROMOCAO'];
 
+    $rs = executeSQL($mainConnection, 'SELECT CD_CPF, DS_NOME FROM MW_CLIENTE WHERE ID_CLIENTE = ?', array($_SESSION['user']), true);
+    $cpf = $rs['CD_CPF'];
+    $nome_clietne = $rs['DS_NOME'];
+
     // se for bin normal (5) ou se for bin do riachuelo (7) e o inicio do cartao nao for private label (02)
     if ($codTipPromocao == 5 OR ($codTipPromocao == 7 AND substr($numeroDoCartao, 0, 2) != '02')) {
         if ($numeroDoCartao AND substr(str_replace('-', '', $_POST['numCartao']), 0, 6) != $numeroDoCartao) {
@@ -156,12 +160,9 @@ if ($_GET['carrinho']) {
             }
         }
     } elseif ($codTipPromocao == 7 AND substr($_POST['numCartao'], 0, 2) == '02') {
-        echo "Utilze seu cartão de crédito para efetuar o pagamento.";
+        echo "$nome_clietne, você já ganhou 30% de desconto por escolher o Cartão Riachuelo. Para finalizar o pagamento, lembre-se de selecionar um outro cartão de crédito de sua preferência.";
         die();
     }
-
-    $rs = executeSQL($mainConnection, 'SELECT CD_CPF FROM MW_CLIENTE WHERE ID_CLIENTE = ?', array($_SESSION['user']), true);
-    $cpf = $rs[0];
 
     // lista codapresentacao e id_base a partir da reserva
     $query = 'SELECT A.ID_APRESENTACAO, A.CODAPRESENTACAO, E.ID_BASE, A.HR_APRESENTACAO, CONVERT(VARCHAR(8), A.DT_APRESENTACAO, 112) DT_APRESENTACAO, E.CODPECA

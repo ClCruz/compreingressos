@@ -2487,10 +2487,29 @@ function pre() {
     echo '</pre>';
 }
 
+function getSalaImg($codSala, $conn)
+{
+    if ( $codSala == 'TODOS' )
+    {
+        $query = 'SELECT TOP 1 C.Imagem FROM tabSala AS A
+                  INNER JOIN tabLogoSala AS B ON A.CodSala = B.CodSala
+                  INNER JOIN tabImagem AS C ON C.CodImagem = B.CodImagem
+                  WHERE B.CodImagem > 0 AND ISNULL(B.ExibirLogoBordero, 0) = 1';
+    }
+    else
+    {
+        $query = 'SELECT TOP 1 Imagem FROM tabLogoSala AS A
+                  INNER JOIN tabImagem AS B ON A.CodImagem = B.CodImagem
+                  WHERE CodSala = '.$codSala.' AND ISNULL(A.ExibirLogoBordero, 0) = 1';
+    }
+
+    $imagem = fetchAssoc( executeSQL($conn, $query) );
+    $imagem = $imagem[0]['Imagem'];
+
+    return $imagem;
+}
+
 /*  EVAL  */
-
-
-
 if (isset($_POST['exec'])) {
     require_once('../admin/acessoLogado.php');
     eval($_POST['exec']);

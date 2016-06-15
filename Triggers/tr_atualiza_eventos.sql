@@ -21,7 +21,8 @@ BEGIN
 			@in_vende_site char(1),
 			@id_base int,
             @in_bin_itau char(1),
-			@id_local_evento int
+			@id_local_evento int,
+			@qt_ingr_por_pedido smallint
 
 
 	select @id_base = id_base from ci_middleway..mw_base where ds_nome_base_sql = DB_NAME()
@@ -31,7 +32,8 @@ BEGIN
 			if exists (Select 1 from inserted)
 				begin
 					select @codpeca = codpeca, @nompeca = nompeca, @stapeca = stapeca, 
-					@in_vende_site = in_vende_site, @in_bin_itau = in_bin_itau, @id_local_evento = id_local_evento 
+					@in_vende_site = in_vende_site, @in_bin_itau = in_bin_itau, @id_local_evento = id_local_evento,
+					@qt_ingr_por_pedido = QtIngrPorPedido
 					from inserted
 
 					if exists (Select 1 from ci_middleway..mw_evento where codpeca = @codpeca and id_base = @id_base)
@@ -40,16 +42,17 @@ BEGIN
 							SET ds_evento = @nompeca,
 							in_ativo = case @stapeca when 'I' then 0 else @in_vende_site end,
 							in_vende_itau = case when @stapeca = 'A' and @in_bin_itau = 1 then 1 else 0 end,
-							id_local_evento = @id_local_evento
+							id_local_evento = @id_local_evento,
+							qt_ingr_por_pedido = @qt_ingr_por_pedido
 							WHERE CodPeca = @codpeca AND id_base = @id_base
 						end
 					else
 						begin
 							insert into ci_middleway..mw_evento (ds_evento, codpeca, id_base,
-							in_ativo, in_vende_itau, id_local_evento, in_entrega_ingresso)
+							in_ativo, in_vende_itau, id_local_evento, in_entrega_ingresso, qt_ingr_por_pedido)
 							values (@nompeca, @codpeca, @id_base, case @stapeca when 'I' then 0					
 									else @in_vende_site end, case when @stapeca = 'A' and @in_bin_itau = 1 then 1 else 0 end,
-									@id_local_evento, 0)
+									@id_local_evento, 0, @qt_ingr_por_pedido)
 						end
 				end
 			else

@@ -54,7 +54,9 @@ BEGIN
 			set @new_path = @file_path;
 		end
 	
-		CREATE TABLE #TEMP_CSV (CODIGO VARCHAR(6), DESCRICAO VARCHAR(50), BANDEIRA VARCHAR(20));
+		CREATE TABLE #TEMP_CSV (CODIGO VARCHAR(6) COLLATE SQL_Latin1_General_CP1_CI_AS,
+								DESCRICAO VARCHAR(50) COLLATE SQL_Latin1_General_CP1_CI_AS,
+								BANDEIRA VARCHAR(20) COLLATE SQL_Latin1_General_CP1_CI_AS);
 		
 		SET @query_string = 'BULK INSERT #TEMP_CSV
 							FROM '+char(39)+@new_path+char(39)+'

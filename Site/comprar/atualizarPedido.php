@@ -47,12 +47,25 @@ if (isset($_GET['action'])) {
 	
 	if ($_GET['action'] == 'add' and isset($_REQUEST['id'])) {
 
-		$query = 'SELECT SUM(1) FROM MW_RESERVA WHERE ID_SESSION = ?';
-		$params = array(session_id());
+		$query = 'SELECT E.QT_INGR_POR_PEDIDO FROM MW_EVENTO E INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO WHERE A.ID_APRESENTACAO = ?';
+		$params = array($_POST['apresentacao']);
+		$rs = executeSQL($mainConnection, $query, $params, true);
+		$maxIngressos = $rs['QT_INGR_POR_PEDIDO'];
+
+		$query = 'SELECT SUM(1) FROM MW_RESERVA R
+					INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+					INNER JOIN MW_EVENTO E ON A.ID_EVENTO = E.ID_EVENTO
+					WHERE A.ID_APRESENTACAO = ? AND R.ID_SESSION = ?';
+		$params = array($_POST['apresentacao'], session_id());
 		$rs = executeSQL($mainConnection, $query, $params, true);
 
-		if ($_SESSION['assinatura']['tipo'] == 'troca' and $rs[0] == count($_SESSION['assinatura']['cadeira'])) {
-			die('Você atingiu o limite para essa troca:<br/>' . count($_SESSION['assinatura']['cadeira']) . ' ingresso(s) selecionado(s).');
+		if ($_SESSION['assinatura']['tipo'] == 'troca') {
+			$query = 'SELECT SUM(1) FROM MW_RESERVA WHERE ID_SESSION = ?';
+			$params = array(session_id());
+			$rs_assinatura = executeSQL($mainConnection, $query, $params, true);
+
+			if ($rs_assinatura[0] == count($_SESSION['assinatura']['cadeira']))
+				die('Você atingiu o limite para essa troca:<br/>' . count($_SESSION['assinatura']['cadeira']) . ' ingresso(s) selecionado(s).');
 		}
 		
 		if ($rs[0] < $maxIngressos) {
@@ -532,9 +545,10 @@ if (isset($_GET['action'])) {
 		
 	} else if ($_GET['action'] == 'noNum' and isset($_POST['numIngressos']) and is_numeric($_POST['numIngressos'])) {
 
-		$query = 'SELECT COUNT(1) FROM MW_RESERVA WHERE ID_SESSION = ? AND ID_APRESENTACAO != ?';
-		$params = array(session_id(), $_POST['apresentacao']);
+		$query = 'SELECT E.QT_INGR_POR_PEDIDO FROM MW_EVENTO E INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO WHERE A.ID_APRESENTACAO = ?';
+		$params = array($_POST['apresentacao']);
 		$rs = executeSQL($mainConnection, $query, $params, true);
+		$maxIngressos = $rs['QT_INGR_POR_PEDIDO'];
 
 		if ($_GET['pos']) {
 			$cod_caixa = 250;
@@ -548,7 +562,7 @@ if (isset($_GET['action'])) {
 			$bin = null;
 		}
 		
-		if ($_POST['numIngressos'] + $rs[0] <= $maxIngressos) {
+		if ($_POST['numIngressos'] <= $maxIngressos) {
 			$conn = getConnection($_POST['teatro']);
 			
 			$return = verificarLimitePorCPF($conn, $_POST['codapresentacao'], $_SESSION['user']);

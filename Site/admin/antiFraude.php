@@ -184,7 +184,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 460, true)) {
                 </thead>
             </table>
             <div class="disponiveis">
-                <table>
+                <table class="ui-widget ui-widget-content">
                     <thead><tr><th class="nm_evento"></th><th class="nm_local"><th class="data"></th><th class="data"></th></th><th class="chk_evento"></th></tr></thead>
                     <tbody id="registros"></tbody>
                 </table>
@@ -203,7 +203,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 460, true)) {
                 </thead>
             </table>
             <div class="selecionados">
-                <table>
+                <table class="ui-widget ui-widget-content">
                     <thead><tr><th class="nm_evento"></th><th class="nm_local"></th><th class="data"></th><th class="data"></th><th class="chk_evento"></th></tr></thead>
                     <tbody id="selecionados">
                         <?php

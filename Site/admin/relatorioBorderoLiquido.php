@@ -127,6 +127,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 251, true)) {
 
             function validar()
             {
+                var primeiraSala = ''; //Primeiro option do combo após "SELECIONE" e "TODOS".
+
                 if(document.fPeca.cboPeca.value == "")
                 {
                     $.dialog({title: 'Alerta...',text: 'Selecione o evento'});

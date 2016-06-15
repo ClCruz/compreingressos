@@ -37,16 +37,29 @@ switch ($_GET['tipo']) {
 	    $id_cliente = $rs['ID_CLIENTE'];
 	    $nome_cliente = $rs['DS_NOME'] ." ". $rs['DS_SOBRENOME'];
 
-	    $query ="SELECT DISTINCT PV.ID_PEDIDO_VENDA,                
-	                PV.DT_PEDIDO_VENDA, 
-	                PV.VL_TOTAL_PEDIDO_VENDA
-	            FROM MW_PEDIDO_VENDA PV
-	            INNER JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
-	            INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO AND A.IN_ATIVO = 1
-	            INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO AND E.IN_ATIVO = 1
-	            WHERE ID_CLIENTE = ? AND IN_SITUACAO = 'F'
-	            AND CONVERT(DATETIME, CONVERT(VARCHAR, A.DT_APRESENTACAO, 112) + ' ' + LEFT(A.HR_APRESENTACAO,2) + ':' + RIGHT(A.HR_APRESENTACAO,2) + ':00') >= GETDATE()
-	            ORDER BY 1 DESC";
+//	    $query ="SELECT DISTINCT PV.ID_PEDIDO_VENDA,
+//	                PV.DT_PEDIDO_VENDA,
+//	                PV.VL_TOTAL_PEDIDO_VENDA
+//	            FROM MW_PEDIDO_VENDA PV
+//	            INNER JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
+//	            INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO AND A.IN_ATIVO = 1
+//	            INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO AND E.IN_ATIVO = 1
+//	            WHERE ID_CLIENTE = ? AND IN_SITUACAO = 'F'
+//	            AND CONVERT(DATETIME, CONVERT(VARCHAR, A.DT_APRESENTACAO, 112) + ' ' + LEFT(A.HR_APRESENTACAO,2) + ':' + RIGHT(A.HR_APRESENTACAO,2) + ':00') >= GETDATE()
+//	            ORDER BY 1 DESC";
+
+		$query = "SELECT DISTINCT PV.ID_PEDIDO_VENDA,                
+					PV.DT_PEDIDO_VENDA, 
+					PV.VL_TOTAL_PEDIDO_VENDA,
+					CONVERT(datetime, A.dt_apresentacao + REPLACE(A.hr_apresentacao, 'h', ':'), 103) AS DT_APRESENTACAO
+				FROM MW_PEDIDO_VENDA PV
+				INNER JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
+				INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO AND A.IN_ATIVO = 1
+				INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO AND E.IN_ATIVO = 1
+				WHERE ID_CLIENTE = ? AND IN_SITUACAO = 'F'
+				AND CONVERT(DATETIME, CONVERT(VARCHAR, A.DT_APRESENTACAO, 112) + ' ' + LEFT(A.HR_APRESENTACAO,2) + ':' + RIGHT(A.HR_APRESENTACAO,2) + ':00') >= GETDATE()
+				ORDER BY DT_APRESENTACAO";
+
 	    $params = array($id_cliente);
 	    $result = executeSQL($mainConnection, $query, $params);    
 
@@ -58,16 +71,17 @@ switch ($_GET['tipo']) {
 	    $pedido_options = array(999999999 => 'Voltar');
 
 		while ($rs = fetchResult($result)) {
-			$pedido_options[$rs['ID_PEDIDO_VENDA']] = $rs['ID_PEDIDO_VENDA'] ." - ". $rs['DT_PEDIDO_VENDA']->format('d/m/y') . str_pad(number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, ',', ''), 11, ' ', STR_PAD_LEFT);
+			$pedido_options[$rs['ID_PEDIDO_VENDA'].'_'.count($pedido_options)] = $rs['ID_PEDIDO_VENDA'] ." - ". $rs['DT_APRESENTACAO']->format('d/m/y') . str_pad(number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, ',', ''), 11, ' ', STR_PAD_LEFT);
+			//$pedido_options[$rs['ID_PEDIDO_VENDA']] = $rs['ID_PEDIDO_VENDA'] ." - ". $rs['DT_APRESENTACAO']->format('d/m/y') . str_pad(number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, ',', ''), 11, ' ', STR_PAD_LEFT);
 		}
 
 	    echo "<WRITE_AT LINE=5 COLUMN=0> $nome_cliente</WRITE_AT>";
 	    echo "<WRITE_AT LINE=7 COLUMN=0> Selecione o Pedido:</WRITE_AT>";
-	    
-	    echo_select('pedido', $pedido_options, 5);
+		echo "<WRITE_AT LINE=9 COLUMN=0> Pedido | Dt. Apres. | Valor</WRITE_AT>";
 
-	} else if(isset($_GET["pedido"])) {	
+	    echo_select('pedido', $pedido_options, 7);
 
+	} else if(isset($_GET["pedido"])) {
 		$query = "SELECT DS_LOCALIZACAO FROM MW_ITEM_PEDIDO_VENDA WHERE ID_PEDIDO_VENDA = ?";
 		$result = executeSQL($mainConnection, $query, array($_GET['pedido']));
 

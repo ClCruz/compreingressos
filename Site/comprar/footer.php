@@ -47,7 +47,7 @@ if (isset($_SESSION['operador']) and in_array($etapa_atual, $etapas_para_exibir)
             </li>
             <li><a href="http://www.compreingressos.com/servicos/4-Ingressos">Ingressos</a>
             </li>
-            <li><a href="http://www.compreingressos.com/especiais/2-Agendamento_de_Grupos">Vendas para grupos</a>
+            <li><a href="http://www.compreingressos.com/grupos">Vendas para grupos</a>
             </li>
             <li><a href="http://www.compreingressos.com/servicos/1-Vendas_pela_Internet">Vendas pela internet</a>
             </li>
@@ -56,7 +56,7 @@ if (isset($_SESSION['operador']) and in_array($etapa_atual, $etapas_para_exibir)
         </ul>
         <ul>
             <li class="title">Ajuda</li>
-            <li><a href="https://compreingressos.webdesklw.com.br/user_sessions/new" target="_blank">Sac & Suporte</a>
+            <li><a href="http://suporte.compreingressos.com/" target="_blank">Sac & Suporte</a>
             </li>
             <li><a href="https://compra.compreingressos.com/comprar/loginBordero.php?redirect=..%2Fadmin%2F%3Fp%3DrelatorioBordero">Borderô web</a>
             </li>

@@ -8,9 +8,7 @@ $locale = setlocale(LC_ALL, "pt_BR", "pt_BR.iso-8859-1", "pt_BR.utf-8", "portugu
 
 $cookieExpireTime = time() + 60 * 20; //20min
 
-$compraExpireTime = 150;//minutos
-
-$maxIngressos = 16;//maximo por compra
+$compraExpireTime = 15;//minutos
 
 $uploadPath = '../images/uploads/';
 

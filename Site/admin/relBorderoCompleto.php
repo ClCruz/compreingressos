@@ -58,19 +58,7 @@ if ($_GET['Small'] == '1') {
   }
 }
 
-if ( !empty($codSala) && $codSala != 'TODOS' ) {
-
-    $query = 'SELECT B.Imagem FROM tabLogoSala AS A
-              INNER JOIN tabImagem AS B ON B.CodImagem = A.CodImagem 
-              WHERE CodSala = '.$codSala;
-}else{
-    $query = 'SELECT TOP 1 B.Imagem FROM tabLogoSala AS A
-              INNER JOIN tabImagem AS B ON A.CodImagem = B.CodImagem
-              WHERE B.CodImagem > 0 ORDER BY B.CodImagem DESC';
-}
-
-$imagem = fetchAssoc( executeSQL($connGeral, $query) );
-$imagem = $imagem[0]['Imagem'];
+$imagem = getSalaImg($codSala, $connGeral);
 
 if (isset($err) && $err != "") {
   echo $err . "<br/>";
@@ -103,7 +91,9 @@ if (isset($err) && $err != "") {
         </td>
         <td>
           <div class="logoTeatro">
+              <?php if( !empty($imagem) ): ?>
               <img src="data:img/jpeg;base64,<?php echo base64_encode($imagem); ?>" alt="" />
+              <?php endif; ?>
           </div>
         </td>
         <td width="300" class="tabela" align="center" bgcolor="LightGrey"><b><font size=2 face="tahoma,verdana,arial">Borderô de Vendas</font><br/>Contabilização dos Ingressos</b></td>

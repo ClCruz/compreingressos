@@ -39,16 +39,21 @@ function echo_select($name, $list, $line, $select_lines = null){
 		$list = array_slice($list, 0, -1, true);	
 	}
 
+	$index = '';
+	$items = '';
+
 	foreach ($list as $key => $value) {
-		$list[$key] = remove_especial_chars(substr($value, 0, 29));
+		$temp  = explode('_', $key);
+
+		$index .= $temp[0].',';
+		$items .= remove_especial_chars(substr($value, 0, 29)).',';
 	}
 
 	$line = $header_lines + $line + 1;
 
-	$index = implode(",", array_keys($list));
-	$items = implode(",", $list);
+	$items = substr($items, 0, -1);
 	$select_lines = $select_lines ? $select_lines : $total_lines - $line;
-	echo "<SELECT LIN=$line COL=2 SIZE=29 QTD=$select_lines UP=B1 DOWN=B4 LEFT=34 RIGHT=36 NAME=$name TYPE_RETURN=3 INDEX=$index,>";
+	echo "<SELECT LIN=$line COL=2 SIZE=29 QTD=$select_lines UP=B1 DOWN=B4 LEFT=34 RIGHT=36 NAME=$name TYPE_RETURN=3 INDEX=$index>";
 	echo utf8_decode($items);
 	echo "</SELECT>";
 
@@ -297,7 +302,7 @@ function print_order($pedido, $reprint = false){
 
 		echo str_pad(substr(remove_accents($rs['DS_EVENTO'], false), 0, 24), 24, " ", STR_PAD_BOTH) ."<BR>";
 		echo str_pad($rs['DT_APRESENTACAO']->format('d/m/Y') ." ". $rs['HR_APRESENTACAO'], 24, " ", STR_PAD_BOTH) ."<BR>";
-		echo str_pad(utf8_decode(remove_accents(substr(preg_replace('/\d+\s+.+?\s+/i', '', $rsAux['NOMSETOR']), 0, 24), false)), 24, " ", STR_PAD_BOTH) ."<BR>";
+		echo str_pad(utf8_decode(remove_accents(substr($rsAux['NOMSETOR'], 0, 24), false)), 24, " ", STR_PAD_BOTH) ."<BR>";
 		echo str_pad(utf8_decode(get_lugar($rs['INDICE'], $rs['ID_BASE'])), 24, " ", STR_PAD_BOTH) ."<BR>";		
 		echo str_pad(substr(remove_accents($rs['DS_TIPO_BILHETE'],false) . " - R$ ". number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', ''), 0, 24), 24, " ", STR_PAD_BOTH) ."<BR>";
 		

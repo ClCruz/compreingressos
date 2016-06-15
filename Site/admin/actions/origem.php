@@ -1,6 +1,6 @@
 <?php
 
-if (acessoPermitido($mainConnection, $_SESSION['admin'], 450, true)) {
+if (acessoPermitido($mainConnection, $_SESSION['admin'], 470, true)) {
 
     if ($_GET['action'] == 'update' and isset($_GET['id'])) { /* ------------ UPDATE ------------ */
         $query = 'SELECT 1 FROM MW_ORIGEM WHERE DS_ORIGEM = ? AND ID_ORIGEM != ?';

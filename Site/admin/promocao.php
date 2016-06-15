@@ -222,7 +222,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                             $('a.button.importar span').text('Importar Arq. CSV');
                         break;
                         // BINs CSV
-                        case '4':
+                        case '4': case '7':
                             mostrar = 'bin';
 
                             $('a.button.importar span').text('Importar Arq. BIN - CSV');
@@ -376,7 +376,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                                             document.location = './?p=promocoes';
                                         },
                                         'Exibir Códigos Gerados': function(){
-                                            if ($cboPromo.val() == 4 /*BIN*/) {
+                                            if ($.inArray($cboPromo.val(), [4, 7]) /*BINs*/) {
                                                 document.location = './?p=cartaoPatrocinado&idPatrocinador='+$('#cboPatrocinador').val();
                                             } else {
                                                 document.location = './?p=codigosPromocionais&id='+id;
@@ -434,7 +434,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                             campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], [name=cboPatrocinador], [name=ds_codigo], [name=qt_codigo])');
                         break;
                         // BINs CSV
-                        case '4':
+                        case '4': case '7':
                             campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], [name=ds_codigo], [name=qt_codigo])');
                         break;
                         // Convite

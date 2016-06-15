@@ -896,7 +896,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
     		or ($is_lote and $is_lote_no_carrinho)) {
 			
 			// se for bin itau
-			if ($rs['CODTIPPROMOCAO'] == 4) {
+			if (in_array($rs['CODTIPPROMOCAO'], array(4, 7))) {
 				$rs['IMG1PROMOCAO'] = '../images/promocional/' . basename($rs['IMG1PROMOCAO']);
 				$rs['IMG2PROMOCAO'] = '../images/promocional/' . basename($rs['IMG2PROMOCAO']);
 
@@ -1528,7 +1528,8 @@ function comboTipoPromocao($name, $selected) {
         3 => 'Arquivo CSV',
         4 => 'BIN',
         5 => 'Convite',
-        6 => 'WebService'
+        // 6 => 'WebService'
+        7 => 'BIN Riachuelo'
     );
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione...</option>';

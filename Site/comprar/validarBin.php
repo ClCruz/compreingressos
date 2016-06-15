@@ -27,16 +27,19 @@ if ($_GET['carrinho']) {
                 INNER JOIN TABTIPBILHETE TTB ON TTB.CODTIPBILHETE = AB.CODTIPBILHETE
                 INNER JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = TTB.ID_PROMOCAO_CONTROLE AND A.DT_APRESENTACAO BETWEEN PC.DT_INICIO_PROMOCAO AND PC.DT_FIM_PROMOCAO
                 INNER JOIN CI_MIDDLEWAY..MW_CARTAO_PATROCINADO CP ON CP.ID_PATROCINADOR = PC.ID_PATROCINADOR
-                AND CP.CD_BIN = ?
-                WHERE PC.CODTIPPROMOCAO = 4
+                WHERE (
+                    (PC.CODTIPPROMOCAO in (4, 7) AND CP.CD_BIN = ?)
+                    OR
+                    (PC.CODTIPPROMOCAO = 7 AND CP.CD_BIN = SUBSTRING(?, 1, 5))
+                )
                 AND R.ID_RESERVA = ?";
-        $params = array($_POST['bin'], $_POST['reserva']);
+        $params = array($_POST['bin'], $_POST['bin'], $_POST['reserva']);
 
         $result = executeSQL($conn, $query, $params);
 
         if (hasRows($result)) {
             $query = "UPDATE MW_RESERVA SET CD_BINITAU = ?, NR_BENEFICIO = NULL WHERE ID_RESERVA = ?";
-            executeSQL($mainConnection, $query, $params);
+            executeSQL($mainConnection, $query, array($_POST['bin'], $_POST['reserva']));
 
             echo "true";
         } else {
@@ -123,15 +126,38 @@ if ($_GET['carrinho']) {
         die();
     }
 
-    $query = "SELECT top 1 cd_binitau from mw_reserva where cd_binitau is not null and id_session = ?";
+    $query = "SELECT TOP 1 R.CD_BINITAU, R.ID_APRESENTACAO_BILHETE, AB.CODTIPBILHETE, E.ID_BASE
+                FROM MW_RESERVA R
+                INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+                INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+                INNER JOIN MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
+                WHERE CD_BINITAU IS NOT NULL AND ID_SESSION = ?";
     $bin = executeSQL($mainConnection, $query, array(session_id()), true);
-    $numeroDoCartao = $bin['cd_binitau'];
+    $numeroDoCartao = $bin['CD_BINITAU'];
+    $id_base = $bin['ID_BASE'];
+    $codTipBilhete = $bin['CODTIPBILHETE'];
 
-    if ($numeroDoCartao && substr(str_replace('-', '', $_POST['numCartao']), 0, 6) != $numeroDoCartao) {
-        if( (!isset($_SESSION['usuario_pdv'])) OR ($_SESSION['usuario_pdv'] == 0) ){
-            echo "O cartão utilizado não corresponde ao cartão informado para validação da promoção.";
-            die();
+    $conn = getConnection($id_base);
+
+    $query = "SELECT P.CODTIPPROMOCAO
+                FROM TABTIPBILHETE T
+                INNER JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE P ON P.ID_PROMOCAO_CONTROLE = T.ID_PROMOCAO_CONTROLE
+                WHERE CODTIPBILHETE = ?";
+
+    $bin = executeSQL($conn, $query, array($codTipBilhete), true);
+    $codTipPromocao = $bin['CODTIPPROMOCAO'];
+
+    // se for bin normal (5) ou se for bin do riachuelo (7) e o inicio do cartao nao for private label (02)
+    if ($codTipPromocao == 5 OR ($codTipPromocao == 7 AND substr($numeroDoCartao, 0, 2) != '02')) {
+        if ($numeroDoCartao AND substr(str_replace('-', '', $_POST['numCartao']), 0, 6) != $numeroDoCartao) {
+            if( (!isset($_SESSION['usuario_pdv'])) OR ($_SESSION['usuario_pdv'] == 0) ){
+                echo "O cartão utilizado não corresponde ao cartão informado para validação da promoção.";
+                die();
+            }
         }
+    } elseif ($codTipPromocao == 7 AND substr($_POST['numCartao'], 0, 2) == '02') {
+        echo "Cartão private label.";
+        die();
     }
 
     $rs = executeSQL($mainConnection, 'SELECT CD_CPF FROM MW_CLIENTE WHERE ID_CLIENTE = ?', array($_SESSION['user']), true);
@@ -146,7 +172,7 @@ if ($_GET['carrinho']) {
              GROUP BY A.ID_APRESENTACAO, A.CODAPRESENTACAO, E.ID_BASE, A.HR_APRESENTACAO, CONVERT(VARCHAR(8), A.DT_APRESENTACAO, 112), E.CODPECA';
 
     // confere se o bin informado é valido
-    $query22 = 'SELECT TOP 1 1
+    $query22 = "SELECT TOP 1 1
                 FROM
                 CI_MIDDLEWAY..MW_RESERVA R
                 INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
@@ -154,10 +180,13 @@ if ($_GET['carrinho']) {
                 INNER JOIN TABTIPBILHETE TTB ON TTB.CODTIPBILHETE = AB.CODTIPBILHETE
                 INNER JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = TTB.ID_PROMOCAO_CONTROLE AND A.DT_APRESENTACAO BETWEEN PC.DT_INICIO_PROMOCAO AND PC.DT_FIM_PROMOCAO
                 INNER JOIN CI_MIDDLEWAY..MW_CARTAO_PATROCINADO CP ON CP.ID_PATROCINADOR = PC.ID_PATROCINADOR
-                AND CP.CD_BIN = ?
-                WHERE PC.CODTIPPROMOCAO = 4
+                WHERE (
+                    (PC.CODTIPPROMOCAO in (4, 7) AND CP.CD_BIN = ?)
+                    OR
+                    (PC.CODTIPPROMOCAO = 7 AND SUBSTRING(R.CD_BINITAU, 1, 2) = '02')
+                )
                 AND A.ID_APRESENTACAO = ?
-                AND R.ID_SESSION = ?';
+                AND R.ID_SESSION = ?";
 
     // (só restorna se participa da promoção) retorna limite e quantidade de bilhetes que participam da promo da compra atual
     $query2 = 'SELECT ISNULL(CE.QT_PROMO_POR_CPF, PC.QT_PROMO_POR_CPF) AS QT_PROMO_POR_CPF, COUNT(R.ID_RESERVA) AS COMPRANDO
@@ -167,7 +196,7 @@ if ($_GET['carrinho']) {
                 INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
                 INNER JOIN TABTIPBILHETE TB ON TB.CODTIPBILHETE = AB.CODTIPBILHETE
                 INNER JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = TB.ID_PROMOCAO_CONTROLE
-                    AND PC.CODTIPPROMOCAO = 4
+                    AND PC.CODTIPPROMOCAO in (4, 7)
                 LEFT JOIN CI_MIDDLEWAY..MW_CONTROLE_EVENTO CE ON CE.ID_PROMOCAO_CONTROLE = PC.ID_PROMOCAO_CONTROLE
                     AND CE.ID_EVENTO = E.ID_EVENTO
                 WHERE A2.ID_APRESENTACAO = ? AND R.ID_SESSION = ?
@@ -180,7 +209,7 @@ if ($_GET['carrinho']) {
                 INNER JOIN TABCOMPROVANTE CR ON CR.CODCLIENTE = H.CODIGO AND CR.CODAPRESENTACAO = H.CODAPRESENTACAO
                 INNER JOIN TABINGRESSO I ON I.CODVENDA = CR.CODVENDA AND LEFT(I.INDICE, 6) = H.INDICE
                 INNER JOIN TABTIPBILHETE TB ON TB.CODTIPBILHETE = H.CODTIPBILHETE
-                INNER JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = TB.ID_PROMOCAO_CONTROLE AND PC.CODTIPPROMOCAO = 4
+                INNER JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = TB.ID_PROMOCAO_CONTROLE AND PC.CODTIPPROMOCAO in (4, 7)
                 WHERE C.CPF = ? AND H.CODAPRESENTACAO IN (
                         SELECT CODAPRESENTACAO FROM TABAPRESENTACAO
                         WHERE DATAPRESENTACAO = ? AND HORSESSAO = ? AND CODPECA = ?

@@ -158,7 +158,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                 $query = 'EXEC prc_importa_codigos_promocionais ?,?';
                 $params = array($path, $id_promocao);
 
-            } else if ($cod_tip_promocao == 4) {
+            } else if (in_array($cod_tip_promocao, array(4, 7))) {
                 
                 $rs = executeSQL($conn,
                                 'SELECT ID_PATROCINADOR FROM MW_PROMOCAO_CONTROLE WHERE ID_PROMOCAO_CONTROLE = ?',
@@ -310,7 +310,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
             apagar_codigos($mainConnection, $_POST['id'], $_POST['qt_codigo'] * -1);
         }
         // carrega arquivos csv com codigos e cpf ou bins
-        else if ($rs['CODTIPPROMOCAO'] == 3 or $rs['CODTIPPROMOCAO'] == 4 and $_POST['diretorio_temp']) {
+        else if (in_array($rs['CODTIPPROMOCAO'], array(3, 4, 7)) and $_POST['diretorio_temp']) {
             $import = importar_conteudo_dos_arquivos($mainConnection, $_POST['id'], $_POST['diretorio_temp'], $rs['CODTIPPROMOCAO']);
             $retorno = $import === true ? '' : 'true?id='.$_POST['id'].'&msg=A promoção foi alterada, porém o processo de importação encontrou problemas no(s) arquivo(s):<br/><br/>'.$import;
         }
@@ -415,7 +415,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
         executeSQL($mainConnection, 'exec prc_insere_bilhete_promocao ?', array($id));
 
         // carrega arquivos csv com codigos e cpf ou bins
-        if ($_POST['cboPromo'] == 3 or $_POST['cboPromo'] == 4 and $_POST['diretorio_temp']) {
+        if (in_array($rs['CODTIPPROMOCAO'], array(3, 4, 7)) and $_POST['diretorio_temp']) {
             $import = importar_conteudo_dos_arquivos($mainConnection, $id, $_POST['diretorio_temp'], $_POST['cboPromo']);
             $retorno = $import === true ? '' : 'true?id='.$id.'&msg=A promoção foi criada, porém o processo de importação encontrou problemas no(s) arquivo(s):<br/><br/>'.$import;
         }

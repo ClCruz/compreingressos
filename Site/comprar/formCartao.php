@@ -55,7 +55,6 @@ if ($_POST) {
                     inner join mw_evento e on e.id_evento = a.id_evento
                     where cd_binitau is not null and id_session = ?";
     	$bin = executeSQL($mainConnection, $query, array(session_id()), true);
-    	$bin = empty($bin) ? '' : substr($bin['cd_binitau'], 0, 4) . '-' . substr($bin['cd_binitau'], -2);
 
     	$query = "select e.id_base, e.codpeca from mw_evento e inner join mw_apresentacao a on a.id_evento = e.id_evento inner join mw_reserva r on r.id_apresentacao = a.id_apresentacao where r.id_session = ?";
     	$rsParcelas = executeSQL($mainConnection, $query, array(session_id()), true);
@@ -137,7 +136,7 @@ if ($_POST) {
                 <div class="linha">
                     <div class="input">
                         <p class="titulo">número do cartão</p>
-                        <input type="text" name="numCartao" value="<?php echo $bin; ?>">
+                        <input type="text" name="numCartao" value="">
                         <div class="erro_help">
                             <p class="help">XXXX-XXXX-XXXX-XXXX</p>
                         </div>

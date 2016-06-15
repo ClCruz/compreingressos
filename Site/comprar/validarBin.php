@@ -156,7 +156,7 @@ if ($_GET['carrinho']) {
             }
         }
     } elseif ($codTipPromocao == 7 AND substr($_POST['numCartao'], 0, 2) == '02') {
-        echo "Cartão private label.";
+        echo "Utilze seu cartão de crédito para efetuar o pagamento.";
         die();
     }
 

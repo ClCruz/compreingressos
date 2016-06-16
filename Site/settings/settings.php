@@ -6,9 +6,16 @@ $title = $nomeSite;// . ' - Painel Administrativo';
 
 $locale = setlocale(LC_ALL, "pt_BR", "pt_BR.iso-8859-1", "pt_BR.utf-8", "portuguese");
 
-$cookieExpireTime = time() + 60 * 20; //20min
-
-$compraExpireTime = 15;//minutos
+if ( isset($_ENV['IS_TEST']) )
+{
+	$cookieExpireTime = time() + 60 * 120; //20min
+	$compraExpireTime = 120;//minutos
+}
+else
+{
+	$cookieExpireTime = time() + 60 * 20; //20min
+	$compraExpireTime = 15;//minutos
+}
 
 $uploadPath = '../images/uploads/';
 

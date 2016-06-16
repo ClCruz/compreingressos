@@ -550,3 +550,19 @@ function updateValorServicoPorPedido(bilhete, target) {
 		}
 	});
 }
+
+//Função de testes para exibir imagem do bin validado
+function validamanual()
+{
+	$this = $(document.forms.pedido['4']);
+
+	var	$tr = $this.closest('tr').next('.beneficio'),
+		$hidden = $tr.find('.hidden'),
+		$notHidden = $tr.find('.notHidden'),
+		$bin = $tr.find('.validador_itau');
+
+	$hidden.removeClass('hidden').addClass('notHidden');
+	$notHidden.removeClass('notHidden').addClass('hidden');
+	$tr.find('.icone_validador').addClass('valido');
+	$bin.prop('readonly', true);
+}

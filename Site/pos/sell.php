@@ -67,7 +67,7 @@ if (isset($_GET['quantidade']) and $_GET['quantidade'] != '') {
 		if (isset($_GET['validar_codigos'])) {
 
 			// se for promocao BIN
-			if ($rs['CODTIPPROMOCAO'] == 4) {
+			if (in_array($rs['CODTIPPROMOCAO'], array(4, 7))) {
 
 				$query = "SELECT 1 FROM MW_RESERVA R WHERE R.ID_SESSION = ? AND CD_BINITAU IS NOT NULL AND CD_BINITAU != ?";
 			    $result = executeSQL($mainConnection, $query, array(session_id(), $_GET['codigo'][0]));
@@ -86,10 +86,13 @@ if (isset($_GET['quantidade']) and $_GET['quantidade'] != '') {
 			                INNER JOIN TABTIPBILHETE TTB ON TTB.CODTIPBILHETE = AB.CODTIPBILHETE
 			                INNER JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = TTB.ID_PROMOCAO_CONTROLE AND A.DT_APRESENTACAO BETWEEN PC.DT_INICIO_PROMOCAO AND PC.DT_FIM_PROMOCAO
 			                INNER JOIN CI_MIDDLEWAY..MW_CARTAO_PATROCINADO CP ON CP.ID_PATROCINADOR = PC.ID_PATROCINADOR
-			                AND CP.CD_BIN = ?
-			                WHERE PC.CODTIPPROMOCAO = 4
+			                WHERE (
+			                    (PC.CODTIPPROMOCAO in (4, 7) AND CP.CD_BIN = ?)
+			                    OR
+			                    (PC.CODTIPPROMOCAO = 7 AND CP.CD_BIN = SUBSTRING(?, 1, 5))
+			                )
 			                AND AB.ID_APRESENTACAO_BILHETE = ?";
-			        $params = array($_GET['codigo'][0], $_GET['bilhete']);
+			        $params = array($_GET['codigo'][0], $_GET['codigo'][0], $_GET['bilhete']);
 
 			        $result = executeSQL($conn, $query, $params);
 
@@ -226,7 +229,7 @@ if (isset($_GET['quantidade']) and $_GET['quantidade'] != '') {
 				}
 
 				// se for bin pegar o codigo promocional apenas uma vez
-				$codes_to_get = (($rs['CODTIPPROMOCAO'] == 4 and $_GET['quantidade'] > 0) ? 1 : $_GET['quantidade']);
+				$codes_to_get = ((in_array($rs['CODTIPPROMOCAO'], array(4, 7)) and $_GET['quantidade'] > 0) ? 1 : $_GET['quantidade']);
 
 				if ($codes_to_get > 0) {
 					for ($i=1; $i <= $codes_to_get; $i++) {

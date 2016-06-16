@@ -826,6 +826,10 @@ table#pedido_resumo tbody tr.beneficio div.img_complemento{
 	margin:0 5px;
 }
 
+table#pedido_resumo tbody tr.beneficio div.img_complemento img{
+	height: 100%;
+}
+
 table#pedido_resumo tbody tr.beneficio div.ajuda{
 	float:left;
 	width:139px;

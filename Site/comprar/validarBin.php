@@ -159,7 +159,7 @@ if ($_GET['carrinho']) {
                 die();
             }
         }
-    } elseif ($codTipPromocao == 7 AND substr($_POST['numCartao'], 0, 2) == '02') {
+    } elseif ($codTipPromocao == 7 AND substr($_POST['numCartao'], 0, 2) == '02' AND !isset($_POST['pos'])) {
         echo "$nome_clietne, você já ganhou 30% de desconto por escolher o Cartão Riachuelo. Para finalizar o pagamento, lembre-se de selecionar um outro cartão de crédito de sua preferência.";
         die();
     }

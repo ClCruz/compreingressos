@@ -80,7 +80,7 @@ $(function(){
 					fecharOverlay();
 					$.dialog({text: data});
 		    		// continuar contagem regressiva
-		    		CountStepper = 1;
+		    		CountStepper = -1;
     			}
     		});
 

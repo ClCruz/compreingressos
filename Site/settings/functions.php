@@ -1081,7 +1081,8 @@ function comboSituacao($name, $situacao = null, $isCombo = true) {
 					"P" => "Em Processamento",
 					"C" => "Cancelado pelo Usuário",
 					"E" => "Expirado",
-					"S" => "Estornado");
+                    "S" => "Estornado",
+                    "N" => "Negado");
     
 	$combo = "<select name=\"" . $name . "\" id=\"" . $name . "\">";
 	foreach ($dados as $key => $valor) {

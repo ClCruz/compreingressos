@@ -519,6 +519,8 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
 
                     cancelarPedido($result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId);
 
+                    executeSQL($mainConnection, "UPDATE MW_PEDIDO_VENDA SET IN_SITUACAO = 'N' WHERE ID_PEDIDO_VENDA = ? AND ID_CLIENTE = ?", array($newMaxId, $_SESSION['user']));
+
                     echo "Transação não autorizada.";
                     die();
                 }

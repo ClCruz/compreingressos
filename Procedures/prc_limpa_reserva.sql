@@ -27,7 +27,7 @@ mw_item_pedido_venda i
 inner join 
 mw_pedido_venda p
 on p.id_pedido_venda = i.id_pedido_venda
-and p.in_situacao = 'P'
+and p.in_situacao in ('P', 'N')
 where id_reserva in (select id_reserva from mw_reserva where dt_validade < @dataatual)
 
 
@@ -40,7 +40,8 @@ END
 -- delete from mw_item_pedido_venda where id_pedido_venda in (select id_pedido_venda from #TMP)
 
 update mw_pedido_venda
-set in_situacao = 'E', cd_bin_cartao = left(cd_bin_cartao, 6) + '******' + right(cd_bin_cartao, 4)
+set in_situacao = CASE WHEN IN_SITUACAO <> 'N' THEN 'E' ELSE 'N' END,
+cd_bin_cartao = left(cd_bin_cartao, 6) + '******' + right(cd_bin_cartao, 4)
 where id_pedido_venda in (select id_pedido_venda from #TMP)
 and in_situacao = 'P'
 

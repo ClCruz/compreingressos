@@ -55,6 +55,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
                                 C.CD_CPF,
                                 PV.CD_BIN_CARTAO,
                                 COUNT(1) QUANTIDADE_INGRESSOS,
+                                PV.NM_TITULAR_CARTAO,
                                 
                                 --dados para obter o canal de venda e local do evento
                                 E.ID_BASE,
@@ -69,7 +70,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
                             INNER JOIN MW_MEIO_PAGAMENTO MP ON MP.ID_MEIO_PAGAMENTO = PV.ID_MEIO_PAGAMENTO
                             INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE
 
-                            WHERE PV.DT_PEDIDO_VENDA BETWEEN CONVERT(DATETIME, ?) AND CONVERT(DATETIME, ? + ' 23:59:59')
+                            WHERE PV.DT_PEDIDO_VENDA BETWEEN CONVERT(DATETIME, ?, 20) AND CONVERT(DATETIME, ? + ' 23:59:59', 20)
                             AND (PV.IN_SITUACAO = ? OR ? = 'TODOS')
                             
                             GROUP BY
@@ -91,7 +92,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
                                 C.DS_NOME + ' ' + C.DS_SOBRENOME,
                                 C.CD_CPF,
                                 PV.CD_BIN_CARTAO,
-                                E.ID_BASE
+                                E.ID_BASE,
+                                PV.NM_TITULAR_CARTAO
 
                             ORDER BY PV.ID_PEDIDO_VENDA, CODVENDA",
                             array($dt_inicial, $dt_final, $_GET['situacao'], $_GET['situacao']));
@@ -128,6 +130,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
                 <td class="text"><?php echo $rs['CD_CPF']; ?></td>
                 <td class="text"><?php echo $rs['CD_BIN_CARTAO']; ?></td>
                 <td><?php echo utf8_encode($info['TIPPECA']); ?></td>
+                <td class="text"><?php echo $rs['NM_TITULAR_CARTAO']; ?></td>
             </tr>
         <?php
         }

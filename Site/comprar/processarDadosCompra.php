@@ -366,8 +366,8 @@ $query = 'UPDATE MW_PEDIDO_VENDA SET
                         ,DS_EMAIL_VOUCHER = ?
                         ,CD_BIN_CARTAO = ?
                         ,ID_ORIGEM = ?
-			WHERE ID_PEDIDO_VENDA = ?
-				AND ID_CLIENTE = ?';
+                        ,NM_TITULAR_CARTAO = ? 
+                        WHERE ID_PEDIDO_VENDA = ? AND ID_CLIENTE = ?';
 
 if ($_POST['nomePresente']) {
     $nome_presente = $_POST['nomePresente'];
@@ -377,11 +377,22 @@ if ($_POST['nomePresente']) {
     $email_presente = null;
 }
 
-$params = array(($totalIngressos + $frete + $totalConveniencia), $totalIngressos, $totalConveniencia,
-                $_SERVER["REMOTE_ADDR"], $PaymentDataCollection['NumberOfPayments'],
-                $nr_beneficio, $nome_presente, $email_presente, $PaymentDataCollection['CardNumber'],
-                $_SESSION['origem'],
-                $newMaxId, $_SESSION['user']);
+$params = array
+        (
+                ($totalIngressos + $frete + $totalConveniencia)
+                ,$totalIngressos
+                ,$totalConveniencia
+                ,$_SERVER["REMOTE_ADDR"]
+                ,$PaymentDataCollection['NumberOfPayments']
+                ,$nr_beneficio
+                ,$nome_presente
+                ,$email_presente
+                ,$PaymentDataCollection['CardNumber']
+                ,$_SESSION['origem']
+                ,$PaymentDataCollection['CardHolder']
+                ,$newMaxId
+                ,$_SESSION['user']
+        );
 
 if ($itensPedido > 0) {
     $gravacao = executeSQL($mainConnection, $query, $params);

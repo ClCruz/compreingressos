@@ -540,7 +540,6 @@ function executeSQL($conn, $strSql, $params = array(), $returnRs = false) {
     } else {
 	$result = sqlsrv_query($conn, $strSql, $params);
     }
-    
 
     if ($returnRs) {
 	return fetchResult($result);

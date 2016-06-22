@@ -622,7 +622,7 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
                 // email temporario para checar novo tratamento de erro (nao é possivel forcar o erro em homologacao)
                 ob_start();
                 echo "[ErrorCode] => 135<br/>[ErrorMessage] => OrderId was already registered<br/><br/>";
-                echo "Não é um erro grave. Apenas checar os dados abaixo:<br/><br/>";
+                echo "Não é um erro grave. Apenas checar os dados abaixo para o pedido {$parametros['OrderData']['OrderId']}:<br/><br/>";
                 echo "<pre>"; var_dump($dados); echo "</pre>";
                 $message = ob_get_clean();
 

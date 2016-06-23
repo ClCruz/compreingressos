@@ -119,8 +119,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                     $("#dt_fim").datepicker("option", "minDate", $(this).val()).trigger('change');
                 });
 
-                $('#cboAssinatura').chosen();
-
                 $cboLocal.on('change', listar_eventos);
                 $eventos.on('change', listar_eventos);
 
@@ -535,10 +533,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
         #dados.geral .ui-widget .chk_evento {
             display: none;
         }
-
-        #cboAssinatura {
-            width: 100%;
-        }
         </style>
         <div title="Processando..." id="loading">
             Aguarde, este processamento poderá levar alguns minutos. Não saia da tela até a
@@ -633,8 +627,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                             <div id="arquivos"></div>
                         </div>
                         <div class="promo_assinatura">
-                            <b>Assinaturas:</b><br/>
-                            <?php echo comboAssinatura('cboAssinatura[]', $assinaturasSelecionadas, true); ?>
+                            <b>Assinatura:</b><br/>
+                            <?php echo comboAssinatura('cboAssinatura[]', $assinaturasSelecionadas); ?>
                         </div>
                     </td>
                     <td>

@@ -217,6 +217,19 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
         }
     }
 
+    
+    
+    if ($_GET['action'] == 'save' AND $_POST['cboAssinatura']) {
+
+        $query = "SELECT 1 FROM MW_ASSINATURA_PROMOCAO WHERE ID_ASSINATURA = ? AND (ID_PROMOCAO_CONTROLE != ? OR ? IS NULL)";
+        $params = array($_POST['cboAssinatura'][0], $_POST['id'], $_POST['id']);
+        $rs = executeSQL($mainConnection, $query, $params, true);
+
+        if (!empty($rs)) {
+            die("false?msg=Essa assinatura já está em uso em outra promoção.&id=".$_POST['id']);
+        }
+    }
+
 
 
     if ($_GET['action'] == 'getEventos' and isset($_GET['cboLocal'])) {

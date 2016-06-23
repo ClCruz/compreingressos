@@ -56,9 +56,22 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                                                 ORDER BY E.DS_EVENTO",
                                                 array($_GET['id']));
 
+            $result_assinaturasSelecionadas = executeSQL($mainConnection,
+                                                            "SELECT AP.ID_ASSINATURA
+                                                            FROM MW_ASSINATURA_PROMOCAO AP
+                                                            INNER JOIN MW_ASSINATURA A ON A.ID_ASSINATURA = AP.ID_ASSINATURA
+                                                            WHERE AP.ID_PROMOCAO_CONTROLE = ?",
+                                                            array($_GET['id']));
+
+            $assinaturasSelecionadas = array();
+            while ($rsAux = fetchResult($result_assinaturasSelecionadas)) {
+                $assinaturasSelecionadas[] = $rsAux['ID_ASSINATURA'];
+            }
+
         }
 ?>
         <link rel="stylesheet" href="../javascripts/uploadify/uploadify.css"/>
+        <link rel="stylesheet" href="../stylesheets/chosen.min.css"/>
 
         <style type="text/css"> div#ui-datepicker-div { z-index: 9999 !important; } </style>
 
@@ -67,6 +80,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
 
         <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
         <script type="text/javascript" src="../javascripts/jquery.mask.min.js"></script>
+
+        <script type="text/javascript" src="../javascripts/chosen.jquery.min.js"></script>
+
         <script type="text/javascript">
             $(function() {
                 var pagina = '<?php echo $pagina; ?>',
@@ -102,6 +118,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                 $('#dt_inicio').on('change', function() {
                     $("#dt_fim").datepicker("option", "minDate", $(this).val()).trigger('change');
                 });
+
+                $('#cboAssinatura').chosen();
 
                 $cboLocal.on('change', listar_eventos);
                 $eventos.on('change', listar_eventos);
@@ -159,16 +177,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                         $('table.ui-widget').show();
                     }
                     
-                    $(":input:not(.datePicker, [name=qt_limite_cpf], [name=limite_cpf\\[\\]], [name=cboExibicao], [name=ds_codigo], [name=qt_codigo], [type=checkbox], [type=hidden], [type=submit])").prop('disabled', true).prop('readonly', true);
-                    $(":input[name=in_hotsite]").prop('disabled', true).prop('readonly', true);
+                    $(":input:not(.datePicker, [name=qt_limite_cpf], [name=limite_cpf\\[\\]], [name=cboExibicao], [name=ds_codigo], [name=qt_codigo], [type=checkbox], [type=hidden], [type=submit], #cboAssinatura), :input[name=in_hotsite]").prop('disabled', true).prop('readonly', true);
 
                     if (abrangencia == 'especifico') {
                         $("#cboLocal").prop('disabled', false).prop('readonly', false);
                         $cboLocal.prepend('<option value="" selected="selected">Selecione...</option>');
                     }
                 }
-
-
 
                 $('.selecionar_todos').on('click', function(){
                     $(this).parents('table').next('div').find('table').find(':input').prop('checked', $(this).prop('checked'));
@@ -232,6 +247,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                             mostrar = 'convite';
 
                             $('[name=ds_codigo]').val('CONVITE');
+                        break;
+                        // Assinatura
+                        case '8':
+                            mostrar = 'assinatura';
                         break;
                     }
 
@@ -423,24 +442,28 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                     switch ($cboPromo.val().substring(0,1)) {
                         // Código Fixo
                         case '1':
-                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], [name=cboPatrocinador])');
+                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], .chosen-container *, #cboAssinatura, [name=cboPatrocinador])');
                         break;
                         // Código Aleatório
                         case '2':
-                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], [name=cboPatrocinador], [name=ds_codigo])');
+                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], .chosen-container *, #cboAssinatura, [name=cboPatrocinador], [name=ds_codigo])');
                         break;
                         // Código de Arquivo CSV
                         case '3':
-                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], [name=cboPatrocinador], [name=ds_codigo], [name=qt_codigo])');
+                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], .chosen-container *, #cboAssinatura, [name=cboPatrocinador], [name=ds_codigo], [name=qt_codigo])');
                         break;
                         // BINs CSV
                         case '4': case '7':
-                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], [name=ds_codigo], [name=qt_codigo])');
+                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], .chosen-container *, #cboAssinatura, [name=ds_codigo], [name=qt_codigo])');
                         break;
                         // Convite
                         case '5':
-                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], [name=cboPatrocinador], [name=ds_codigo], [name=qt_codigo], [name=ds_img1], [name=ds_img2])');
-                            break;
+                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], .chosen-container *, #cboAssinatura, [name=cboPatrocinador], [name=ds_codigo], [name=qt_codigo], [name=ds_img1], [name=ds_img2])');
+                        break;
+                        // Assinatura
+                        case '8':
+                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], .chosen-container *, [name=cboPatrocinador], [name=ds_codigo], [name=qt_codigo], [name=ds_img1], [name=ds_img2])');
+                        break;
                         // inválido
                         default:
                             $cboPromo.parent().addClass('ui-state-error');
@@ -467,7 +490,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
 
                         } else {
                     
-                            if ($this.val() == '') {
+                            if ($this.val() == '' || $this.val() == null) {
                                 $this.parent().addClass('ui-state-error');
                                 valido = false;
                                 console.log($this);
@@ -511,6 +534,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
         #dados.geral .disponiveis,
         #dados.geral .ui-widget .chk_evento {
             display: none;
+        }
+
+        #cboAssinatura {
+            width: 100%;
         }
         </style>
         <div title="Processando..." id="loading">
@@ -604,6 +631,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
 
                             <div id="uploadifyQueue" class="uploadifyQueue"></div>
                             <div id="arquivos"></div>
+                        </div>
+                        <div class="promo_assinatura">
+                            <b>Assinaturas:</b><br/>
+                            <?php echo comboAssinatura('cboAssinatura[]', $assinaturasSelecionadas, true); ?>
                         </div>
                     </td>
                     <td>

@@ -756,6 +756,7 @@ function comboTipoLocalOptions($name, $selected, $isCombo = true) {
 }
 
 function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NULL, $isCombo = true, $isArray = false) {
+    session_start();
     $mainConnection = mainConnection();
 
     $query = 'SELECT B.ID_BASE, E.ID_EVENTO
@@ -922,13 +923,13 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
                 // se for promocao convite
                 if ($rs['CODTIPPROMOCAO'] == 5) {
                     $rs_cod_convite = executeSQL($mainConnection,
-                        'SELECT TOP 1 P.CD_PROMOCIONAL
+                        'SELECT TOP 1 P.CD_PROMOCIONAL, P.ID_PEDIDO_VENDA, P.ID_SESSION
                          FROM MW_PROMOCAO P
                          WHERE P.ID_PROMOCAO_CONTROLE = ?
                          ORDER BY P.ID_PEDIDO_VENDA, P.ID_SESSION, P.CD_PROMOCIONAL DESC', array($rs['ID_PROMOCAO_CONTROLE']), true);
 
                     // se nao tiver mais cupons ignorar esse tipo de bilhete
-                    if ((!empty($rs['ID_SESSION']) or !empty($rs['ID_PEDIDO_VENDA'])) and $rs['ID_APRESENTACAO_BILHETE'] != $selected) {
+                    if ((!empty($rs_cod_convite['ID_SESSION']) or !empty($rs_cod_convite['ID_PEDIDO_VENDA'])) and $rs['ID_APRESENTACAO_BILHETE'] != $selected) {
                         continue;
                     }
 
@@ -936,6 +937,28 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
                         $imgs .= 'codigo="CONVITE" ';
                         $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['codPreValidado'] = 'CONVITE';
                     }
+
+                // se for promocao assinatura
+                } elseif ($rs['CODTIPPROMOCAO'] == 8) {
+                    $rs_assinatura = executeSQL($mainConnection,
+                        'SELECT TOP 1 P.CD_PROMOCIONAL, P.ID_PEDIDO_VENDA, P.ID_SESSION, C.CD_CPF
+                         FROM MW_PROMOCAO P
+                         INNER JOIN MW_ASSINATURA_PROMOCAO AP ON AP.ID_PROMOCAO_CONTROLE = P.ID_PROMOCAO_CONTROLE
+                         INNER JOIN MW_ASSINATURA_CLIENTE AC ON AC.ID_ASSINATURA = AP.ID_ASSINATURA
+                         INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = AC.ID_CLIENTE
+                         WHERE P.ID_PROMOCAO_CONTROLE = ? AND C.ID_CLIENTE = ?
+                         ORDER BY P.ID_PEDIDO_VENDA, P.ID_SESSION, P.CD_PROMOCIONAL DESC', array($rs['ID_PROMOCAO_CONTROLE'], $_SESSION['user']), true);
+
+                    // se nao tiver mais cupons ignorar esse tipo de bilhete
+                    if (empty($rs_assinatura)
+                        OR
+                        ((!empty($rs_assinatura['ID_SESSION']) OR !empty($rs_assinatura['ID_PEDIDO_VENDA']))
+                            AND $rs['ID_APRESENTACAO_BILHETE'] != $selected)) {
+                        continue;
+                    }
+
+                    $imgs .= 'codigo="'.$rs_assinatura['CD_CPF'].'" ';
+                    $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['codPreValidado'] = $rs_assinatura['CD_CPF'];
                 }
 
 				$BIN = '';
@@ -957,9 +980,11 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 			$lote = ($rs['QTDVENDAPORLOTE'] > 0 and $rs['STATIPBILHMEIAESTUDANTE'] == 'N') ? ' lote="1"' : '';
             $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['lote'] = ($rs['QTDVENDAPORLOTE'] > 0 and $rs['STATIPBILHMEIAESTUDANTE'] == 'N');
 
+            $tipoPromo = ' tipoPromo="'.$rs['CODTIPPROMOCAO'].'"';
+
 			if (($selected == $rs['ID_APRESENTACAO_BILHETE'])) {
 			    $isSelected = 'selected';
-			    $text = '<input type="hidden" name="' . $name . '" value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $BIN . $promocao .
+			    $text = '<input type="hidden" name="' . $name . '" value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $BIN . $promocao . $tipoPromo .
 		    			' valor="'.number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', '').'"><span class="' . $name . ' inputStyle">' . utf8_encode($rs['DS_TIPO_BILHETE']) . '</span>';
 			} else {
 			    $isSelected = '';
@@ -973,7 +998,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 
             // checar exibicao da promocao
             if ($rs['IN_EXIBICAO'] == null or $rs['IN_EXIBICAO'] == 'T' or $rs['IN_EXIBICAO'] == 'W') {
-    			$combo .= '<option value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $isSelected . ' ' . $BIN . $promocao . $meia_estudante . $lote .
+    			$combo .= '<option value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $isSelected . ' ' . $BIN . $promocao . $meia_estudante . $lote . $tipoPromo .
     					  ' valor="'.number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', '').'">' . utf8_encode($rs['DS_TIPO_BILHETE']) . '</option>';
             }
 
@@ -1530,7 +1555,8 @@ function comboTipoPromocao($name, $selected) {
         4 => 'BIN',
         5 => 'Convite',
         // 6 => 'WebService'
-        7 => 'BIN Riachuelo'
+        7 => 'BIN Riachuelo',
+        8 => 'Assinatura'
     );
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione...</option>';
@@ -1559,6 +1585,21 @@ function comboExibicaoPromocao($name, $selected) {
     return $combo;
 }
 
+function comboAssinatura($name, $selected, $multiSelect = false) {
+    $mainConnection = mainConnection();
+    $result = executeSQL($mainConnection, 'SELECT ID_ASSINATURA, DS_ASSINATURA FROM MW_ASSINATURA ORDER BY DS_ASSINATURA');
+
+    $multi = $multiSelect ? ' multiple data-placeholder="Selecione..."' : '';
+
+    $combo = '<select name="' . $name . '" class="inputStyle" id="'.preg_replace('/\[|\]/', '', $name).'"'.$multi.'>'.($multiSelect ? '' : '<option value="">Selecione...</option>');
+    while ($rs = fetchResult($result)) {
+        $combo .= '<option value="' . $rs['ID_ASSINATURA'] . '"' . ((in_array($rs['ID_ASSINATURA'], $selected) OR $rs['ID_ASSINATURA'] === $selected) ? ' selected' : '') . '>' . $rs['DS_ASSINATURA'] . '</option>';
+    }
+    $combo .= '</select>';
+
+    return $combo;
+}
+
 function comboGenerico(array $dados, $selectedDados)
 {
     $strValue           = $selectedDados['strValue'];
@@ -1580,7 +1621,7 @@ function comboGenerico(array $dados, $selectedDados)
     return $opt;
 }
 
-// INICIO DOS COMBOS PARA O SISTEMA DE ASSINATURA ------------------------------------------
+// INICIO DOS COMBOS PARA O SISTEMA DE ASSINATURA (PACOTE) ------------------------------------------
 
 // combo para os eventos que podem ser pacote
 function comboEventoPacotePorUsuario($name, $local, $usuario, $selected) {
@@ -1633,7 +1674,7 @@ function comboPacote($name, $usuario, $selected, $id_base = null, $fase = null) 
     return $combo;
 }
 
-// FIM DOS COMBOS PARA O SISTEMA DE ASSINATURA ------------------------------------------
+// FIM DOS COMBOS PARA O SISTEMA DE ASSINATURA (PACOTE) ------------------------------------------
 
 function is_pacote($id_apresentacao) {
     $mainConnection = mainConnection();

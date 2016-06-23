@@ -94,7 +94,9 @@ if ($_GET['carrinho']) {
                 // importacao do csv
                 '3' => 'Este código promocional já foi utilizado. Por favor, informe outro código promocional ou selecione outro tipo de ingresso.',
                 // convite
-                '5' => 'Convites esgotados.'
+                '5' => 'Convites esgotados.',
+                // assinatura
+                '8' => 'Os bilhetes de assinatura disponíveis já foram utilizados. Por favor, selecione outro tipo de ingresso.'
             );
 
             if (!empty($rs['ID_SESSION']) || !empty($rs['ID_PEDIDO_VENDA'])) {

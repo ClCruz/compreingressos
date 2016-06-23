@@ -862,12 +862,12 @@ table#pedido_resumo tbody tr.beneficio div.icone_validador{
 	width:20px;
 	margin:28px 0 0 10px;
 	height:20px;
-	background:transparent url('beneficio_validacao.png') 0 0 no-repeat;
+	background:transparent url('../images/beneficio_validacao.png') 0 0 no-repeat;
 }
 
 table#pedido_resumo tbody tr.beneficio div.icone_validador.valido{
 	background:#CEA;
-	background:transparent url('beneficio_validacao.png') 0 -20px no-repeat;
+	background:transparent url('../images/beneficio_validacao.png') 0 -20px no-repeat;
 }
 
 table#pedido_resumo tbody tr.beneficio div.container_validador{
@@ -2746,6 +2746,14 @@ div.resumo_carrinho span.frase{
     margin: 150px 0 0 70px;
     border: 3px solid #D3D3D3;
 }
+
 .meia_entrada a:hover{
 	text-decoration: underline;
+}
+
+.beneficio.promo_8 p.frase1.notHidden,
+.beneficio.promo_8 p.frase2.notHidden,
+.beneficio.promo_8 .icone_validador:not(.valido),
+.beneficio.promo_8 .icone_validador:not(.valido) + .container_validador {
+    display: none;
 }

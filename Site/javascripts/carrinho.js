@@ -107,6 +107,12 @@ $(function() {
 
 		// verifica se esta na etapa 2 ou etapa 4 (select = etapa 2)
 		if ($this.is('select')) {
+			$this.closest('tr').next('.beneficio').removeClass(function(i, css){ return (css.match(/promo_\d+/g) || []).join(' '); });
+
+			if ($this.find('option:selected').attr('tipoPromo')) {
+				$this.closest('tr').next('.beneficio').addClass('promo_'+$this.find('option:selected').attr('tipoPromo'));
+			}
+
 			// ingresso selecionado é bin itaucard? tem bin associado?
 			if ($this.find('option:selected').attr('codeBin') != undefined) {
 				$mesmoBinSelecionado = $('option:selected').filter(function(){
@@ -152,7 +158,7 @@ $(function() {
 
 						$this.closest('tr').addClass('complementar')
 							.next('.beneficio')
-							.find('input[name=bin\\[\\]]').attr('maxlength', sizeBin).attr('placeholder', placeholder).end()
+							.find('input[name=bin\\[\\]]').val('').attr('maxlength', sizeBin).attr('placeholder', placeholder).end()
 							.find('.img_complemento img').attr('src', $this.find('option:selected').attr('img1')).end()
 							.find('.container_validador img').attr('src', $this.find('option:selected').attr('img2')).end()
 							.slideDown();
@@ -172,7 +178,7 @@ $(function() {
 						}
 					}
 
-					$this.closest('tr').next('.beneficio').find('input[name=tipoBin\\[\\]]').val('itau');
+					$this.closest('tr').next('.beneficio').find('input[name=tipoBin\\[\\]]').val('itau').end();
 				}
 
 			// ingresso selecionado é promocional?
@@ -216,7 +222,7 @@ $(function() {
 
 				$this.closest('tr').addClass('complementar')
 					.next('.beneficio')
-					.find('input[name=bin\\[\\]]').attr('maxlength', sizeBin).attr('placeholder', placeholder).end()
+					.find('input[name=bin\\[\\]]').val('').attr('maxlength', sizeBin).attr('placeholder', placeholder).end()
 					.find('.img_complemento img').attr('src', $this.find('option:selected').attr('img1')).end()
 					.find('.container_validador img').attr('src', $this.find('option:selected').attr('img2')).end()
 					.find('input[name=tipoBin\\[\\]]').val('promocao').end()

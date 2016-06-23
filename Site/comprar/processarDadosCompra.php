@@ -560,7 +560,7 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
 
         // se o meio de pagamento for fastcash
         if(in_array($_POST['codCartao'], array('892', '893'))){
-            extenderTempo($horas_antes_apresentacao_pagamento);
+            extenderTempo($horas_antes_apresentacao_pagamento * 60);
 
             $query = "UPDATE P SET ID_MEIO_PAGAMENTO = M.ID_MEIO_PAGAMENTO
                         FROM MW_PEDIDO_VENDA P, MW_MEIO_PAGAMENTO M

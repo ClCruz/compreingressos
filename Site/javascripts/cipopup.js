@@ -42,11 +42,7 @@ var ciPopup = {
         {
             if (ciPopup.refSibling.isBefore)
                 {
-                    console.log($(ciPopup.refSibling));
                     $(ciPopup.newContent).insertBefore(ciPopup.refSibling);
-
-                    //var par = $(ciPopup.refSibling).parent();
-                    //$(par).append(ciPopup.newContent);
                 }
             else
                 { $(ciPopup.newContent).insertAfter(ciPopup.refSibling); }
@@ -55,9 +51,6 @@ var ciPopup = {
         {
             $(ciPopup.refParent).append(ciPopup.newContent);
         }
-
-        //Zerar configurações e referências
-        $(ciPopup.content).html('');
 
         ciPopup.newContent  = null;
         ciPopup.refContent  = null;
@@ -132,7 +125,6 @@ var ciPopup = {
 
             var isBefore = false; //Flag para inserir ANTEs ou depois do REF
 
-            console.log(index);
             if ( index == 0 ) { isBefore = true; index = 1; }
             ciPopup.refSibling = $(parent).children().eq(index -1);
             ciPopup.refSibling.isBefore = isBefore;
@@ -144,7 +136,7 @@ var ciPopup = {
     insertAndConfig: function ()
     {
         //Verifica se o DIALOG interno aparece abaixo ou acima do conteúdo que será exibido no popup
-        if ( ciPopup.dialog.in.positionOfContent == 'after' ) {
+        if ( ciPopup.dialog.options.insideDialogPosition == 'after' ) {
             $(ciPopup.newContent).insertBefore(ciPopup.dialog.in.container); //insert
         }else{
             $(ciPopup.content).append(ciPopup.newContent); //insert
@@ -253,13 +245,13 @@ var ciPopup = {
             container:  null,
             content:    null,
             xHide:      null,
-            positionOfContent: 'after' //define se o Dialog INSIDE aparece antes ou depois do conteúdo do POPUP. Default[depois]
         },
 
         //Configs Default
         options: {
             autoHide: { set: true, time: 4000 },
-            side:       'in'
+            side:       'in', //informa qual dialog será exibida, dentro ou fora do box de content do popup
+            insideDialogPosition: 'after' //define se o Dialog INSIDE aparece antes ou depois do conteúdo do POPUP. Default[depois]
         },
 
         hide: function (options)
@@ -286,6 +278,7 @@ var ciPopup = {
         }
     },
 
+    //Criar HTMLs dos DIALOGS e popular objetos
     dialogCreate: function ()
     {
         var Dialog;

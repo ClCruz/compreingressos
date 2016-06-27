@@ -243,13 +243,14 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
     <script type="text/javascript">
       $(document).ready(function ()
       {
-        $('#teste').click(function () {
-          $.ajax({
-            success: function () {
-              console.log('testeok!');
-            }
-          })
+        $('#teste1').click(function () {
+          ciPopup.init('login_assinante');
         });
+
+        $('#teste2').click(function () {
+          ciPopup.init('cont_teste2');
+        });
+
         if ( exibePopUpAssinante )
         {
           ciPopup.init('login_assinante');

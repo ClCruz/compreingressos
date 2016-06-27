@@ -21,7 +21,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
   $query = 'SELECT A.CODAPRESENTACAO, E.ID_BASE, E.ID_EVENTO,E.DS_EVENTO,
               B.DS_NOME_TEATRO, CONVERT(VARCHAR(10), A.DT_APRESENTACAO, 103) DT_APRESENTACAO,
               A.HR_APRESENTACAO, LE.DS_LOCAL_EVENTO, M.DS_MUNICIPIO, ES.SG_ESTADO, A.DS_PISO,
-              E.QT_INGR_POR_PEDIDO
+              E.QT_INGR_POR_PEDIDO, E.in_exibe_tela_assinante
             FROM MW_APRESENTACAO A
             INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO AND E.IN_ATIVO = \'1\'
             INNER JOIN MW_BASE B ON B.ID_BASE = E.ID_BASE AND B.IN_ATIVO = \'1\'
@@ -204,6 +204,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
     <!-- SCRIPT TAG -->
     <script type="text/JavaScript">
       var idcampanha = <?php echo ($idcampanha != "") ? $idcampanha : 0; ?>;
+      var exibePopUpAssinante = '<?php echo ( $rs['in_exibe_tela_assinante'] == 1 ) ? true : false; ?>';
       if(idcampanha != 0){
         var ADM_rnd_<?php echo $idcampanha; ?> = Math.round(Math.random() * 9999);
         var ADM_post_<?php echo $idcampanha; ?> = new Image();
@@ -234,8 +235,39 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
       }
     </style>
     <?php } ?>
+
+    <script src="../javascripts/identificacao_cadastro.js" type="text/javascript"></script>
+    <script src="../javascripts/cipopup.js" type="text/javascript"></script>
+
+    <?php if ( !isset($_SESSION['user']) ): ?>
+    <script type="text/javascript">
+      $(document).ready(function ()
+      {
+        $('#teste').click(function () {
+          $.ajax({
+            success: function () {
+              console.log('testeok!');
+            }
+          })
+        });
+        if ( exibePopUpAssinante )
+        {
+          ciPopup.init('login_assinante');
+        }
+      });
+    </script>
+    <?php endif; ?>
   </head>
   <body style="height: 0px; overflow: visible; position: static;">
+  <!-- conteudo para exibir em popup -->
+  <div class="hidden">
+    <div id="login_assinante">
+      <?php require_once ('div_identificacao.php'); ?>
+      <div class="ui-helper-clearfix"></div>
+    </div>
+  </div>
+  <!-- conteudo para exibir em popup -->
+
     <div style="margin-top: 0px;" id="pai">
       <?php include_once("header.php"); ?>
       <div id="content">
@@ -400,6 +432,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
           </div>
         </div>
       </div>
+
     </div>
   </body>
 </html>

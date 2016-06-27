@@ -1,5 +1,11 @@
 TimeoutToHideDialog = undefined;
 
+if ( typeof simples == 'undefined' ) {
+	$.getScript('../javascripts/simpleFunctions.js', function () {
+		simples.init();
+	});
+}
+
 function trimAll(text) {
 	return text.replace(/[ \t\r\n\v\f]/g,"");
 }
@@ -82,7 +88,8 @@ function atualizarCaixaMeiaEntrada(id) {
 			var $dialog = $('div.alert'),
 				defaults = {
 					text: 'Ocorreu um erro durante o processo...<br><br>Favor informar o suporte!',
-					autoHide: { set: false, time: 3000 }
+					autoHide: { set: false, time: 3000 },
+					onOverlay: { set: false, div: null }
 				 },
 				 options = $.extend(true, defaults, options),
 				 element = $dialog.find('div.container_erros'),
@@ -97,76 +104,80 @@ function atualizarCaixaMeiaEntrada(id) {
 			}
 
 			if (options.autoHide.set) {
+
+				//limpar timeout caso tenha sido executaod recentemente com alguma informação
 				if ( TimeoutToHideDialog != undefined ) {
 					clearTimeout(TimeoutToHideDialog);
 					TimeoutToHideDialog = undefined;
-				}else{ console.log("Sem timeout definido"); }
+				}
 
 				TimeoutToHideDialog = setTimeout(function() {
-					$dialog.hide();
+					$dialog.slideUp('slow');
 				},options.autoHide.time);
 			}
 		},
-		
+
 		confirmDialog: function(options) {
 			var defaults = {
 					text: 'Deseja concluir a operação',
 					detail: '?',
 					uiOptions: {
 						buttons: {
-							'Ok': ['', function() {}]
+							'Ok': ['', function () {
+							}]
 						}
 					}
-				},
-				// options = $.extend(true, defaults, options),
-				$overlay = $('#overlay')[0]
-							? $('#overlay')
-							: $('<div id="overlay"></div>').appendTo('#pai'),
-				$element = $overlay.find('#resposta')[0]
-							? $overlay.find('#resposta')
-							: $('<div class="centraliza" id="resposta">'+
-									'<img src="../images/ico_white.png">'+
-									'<p class="frase"></p>'+
-									'<p class="aviso"></p>'+
-									'<a class="opcao a">'+
-										'<span class="opcao"></span>'+
-										'<span class="descricao"></span>'+
-									'</a>'+
-									'<a class="opcao b">'+
-										'<span class="opcao"></span>'+
-										'<span class="descricao"></span>'+
-									'</a>'+
-								'</div>').appendTo($overlay);
+				};
 
-			bt_keys = Object.keys(options.uiOptions.buttons);
-			
-			$element.hide()
-				.find('.frase').html(options.text).end()
-				.find('.aviso').html(options.detail).end()
-				.find('a.opcao').remove();
-			if (bt_keys.length > 1) {
-				$element.append('<a class="opcao a">'+
-									'<span class="opcao">'+bt_keys[0]+'</span>'+
-									'<span class="descricao">'+options.uiOptions.buttons[bt_keys[0]][0]+'</span>'+
-								'</a>');
-				$element.find('.opcao.a').off('click').on('click', options.uiOptions.buttons[bt_keys[0]][1]);
+			options = $.extend(true, defaults, options),
+			$overlay = $('#overlay')[0]
+						? $('#overlay')
+						: $('<div id="overlay"></div>').appendTo('#pai'),
+			$element = $overlay.find('#resposta')[0]
+						? $overlay.find('#resposta')
+						: $('<div class="centraliza" id="resposta">'+
+								'<img src="../images/ico_white.png">'+
+								'<p class="frase"></p>'+
+								'<p class="aviso"></p>'+
+								'<a class="opcao a">'+
+									'<span class="opcao"></span>'+
+									'<span class="descricao"></span>'+
+								'</a>'+
+								'<a class="opcao b">'+
+									'<span class="opcao"></span>'+
+									'<span class="descricao"></span>'+
+								'</a>'+
+							'</div>').appendTo($overlay);
 
-				$element.append('<a class="opcao b">'+
-									'<span class="opcao">'+bt_keys[1]+'</span>'+
-									'<span class="descricao">'+options.uiOptions.buttons[bt_keys[1]][0]+'</span>'+
-								'</a>');
-				$element.find('.opcao.b').off('click').on('click', options.uiOptions.buttons[bt_keys[1]][1]);
-			} else {
-				$element.append('<a class="opcao unica">'+
-									'<span class="opcao">'+bt_keys[0]+'</span>'+
-									'<span class="descricao">'+options.uiOptions.buttons[bt_keys[0]][0]+'</span>'+
-								'</a>');
-				$element.find('.opcao.unica').off('click').on('click', options.uiOptions.buttons[bt_keys[0]][1]);
-			}
+		bt_keys = Object.keys(options.uiOptions.buttons);
 
-			abreOverlay('resposta');
+		$element.hide()
+			.find('.frase').html(options.text).end()
+			.find('.aviso').html(options.detail).end()
+			.find('a.opcao').remove();
+		if (bt_keys.length > 1) {
+			$element.append('<a class="opcao a">'+
+								'<span class="opcao">'+bt_keys[0]+'</span>'+
+								'<span class="descricao">'+options.uiOptions.buttons[bt_keys[0]][0]+'</span>'+
+							'</a>');
+			$element.find('.opcao.a').off('click').on('click', options.uiOptions.buttons[bt_keys[0]][1]);
+
+			$element.append('<a class="opcao b">'+
+								'<span class="opcao">'+bt_keys[1]+'</span>'+
+								'<span class="descricao">'+options.uiOptions.buttons[bt_keys[1]][0]+'</span>'+
+							'</a>');
+			$element.find('.opcao.b').off('click').on('click', options.uiOptions.buttons[bt_keys[1]][1]);
+		} else {
+			$element.append('<a class="opcao unica">'+
+								'<span class="opcao">'+bt_keys[0]+'</span>'+
+								'<span class="descricao">'+options.uiOptions.buttons[bt_keys[0]][0]+'</span>'+
+							'</a>');
+			$element.find('.opcao.unica').off('click').on('click', options.uiOptions.buttons[bt_keys[0]][1]);
+		}
+
+		abreOverlay('resposta');
 		},
-		
+
 		getUrlVars: function(url) {
 			var vars = [],
 				 hash,
@@ -184,7 +195,7 @@ function atualizarCaixaMeiaEntrada(id) {
 			}
 			return vars;
 		},
-		
+
 		getUrlVar: function(name, url) {
 			return $.getUrlVars(url)[name];
 		},

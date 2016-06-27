@@ -148,9 +148,24 @@ var simples =
         this.getUrlParamns();
     },
 
+    serverURL: function ()
+    {
+        from = location.pathname.split('/');
+        from = from[from.length-1];
+        return from;
+    },
+
     setVars: function ()
     {
 
+    },
+
+    isInt: function (n){
+        return Number(n) === n && n % 1 === 0;
+    },
+
+    isFloat: function(n) {
+        return Number(n) === n && n % 1 !== 0;
     },
 
     /*
@@ -389,5 +404,32 @@ var simples =
             $('#'+prefix+nextFocus).focus();
 
         }
+    },
+
+    createElement: function (tag, paramns)
+    {
+        var element = document.createElement(tag);
+
+
+        if ( paramns.attrs != undefined )
+        {
+            for(attr in paramns.attrs)
+            {
+                element.setAttribute(attr, paramns.attrs[attr]);
+            }
+        }
+
+        if ( paramns.html != undefined )
+        {
+            element.innerHTML = paramns.html;
+        }
+
+        if ( paramns.style != undefined )
+        {
+            element.setAttribute('style', paramns.style);
+        }
+
+        return element;
     }
+
 };

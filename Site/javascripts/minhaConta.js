@@ -32,6 +32,14 @@ $(function() {
         var $this = $(this),
         href = $this.attr('href').split('?');
 
+        if ($this.parent('td[class*=assinatura_]').length) {
+            $('#meus_pedidos tbody tr').hide();
+            $('#meus_pedidos tbody tr').filter(function(){
+                return $(this).find('td.npedido').attr('class') == $this.parent('td').attr('class');
+            }).show();
+            return;
+        }
+
         $.ajax({
             url: href[0],
             data: href[1],
@@ -59,20 +67,70 @@ $(function() {
         });
     });
 
-
     $('#comboTeatroAssinaturas').on('change', function(){
         $(this).next('div.sbHolder').addClass('teatros');
 
-        $.ajax({
-            url: 'atualizarAssinatura.php?action=load&local='+$(this).val(),
-            success: function(data) {
-                $('#assinaturas tbody').html(data).show();
-                if($('#acao').length === 0){
-                    $('input[name*=pacote]').hide();
+        if ($(this).val() != 'compreingressos') {
+            $('.tabela_assinaturas').slideUp();
+            $('.tabela_pacotes').slideDown();
+
+            $.ajax({
+                url: 'atualizarAssinatura.php?action=load&local='+$(this).val(),
+                success: function(data) {
+                    $('#assinaturas tbody').html(data).show();
+                    if($('#acao').length === 0){
+                        $('input[name*=pacote]').hide();
+                    }
+                }
+            });
+        } else {
+            $('.tabela_assinaturas').slideDown();
+            $('.tabela_pacotes').slideUp();
+        }
+    }).trigger('change');
+
+    $('.tabela_assinaturas').on('click', '.acao.cancelar a', function(event) {
+        event.preventDefault();
+
+        var $this = $(this);
+
+        $.confirmDialog({
+            text: 'Você tem certeza que deseja cancelar essa assinatura?',
+            detail: 'Após o cancelamento você ainda terá os beneficios da assinatura até a data do próximo pagamento.',
+            uiOptions: {
+                buttons: {
+                    'Não': ["ainda quero minha assinatura", function() {
+                        fecharOverlay();
+                    }],
+                    'sim': ["desejo cancelar minha assinatura", function() {
+                        $.ajax({
+                            url: $this.attr('href'),
+                            success: function(data) {
+                                if (data == 'true') {
+                                    document.location = 'minha_conta.php?assinaturas=1';
+                                } else {
+                                    $.dialog({text: data});
+                                }
+                            }
+                        });
+                        fecharOverlay();
+                    }]
                 }
             }
         });
-    }).trigger('change');
+    });
+
+    $('.tabela_assinaturas').on('click', '.acao.historico a', function(event) {
+        event.preventDefault();
+
+        var $this = $(this);
+
+        $('.menu_conta a[href*="#meus_pedidos"]').click();
+        $('#meus_pedidos tbody tr').hide();
+        $('#meus_pedidos tbody tr').filter(function(){
+            return $(this).find('td.npedido').is('.assinatura_'+$.getUrlVar('pedido', $this.attr('href')));
+        }).show();
+    });
 
     $('#acao').change(function(event) {
         event.preventDefault();
@@ -180,7 +238,7 @@ $(function() {
 
     if ($.getUrlVar('pedido') != undefined && $.getUrlVar('pedido') != '') {
         $('.menu_conta a[href*="#meus_pedidos"]').click();
-        $('#meus_pedidos a[href*="detalhes_pedido.php?pedido=' + $.getUrlVar('pedido') + '"]').click();
+        $('#meus_pedidos a[href="detalhes_pedido.php?pedido=' + $.getUrlVar('pedido') + '"]').click();
     }
 
     if($.getUrlVar('assinaturas') != undefined){

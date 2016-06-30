@@ -439,7 +439,35 @@ if (isset($_GET['action'])) {
 		}
 		
 	} else if ($_GET['action'] == 'getAddresses' and isset($_SESSION['user']) and $_GET['id']) {
+		
 		$retorno = json_encode(getEnderecoCliente($_SESSION['user'], $_GET['id']));
+	
+	} else if ($_GET['action'] == 'cancelar_assinatura' AND isset($_GET['id'])) {
+
+		$query = "SELECT
+	                A.QT_DIAS_CANCELAMENTO,
+	                DATEDIFF(DAY, AC.DT_COMPRA, GETDATE()) AS DIAS_DESDE_COMPRA,
+	                DC.ID_DADOS_CARTAO
+	                FROM MW_ASSINATURA A
+	                INNER JOIN MW_ASSINATURA_CLIENTE AC ON AC.ID_ASSINATURA = A.ID_ASSINATURA
+	                INNER JOIN MW_DADOS_CARTAO DC ON DC.ID_DADOS_CARTAO = AC.ID_DADOS_CARTAO
+	                WHERE AC.ID_CLIENTE = ? AND AC.ID_ASSINATURA_CLIENTE = ?";
+	    $params = array($_SESSION['user'], $_GET['id']);
+	    $rs = executeSQL($mainConnection, $query, $params, true);
+
+		if (!empty($rs)) {
+			if (!isset($_SESSION['operador']) AND $rs['DIAS_DESDE_COMPRA'] <= $rs['QT_DIAS_CANCELAMENTO']) {
+				$retorno = "Você ainda não pode cancelar esta assinatura.";
+			} else {
+				$query = "UPDATE MW_ASSINATURA_CLIENTE SET IN_ATIVO = 0
+			                WHERE ID_CLIENTE = ? AND ID_ASSINATURA_CLIENTE = ?";
+			    executeSQL($mainConnection, $query, $params);
+
+			    $retorno = 'true';
+			}
+		} else {
+			$retorno = "Assinatura não encontrada.";
+		}
 	}
 
 	if ($send_mailchimp) {

@@ -3,7 +3,7 @@ require_once('../settings/functions.php');
 require_once('../settings/settings.php');
 session_start();
 
-$mainConnection = mainConnection();
+$mainConnection = isset($mainConnection) ? $mainConnection : mainConnection();
 
 $enderecoMain = getEnderecoCliente($_SESSION['user'], -1);
 ?>

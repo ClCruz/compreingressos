@@ -610,14 +610,16 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
             if ($result->AuthorizeTransactionResult->ErrorReportDataCollection->ErrorReportDataResponse->ErrorCode == '135') {
                 $dados = obterDadosPedidoPago($parametros['OrderData']['OrderId']);
 
-                $result->AuthorizeTransactionResult->OrderData->BraspagOrderId = $dados->BraspagOrderId;
-                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId = $dados->BraspagTransactionId;
-                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId = $dados->AcquirerTransactionId;
-                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AuthorizationCode = $dados->AuthorizationCode;
-                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->PaymentMethod = $dados->PaymentMethod;
+                if ($dados !== false) {
+                    $result->AuthorizeTransactionResult->OrderData->BraspagOrderId = $dados->BraspagOrderId;
+                    $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId = $dados->BraspagTransactionId;
+                    $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId = $dados->AcquirerTransactionId;
+                    $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AuthorizationCode = $dados->AuthorizationCode;
+                    $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->PaymentMethod = $dados->PaymentMethod;
 
-                $result->AuthorizeTransactionResult->CorrelationId = $ri;
-                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->Status = '0';
+                    $result->AuthorizeTransactionResult->CorrelationId = $ri;
+                    $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->Status = '0';
+                }
 
                 // email temporario para checar novo tratamento de erro (nao é possivel forcar o erro em homologacao)
                 ob_start();

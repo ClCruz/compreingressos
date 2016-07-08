@@ -23,7 +23,7 @@ $(function(){
 
         if ($('[name=codCartao]:checked').next('label').next('p.nome').text().toLowerCase().indexOf('fastcash') == -1) {
 		    $this.find(':input:not(.compra_captcha :input, [name=nomePresente], [name=emailPresente])').each(function(i,e) {
-	    		var e = $(e);
+		    	var e = $(e);
 	    		if (e.val().length < e.attr('maxlength')/2 || e.val() == '') {
 	    		    e.addClass('erro');
 	    		    valido = false;
@@ -37,7 +37,7 @@ $(function(){
                 valido = false;
             } else titular.removeClass('erro');
 
-            if (!nomePresente.is(':hidden')) {
+            if (nomePresente[0] && !nomePresente.is(':hidden')) {
 	            if (trim(nomePresente.val()).length < 3) {
 	                nomePresente.addClass('erro');
 	                valido = false;
@@ -111,11 +111,11 @@ $(function(){
 		if ($cartao.next('label').next('p.nome').text().toLowerCase().indexOf('fastcash') > -1) {
 			$('.container_dados').find('.linha').eq(0).slideUp().end()
 												.eq(1).slideUp().end().end()
-								.find('.frase').eq(0).text('5.2 Presente');
+								.find('.frase .alt').eq(0).text('Presente');
 		} else {
 			$('.container_dados').find('.linha').eq(0).slideDown().end()
 												.eq(1).slideDown().end().end()
-								.find('.frase').eq(0).text('5.2 Dados do cartão');
+								.find('.frase .alt').eq(0).text('Dados do cartão');
 
 			if (!$('div.img_cod_cartao').is(':hidden')) {
 				$('div.img_cod_cartao').fadeOut(200, function(){
@@ -152,5 +152,10 @@ $(function(){
 	$('a.envio_presente_explicao').on('click',function(e){
 		e.preventDefault();
 		$('.explicacao_envio_presente').fadeToggle();
+	});
+
+	$('.botao_pagamento').on('click', function(e){
+		e.preventDefault();
+		$('#dadosPagamento').submit();
 	});
 });

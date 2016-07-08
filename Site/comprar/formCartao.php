@@ -104,7 +104,7 @@ if ($_POST) {
                 <?php
                 if($_SESSION['usuario_pdv'] == 0){
                 ?>
-                <p class="frase">5.2 Dados do cartão</p>
+                <p class="frase">5.2 <span class="alt">Dados do cartão</span></p>
                 <div class="linha">
                     <div class="input">
                         <p class="titulo">nome do titular</p>

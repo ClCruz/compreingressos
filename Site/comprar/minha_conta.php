@@ -30,7 +30,8 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                     WHERE ID_ASSINATURA_CLIENTE = AC.ID_ASSINATURA_CLIENTE AND ID_PEDIDO_VENDA IS NULL AND ID_SESSION IS NULL) AS QT_BILHETES_DISPONIVEIS,
                 DATEDIFF(DAY, AC.DT_COMPRA, GETDATE()) AS DIAS_DESDE_COMPRA,
                 A.QT_DIAS_CANCELAMENTO,
-                AC.IN_ATIVO
+                AC.IN_ATIVO,
+                A.DS_IMAGEM
                 FROM MW_ASSINATURA A
                 INNER JOIN MW_ASSINATURA_CLIENTE AC ON AC.ID_ASSINATURA = A.ID_ASSINATURA
                 INNER JOIN MW_DADOS_CARTAO DC ON DC.ID_DADOS_CARTAO = AC.ID_DADOS_CARTAO
@@ -49,7 +50,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                     *
                 FROM (
                     SELECT
-                        AC.ID_ASSINATURA_CLIENTE AS ID_PEDIDO_VENDA,
+                        AH.ID_ASSINATURA_HISTORICO AS ID_PEDIDO_VENDA,
                         ' - ' AS IN_RETIRA_ENTREGA,
                         CONVERT(VARCHAR(10), AH.DT_PAGAMENTO, 103) AS DT_PEDIDO_VENDA, 
                         AH.VL_PAGAMENTO AS VL_TOTAL_PEDIDO_VENDA,
@@ -58,7 +59,8 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                         '' AS CD_MEIO_PAGAMENTO,
                         ASS.DS_ASSINATURA,
                         'A' AS TIPO_PEDIDO, --assinatura
-                        AH.DT_PAGAMENTO AS ORDER_KEY
+                        AH.DT_PAGAMENTO AS ORDER_KEY,
+                        AC.ID_ASSINATURA_CLIENTE
                     FROM MW_ASSINATURA_HISTORICO AH
                     INNER JOIN MW_ASSINATURA_CLIENTE AC ON AC.ID_ASSINATURA_CLIENTE = AH.ID_ASSINATURA_CLIENTE
                     INNER JOIN MW_ASSINATURA ASS ON ASS.ID_ASSINATURA = AC.ID_ASSINATURA
@@ -81,7 +83,8 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                         M.CD_MEIO_PAGAMENTO,
                         ASS.DS_ASSINATURA,
                         'P' AS TIPO_PEDIDO, --pedido
-                        PV.DT_PEDIDO_VENDA AS ORDER_KEY
+                        PV.DT_PEDIDO_VENDA AS ORDER_KEY,
+                        NULL
                     FROM MW_PEDIDO_VENDA PV
                     LEFT JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_PAI
                     LEFT JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO
@@ -390,7 +393,15 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                                 while ($rs = fetchResult($result)) {
                             ?>
                                     <tr>
-                                        <td class="npedido <?php echo $rs['TIPO_PEDIDO'] == 'A' ? 'assinatura_'.$rs['ID_PEDIDO_VENDA'] : ''; ?>"><a href="detalhes_pedido.php?pedido=<?php echo $rs['ID_PEDIDO_VENDA']; ?>"><?php echo $rs['ID_PEDIDO_VENDA']; ?></a></td>
+                                        <?php if ($rs['TIPO_PEDIDO'] == 'A') { ?>
+                                            <td class="npedido <?php echo 'assinatura_'.$rs['ID_ASSINATURA_CLIENTE']; ?>">
+                                                <a href="detalhes_pedido.php?pedido=A<?php echo $rs['ID_PEDIDO_VENDA']; ?>">A<?php echo $rs['ID_PEDIDO_VENDA']; ?></a>
+                                            </td>
+                                        <?php } else { ?>
+                                            <td class="npedido">
+                                                <a href="detalhes_pedido.php?pedido=<?php echo $rs['ID_PEDIDO_VENDA']; ?>"><?php echo $rs['ID_PEDIDO_VENDA']; ?></a>
+                                            </td>
+                                        <?php } ?>
                                         <td><?php echo $rs['IN_RETIRA_ENTREGA']; ?></td>
                                         <td><?php echo $rs['DT_PEDIDO_VENDA']; ?></td>
                                         <td>R$ <?php echo number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, ',', ''); ?></td>
@@ -525,7 +536,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                             ?>
                                 <table class="tabela_assinaturas">
                                     <tr>
-                                        <td rowspan="4" class="logo"><img src="../images/assinante_a.png" /></td>
+                                        <td rowspan="4" class="logo"><img src="<?php echo $rs['DS_IMAGEM']; ?>" /></td>
                                         <td class="texto"><?php echo $rs['DS_ASSINATURA']; ?></td>
                                         <td class="acao cancelar" rowspan="2">
                                             <?php if ($mostrar_cancelamento) { ?>
@@ -540,11 +551,12 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                                         <td class="texto bottom_line">
                                             <?php
                                             if ($rs['IN_ATIVO']) {
-                                                echo "o próximo pagamento será no dia ";
+                                                $valor = getProximoValorAssinatura($rs['ID_ASSINATURA_CLIENTE']);
+
+                                                echo "o próximo pagamento será no dia ".$rs['DT_PROXIMO_PAGAMENTO']->format('d/m').", no valor de R$ ".number_format($valor, 2, ',', '');
                                             } else {
-                                                echo "essa assinatura foi cancelada, mas ainda pode ser utilizada até o dia ";
+                                                echo "essa assinatura foi cancelada, mas ainda pode ser utilizada até o dia ".$rs['DT_PROXIMO_PAGAMENTO']->format('d/m');
                                             }
-                                            echo $rs['DT_PROXIMO_PAGAMENTO']->format('d/m');
                                             ?>
                                         </td>
                                         <td class="acao historico" rowspan="2"><a href="minha_conta.php?pedido=<?php echo $rs['ID_ASSINATURA_CLIENTE']; ?>">historico de pagamento</a></td>

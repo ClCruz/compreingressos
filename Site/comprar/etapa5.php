@@ -59,15 +59,6 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	<script type="text/javascript" src="../javascripts/contagemRegressiva.js?until=<?php echo tempoRestante(); ?>"></script>
 	<script type="text/javascript" src="../javascripts/formCartao.js"></script>
 
-	<script>
-	$(function(){
-		$('.botao_pagamento').click(function(e){
-			e.preventDefault();
-			$('#dadosPagamento').submit();
-		});
-	});
-	</script>
-
 	<?php echo $campanha['script']; ?>
 
 	<script type="text/javascript">

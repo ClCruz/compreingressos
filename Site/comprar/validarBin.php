@@ -151,8 +151,8 @@ if ($_GET['carrinho']) {
     $cpf = $rs['CD_CPF'];
     $nome_cliente = $rs['DS_NOME'];
 
-    // se for bin normal (5) ou se for bin do riachuelo (7) e o inicio do cartao nao for private label (02)
-    if ($codTipPromocao == 5 OR ($codTipPromocao == 7 AND substr($numeroDoCartao, 0, 2) != '02')) {
+    // se for bin normal (4) ou se for bin do riachuelo (7) e o inicio do cartao nao for private label (02)
+    if ($codTipPromocao == 4 OR ($codTipPromocao == 7 AND substr($numeroDoCartao, 0, 2) != '02')) {
         if ($numeroDoCartao AND substr(str_replace('-', '', $_POST['numCartao']), 0, 6) != $numeroDoCartao) {
             if( (!isset($_SESSION['usuario_pdv'])) OR ($_SESSION['usuario_pdv'] == 0) ){
                 echo "O cartão utilizado não corresponde ao cartão informado para validação da promoção.";

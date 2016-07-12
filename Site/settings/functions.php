@@ -612,7 +612,7 @@ function comboEvento($name, $teatro, $selected, $paramns = array())
                         INNER JOIN mw_evento AS B ON A.id_evento = B.id_evento
                         WHERE B.id_base = ? AND A.in_ativo = '1'
                         GROUP BY A.id_evento, B.ds_evento
-                        HAVING MAX(A.dt_apresentacao) >= GETDATE()
+                        HAVING CONVERT(DATE, MAX(A.dt_apresentacao), 103) >= CONVERT(DATE, GETDATE(), 103)
                         ORDER BY B.ds_evento";
     }
     else

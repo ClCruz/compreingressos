@@ -34,7 +34,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
     {
         if ( !isset($_GET['cartaz']) || ( isset($_GET['cartaz']) && $_GET['cartaz'] == 1 ) )
         {
-            $complemento = 'HAVING MAX(A.dt_apresentacao) >= GETDATE()';
+            $complemento = 'HAVING CONVERT(DATE, MAX(A.dt_apresentacao), 103) >= CONVERT(DATE, GETDATE(), 103)';
             $iptCartazCheck = 'checked="checked"';
         }
         else if ( isset($_GET['cartaz']) && $_GET['cartaz'] == 0 )

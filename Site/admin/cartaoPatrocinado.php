@@ -1,4 +1,5 @@
 <?php
+require_once("../settings/Paginator.php");
 require_once('../settings/functions.php');
 include('../settings/Log.class.php');
 $mainConnection = mainConnection();
@@ -14,8 +15,40 @@ if (isset($_GET['action'])) {
 	
 } else {
 	
-	$result = executeSQL($mainConnection, 'SELECT ID_CARTAO_PATROCINADO, DS_CARTAO_PATROCINADO, CD_BIN FROM MW_CARTAO_PATROCINADO WHERE ID_PATROCINADOR = ?', array($_GET['idPatrocinador']));
-	
+	// $result = executeSQL($mainConnection, 'SELECT ID_CARTAO_PATROCINADO, DS_CARTAO_PATROCINADO, CD_BIN FROM MW_CARTAO_PATROCINADO WHERE ID_PATROCINADOR = ? order by DS_CARTAO_PATROCINADO', array($_GET['idPatrocinador']));
+
+	function paginarResultados($mainConnection)
+	{
+		global $obj;
+
+		$num_registros = 'SELECT ID_CARTAO_PATROCINADO, DS_CARTAO_PATROCINADO, CD_BIN FROM MW_CARTAO_PATROCINADO WHERE ID_PATROCINADOR = ? order by DS_CARTAO_PATROCINADO';
+		$params = array($_GET['idPatrocinador']);
+
+		$paramns = array(
+			'query' => $num_registros,
+			'paramns' => $params
+		);
+
+		$link = '?p='.$_GET['p'].'&idPatrocinador='.$_GET['idPatrocinador'];
+		$obj = Paginator::__paginate($link, $paramns);
+
+		$between = 'where row between '.$obj["start"].' and '.$obj['end'];
+		$nQuery = 'WITH results AS (
+				SELECT 
+					ID_CARTAO_PATROCINADO, 
+					DS_CARTAO_PATROCINADO, 
+					CD_BIN
+					, ROW_NUMBER() OVER (ORDER BY DS_CARTAO_PATROCINADO) row 
+				FROM MW_CARTAO_PATROCINADO 
+				WHERE ID_PATROCINADOR = ?)
+				SELECT * FROM results '.$between;
+
+		$result = executeSQL($mainConnection, $nQuery, array($_GET['idPatrocinador']));
+		return $result;
+	}
+
+	$result = paginarResultados($mainConnection);
+
 ?>
 
 <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
@@ -161,6 +194,13 @@ $(function() {
 			?>
 		</tbody>
 	</table>
+	<?php if($_GET['idPatrocinador'] != '') { ?>
+	<div id="paginacao">
+		<?php
+			echo $obj['htmlpages'];
+		?>
+	</div>
+	<?php } ?>
 	<a id="new" href="#new">Novo</a>
 </form>
 <?php

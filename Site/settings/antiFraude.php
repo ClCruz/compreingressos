@@ -450,7 +450,7 @@ function obterDadosPedidoPago($orderId) {
 
     $rs_gateway_pagamento = executeSQL($mainConnection, 'SELECT ID_GATEWAY_PAGAMENTO, DS_GATEWAY_PAGAMENTO, CD_GATEWAY_PAGAMENTO, DS_URL FROM MW_GATEWAY_PAGAMENTO WHERE IN_ATIVO = 1', array(), true);
 
-    $url_braspag = 'https://homologacao.pagador.com.br/services/pagadorQuery.asmx?WSDL';//$rs_gateway_pagamento['DS_URL'];
+    $url_braspag = ($_ENV['IS_TEST'] ? 'https://homologacao.pagador.com.br/services/pagadorQuery.asmx?WSDL' : 'https://transaction.pagador.com.br/services/pagadorQuery.asmx?WSDL');
     $parametros['MerchantId'] = $rs_gateway_pagamento['CD_GATEWAY_PAGAMENTO'];
     $parametros['OrderId'] = "$orderId";
 
@@ -489,7 +489,7 @@ function obterDadosPedidoPago($orderId) {
 
     $rs_gateway_pagamento = executeSQL($mainConnection, 'SELECT ID_GATEWAY_PAGAMENTO, DS_GATEWAY_PAGAMENTO, CD_GATEWAY_PAGAMENTO, DS_URL FROM MW_GATEWAY_PAGAMENTO WHERE IN_ATIVO = 1', array(), true);
 
-    $url_braspag = 'https://homologacao.pagador.com.br/services/pagadorQuery.asmx?WSDL';//$rs_gateway_pagamento['DS_URL'];
+    $url_braspag = ($_ENV['IS_TEST'] ? 'https://homologacao.pagador.com.br/services/pagadorQuery.asmx?WSDL' : 'https://transaction.pagador.com.br/services/pagadorQuery.asmx?WSDL');
     $parametros['MerchantId'] = $rs_gateway_pagamento['CD_GATEWAY_PAGAMENTO'];
     $parametros['BraspagOrderId'] = $braspagOrderId;
 

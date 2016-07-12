@@ -54,14 +54,22 @@ $(function() {
 	$('#estado').on('change', function(){
 		// estado == exterior?
 		if ($(this).val() == 28) {
-			$('#cpf').val('não se aplica').prop('disabled', true).addClass('disabled').slideUp('slow').findNextMsg().slideUp('slow');
-  			$('#cep').mask('AAAAAAAA').attr('pattern', '.{3,8}');
+			$cep = $('#cep');
+			$cep.attr('maxlength',17);
+			$('#cep').mask('00000000000000000').removeAttr('pattern');
 			$('#fixo').mask('AAAAAAAAAAAAAAA').attr('pattern', '.{1,15}');
 			$('#celular').mask('AAAAAAAAAAAAAAA');
+
+			$cep.on('blur', function(){
+				$this = $(this);
+				if ($this.val().length == 8) 
+				{
+					simples.preventGetCEP = false;
+					$this.mask('00000-000').attr('pattern', '.{3,8}');
+					simples.getCEP($this, { getnow: true });
+				}
+			})
 		} else {
-			if ($('#cpf').val() == 'não se aplica') {
-				$('#cpf').val('').prop('disabled', false).removeClass('disabled').slideDown('fast');
-			}
 			$('#cep').mask('00000-000').attr('pattern', '.{9}');
 			$('input[name=fixo]').mask('(00) 0000-0000').attr('pattern', '.{14}');
 			$('input[name=celular]').mask('(00) 000000000');
@@ -71,16 +79,23 @@ $(function() {
 	$('#checkbox_estrangeiro').on('change', function(){
 		$('#estado').selectbox('detach');
 		if ($(this).is(':checked')) {
+			$('#cpf').val('não se aplica').prop('disabled', true).addClass('disabled').slideUp('slow').findNextMsg().slideUp('slow');
 			$('#estado').append('<option value="28">Exterior</option>').val(28);
-			$('#estado').selectbox('attach').selectbox('disable');
+			$('#estado').selectbox('attach');
 			$('#tipo_documento').parent('span').slideDown('fast');
 			$('#tipo_documento').parent('span').next('div').slideDown('fast');
+			simples.preventGetCEP = true;
 		} else {
+			if ($('#cpf').val() == 'não se aplica') {
+				$('#cpf').val('').prop('disabled', false).removeClass('disabled').slideDown('fast');
+			}
+			simples.preventGetCEP = false;
 			$('#estado').find('option[value=28]').remove();
 			$('#estado').selectbox('attach').selectbox('enable');
 			$('#tipo_documento').parent('span').slideUp('slow', function(){$('#tipo_documento').selectbox('detach').val('').selectbox('attach');});
 			$('#tipo_documento').parent('span').next('div').slideUp('slow');
 		}
+
 		$('#estado').trigger('change');
 	}).trigger('change');
 	
@@ -126,8 +141,7 @@ $(function() {
 	});
 	
 	$('.salvar_dados').click(function(event) {
-		event.preventDefault();
-				
+		event.preventDefault();	
 		var $this = $(this),
 			 naoRequeridos = '#senha1,#senha2,#fixo,#complemento,#checkbox_guia,#checkbox_sms,#cep,#checkbox_estrangeiro,[name=sexo],#nascimento_dia,#nascimento_mes,#nascimento_ano,#numero_endereco',
 			 especiais = ',#email1,#email2,#rg,#estado,#cidade,#bairro,#endereco,#cpf,#tipo_documento',

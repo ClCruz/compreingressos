@@ -149,10 +149,10 @@ if ($_GET['carrinho']) {
 
     $rs = executeSQL($mainConnection, 'SELECT CD_CPF, DS_NOME FROM MW_CLIENTE WHERE ID_CLIENTE = ?', array($_SESSION['user']), true);
     $cpf = $rs['CD_CPF'];
-    $nome_clietne = $rs['DS_NOME'];
+    $nome_cliente = $rs['DS_NOME'];
 
-    // se for bin normal (5) ou se for bin do riachuelo (7) e o inicio do cartao nao for private label (02)
-    if ($codTipPromocao == 5 OR ($codTipPromocao == 7 AND substr($numeroDoCartao, 0, 2) != '02')) {
+    // se for bin normal (4) ou se for bin do riachuelo (7) e o inicio do cartao nao for private label (02)
+    if ($codTipPromocao == 4 OR ($codTipPromocao == 7 AND substr($numeroDoCartao, 0, 2) != '02')) {
         if ($numeroDoCartao AND substr(str_replace('-', '', $_POST['numCartao']), 0, 6) != $numeroDoCartao) {
             if( (!isset($_SESSION['usuario_pdv'])) OR ($_SESSION['usuario_pdv'] == 0) ){
                 echo "O cartão utilizado não corresponde ao cartão informado para validação da promoção.";
@@ -160,7 +160,7 @@ if ($_GET['carrinho']) {
             }
         }
     } elseif ($codTipPromocao == 7 AND substr($_POST['numCartao'], 0, 2) == '02' AND !isset($_POST['pos'])) {
-        echo "$nome_clietne, você já ganhou 30% de desconto por escolher o Cartão Riachuelo. Para finalizar o pagamento, lembre-se de selecionar um outro cartão de crédito de sua preferência.";
+        echo "$nome_cliente, como cliente do Cartão Riachuelo você ganhou 30% de desconto na sua compra. Finalize o pagamento com a forma de pagamento de sua preferência.";
         die();
     }
 

@@ -172,14 +172,13 @@ $(function() {
 			return;
 
 		} else {
-		
 			var $this = $(this),
 				 naoRequeridos = '#email,[id^=nascimento],[name=sexo],#celular,#complemento,#checkbox_guia,#checkbox_sms,#checkbox_estrangeiro',
 				 especiais = '#fixo,#email1,#email2,#senha1,#senha2,[name="tag"],.recaptcha :input,[type="button"],#cpf,#tipo_documento,#rg'
 				 formulario = $('#form_cadastro'),
-				 campos = formulario.find(':input:not(' + naoRequeridos + ',' + especiais +')'),
+				 campos = formulario.find(':input:not(' + naoRequeridos + ',' + especiais +'),:input:not([class*="disabled"]'),
 				 valido = true;
-
+				 console.log(campos);
 			campos.each(function() {
 				var $this = $(this);
 				

@@ -265,42 +265,57 @@ var simples =
         return str.replace(/[^a-z0-9]/gi,'');
     },
 
+    preventGetCEP: false, //Qdo a opção é EXTERIOR (estrangeiro) não pegar cep
+
     getCEP: function (element, paramns)
     {
-        if ( typeof paramns != 'object' ) { paramns = { prefix: '' } }
+        if ( typeof paramns != 'object' ) { paramns = {} }
+
+        if ( !paramns.prefix ) { paramns.prefix = ''; }
+        if ( !paramns.getnow ) { paramns.getnow = false; }
+
         var prefix = paramns.prefix;
 
-        $(element).keyup(function () {
-            var leng = this.value.length;
-            if (leng == 9)
-            {
-                $('.alert').hide();
-                var cep = this.value.replace('-', '');
+        if ( !paramns.getnow ) {
+            $(element).keyup(function (){
 
-                $.ajax({
-                    url: 'https://api.postmon.com.br/v1/cep/'+cep,
-                    dataType: 'json',
-                    success: function (data) {
-                        try{
-                            SetFormEndereco(data);
-                        } catch (e){
-                            console.log({e:e});
-                            $.dialog({ text: 'O CEP foi encontrado, mas ocorreu algum erro ao preencher o formulário de endereço. Favor entrar em contato com o administrador do Sistema e preencher o endereço manualmente.' });
-                        }
-                    },
-                    error: function (error) {
-                        console.log(error);
-                        SetFormEndereco('reset');
-                        $.dialog({ text: 'CEP não encontrado. Por favor, verifique se foi digitado corretamente.', autoHide: { set: true, time: 6000 } });
-                    }
-                });
-            }else{
-                SetFormEndereco('reset');
-            }
-        });
+                var leng = this.value.length;
+                if (leng == 9 && !simples.preventGetCEP)
+                {
+                    __get(this);
+                }else{
+                    SetFormEndereco('reset');
+                }
+            });
+        }else{
+            __get($(element)[0]);
+        }
         
         function setData(data, param, from) {
             
+        }
+
+        function __get(input){
+            $('.alert').hide();
+            var cep = input.value.replace('-', '');
+
+            $.ajax({
+                url: 'https://api.postmon.com.br/v1/cep/'+cep,
+                dataType: 'json',
+                success: function (data) {
+                    try{
+                        SetFormEndereco(data);
+                    } catch (e){
+                        console.log({e:e});
+                        $.dialog({ text: 'O CEP foi encontrado, mas ocorreu algum erro ao preencher o formulário de endereço. Favor entrar em contato com o administrador do Sistema e preencher o endereço manualmente.' });
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                    SetFormEndereco('reset');
+                    $.dialog({ text: 'CEP não encontrado. Por favor, verifique se foi digitado corretamente.', autoHide: { set: true, time: 6000 } });
+                }
+            });
         }
         
         function verificaEstadoSigla(sigla)
@@ -349,7 +364,7 @@ var simples =
 
             if ( typeof data == 'string' &&  data == 'reset')
             {
-                estado.options.selectedIndex = 0;
+                estado.options.selectedIndex = ( estado.options.selectedIndex == 28 ) ? 28 : 0;
                 $(estado).selectbox('detach');
                 $(estado).selectbox('attach');
 
@@ -384,7 +399,6 @@ var simples =
             $(bairro).val(data.bairro);
             $(endereco).val(data.logradouro);
 
-            //console.log(data.logradouro);
             nextFocus = ( data.logradouro != undefined ) ? 'numero_endereco' : 'bairro';
             $('#'+prefix+nextFocus).focus();
 

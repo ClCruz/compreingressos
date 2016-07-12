@@ -205,7 +205,7 @@ session_start();
 						<p class="erro">informe seu logradouro</p>
 						<p class="help"></p>
 					</div>
-					<input type="text" name="numero_endereco" id="numero_endereco" placeholder="Número do Endereço/Address Number" maxlength="50" pattern=".{1,150}" value="<?php echo utf8_encode($rs['NR_ENDERECO']); ?>">
+					<input type="text" name="numero_endereco" id="numero_endereco" placeholder="Número do Endereço/Address Number" maxlength="15" pattern=".{1,150}" value="<?php echo utf8_encode($rs['NR_ENDERECO']); ?>">
 					<div class="erro_help">
 						<p class="erro">Número</p>
 						<p class="help"></p>
@@ -278,14 +278,14 @@ session_start();
 				<label class="checkbox" for="checkbox_guia">quero receber o guia de espetáculos, com atrações específicas para a minha localidade</label>
 				<input id="checkbox_sms" type="checkbox" name="extra_sms" class="checkbox" value="S" <?php echo ($rs['IN_RECEBE_SMS'] == 'S') ? 'checked' : ''; ?>>
 				<label class="checkbox" for="checkbox_sms" id="label_sms">autorizo o envio de mensagens SMS</label>
-				
-				<?php if (!(isset($_SESSION['user']) and is_numeric($_SESSION['user'])) or preg_match('/etapa/', basename($_SERVER['SCRIPT_FILENAME']))) { ?>
-				<input id="checkbox_politica" type="checkbox" name="concordo" class="checkbox" value="S">
+				<?php
+					$url = explode("/", $_SERVER['PHP_SELF']);
+				?>	
+				<input id="checkbox_politica" type="checkbox" name="concordo" class="checkbox" value="S" <?php echo (($url[2] != "login.php") and isset($_SESSION['user']) and is_numeric($_SESSION['user'])) ? ' checked disabled' : ''; ?>>
 				<label class="checkbox" for="checkbox_politica" id="label_politica">
-					concordo com os <a href="" target="_blank" class="termos_de_uso">termos de uso</a> e a 
-					<a href="" target="_blank" class="politica_de_privacidade">política de privacidade</a>
+					concordo com os <a href="" target="_blank" class="termos_de_uso">termos de uso</a>, a 
+					<a href="" target="_blank" class="politica_de_privacidade">política de privacidade</a> e a <a href="http://www.compreingressos.com/politica" target="_blank" class="politica_de_venda">política de venda</a>
 				</label>
-				<?php } ?>
 			</div>
 
 			<?php if (!(isset($_SESSION['user']) and is_numeric($_SESSION['user'])) and !(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) { ?>

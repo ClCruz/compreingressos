@@ -166,7 +166,7 @@ span.pedido_resumo table tbody td {
 }
 
 input[type="checkbox"]:disabled+label {
-	opacity: .3;
+	opacity: .9;
 }
 
 a.botao.voltar.passo0 {

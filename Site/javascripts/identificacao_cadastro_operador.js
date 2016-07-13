@@ -73,6 +73,7 @@ $(function() {
 			$('#cep').mask('00000-000').attr('pattern', '.{9}');
 			$('input[name=fixo]').mask('(00) 0000-0000').attr('pattern', '.{14}');
 			$('input[name=celular]').mask('(00) 000000000');
+			simples.preventGetCEP = false;
 		}
 	}).trigger('change');
 
@@ -201,14 +202,6 @@ $(function() {
 			} else $('#rg').removeClass('erro').findNextMsg().slideUp('slow');
 		} else $('#rg').removeClass('erro').findNextMsg().slideUp('slow');
 
-		// estado == exterior?
-		if ($('#estado').val() != 28) {
-			if ($('#cpf').val().length < 6) {
-				$('#cpf').addClass('erro').findNextMsg().slideDown('fast');
-				valido = false;
-			} else $('#cpf').removeClass('erro').findNextMsg().slideUp('slow');
-		}
-		
 		if (valido) {
 			$.ajax({
 				url: formulario.attr('action') + '?action=add',

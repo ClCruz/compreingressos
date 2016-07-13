@@ -40,8 +40,8 @@ if (isset($_GET['action'])) {
 		$_POST['cpf'] = preg_replace("/[^0-9]/", "", $_POST['cpf']);
 
 		$_POST['cep'] = preg_replace("/[^0-9]/", "", $_POST['cep']);
-		
-		if ($_POST['estado'] != 28) {
+
+		if( !$_POST['checkbox_estrangeiro'] ){
 			$_POST['telefone'] = explode(' ', $_POST['fixo']);
 			$_POST['ddd1'] = preg_replace("/[^0-9]/", "", $_POST['telefone'][0]);
 			$_POST['telefone'] = preg_replace("/[^0-9]/", "", $_POST['telefone'][1]);
@@ -52,14 +52,15 @@ if (isset($_GET['action'])) {
 		} else {
 			$_POST['telefone'] = $_POST['fixo'];
 		}
-		// -------------------------------------------------------------------------------
 
 		if (!isset($_POST['extra_info'])) $_POST['extra_info'] = 'N';
 		if (!isset($_POST['extra_sms'])) $_POST['extra_sms'] = 'N';
 		if (!isset($_POST['concordo'])) $_POST['concordo'] = 'N';
-		
-		if ($_POST['estado'] != 28) {
-			if (!verificaCPF($_POST['cpf'])) {
+
+		if( !$_POST['checkbox_estrangeiro'] )
+		{
+			if (!verificaCPF($_POST['cpf']))
+			{
 				echo 'CPF Inválido';
 				exit();
 			}
@@ -206,6 +207,11 @@ if (isset($_GET['action'])) {
 		
 		$newID = executeSQL($mainConnection, 'SELECT ISNULL(MAX(ID_CLIENTE), 0) + 1 FROM MW_CLIENTE', array(), true);
 		$newID = $newID[0];
+
+		// se for do exterior usar o id de usuario como cpf
+		if( empty($_POST['cpf']) && $_POST['checkbox_estrangeiro'] ){
+			$_POST['cpf'] = substr('00000000000' . $newID, -11);
+		}
 		
 		$query = 'INSERT INTO MW_CLIENTE
 						(
@@ -271,11 +277,6 @@ if (isset($_GET['action'])) {
 			$retorno = 'true';
 			$send_mailchimp = true;
 			$email = $_POST['email1'];
-
-			// se for do exterior usar o id de usuario como cpf
-			if ($_POST['estado'] == 28) {
-				executeSQL($mainConnection, "UPDATE MW_CLIENTE SET CD_CPF = RIGHT('00000000000' + CONVERT(VARCHAR(20), ID_CLIENTE), 11) WHERE CD_EMAIL_LOGIN = ?", array($_POST['email1']));
-			}
 			
 			dispararTrocaSenha($_POST['email1']);
 		} else {
@@ -300,7 +301,9 @@ if (isset($_GET['action'])) {
 		}
 
 		// se for do exterior usar o id de usuario como cpf
-		$_POST['cpf'] = $_POST['estado'] == 28 ? substr('00000000000' . $_SESSION['user'], -11) : $_POST['cpf'];
+		if( empty($_POST['cpf']) && $_POST['checkbox_estrangeiro'] ){
+			$_POST['cpf'] = substr('00000000000' . $_SESSION['user'], -11);
+		}
 		
 		$query = 'SELECT CD_EMAIL_LOGIN FROM MW_CLIENTE WHERE ID_CLIENTE = ?';
 		$params = array($_SESSION['user']);
@@ -510,7 +513,10 @@ if (isset($_GET['action'])) {
 		if ($retorno[0]['code'] == 242) {
 			echo 'Data de Nascimento inválida';
 		} else {
-			// var_dump($query, $params, $retorno);
+			//var_dump($query, $params, $retorno);
+//			printr($query);
+//			printr($params);
+//			printr($retorno);
 			echo "Um erro inesperado ocorreu. Favor informar o suporte.";
 		}
 	} else {

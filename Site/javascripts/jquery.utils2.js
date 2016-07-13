@@ -1,5 +1,53 @@
 TimeoutToHideDialog = undefined;
 
+$(document).ready(function () {
+	enterSubmit();
+	function enterSubmit()
+	{
+		try{
+			cfgForm();
+		}catch (E){
+			console.log(E);
+		}
+
+		function cfgForm()
+		{
+			var form = document.forms.identificacao;
+			var iptPass 	= null;
+			var iptSubmit 	= null;
+
+			var i = 0;
+			while (i < form.length)
+			{
+				var input = form[i];
+				if (input.getAttribute('name') == 'senha')
+				{
+					iptPass = input;
+				}
+
+				if (input.getAttribute('type') == 'button' && input.getAttribute('id') == 'logar')
+				{
+					iptSubmit = input;
+				}
+				i++;
+			}
+
+			if (iptPass != null && iptSubmit != null) {
+				setDynamicClick(iptPass, iptSubmit);
+			}
+
+			function setDynamicClick(pass, submit)
+			{
+				pass.onkeyup = function (key) {
+					if (key.keyCode == 13) {
+						submit.click();
+					}
+				}
+			}
+		}
+	}
+});
+
 function trimAll(text) {
 	return text.replace(/[ \t\r\n\v\f]/g,"");
 }

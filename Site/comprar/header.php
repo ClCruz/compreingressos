@@ -31,34 +31,32 @@ if ($pdo !== false) {
 
 $rows = numRows($mainConnection, "SELECT 1 FROM MW_RESERVA WHERE ID_SESSION = ?", array(session_id()));
 
-$homeConn = getConnectionHome();
-
-$query = 'SELECT id, link FROM publicidades WHERE ( CURDATE() BETWEEN data_inicio AND data_fim) AND status = true ORDER BY RAND() LIMIT 1';
-$exe = $homeConn->prepare($query);
-$banner = $exe->execute();
-$banner = $exe->fetch();
-
+//$homeConn = getConnectionHome();
+//$query = 'SELECT id, link FROM publicidades WHERE ( CURDATE() BETWEEN data_inicio AND data_fim) AND status = true ORDER BY RAND() LIMIT 1';
+//$exe = $homeConn->prepare($query);
+//$banner = $exe->execute();
+//$banner = $exe->fetch();
 
 ?>
 
-<link rel="stylesheet" type="text/css" href="/stylesheets/nova_home.css">
-<link rel="stylesheet" type="text/css" href="/stylesheets/icons/socicon/styles.css">
-<link rel="stylesheet" type="text/css" href="/stylesheets/icons/flaticon1/flaticon.css">
+<link rel="stylesheet" type="text/css" href="../stylesheets/nova_home.css">
+<link rel="stylesheet" type="text/css" href="../stylesheets/icons/socicon/styles.css">
+<link rel="stylesheet" type="text/css" href="../stylesheets/icons/flaticon1/flaticon.css">
 
 <?php require("desktopMobileVersion.php"); ?>
 
 <div id="novo_menu">
 	<div class="centraliza">
 
-		<div class="publicidade">
+		<?php //if( !empty($banner) ): ?>
+		<!-- <div class="publicidade">
 			<div class="anuncio">
-				<?php if( !empty($banner) ): ?>
-					<a href="<?php echo $banner['link'] ?>" target="_self">
-						<img src="http://www.compreingressos.com/images/publicidades/<?php echo $banner['id'] ?>/publicidade.jpg" style="width: 960px; height: 75px">
+					<a href="<?php //echo $banner['link'] ?>" target="_self">
+						<img src="http://www.compreingressos.com/images/publicidades/<?php //echo $banner['id'] ?>/publicidade.jpg" style="width: 960px; height: 75px">
 					</a>
-				<?php endif; ?>
 			</div>
-		</div>
+		</div>-->
+		<?php //endif; ?>
 
 		<div class="itens">
 			<div class="primeira">

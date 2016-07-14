@@ -2757,3 +2757,9 @@ div.resumo_carrinho span.frase{
 .beneficio.promo_8 .icone_validador:not(.valido) + .container_validador {
     display: none;
 }
+
+
+div.espetaculo_img.assinatura{
+	border:none;
+	background:none;
+}

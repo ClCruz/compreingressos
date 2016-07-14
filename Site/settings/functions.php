@@ -506,6 +506,54 @@ function getURLApresentacaoAtual() {
 	return 'etapa1.php?apresentacao='.$rs['ID_APRESENTACAO'].'&eventoDS='.utf8_encode($rs['DS_EVENTO']);
 }
 
+function getPrimeiroValorAssinatura($id_usuario, $id_assinatura) {
+    $mainConnection = mainConnection();
+
+    $query = 'WITH RESULTADO AS (
+                    SELECT AV.QT_MES_VIGENCIA, AV.VL_ASSINATURA, MAX(AV.VL_ASSINATURA) VALOR_MAXIMO
+                    FROM MW_ASSINATURA_VALOR AV
+                    WHERE AV.ID_ASSINATURA = ?
+                    GROUP BY AV.QT_MES_VIGENCIA, AV.VL_ASSINATURA
+                )
+                SELECT TOP 1 VL_ASSINATURA
+                FROM RESULTADO
+                WHERE (EXISTS (SELECT TOP 1 1 FROM MW_ASSINATURA_CLIENTE WHERE ID_CLIENTE = ?) AND VL_ASSINATURA IN (SELECT MAX(VL_ASSINATURA) FROM RESULTADO))
+                        OR
+                        (NOT EXISTS (SELECT TOP 1 1 FROM MW_ASSINATURA_CLIENTE WHERE ID_CLIENTE = ?))
+                ORDER BY QT_MES_VIGENCIA';
+    $params = array($id_assinatura, $id_usuario, $id_usuario);
+    $rs = executeSQL($mainConnection, $query, $params, true);
+
+    return $rs['VL_ASSINATURA'];
+}
+
+function getProximoValorAssinatura($id_assinatura_cliente) {
+    $mainConnection = mainConnection();
+
+    $query = "WITH RESULTADO AS (
+                    SELECT AC.ID_CLIENTE, AC.ID_ASSINATURA_CLIENTE, AV.QT_MES_VIGENCIA, AV.VL_ASSINATURA, COUNT(AH.ID_ASSINATURA_CLIENTE) AS QT_PAGAMENTOS
+                    FROM MW_ASSINATURA_VALOR AV
+                    INNER JOIN MW_ASSINATURA_CLIENTE AC ON AC.ID_ASSINATURA = AV.ID_ASSINATURA
+                    INNER JOIN MW_ASSINATURA_HISTORICO AH ON AH.ID_ASSINATURA_CLIENTE = AC.ID_ASSINATURA_CLIENTE
+                    WHERE AC.ID_ASSINATURA_CLIENTE = ?
+                    GROUP BY AC.ID_CLIENTE, AC.ID_ASSINATURA_CLIENTE, AV.QT_MES_VIGENCIA, AV.VL_ASSINATURA
+                )
+                SELECT TOP 1 VL_ASSINATURA
+                FROM RESULTADO
+                WHERE
+                    (QT_MES_VIGENCIA >= QT_PAGAMENTOS
+                        AND ID_ASSINATURA_CLIENTE IN (SELECT MIN(ID_ASSINATURA_CLIENTE)
+                                                        FROM MW_ASSINATURA_CLIENTE
+                                                        WHERE ID_CLIENTE = RESULTADO.ID_CLIENTE))
+                    OR
+                    (QT_MES_VIGENCIA IN (SELECT MAX(QT_MES_VIGENCIA) FROM RESULTADO))
+                ORDER BY QT_MES_VIGENCIA";
+    $params = array($id_assinatura_cliente);
+    $rs = executeSQL($mainConnection, $query, $params, true);
+
+    return $rs['VL_ASSINATURA'];
+}
+
 
 
 

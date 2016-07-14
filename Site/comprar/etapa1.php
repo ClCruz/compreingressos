@@ -175,7 +175,6 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
     <link href="../images/favicon.ico" rel="shortcut icon"/>
     <link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css' />
     <link rel="stylesheet" href="../stylesheets/cicompra.css"/>
-    <?php require("desktopMobileVersion.php"); ?>
 
     <link rel="stylesheet" href="../stylesheets/annotations.css"/>
     <link rel="stylesheet" href="../stylesheets/ajustes.css"/>
@@ -196,7 +195,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
     <script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
     <script src="../javascripts/common.js" type="text/javascript"></script>
     <script src="../javascripts/jquery.annotate.js" type="text/javascript"></script>
-   
+
     <script type="text/javascript" src="../javascripts/plateia.js?<?php echo $vars; ?>"></script>
     <script type="text/javascript" src="../javascripts/overlay_datas.js?evento=<?php echo $rs['ID_EVENTO']; ?>"></script>
 
@@ -227,18 +226,18 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
       })();
     </script>
     <?php if(!empty($rs2) && $rs2["TAMANHOLUGAR"] != 0){ ?>
-    <style type="text/css">
-      .diametro{
-        width: <?php echo $rs2["TAMANHOLUGAR"]; ?>px;
-        height: <?php echo $rs2["TAMANHOLUGAR"]; ?>px;
-      }
-    </style>
+      <style type="text/css">
+        .diametro{
+          width: <?php echo $rs2["TAMANHOLUGAR"]; ?>px;
+          height: <?php echo $rs2["TAMANHOLUGAR"]; ?>px;
+        }
+      </style>
     <?php } ?>
   </head>
   <body style="height: 0px; overflow: visible; position: static;">
-    <div style="margin-top: 0px;" id="pai">
-      <?php include_once("header.php"); ?>
-      <div id="content">
+  <div style="margin-top: 0px;" id="pai">
+    <?php include_once("header.php"); ?>
+    <div id="content">
         <div class="alert">
           <div class="centraliza">
             <img src="../images/ico_erro_notificacao.png" alt="Notificação" />

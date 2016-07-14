@@ -1364,31 +1364,6 @@ div#detalhes_busca{
 	font-variant:small-caps;
 }
 
-#footer ul li a.facebook{
-	display:block;
-	padding:30px 0 15px 95px;
-	text-transform:none;
-	background:transparent url('../images/ico_facebook.png') 0 0 no-repeat;
-	line-height:1.2em;
-}
-
-#footer ul li a.facebook:hover{
-  background-position:0 -92px;
-}
-
-#footer ul li a.twitter{
-	display:block;
-	margin-top:30px;
-	text-transform:none;
-	padding:30px 0 15px 95px;
-	background:transparent url('../images/ico_twitter.png') 0 0 no-repeat;
-	line-height:1.2em;
-}
-
-#footer ul li a.twitter:hover{
-  background-position:0 -92px;
-}
-
 #selos{
 	float:left;
 	width:100%;

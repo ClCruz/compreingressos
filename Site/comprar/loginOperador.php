@@ -9,7 +9,7 @@ require_once('../settings/functions.php');
 	<link href="../images/favicon.ico" rel="shortcut icon"/>
 	<link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
-    <?php require("desktopMobileVersion.php"); ?>
+    
 	<link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
 
 	<script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
@@ -121,7 +121,7 @@ require_once('../settings/functions.php');
 
 		<?php include "footer.php"; ?>
 
-		<?php include "selos.php"; ?>
+		<?php //include "selos.php"; ?>
 	</div>
 </body>
 </html>

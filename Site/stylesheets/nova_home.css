@@ -16,7 +16,7 @@ div#novo_menu ul li { list-style: none; }
 div#novo_menu ul  { padding: 0px; margin: 0px; }
 div#novo_menu input { float: none; }
 
-div#novo_menu{height: 185px;background: #cd1331;padding: 5px 0px 15px 0px; position: relative;}
+div#novo_menu{background: #cd1331;padding: 5px 0px 15px 0px; position: relative;}
 
 div#novo_menu .publicidade{width: 100%;height: 75px;background: rgba(255, 255, 255, 0.2);margin-bottom: 15px;}
 

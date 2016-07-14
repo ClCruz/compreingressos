@@ -15,7 +15,6 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
         <link href="../images/favicon.ico" rel="shortcut icon"/>
         <link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'/>
         <link rel="stylesheet" href="../stylesheets/cicompra.css"/>
-        <?php require("desktopMobileVersion.php"); ?>
         <link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
 
         <script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
@@ -57,15 +56,16 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
         <title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
     </head>
     <body>
-        <div id="pai">
-            <?php require "header.php"; ?>
-            <div id="content">
-                <div class="alert">
-                    <div class="centraliza">
-                        <img alt="" src="../images/ico_erro_notificacao.png" />
-                        <div class="container_erros"></div>
-                        <a>fechar</a>
-                    </div>
+    <div id="pai">
+        <?php require "header.php"; ?>
+        
+        <div id="content">
+            <div class="alert">
+                <div class="centraliza">
+                    <img alt="" src="../images/ico_erro_notificacao.png" />
+                    <div class="container_erros"></div>
+                    <a>fechar</a>
+                </div>
                 </div>
 
                 <div class="centraliza">

@@ -57,15 +57,16 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
         <title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
     </head>
     <body>
-        <div id="pai">
-            <?php require "header.php"; ?>
-            <div id="content">
-                <div class="alert">
-                    <div class="centraliza">
-                        <img alt="" src="../images/ico_erro_notificacao.png" />
-                        <div class="container_erros"></div>
-                        <a>fechar</a>
-                    </div>
+    <div id="pai">
+        <?php require "header.php"; ?>
+        
+        <div id="content">
+            <div class="alert">
+                <div class="centraliza">
+                    <img alt="" src="../images/ico_erro_notificacao.png" />
+                    <div class="container_erros"></div>
+                    <a>fechar</a>
+                </div>
                 </div>
 
                 <div class="centraliza">

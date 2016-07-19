@@ -33,7 +33,10 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
                     C.DS_DDD_CELULAR,
                     C.DS_CELULAR,
                     U.DS_NOME,
-                    PV.ID_IP ";
+                    PV.ID_IP,
+                    PV.ID_USUARIO_ESTORNO,
+                    PV.DS_MOTIVO_CANCELAMENTO,
+                    PV.DT_HORA_CANCELAMENTO ";
 
     $from = " FROM MW_PEDIDO_VENDA PV INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE
                       LEFT JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
@@ -58,7 +61,10 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
                   C.DS_DDD_CELULAR,
                   C.DS_CELULAR,
                   U.DS_NOME,
-                  PV.ID_IP ";
+                  PV.ID_IP,
+                  PV.ID_USUARIO_ESTORNO,
+                  PV.DS_MOTIVO_CANCELAMENTO,
+                  PV.DT_HORA_CANCELAMENTO ";
 
     if (!empty($_GET["num_pedido"])) {
 
@@ -89,7 +95,10 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
                             C.DS_TELEFONE,
                             C.DS_DDD_CELULAR,
                             C.DS_CELULAR,
-                            PV.ID_IP ";
+                            PV.ID_IP,
+                            PV.ID_USUARIO_ESTORNO,
+                            PV.DS_MOTIVO_CANCELAMENTO,
+                            PV.DT_HORA_CANCELAMENTO ";
 
                 $group = " GROUP BY
                               (CONVERT(VARCHAR(10), PV.DT_PEDIDO_VENDA, 103) + ' - ' + CONVERT(VARCHAR(8), PV.DT_PEDIDO_VENDA, 114)),
@@ -103,7 +112,10 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
                               C.DS_TELEFONE,
                               C.DS_DDD_CELULAR,
                               C.DS_CELULAR,
-                              PV.ID_IP ";
+                              PV.ID_IP,
+                              PV.ID_USUARIO_ESTORNO,
+                              PV.DS_MOTIVO_CANCELAMENTO,
+                              PV.DT_HORA_CANCELAMENTO ";
 
                 $from = "FROM MW_PEDIDO_VENDA PV INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE AND PV.ID_USUARIO_CALLCENTER IS NULL
                           LEFT JOIN MW_ITEM_PEDIDO_VENDA_HIST IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA ";
@@ -310,6 +322,27 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
                     <td><?php echo comboSituacao('situacao', $rs['IN_SITUACAO'], false)?></td>
                     <td><?php echo comboFormaEntrega($rs['IN_RETIRA_ENTREGA']); ?></td>
                 </tr>
+                <?php
+                  if($_GET['situacao'] == 'S')
+                  {
+                    if($rs['DT_HORA_CANCELAMENTO'] != NULL || $rs['DT_HORA_CANCELAMENTO'] != "")
+                    {
+                      $dt_estorno = date_format($rs['DT_HORA_CANCELAMENTO'], 'd/m/Y').' às '.date_format($rs['DT_HORA_CANCELAMENTO'], 'H:i').'hs';
+                    }
+                    else
+                    {
+                      $dt_estorno = 'Sem informação';
+                    }
+                ?>
+                  <tr>
+                    <td colspan='4'>Estornado pelo usuário: <?php echo comboAdmins('admin', $rs['ID_USUARIO_ESTORNO'], false); ?></td>
+                    <td colspan='4'>Motivo: <?php echo $rs['DS_MOTIVO_CANCELAMENTO']; ?></td>
+                    <td colspan='3'>Data de Estorno: <?php echo $dt_estorno ?></td>
+                  </tr>
+                <?php
+                  }
+                ?>
+                <tr></tr>
         <?php
             }
         }

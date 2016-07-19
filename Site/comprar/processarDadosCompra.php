@@ -366,8 +366,8 @@ $query = 'UPDATE MW_PEDIDO_VENDA SET
                         ,DS_EMAIL_VOUCHER = ?
                         ,CD_BIN_CARTAO = ?
                         ,ID_ORIGEM = ?
-			WHERE ID_PEDIDO_VENDA = ?
-				AND ID_CLIENTE = ?';
+                        ,NM_TITULAR_CARTAO = ? 
+                        WHERE ID_PEDIDO_VENDA = ? AND ID_CLIENTE = ?';
 
 if ($_POST['nomePresente']) {
     $nome_presente = $_POST['nomePresente'];
@@ -377,11 +377,22 @@ if ($_POST['nomePresente']) {
     $email_presente = null;
 }
 
-$params = array(($totalIngressos + $frete + $totalConveniencia), $totalIngressos, $totalConveniencia,
-                $_SERVER["REMOTE_ADDR"], $PaymentDataCollection['NumberOfPayments'],
-                $nr_beneficio, $nome_presente, $email_presente, $PaymentDataCollection['CardNumber'],
-                $_SESSION['origem'],
-                $newMaxId, $_SESSION['user']);
+$params = array
+        (
+                ($totalIngressos + $frete + $totalConveniencia)
+                ,$totalIngressos
+                ,$totalConveniencia
+                ,$_SERVER["REMOTE_ADDR"]
+                ,$PaymentDataCollection['NumberOfPayments']
+                ,$nr_beneficio
+                ,$nome_presente
+                ,$email_presente
+                ,$PaymentDataCollection['CardNumber']
+                ,$_SESSION['origem']
+                ,$PaymentDataCollection['CardHolder']
+                ,$newMaxId
+                ,$_SESSION['user']
+        );
 
 if ($itensPedido > 0) {
     $gravacao = executeSQL($mainConnection, $query, $params);
@@ -549,7 +560,7 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
 
         // se o meio de pagamento for fastcash
         if(in_array($_POST['codCartao'], array('892', '893'))){
-            extenderTempo($horas_antes_apresentacao_pagamento);
+            extenderTempo($horas_antes_apresentacao_pagamento * 60);
 
             $query = "UPDATE P SET ID_MEIO_PAGAMENTO = M.ID_MEIO_PAGAMENTO
                         FROM MW_PEDIDO_VENDA P, MW_MEIO_PAGAMENTO M
@@ -599,19 +610,21 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
             if ($result->AuthorizeTransactionResult->ErrorReportDataCollection->ErrorReportDataResponse->ErrorCode == '135') {
                 $dados = obterDadosPedidoPago($parametros['OrderData']['OrderId']);
 
-                $result->AuthorizeTransactionResult->OrderData->BraspagOrderId = $dados->BraspagOrderId;
-                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId = $dados->BraspagTransactionId;
-                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId = $dados->AcquirerTransactionId;
-                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AuthorizationCode = $dados->AuthorizationCode;
-                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->PaymentMethod = $dados->PaymentMethod;
+                if ($dados !== false) {
+                    $result->AuthorizeTransactionResult->OrderData->BraspagOrderId = $dados->BraspagOrderId;
+                    $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId = $dados->BraspagTransactionId;
+                    $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId = $dados->AcquirerTransactionId;
+                    $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AuthorizationCode = $dados->AuthorizationCode;
+                    $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->PaymentMethod = $dados->PaymentMethod;
 
-                $result->AuthorizeTransactionResult->CorrelationId = $ri;
-                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->Status = '0';
+                    $result->AuthorizeTransactionResult->CorrelationId = $ri;
+                    $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->Status = '0';
+                }
 
                 // email temporario para checar novo tratamento de erro (nao é possivel forcar o erro em homologacao)
                 ob_start();
                 echo "[ErrorCode] => 135<br/>[ErrorMessage] => OrderId was already registered<br/><br/>";
-                echo "Não é um erro grave. Apenas checar os dados abaixo:<br/><br/>";
+                echo "Não é um erro grave. Apenas checar os dados abaixo para o pedido {$parametros['OrderData']['OrderId']}:<br/><br/>";
                 echo "<pre>"; var_dump($dados); echo "</pre>";
                 $message = ob_get_clean();
 

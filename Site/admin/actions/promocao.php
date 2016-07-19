@@ -219,14 +219,17 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
 
     
     
-    if ($_GET['action'] == 'save' AND $_POST['cboAssinatura']) {
+    if ($_GET['action'] == 'save' AND $_POST['cboAssinatura'] AND $_POST['cboPromo'] == 8) {
 
-        $query = "SELECT 1 FROM MW_ASSINATURA_PROMOCAO WHERE ID_ASSINATURA = ? AND (ID_PROMOCAO_CONTROLE != ? OR ? IS NULL)";
-        $params = array($_POST['cboAssinatura'][0], $_POST['id'], $_POST['id']);
+        $query = "SELECT 1 FROM MW_ASSINATURA_PROMOCAO AP
+                    INNER JOIN MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = AP.ID_PROMOCAO_CONTROLE
+                    WHERE AP.ID_ASSINATURA = ? AND PC.CODTIPPROMOCAO = 8";
+
+        $params = array($_POST['cboAssinatura'][0]);
         $rs = executeSQL($mainConnection, $query, $params, true);
 
         if (!empty($rs)) {
-            die("false?msg=Essa assinatura já está em uso em outra promoção.&id=".$_POST['id']);
+            die("false?erro=Essa assinatura já está em uso em outra promoção.&id=".$_POST['id']);
         }
     }
 
@@ -355,7 +358,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
             $retorno = $import === true ? '' : 'true?id='.$_POST['id'].'&msg=A promoção foi alterada, porém o processo de importação encontrou problemas no(s) arquivo(s):<br/><br/>'.$import;
         }
         // associa as assinaturas a promocao
-        elseif ($rs['CODTIPPROMOCAO'] == 8) {
+        elseif (in_array($rs['CODTIPPROMOCAO'], array(8, 9))) {
             associar_assinaturas($mainConnection, $_POST['id'], $_POST['cboAssinatura']);
         }
 
@@ -410,8 +413,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                     IN_EXIBICAO
                     )
                 VALUES (?,?,?,?,?,?,?,1,?,?,?,?,?,?,?,?,?,?);
-                SELECT SCOPE_IDENTITY() as ID;';
-        $params = array($_POST['cboPromo'],
+                SELECT
+                    ID_PROMOCAO_CONTROLE as ID,
+                    CODTIPPROMOCAO
+                FROM MW_PROMOCAO_CONTROLE
+                WHERE ID_PROMOCAO_CONTROLE = SCOPE_IDENTITY();';
+        $params = array(
+            $_POST['cboPromo'],
             utf8_decode($_POST['ds_promo']),
             utf8_decode($_POST['ds_bilhete']),
             $_POST['vl_desconto'],
@@ -427,7 +435,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
             $_POST['in_servico'],
             $_POST['cboPatrocinador'],
             $_POST['qt_limite_cpf'],
-                        $_POST['cboExibicao']);
+            $_POST['cboExibicao']
+        );
 
         $result = executeSQL($mainConnection, $query, $params);
 
@@ -464,7 +473,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
             $retorno = $import === true ? '' : 'true?id='.$id.'&msg=A promoção foi criada, porém o processo de importação encontrou problemas no(s) arquivo(s):<br/><br/>'.$import;
         }
         // associa as assinaturas a promocao
-        elseif ($rs['CODTIPPROMOCAO'] == 8) {
+        elseif (in_array($rs['CODTIPPROMOCAO'], array(8, 9))) {
             associar_assinaturas($mainConnection, $id, $_POST['cboAssinatura']);
         }
         // gera os codigos dos cupons

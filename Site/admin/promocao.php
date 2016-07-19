@@ -175,7 +175,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                         $('table.ui-widget').show();
                     }
                     
-                    $(":input:not(.datePicker, [name=qt_limite_cpf], [name=limite_cpf\\[\\]], [name=cboExibicao], [name=ds_codigo], [name=qt_codigo], [type=checkbox], [type=hidden], [type=submit], #cboAssinatura), :input[name=in_hotsite]").prop('disabled', true).prop('readonly', true);
+                    $(":input:not(.datePicker, [name=qt_limite_cpf], [name=limite_cpf\\[\\]], [name=cboExibicao], [name=ds_codigo], [name=qt_codigo], [type=checkbox], [type=hidden], [type=submit]), :input[name=in_hotsite]").prop('disabled', true).prop('readonly', true);
 
                     if (abrangencia == 'especifico') {
                         $("#cboLocal").prop('disabled', false).prop('readonly', false);
@@ -247,7 +247,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                             $('[name=ds_codigo]').val('CONVITE');
                         break;
                         // Assinatura
-                        case '8':
+                        case '8': case '9':
                             mostrar = 'assinatura';
                         break;
                     }
@@ -318,6 +318,21 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                             $('option[value=TODOS]').next().prop('selected', true);
                     } else {
                         $('option[value=TODOS]').prop('disabled', false);
+                    }
+
+                    if (mostrar == 'assinatura') {
+                        if ($cboPromo.val() == 9) {
+                            $('#cboAssinatura').prop('multiple', true)
+                                .find('option[value=""]').text('').end()
+                                .chosen();
+                        } else {
+                            if ($('[name=id]').val() != '') {
+                                $('#cboAssinatura').prop('multiple', false);
+                            } else {
+                                $('#cboAssinatura').prop('multiple', false).chosen("destroy")
+                                    .find('option[value=""]').remove().end().find('option:first').before('<option value="" selected>Selecione...</option>');
+                            }
+                        }
                     }
 
                     if ($cboPromo.val() != '') listar_eventos();
@@ -459,7 +474,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                             campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], .chosen-container *, #cboAssinatura, [name=cboPatrocinador], [name=ds_codigo], [name=qt_codigo], [name=ds_img1], [name=ds_img2])');
                         break;
                         // Assinatura
-                        case '8':
+                        case '8': case '9':
                             campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], .chosen-container *, [name=cboPatrocinador], [name=ds_codigo], [name=qt_codigo], [name=ds_img1], [name=ds_img2])');
                         break;
                         // inválido
@@ -532,6 +547,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
         #dados.geral .disponiveis,
         #dados.geral .ui-widget .chk_evento {
             display: none;
+        }
+        #cboAssinatura {
+            width: 100%;
         }
         </style>
         <div title="Processando..." id="loading">
@@ -628,7 +646,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                         </div>
                         <div class="promo_assinatura">
                             <b>Assinatura:</b><br/>
-                            <?php echo comboAssinatura('cboAssinatura[]', $assinaturasSelecionadas); ?>
+                            <?php echo comboAssinatura('cboAssinatura[]', $assinaturasSelecionadas, true); ?>
                         </div>
                     </td>
                     <td>

@@ -64,7 +64,8 @@ if ($_GET['carrinho']) {
         $query = "SELECT TOP 1 P.ID_PROMOCAO,
                         P.ID_SESSION,
                         P.ID_PEDIDO_VENDA,
-                        PC.CODTIPPROMOCAO
+                        PC.CODTIPPROMOCAO,
+                        PC.ID_PROMOCAO_CONTROLE
                     FROM CI_MIDDLEWAY..MW_RESERVA R
                     INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB
                         ON AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
@@ -74,17 +75,35 @@ if ($_GET['carrinho']) {
                     INNER JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE PC
                         ON PC.ID_PROMOCAO_CONTROLE = TTB.ID_PROMOCAO_CONTROLE
                             AND PC.IN_ATIVO = 1
-                    INNER JOIN CI_MIDDLEWAY..MW_PROMOCAO P
+                    LEFT JOIN CI_MIDDLEWAY..MW_PROMOCAO P
                         ON P.ID_PROMOCAO_CONTROLE = PC.ID_PROMOCAO_CONTROLE
-                    WHERE R.ID_RESERVA = ?
                         AND P.CD_PROMOCIONAL = ?
+                    WHERE R.ID_RESERVA = ?
                     ORDER BY P.ID_SESSION,
                         P.ID_PEDIDO_VENDA";
 
-        $result = executeSQL($conn, $query, array($_POST['reserva'], $_POST['bin']));
+        $result = executeSQL($conn, $query, array($_POST['bin'], $_POST['reserva']));
 
-        if (hasRows($result)) {
-            $rs = fetchResult($result);
+        if ($rs = fetchResult($result)) {
+
+            // se for beneficio de assinante checar por validade e adicionar cupom
+            if ($rs['CODTIPPROMOCAO'] == 9 AND ($rs['ID_PROMOCAO'] == NULL OR !empty($rs['ID_SESSION']) OR !empty($rs['ID_PEDIDO_VENDA']))) {
+                $rs_assinatura = executeSQL($mainConnection,
+                        "SELECT TOP 1 C.CD_CPF
+                         FROM MW_ASSINATURA_PROMOCAO AP
+                         INNER JOIN MW_ASSINATURA_CLIENTE AC ON AC.ID_ASSINATURA = AP.ID_ASSINATURA
+                         INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = AC.ID_CLIENTE
+                         WHERE C.ID_CLIENTE = ?
+                         AND (AC.IN_ATIVO = 1 OR (AC.IN_ATIVO = 0 AND AC.DT_PROXIMO_PAGAMENTO >= CAST(GETDATE() AS DATE)))", array($_SESSION['user']), true);
+
+                // se tiver assinatura para o beneficio gerar um cupom
+                if (!empty($rs_assinatura)) {
+                    $query = "INSERT INTO MW_PROMOCAO (CD_PROMOCIONAL, CD_CPF_PROMOCIONAL, ID_PROMOCAO_CONTROLE) VALUES (?,?,?); SELECT SCOPE_IDENTITY();";
+                    $result = executeSQL($mainConnection, $query, array($rs_assinatura['CD_CPF'], $rs_assinatura['CD_CPF'], $rs['ID_PROMOCAO_CONTROLE']));
+                    $rs['ID_PROMOCAO'] = getLastID($result);
+                    $rs['ID_SESSION'] = $rs['ID_PEDIDO_VENDA'] = NULL;
+                }
+            }
 
             $erros = array(
                 // codigo fixo
@@ -96,11 +115,16 @@ if ($_GET['carrinho']) {
                 // convite
                 '5' => 'Convites esgotados.',
                 // assinatura
-                '8' => 'Os bilhetes de assinatura disponíveis já foram utilizados. Por favor, selecione outro tipo de ingresso.'
+                '8' => 'Os bilhetes de assinatura disponíveis já foram utilizados. Por favor, selecione outro tipo de ingresso.',
+                // assinatura
+                '9' => 'Este bilhete só pode ser utilizado por assinantes CompreIngressos.com'
             );
 
-            if (!empty($rs['ID_SESSION']) || !empty($rs['ID_PEDIDO_VENDA'])) {
+            if (!empty($rs['ID_PROMOCAO']) AND (!empty($rs['ID_SESSION']) OR !empty($rs['ID_PEDIDO_VENDA']))) {
                 echo $erros[$rs['CODTIPPROMOCAO']];
+                die();
+            } elseif (empty($rs['ID_PROMOCAO'])) {
+                echo "Código promocional inexistente.";
                 die();
             }
 

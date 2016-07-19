@@ -37,6 +37,9 @@ BEGIN
     SELECT @resp = dbo.GetHttp(@url+CONVERT(varchar, @id));
     
 	INSERT INTO MW_LOG_IPAGARE VALUES (GETDATE(), -1, 'FIM REQUEST RECORRENCIA PEDIDO = '+CONVERT(varchar, @id)+', RESULTADO = '+@resp);
+	
+	FETCH NEXT FROM ids_cursor   
+    INTO @id
 END   
 CLOSE ids_cursor;  
 DEALLOCATE ids_cursor;

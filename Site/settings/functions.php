@@ -995,6 +995,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
                          INNER JOIN MW_ASSINATURA_CLIENTE AC ON AC.ID_ASSINATURA = AP.ID_ASSINATURA
                          INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = AC.ID_CLIENTE
                          WHERE P.ID_PROMOCAO_CONTROLE = ? AND C.ID_CLIENTE = ?
+                         AND (AC.IN_ATIVO = 1 OR (AC.IN_ATIVO = 0 AND AC.DT_PROXIMO_PAGAMENTO >= CAST(GETDATE() AS DATE)))
                          ORDER BY P.ID_PEDIDO_VENDA, P.ID_SESSION, P.CD_PROMOCIONAL DESC', array($rs['ID_PROMOCAO_CONTROLE'], $_SESSION['user']), true);
 
                     // se nao tiver mais cupons ignorar esse tipo de bilhete
@@ -1002,6 +1003,24 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
                         OR
                         ((!empty($rs_assinatura['ID_SESSION']) OR !empty($rs_assinatura['ID_PEDIDO_VENDA']))
                             AND $rs['ID_APRESENTACAO_BILHETE'] != $selected)) {
+                        continue;
+                    }
+
+                    $imgs .= 'codigo="'.$rs_assinatura['CD_CPF'].'" ';
+                    $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['codPreValidado'] = $rs_assinatura['CD_CPF'];
+
+                // se for beneficio para assinante
+                } elseif ($rs['CODTIPPROMOCAO'] == 9) {
+                    $rs_assinatura = executeSQL($mainConnection,
+                        "SELECT TOP 1 C.CD_CPF
+                         FROM MW_ASSINATURA_PROMOCAO AP
+                         INNER JOIN MW_ASSINATURA_CLIENTE AC ON AC.ID_ASSINATURA = AP.ID_ASSINATURA
+                         INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = AC.ID_CLIENTE
+                         WHERE C.ID_CLIENTE = ?
+                         AND (AC.IN_ATIVO = 1 OR (AC.IN_ATIVO = 0 AND AC.DT_PROXIMO_PAGAMENTO >= CAST(GETDATE() AS DATE)))", array($_SESSION['user']), true);
+
+                    // se nao tiver assinatura para o beneficio ignorar esse tipo de bilhete
+                    if (empty($rs_assinatura)) {
                         continue;
                     }
 
@@ -1604,7 +1623,8 @@ function comboTipoPromocao($name, $selected) {
         5 => 'Convite',
         // 6 => 'WebService'
         7 => 'BIN Riachuelo',
-        8 => 'Assinatura'
+        8 => 'Assinatura',
+        9 => 'Benefício Assinatura'
     );
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione...</option>';

@@ -19,10 +19,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 260, true)) {
                                               M.IN_ATIVO,
                                               M.NM_CARTAO_EXIBICAO_SITE,
                                               M.QT_HR_ANTECED,
-                                              B.DS_CLEARSALE_BANDEIRA
+                                              B.DS_CLEARSALE_BANDEIRA,
+                                              AMP.IN_ATIVO AS IN_ASSINATURA
                                           FROM MW_MEIO_PAGAMENTO M
                                           LEFT JOIN MW_CLEARSALE_BANDEIRA_MEIO X ON X.ID_MEIO_PAGAMENTO = M.ID_MEIO_PAGAMENTO
                                           LEFT JOIN MW_CLEARSALE_BANDEIRA B ON B.ID_CLEARSALE_BANDEIRA = X.ID_CLEARSALE_BANDEIRA
+                                          LEFT JOIN MW_ASSINATURA_MEIO_PAGAMENTO AMP ON AMP.ID_MEIO_PAGAMENTO = M.ID_MEIO_PAGAMENTO
                                           ORDER BY IN_ATIVO DESC, DS_MEIO_PAGAMENTO');
 ?>
 
@@ -58,7 +60,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 260, true)) {
 
                   tr.find('td:not(.button):eq(1)').html($('#nm_cartao_site').val());
                   tr.find('td:not(.button):eq(2)').html($('#hr_anteced').val());
-                  tr.find('td:not(.button):eq(4)').html($('#in_ativo').is(':checked') ? 'Sim' : 'Não');
+                  tr.find('td:not(.button):eq(4)').html($('#in_ativo_assinatura').is(':checked') ? 'Sim' : 'Não');
+                  tr.find('td:not(.button):eq(5)').html($('#in_ativo').is(':checked') ? 'Sim' : 'Não');
 
                   $this.text('Editar').attr('href', pagina + '?action=edit&' + id);
                   tr.removeAttr('id');
@@ -81,8 +84,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 260, true)) {
 
             tr.find('td:not(.button):eq(1)').html('<input id="nm_cartao_site" name="nm_cartao_site" maxlength="25" value="'+ values[1] +'" type="textbox" />');
             tr.find('td:not(.button):eq(2)').html('<input id="hr_anteced" name="hr_anteced" maxlength="3" value="'+ values[2] +'" type="textbox" />');
-            tr.find('td:not(.button):eq(4)').html('<input id="in_ativo" name="in_ativo" type="checkbox" />');
-            if (values[4] == 'Sim') $('#in_ativo').attr('checked', 'checked');
+            tr.find('td:not(.button):eq(4)').html('<input id="in_ativo_assinatura" name="in_ativo_assinatura" type="checkbox" />');
+            tr.find('td:not(.button):eq(5)').html('<input id="in_ativo" name="in_ativo" type="checkbox" />');
+            if (values[4] == 'Sim') $('#in_ativo_assinatura').attr('checked', 'checked');
+            if (values[5] == 'Sim') $('#in_ativo').attr('checked', 'checked');
 
             $this.text('Salvar').attr('href', pagina + '?action=update&' + id);
           }
@@ -126,6 +131,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 260, true)) {
             <th class="left">Nome do cartão para exibição no site</th>
             <th class="left">Horas antecedentes para exibição</th>
             <th class="left">Bandeira ClearSale</th>
+            <th class="left">Assinatura</th>
             <th class="left">Ativo</th>
             <th>A&ccedil;&otilde;es</th>
           </tr>
@@ -139,6 +145,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 260, true)) {
           <td><?php echo utf8_encode($rs["NM_CARTAO_EXIBICAO_SITE"]); ?></td>
           <td><?php echo $rs["QT_HR_ANTECED"]; ?></td>
           <td><?php echo utf8_encode($rs["DS_CLEARSALE_BANDEIRA"]); ?></td>
+          <td><?php echo $rs['IN_ASSINATURA'] ? 'Sim' : 'Não'; ?></td>
           <td><?php echo $rs['IN_ATIVO'] ? 'Sim' : 'Não'; ?></td>
           <td class="button"><a href="<?php echo $pagina; ?>?action=edit&idMeioPagamento=<?php echo $rs['ID_MEIO_PAGAMENTO']; ?>">Editar</a></td>
         </tr>

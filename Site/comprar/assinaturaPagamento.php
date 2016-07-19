@@ -82,7 +82,7 @@ if ($_POST) {
  
 				    	$query = "SELECT cd_meio_pagamento, ds_meio_pagamento, nm_cartao_exibicao_site 
 				                      from mw_meio_pagamento
-				                      where in_ativo = 1
+				                      where in_ativo = 1 and id_meio_pagamento in (select id_meio_pagamento from mw_assinantura_forma_pagamento)
 				                      order by ds_meio_pagamento";
 				    	$result = executeSQL($mainConnection, $query);
 

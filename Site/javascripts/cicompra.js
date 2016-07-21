@@ -392,7 +392,11 @@ $(document).ready(function(){
   
   /* FECHA OVERLAY */
   $('#overlay, #overlay div.fechar').on('click',function(){
-    fecharOverlay();
+    var overlay = document.getElementById('overlay');
+
+    if ( !overlay.hasAttribute('data-clickable') || overlay.getAttribute('data-clickable') == 'true' ) {
+      fecharOverlay();
+    }
   }).children().click(function(e) {
     return false;
   });

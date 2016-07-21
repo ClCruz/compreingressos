@@ -1,10 +1,32 @@
+Cadastro = {
+	showForm: function(wich)
+	{
+		var esqueci = $('#esqueciForm');
+		var login 	= $('#loginForm');
+
+		if ( wich == 'esqueci' )
+		{
+			$(login).slideUp(function () {
+				$(esqueci).slideDown();
+			});
+		}
+		else if('login')
+		{
+			$(esqueci).slideUp(function () {
+				$(login).slideDown();
+			})
+		}
+
+	}
+};
+
 $(function() {
 	$('#dados_conta, #esqueciForm, p.erro').hide();
 	
 	$('.number').onlyNumbers();
 
 	var email_pattern = /\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/i;
-	
+
 	$('#logar').click(function(event) {
 		event.preventDefault();
 		var $this = $(this),
@@ -31,22 +53,50 @@ $(function() {
 				data: form.serialize(),
 				type: form.attr('method'),
 				success: function(data) {
-					if (data.substr(0, 4) == 'redi') {
-						document.location = data;
-					} else {
-						$.dialog({text:'Combinação de usuário e senha incorreto'});
+					try
+					{
+						var obj = JSON.parse(data);
+						if (obj.status) {
+							ciPopup.hide(function () {
+								$.dialog({text:'Login efetuado com sucesso!'});
+							}, 1000);
+						}else{
+							ciPopup.msgDialog('Combinação de usuário e senha incorreta')
+						}
+					}
+					catch (Ex)
+					{
+						if (data.substr(0, 4) == 'redi') {
+							document.location = data;
+						} else {
+							$.dialog({text:'Combinação de usuário e senha incorreta'});
+						}
 					}
 				}
 			});
 		}
 	});
-	
+
+	$('#lembrei_senha').click(function () {
+		Cadastro.showForm('login');
+	});
+
+
+
 	$('#esqueci').click(function(event) {
-		event.preventDefault();
-		if ($('#esqueciForm').is(':hidden')) {
-			$('#esqueciForm').slideDown('slow');
-		} else {
-			$('#esqueciForm').slideUp('slow');
+
+		if (simples.serverURL() == 'etapa1.php')
+		{
+			Cadastro.showForm('esqueci');
+		}
+		else
+		{
+			event.preventDefault();
+			if ($('#esqueciForm').is(':hidden')) {
+				$('#esqueciForm').slideDown('slow');
+			} else {
+				$('#esqueciForm').slideUp('slow');
+			}
 		}
 	});
 	
@@ -65,18 +115,43 @@ $(function() {
 			url: $this.attr('href'),
 			data: 'email=' + email_txt,
 			success: function(data) {
-				if (data == 'true') {
-					email.val('');
-					$this.next('.resultado').find('span').text(email_txt).end()
-						.slideDown('fast')
-						.delay(6000)
-						.slideUp('slow');
-					$('#esqueciForm').slideDown().delay(6500).slideUp('slow');
-				} else {
-					$.dialog({title: 'Aviso...', text: data});
+
+				try{
+					var obj = JSON.parse(data);
+					if ( obj.status )
+					{
+						ciPopup.msgDialog('Um e-mail com instruções para recuperar sua senha foi enviado para '+email_txt,
+							{
+								autoHide: { set: true }
+							});
+						Cadastro.showForm('login');
+					}
+					else
+					{
+						ciPopup.msgDialog(obj.msg, {
+							options: { autoHide: { set:true } }
+						});
+					}
+				}catch (Ex){
+					if (data == 'true') {
+						successOnRedefine();
+					} else {
+						$.dialog({title: 'Aviso...', text: data});
+					}
 				}
+
 			}
 		});
+
+		//Exibe mesnagem de sucesso abaixo do form
+		function successOnRedefine() {
+			email.val('');
+			$this.next('.resultado').find('span').text(email_txt).end()
+				.slideDown('fast')
+				.delay(6000)
+				.slideUp('slow');
+			$('#esqueciForm').slideDown().delay(6500).slideUp('slow');
+		}
 	});
 	
 	$('a.bt_cadastro').click(function(event) {

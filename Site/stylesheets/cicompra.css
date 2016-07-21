@@ -393,6 +393,12 @@ div.identificacao a.esqueci_senha{
 	display:block;
 }
 
+div.identificacao a#lembrei_senha {
+	height: 55px;
+	float: right;
+	line-height: 55px;
+}
+
 div.identificacao div.container_esqueci_senha{
 	display:none;
 	float:left;
@@ -2307,6 +2313,29 @@ div.alert a{
   width:730px;
   margin:30px 55px 0;
 }
+
+/*MODAL ASSIANNTE A*/
+#cipopup { width: 100%; height: 100%; position: fixed; z-index: 99; top: 0px; left: 0px; }
+#cipopup .bg { width: 100%; height: 100%;  background: rgba(0,0,0,0.8); position: absolute; top: 0px; left: 0px; }
+#cipopup .content { min-width: 300px; min-height: 300px; background: #fff; position: absolute; top: 50%; left: 50%; margin-top: -150px; margin-left: -150px; border-radius: 5px 0 5px 5px; padding: 35px; }
+#cipopup .content .default.popup_hide {  position: absolute;  background: #c02a2c;  top: -30px;  right: 0;  height: 30px;  line-height: 30px;  color: #fff;  padding: 0 15px;  text-transform: uppercase;  font-size: 12px;  font-weight: bold;  transition: all 0.3s;   }
+#cipopup .content .default.popup_hide:hover {  background: #961a1e;  cursor: pointer;   }
+
+
+div#popup_dialog_out {  z-index: 99;;  position: absolute;  background: #c02a2c;  bottom: 50px;  right: -370px;  width: 340px;  min-height: 90px;  padding: 10px;  color: #fff;   }
+div#popup_dialog_out .x_dialog {  position: absolute;  top: -20px;  right: 5px;  cursor: pointer;  transition: all 0.3s;  text-transform: uppercase;  font-size: 12px;   }
+div#popup_dialog_out .x_dialog:hover {  color: #c02a2c;   }
+div#popup_dialog_in .x_dialog {  position: absolute;  top: -27px;  right: -1px;  padding: 5px;  background: #ff5050;  border: 1px solid red;  cursor: pointer;  color: #fff;  transition: all 0.3s;   }
+div#popup_dialog_in .x_dialog:hover {  background: red;   }
+div#popup_dialog_in { display: none; padding: 10px;  border: 1px solid #961a1e;  font-size: 12px;  color: #981c1e;  text-transform: uppercase;  position: relative;  margin-top: 30px;   }
+div#login_assinante .identificacao.cadastro {  display: none;   }
+
+
+div#login_assinante div.identificacao {  margin: 0px;   }
+div#cipopup div#login_assinante input{  margin-bottom: 25px;   }
+div#cipopup div#login_assinante div.erro_help{  display: none;   }
+
+/*MODAL ASSIANNTE A*/
 
 /* Select Box */
 .sbHolder{

@@ -42,10 +42,21 @@ if (isset($_POST['email']) and isset($_POST['senha'])) {
 			}
 		}
 
-		echo 'redirect.php?redirect=' . str_replace_once("&tag=3._Identificaçao_-_Autentique-se", "", $_GET['redirect']) . urlencode($url);
+		$res = 'redirect.php?redirect=' . str_replace_once("&tag=3._Identificaçao_-_Autentique-se", "", $_GET['redirect']) . urlencode($url);
 	} else {
-		echo 'false';
+		$res = false;
 	}
+
+
+	if ( httpReferer('etapa1') )
+	{
+		$arr = array();
+		$arr['status'] = ( $res === false ) ? false : true;
+		$res = json_encode($arr);
+	}
+
+	echo $res;
+
 } else if (isset($_SESSION['operador']) and isset($_GET['id'])) {
 	$_SESSION['user'] = $_GET['id'];
 	echo 'redirect.php?redirect=' . str_replace_once("&tag=3._Identificaçao_-_Autentique-se", "", $_GET['redirect']) . urlencode($url);

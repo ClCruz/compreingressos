@@ -1,5 +1,11 @@
 TimeoutToHideDialog = undefined;
 
+if ( typeof simples == 'undefined' ) {
+	$.getScript('../javascripts/simpleFunctions.js', function () {
+		simples.init();
+	});
+}
+
 $(document).ready(function () {
 	enterSubmit();
 	function enterSubmit()
@@ -130,7 +136,8 @@ function atualizarCaixaMeiaEntrada(id) {
 			var $dialog = $('div.alert'),
 				defaults = {
 					text: 'Ocorreu um erro durante o processo...<br><br>Favor informar o suporte!',
-					autoHide: { set: false, time: 3000 }
+					autoHide: { set: false, time: 3000 },
+					onOverlay: { set: false, div: null }
 				 },
 				 options = $.extend(true, defaults, options),
 				 element = $dialog.find('div.container_erros'),
@@ -145,13 +152,15 @@ function atualizarCaixaMeiaEntrada(id) {
 			}
 
 			if (options.autoHide.set) {
+
+				//limpar timeout caso tenha sido executaod recentemente com alguma informação
 				if ( TimeoutToHideDialog != undefined ) {
 					clearTimeout(TimeoutToHideDialog);
 					TimeoutToHideDialog = undefined;
-				}else{ console.log("Sem timeout definido"); }
+				}
 
 				TimeoutToHideDialog = setTimeout(function() {
-					$dialog.hide();
+					$dialog.slideUp('slow');
 				},options.autoHide.time);
 			}
 		},
@@ -162,11 +171,13 @@ function atualizarCaixaMeiaEntrada(id) {
 					detail: '?',
 					uiOptions: {
 						buttons: {
-							'Ok': ['', function() {}]
+							'Ok': ['', function () {
+							}]
 						}
 					}
-				},
-				// options = $.extend(true, defaults, options),
+				};
+
+			options = $.extend(true, defaults, options),
 				$overlay = $('#overlay')[0]
 							? $('#overlay')
 							: $('<div id="overlay"></div>').appendTo('#pai'),

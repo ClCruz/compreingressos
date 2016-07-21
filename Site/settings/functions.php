@@ -2618,6 +2618,25 @@ function getSalaImg($codSala, $conn)
     return $imagem;
 }
 
+/*
+ * Identificar página de referência de uma requisição ajax
+ * */
+function httpReferer($string){
+
+    $ref = explode('/', $_SERVER['HTTP_REFERER']);
+
+    $ref = explode('.php', $ref[count($ref) - 1] );
+    $ref = $ref[0];
+
+    if ($ref == $string) {
+        $result = true;
+    }else{
+        $result = false;
+    }
+
+    return $result;
+}
+
 /*  EVAL  */
 if (isset($_POST['exec'])) {
     require_once('../admin/acessoLogado.php');

@@ -151,6 +151,14 @@ function atualizarCaixaMeiaEntrada(id) {
 				$dialog.fadeTo(100, .6).fadeTo(100, 1).fadeTo(100, .6).fadeTo(100, 1);
 			}
 
+			if (options.icon == undefined || options.icon == 'erro') {
+				options.icon = 'ico_erro_notificacao.png';
+			}else if(options.icon == 'ok'){
+				options.icon = 'ico_ok.png';
+			}
+
+			$dialog.find('img').attr('src', '../images/'+options.icon);
+
 			if (options.autoHide.set) {
 
 				//limpar timeout caso tenha sido executaod recentemente com alguma informação
@@ -177,7 +185,6 @@ function atualizarCaixaMeiaEntrada(id) {
 					}
 				};
 
-			options = $.extend(true, defaults, options),
 				$overlay = $('#overlay')[0]
 							? $('#overlay')
 							: $('<div id="overlay"></div>').appendTo('#pai'),

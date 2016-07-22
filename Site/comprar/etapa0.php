@@ -127,7 +127,7 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
 
             <?php include "footer.php"; ?>
 
-            <?php include "selos.php"; ?>
+            <?php //include "selos.php"; ?>
         </div>
     </body>
 </html>

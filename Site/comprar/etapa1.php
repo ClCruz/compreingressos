@@ -404,7 +404,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
           </div>
 
       <?php include "footer.php"; ?>
-      <?php include "selos.php"; ?>
+      <?php //include "selos.php"; ?>
 
       <div id="overlay">
         <div class="centraliza hidden" id="outras_datas">

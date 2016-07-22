@@ -233,7 +233,7 @@ if ($_POST) {
 
 		<?php include "footer.php"; ?>
 
-		<?php include "selos.php"; ?>
+		<?php //include "selos.php"; ?>
 	</div>
 
 	<script>

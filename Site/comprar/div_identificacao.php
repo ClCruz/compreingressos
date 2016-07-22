@@ -1,6 +1,14 @@
 <?php
 	//printr($_SERVER);
-	if ( $_SERVER['URL'] == '/comprar/etapa1.php' ) {
+	function is_etapa1(){
+		$url = $_SERVER['URL'];
+		$url = explode('/',$url);
+		$last = end($url);
+
+		return ( $last == 'etapa1.php' ) ? true : false;
+	}
+
+	if ( is_etapa1() ) {
 		$titulo = 'Assinante';
 		$assinante = true;
 	}else{

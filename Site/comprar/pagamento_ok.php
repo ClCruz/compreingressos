@@ -277,7 +277,7 @@ unset($_SESSION['origem']);
 
 		<?php include "footer.php"; ?>
 
-		<?php include "selos.php"; ?>
+		<?php //include "selos.php"; ?>
 	</div>
 
 	<!-- Google Code for Compra de Ingresso Conversion Page -->

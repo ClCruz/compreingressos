@@ -593,7 +593,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
 
 <?php include "footer.php"; ?>
 
-<?php include "selos.php"; ?>
+<?php //include "selos.php"; ?>
 <div id="overlay">
             <?php require 'termosUso.php'; ?>
         </div>

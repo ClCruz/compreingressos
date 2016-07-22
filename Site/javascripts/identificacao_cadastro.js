@@ -58,7 +58,7 @@ $(function() {
 						var obj = JSON.parse(data);
 						if (obj.status) {
 							ciPopup.hide(function () {
-								$.dialog({text:'Login efetuado com sucesso!'});
+								$.dialog({text:'Login efetuado com sucesso!', icon: 'ok'});
 							}, 1000);
 						}else{
 							ciPopup.msgDialog('Combinação de usuário e senha incorreta')

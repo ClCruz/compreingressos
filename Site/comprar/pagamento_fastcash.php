@@ -138,7 +138,7 @@ $url = getFastcashPaymentURL($_GET['pedido']);
 
 		<?php include "footer.php"; ?>
 
-		<?php include "selos.php"; ?>
+		<?php //include "selos.php"; ?>
 	</div>
 </body>
 </html>

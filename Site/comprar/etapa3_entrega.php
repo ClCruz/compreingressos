@@ -106,7 +106,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 
 		<?php include "footer.php"; ?>
 
-		<?php include "selos.php"; ?>
+		<?php //include "selos.php"; ?>
 	</div>
 </body>
 </html>

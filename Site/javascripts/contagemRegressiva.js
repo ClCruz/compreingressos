@@ -23,7 +23,7 @@ function CountBack(secs) {
 			}
 		});
 
-		$('#resposta .opcao.unica').attr('href', 'http://compreingressos.com/').hide()
+		$('#resposta .opcao.unica').attr('href', 'http://compreingressos.com/').hide();
 
 		$.ajax({
 			url: 'pagamento_cancelado.php?tempoExpirado',

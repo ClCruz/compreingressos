@@ -290,6 +290,25 @@ if ($descricao_erro == '') {
 
         executeSQL($mainConnection, "EXEC PRC_REPOR_CUPONS_ASSINATURA ?", array($id_assinatura_cliente));
 
+        // -=========== envio do email de sucesso ===========-
+        $rs = executeSQL($mainConnection, 'SELECT QT_BILHETE FROM MW_ASSINATURA WHERE ID_ASSINATURA = ?', array($_POST['id']), true);
+
+        require_once('../settings/Template.class.php');
+        $tpl = new Template('./templates/emailAssinatura.html');
+
+        $tpl->nome_cliente = $parametros['CustomerData']['CustomerName'];
+        $tpl->quantidade_ingressos = $rs['QT_BILHETE'];
+
+        ob_start();
+        $tpl->show();
+        $message = ob_get_clean();
+
+        $subject = 'Assinatura - Pedido '.$_SESSION['order_id'];
+        $namefrom = 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS';
+        $from = ($_ENV['IS_TEST'] ? 'contato@intuiti.com.br' : 'compreingressos@gmail.com');
+
+        authSendEmail($from, $namefrom, $parametros['CustomerData']['CustomerEmail'], $parametros['CustomerData']['CustomerName'], $subject, $message, array(), array(), 'utf-8');
+
         die("redirect.php?redirect=assinatura_ok.php?pedido=".$_SESSION['order_id']);
     } else {
         $descricao_erro = "Transação não autorizada.";

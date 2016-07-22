@@ -419,7 +419,9 @@ $(function() {
 			$area.removeClass('erro')
 		}
 	});
-	
 
-	simples.getCEP($('#cep'));
+	//evitar erro ao carregar modal do assinante A por causa de tempo de execução
+	if (simples != undefined) {
+		simples.getCEP($('#cep'));
+	}
 });

@@ -610,7 +610,7 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
             if ($result->AuthorizeTransactionResult->ErrorReportDataCollection->ErrorReportDataResponse->ErrorCode == '135') {
                 $dados = obterDadosPedidoPago($parametros['OrderData']['OrderId']);
 
-                if ($dados !== false) {
+                if (!empty($dados)) {
                     $result->AuthorizeTransactionResult->OrderData->BraspagOrderId = $dados->BraspagOrderId;
                     $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId = $dados->BraspagTransactionId;
                     $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId = $dados->AcquirerTransactionId;

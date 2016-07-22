@@ -1,44 +1,44 @@
 <?php
 function mainConnection() {
-	$host = '186.237.201.150,8433\sql2008_dev';
+	$host = 'localhost\\sql2008';
 	$port = '1433';
 	$dbname = 'CI_MIDDLEWAY';
 	$user = 'tsp';
 	$pass = 'tsp';
 	
-	return sqlsrv_connect($host, array("UID" => $user, "PWD" => $pass, "Database" => $dbname));
+	return sqlsrv_connect($host.','.$port, array("UID" => $user, "PWD" => $pass, "Database" => $dbname));
 }
 
 function getConnection($teatroID) {
 	$mainConnection = mainConnection();
 	$rs = executeSQL($mainConnection, 'SELECT DS_NOME_BASE_SQL FROM MW_BASE WHERE ID_BASE = ?', array($teatroID), true);
 	
-	$host = '186.237.201.150,8433\sql2008_dev';
+	$host = 'localhost\\sql2008';
 	$port = '1433';
 	$user = 'tsp';
 	$pass = 'tsp';
 	
-	return sqlsrv_connect($host, array("UID" => $user, "PWD" => $pass, "Database" => $rs['DS_NOME_BASE_SQL']));
+	return sqlsrv_connect($host.','.$port, array("UID" => $user, "PWD" => $pass, "Database" => $rs['DS_NOME_BASE_SQL']));
 }
 
 function getConnectionTsp() {
-	$host = '186.237.201.150,8433\sql2008_dev';
+	$host = 'localhost\\sql2008';
 	$port = '1433';
 	$dbname = 'tspweb';
 	$user = 'tsp';
 	$pass = 'tsp';
 	
-	return sqlsrv_connect($host, array("UID" => $user, "PWD" => $pass, "Database" => $dbname));
+	return sqlsrv_connect($host.','.$port, array("UID" => $user, "PWD" => $pass, "Database" => $dbname));
 }
 
 function getConnectionDw() {
-    $host = '186.237.201.150,8433\sql2008_dev';
+    $host = 'localhost\\sql2008';
 	$port = '1433';
 	$dbname = 'CI_DW';
 	$user = 'sa';
 	$pass = 'sa';
 
-	return sqlsrv_connect($host, array("UID" => $user, "PWD" => $pass, "Database" => $dbname));
+	return sqlsrv_connect($host.','.$port, array("UID" => $user, "PWD" => $pass, "Database" => $dbname));
 }
 
 function getConnectionHome() {

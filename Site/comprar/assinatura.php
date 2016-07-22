@@ -1,6 +1,13 @@
 <?php
 require_once('../settings/functions.php');
 
+session_start();
+
+if (isset($_SESSION['operador']) and !isset($_SESSION['user'])) {
+	header("Location: etapa3_2.php?assinatura=1&redirect=".urlencode(getCurrentUrl()));
+	die();
+}
+
 require('acessoLogado.php');
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

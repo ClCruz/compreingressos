@@ -30,6 +30,7 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
         <script type="text/javascript">
             $(function() {
                 $('#teatro').selectbox('detach');
+                $('#assinatura').selectbox('detach');
 
                 $('#teatro').on('change', function() {
                     $.ajax({
@@ -46,6 +47,10 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
 
                 $('#eventos').on('change', '#evento', function() {
                     if ($(this).val() != '') document.location = $(this).val();
+                });
+
+                $('#assinatura').on('change', function() {
+                    if ($(this).val() != '') document.location = 'etapa3_2.php?assinatura=1&redirect='+encodeURIComponent('assinatura.php?id='+$(this).val());
                 });
 
                 if ($('#teatro').val() != '') {
@@ -97,6 +102,16 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
                             echo $combo;
                         } else {
                             echo comboTeatro('teatro');
+                        }
+                        ?>
+                    </span>
+
+                    <span style="display: inline-block; margin-bottom: 20px; margin-left: 20px;">
+                        <?php
+                        if (isset($_SESSION['usuario_pdv']) and $_SESSION['usuario_pdv'] == 1) {
+                        } else {
+                            echo "<p>OU selecione a assinatura desejada:</p>";
+                            echo comboAssinatura('assinatura');
                         }
                         ?>
                     </span>

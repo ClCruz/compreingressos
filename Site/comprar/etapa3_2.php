@@ -42,8 +42,10 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 
 	<script type="text/javascript" src="../javascripts/identificacao_cadastro_operador.js"></script>
 	<script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
+	<?php if (!isset($_GET['assinatura'])) { ?>
 	<script type="text/javascript" src="../javascripts/contagemRegressiva.js?until=<?php echo tempoRestante(); ?>"></script>
-	
+	<?php } ?>
+
 	<script>
 	$(function() {
 		$('#limpar').click();
@@ -95,6 +97,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 					</div>
 					<div class="descricao">
 						<p class="nome">3. Identificação</p>
+						<?php if (!isset($_GET['assinatura'])) { ?>
 						<p class="descricao">
 							passo <b>3 de 5</b> identifique-se ou cadastre-se
 						</p>
@@ -105,6 +108,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 								automaticamente e os lugares liberados
 							</p>
 						</div>
+						<?php } ?>
 					</div>
 				</div>
 

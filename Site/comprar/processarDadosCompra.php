@@ -607,6 +607,10 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
         }
         // compra normal
         else{
+            executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+                array($_SESSION['user'], json_encode(array('descricao' => '5.1. retorno do pedido=' . $parametros['OrderData']['OrderId'], 'post' => $result)))
+            );
+
             if ($result->AuthorizeTransactionResult->ErrorReportDataCollection->ErrorReportDataResponse->ErrorCode == '135') {
                 $dados = obterDadosPedidoPago($parametros['OrderData']['OrderId']);
 
@@ -629,6 +633,10 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
                 $message = ob_get_clean();
 
                 sendErrorMail('Erro no Sistema COMPREINGRESSOS.COM', $message);
+
+                executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+                    array($_SESSION['user'], json_encode(array('descricao' => '5.2. erro 135, retorno do pedido=' . $parametros['OrderData']['OrderId'], 'post' => $dados)))
+                );
             }
 
             if (($result->AuthorizeTransactionResult->CorrelationId == $ri and $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->Status == '0')

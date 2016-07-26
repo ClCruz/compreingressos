@@ -26,8 +26,8 @@
 		<div class="identificacao cliente">
 			<p class="frase"><b>Já sou</b> <?php echo $titulo ?></p>
 			<?php if ( $assinante ): ?>
-				<div class="felipe">
-					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ac elit non urna tincidunt condimentum. Cras interdum purus vitae malesuada pharetra. Donec metus leo.
+				<div>
+					Se você já é cadastrado na compreingressos ou já possui os benefícios do clube Assinante A ,faça o seu login. Caso contrário, cadastre-se agora e finalize sua compra.
 				</div>
 			<?php endif; ?>
 			<p class="site">compreingressos.com</p>

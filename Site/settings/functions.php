@@ -961,7 +961,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 			} elseif ($rs['CODTIPPROMOCAO'] != NULL) {
 
                 if ($rs['IMG1PROMOCAO'] === '') {
-                    $imgs = '';
+                    $imgs = 'img1="" img2="" ';
                 } else {
                     $imgs = 'img1="' . '../images/promocional/' . basename($rs['IMG1PROMOCAO']) .
                             '" img2="' . '../images/promocional/' . basename($rs['IMG2PROMOCAO']) . '" ';

@@ -10,18 +10,20 @@ if ($_GET['RESPAG'] == 'APROVADO') {
 	$strCookie = 'PHPSESSID=' . $_COOKIE['PHPSESSID'] . '; path=/';
 
 	$post_data = http_build_query(array('pedido' => $_GET['pedido'], 'justificativa' => 'Estorno pela máquina POS', 'pos_serial' => $_GET['pos_serial']));
-	$url = 'http'.($_SERVER["HTTPS"] == "on" ? 's' : '').'://'.$_SERVER['SERVER_NAME'].($_ENV['IS_TEST'] ? '/compreingressos2' : '').'/admin/estorno.php';
+	$url = 'http'.($_SERVER["HTTPS"] == "on" ? 's' : '').'://'.($_SERVER['SERVER_NAME'] ? $_SERVER['SERVER_NAME'] : 'compra.compreingressos.com').($_ENV['IS_TEST'] ? '/compreingressos2' : '').'/admin/estorno.php';
 
 	session_write_close();
 
 	$ch = curl_init(); 
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_USERAGENT, $useragent);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 	curl_setopt($ch, CURLOPT_COOKIE, $strCookie);
 	curl_setopt($ch, CURLOPT_POST, 1);
 	curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	$response = curl_exec($ch); 
+	$response = curl_exec($ch);
+	$errno = curl_errno($ch);
 	curl_close($ch);
 
 	session_start();
@@ -38,7 +40,7 @@ if ($_GET['RESPAG'] == 'APROVADO') {
 
 	} else {
 		
-		display_error($response);
+		display_error($response.($errno != 0 ? ' CURL'.$errno : ''));
 	}
 
 } else {

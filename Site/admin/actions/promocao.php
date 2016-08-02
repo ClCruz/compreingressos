@@ -223,7 +223,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
 
         $query = "SELECT 1 FROM MW_ASSINATURA_PROMOCAO AP
                     INNER JOIN MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = AP.ID_PROMOCAO_CONTROLE
-                    WHERE AP.ID_ASSINATURA = ? AND PC.CODTIPPROMOCAO = 8";
+                    WHERE AP.ID_ASSINATURA = ? AND PC.CODTIPPROMOCAO = 8 AND PC.IN_ATIVO = 1";
 
         $params = array($_POST['cboAssinatura'][0]);
         $rs = executeSQL($mainConnection, $query, $params, true);

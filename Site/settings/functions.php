@@ -1626,6 +1626,8 @@ function comboTipoPromocao($name, $selected) {
         9 => 'Benefício Assinatura'
     );
 
+    asort($tipos);
+
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione...</option>';
     foreach ($tipos as $key => $value) {
         $combo .= '<option value="' . $key . '"' . (($selected == $key) ? ' selected' : '') . '>' . $value . '</option>';

@@ -102,6 +102,7 @@ deallocate c1
 
 -- limpa cupons promocionais
 update p set id_session = null from mw_promocao p inner join mw_reserva r on r.id_session = p.id_session where dt_validade <= getdate()
+update mw_promocao set id_session = null where id_session not in (select id_session from mw_reserva) and id_pedido_venda is null
 
 delete from mw_reserva where dt_validade <= @dataatual
 

@@ -34,6 +34,8 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
 
   $maxIngressos = $rs['QT_INGR_POR_PEDIDO'];
 
+  $exibePopUpAssinante = ($rs['in_exibe_tela_assinante'] == '1' AND !isset($_SESSION['operador']) AND !isset($_SESSION['user']));
+
   $evento_info = getEvento($rs['ID_EVENTO']);
   $is_pacote = is_pacote($_GET['apresentacao']);
 
@@ -204,7 +206,6 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
     <!-- SCRIPT TAG -->
     <script type="text/JavaScript">
       var idcampanha = <?php echo ($idcampanha != "") ? $idcampanha : 0; ?>;
-      var exibePopUpAssinante = '<?php echo ( $rs['in_exibe_tela_assinante'] == 1 ) ? true : false; ?>';
       if(idcampanha != 0){
         var ADM_rnd_<?php echo $idcampanha; ?> = Math.round(Math.random() * 9999);
         var ADM_post_<?php echo $idcampanha; ?> = new Image();
@@ -236,22 +237,18 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
       </style>
     <?php } ?>
 
-    <script src="../javascripts/identificacao_cadastro.js" type="text/javascript"></script>
-    <script src="../javascripts/cipopup.js" type="text/javascript"></script>
-
-    <?php if ( !isset($_SESSION['user']) ): ?>
-    <script type="text/javascript">
-      $(document).ready(function ()
-      {
-
-        if ( exibePopUpAssinante )
-        {
+    <?php if ($exibePopUpAssinante) { ?>
+      <script src="../javascripts/simpleFunctions.js" type="text/javascript"></script>
+      <script src="../javascripts/identificacao_cadastro.js" type="text/javascript"></script>
+      <script src="../javascripts/cipopup.js" type="text/javascript"></script>
+      <script type="text/javascript">
+        $(document).ready(function (){
           ciPopup.init('login_assinante');
-        }
-      });
-    </script>
-    <?php endif; ?>
-  </head>
+        });
+      </script>
+    <?php } ?>
+    
+      </head>
   <body style="height: 0px; overflow: visible; position: static;">
   <!-- conteudo para exibir em popup -->
   <div class="hidden">

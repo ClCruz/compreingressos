@@ -359,7 +359,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
         }
         // associa as assinaturas a promocao
         elseif (in_array($rs['CODTIPPROMOCAO'], array(8, 9))) {
-            associar_assinaturas($mainConnection, $_POST['id'], $_POST['cboAssinatura']);
+            // associar_assinaturas($mainConnection, $_POST['id'], $_POST['cboAssinatura']);
         }
 
         $retorno = $retorno

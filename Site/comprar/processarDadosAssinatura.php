@@ -263,10 +263,12 @@ if ($descricao_erro == '') {
 		$result2 = executeSQL($mainConnection, $query, $params);
 		$id_dados_cartao = getLastID($result2);
 
-        $query = "INSERT INTO MW_ASSINATURA_CLIENTE (ID_ASSINATURA, ID_CLIENTE, ID_DADOS_CARTAO, DT_PROXIMO_PAGAMENTO, DT_COMPRA, IN_ATIVO) VALUES (?, ?, ?, dbo.GetProximaDataPagamento(GETDATE()), GETDATE(), 1); SELECT SCOPE_IDENTITY();";
-        $params = array($_POST['id'], $_SESSION['user'], $id_dados_cartao);
+        $query = "INSERT INTO MW_ASSINATURA_CLIENTE (ID_ASSINATURA, ID_CLIENTE, ID_DADOS_CARTAO, DT_PROXIMO_PAGAMENTO, DT_COMPRA, IN_ATIVO, ID_USUARIO_CALLCENTER) VALUES (?, ?, ?, dbo.GetProximaDataPagamento(GETDATE()), GETDATE(), 1, ?); SELECT SCOPE_IDENTITY();";
+        $params = array($_POST['id'], $_SESSION['user'], $id_dados_cartao, $_SESSION['operador']);
         $result2 = executeSQL($mainConnection, $query, $params);
 		$id_assinatura_cliente = getLastID($result2);
+
+        $rs = executeSQL($mainConnection, 'SELECT QT_BILHETE FROM MW_ASSINATURA WHERE ID_ASSINATURA = ?', array($_POST['id']), true);
 
 		$query = "UPDATE MW_ASSINATURA_HISTORICO SET
                         ID_ASSINATURA_CLIENTE = ?,
@@ -275,7 +277,8 @@ if ($descricao_erro == '') {
                         ID_TRANSACTION_BRASPAG = ?,
                         ID_PEDIDO_IPAGARE = ?,
                         CD_NUMERO_AUTORIZACAO = ?,
-                        CD_NUMERO_TRANSACAO = ?
+                        CD_NUMERO_TRANSACAO = ?,
+                        QT_BILHETE_DISPONIVEIS = ?
                     WHERE ID_ASSINATURA_HISTORICO = ?";
 		$params = array(
             $id_assinatura_cliente,
@@ -284,6 +287,7 @@ if ($descricao_erro == '') {
             $result->AuthorizeTransactionResult->OrderData->BraspagOrderId,
             $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AuthorizationCode,
             $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId,
+            $rs['QT_BILHETE'],
             substr($_SESSION['order_id'], 1)
         );
         executeSQL($mainConnection, $query, $params);
@@ -291,8 +295,6 @@ if ($descricao_erro == '') {
         executeSQL($mainConnection, "EXEC PRC_REPOR_CUPONS_ASSINATURA ?", array($id_assinatura_cliente));
 
         // -=========== envio do email de sucesso ===========-
-        $rs = executeSQL($mainConnection, 'SELECT QT_BILHETE FROM MW_ASSINATURA WHERE ID_ASSINATURA = ?', array($_POST['id']), true);
-
         require_once('../settings/Template.class.php');
         $tpl = new Template('./templates/emailAssinatura.html');
 

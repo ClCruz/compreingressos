@@ -96,9 +96,9 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 							<img src="../images/ico_black_passo5.png">
 						</div>
 						<div class="descricao">
-							<p class="nome">5. Pagamento</p>
+							<p class="nome">5. <?php echo ($_COOKIE['total_exibicao'] != 0 ? 'Pagamento' : 'Finalização'); ?></p>
 							<p class="descricao">
-								passo <b>5 de 5</b> escolha a bandeira de sua preferência
+								passo <b>5 de 5</b> <?php echo ($_COOKIE['total_exibicao'] != 0 ? 'escolha a bandeira de sua preferência' : 'clique em finalizar para processamento do pedido'); ?>
 							</p>
 							<div class="sessao">
 								<p class="tempo" id="tempoRestante"></p>

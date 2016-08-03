@@ -50,6 +50,34 @@ require('verificarServicosPedido.php');
 	  })();
 	</script>
 
+	<?php
+	$mainConnection = mainConnection();
+	$query = 'SELECT
+                A.DS_ASSINATURA,
+                (SELECT COUNT(1)
+                    FROM MW_PROMOCAO
+                    WHERE ID_ASSINATURA_CLIENTE = AC.ID_ASSINATURA_CLIENTE AND ID_PEDIDO_VENDA IS NULL AND ID_SESSION IS NULL) AS QT_BILHETES_DISPONIVEIS
+                FROM MW_ASSINATURA A
+                INNER JOIN MW_ASSINATURA_CLIENTE AC ON AC.ID_ASSINATURA = A.ID_ASSINATURA
+                WHERE AC.ID_CLIENTE = ? AND (AC.IN_ATIVO = 1 OR (AC.IN_ATIVO = 0 AND AC.DT_PROXIMO_PAGAMENTO > GETDATE()))';
+	$params = array($_SESSION['user']);
+	$result = executeSQL($mainConnection, $query, $params);
+
+	if (hasRows($result)) {
+		$msg = '';
+
+		while ($rs = fetchResult($result)) {
+			if ($rs['QT_BILHETES_DISPONIVEIS'] == 1) {
+		        $msg .= "você ainda tem 1 bilhete disponível ({$rs['DS_ASSINATURA']})<br/>";
+		    } else {
+		        $msg .= "você ainda tem {$rs['QT_BILHETES_DISPONIVEIS']} bilhetes disponíveis ({$rs['DS_ASSINATURA']})<br/>";
+		    }
+		}
+
+		echo '<script type="text/javascript">$(function(){$.dialog({text:"'.$msg.'", icon: "ok"})})</script>';
+	}
+	?>
+
 	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
 </head>
 <body>

@@ -19,7 +19,7 @@ if ($_POST) {
         // e variavel usuario_pdv = 1 para o javascript nao validar dads do cartao
         ?>
         <div class="container_cartoes">
-            <p class="frase">Finalize sua reserva.</p>
+            <p class="frase">Finalize seu pedido.</p>
             <br/>
             <input type="hidden" name="codCartao" value="887" />
             <input type="hidden" name="usuario_pdv" value="1" />

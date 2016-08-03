@@ -24,6 +24,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                 A.DS_ASSINATURA,
                 DC.CD_NUMERO_CARTAO,
                 AC.DT_PROXIMO_PAGAMENTO,
+                DATEADD(DAY, -1, AC.DT_PROXIMO_PAGAMENTO) AS DT_VALIDADE_BILHETES,
                 A.QT_BILHETE,
                 (SELECT COUNT(1)
                     FROM MW_PROMOCAO
@@ -568,9 +569,9 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                                             if ($rs['QT_BILHETES_DISPONIVEIS'] == 0) {
                                                 echo "e você já utilizou seus bilhetes desse mês";
                                             } elseif ($rs['QT_BILHETES_DISPONIVEIS'] == 1) {
-                                                echo "e você ainda tem 1 bilhete disponível";
+                                                echo "e você ainda tem 1 bilhete disponível até o dia ".$rs['DT_VALIDADE_BILHETES']->format('d/m');
                                             } else {
-                                                echo "e você ainda tem {$rs['QT_BILHETES_DISPONIVEIS']} bilhetes disponíveis";
+                                                echo "e você ainda tem {$rs['QT_BILHETES_DISPONIVEIS']} bilhetes disponíveis até o dia ".$rs['DT_VALIDADE_BILHETES']->format('d/m');
                                             }
                                             ?>
                                         </td>

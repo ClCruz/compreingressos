@@ -204,6 +204,8 @@ if (empty($rs)) {
 	        $params = array($_GET['id']);
 	        executeSQL($mainConnection, $query, $params);
 
+	        $rs = executeSQL($mainConnection, 'SELECT QT_BILHETE FROM MW_ASSINATURA WHERE ID_ASSINATURA = ?', array($id_assinatura), true);
+
 			$query = "UPDATE MW_ASSINATURA_HISTORICO SET
                         ID_ASSINATURA_CLIENTE = ?,
                         DT_PAGAMENTO = GETDATE(),
@@ -211,7 +213,8 @@ if (empty($rs)) {
                         ID_TRANSACTION_BRASPAG = ?,
                         ID_PEDIDO_IPAGARE = ?,
                         CD_NUMERO_AUTORIZACAO = ?,
-                        CD_NUMERO_TRANSACAO = ?
+                        CD_NUMERO_TRANSACAO = ?,
+                        QT_BILHETE_DISPONIVEIS = ?
                     WHERE ID_ASSINATURA_HISTORICO = ?";
 			$params = array(
 	            $_GET['id'],
@@ -220,6 +223,7 @@ if (empty($rs)) {
 	            $result->AuthorizeTransactionResult->OrderData->BraspagOrderId,
 	            $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AuthorizationCode,
 	            $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId,
+            	$rs['QT_BILHETE'],
 	            substr($order_id, 1)
 	        );
         	executeSQL($mainConnection, $query, $params);

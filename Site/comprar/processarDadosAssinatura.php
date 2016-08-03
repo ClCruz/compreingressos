@@ -278,7 +278,7 @@ if ($descricao_erro == '') {
                         ID_PEDIDO_IPAGARE = ?,
                         CD_NUMERO_AUTORIZACAO = ?,
                         CD_NUMERO_TRANSACAO = ?,
-                        QT_BILHETE_DISPONIVEIS = ?
+                        QT_BILHETE = ?
                     WHERE ID_ASSINATURA_HISTORICO = ?";
 		$params = array(
             $id_assinatura_cliente,

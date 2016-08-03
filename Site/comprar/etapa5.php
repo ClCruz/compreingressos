@@ -143,7 +143,13 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 
 		<div id="texts">
 			<div class="centraliza">
-				<p>Escolha o cartão de crédito de sua preferência, preencha os dados e clique em Pagar para finalizar o seu pedido.</p>
+				<p>
+					<?php if ($_COOKIE['total_exibicao'] != 0) { ?>
+					Escolha o cartão de crédito de sua preferência, preencha os dados e clique em Pagar para finalizar o seu pedido.
+					<?php } else { ?>
+					Clique em finalizar para o processar o seu pedido.
+					<?php } ?>
+				</p>
 			</div>
 		</div>
 

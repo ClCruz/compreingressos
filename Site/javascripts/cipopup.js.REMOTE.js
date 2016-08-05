@@ -25,6 +25,7 @@ var ciPopup = {
 
     init: function (elementId, options)
     {
+        console.log('Here: '+elementId);
         if (ciPopup.status == 'off') {
             this.config();
         }
@@ -70,10 +71,10 @@ var ciPopup = {
             if ( simples.isInt(timeToCallback) ) { time = timeToCallback; }
 
             var go = setTimeout(function () {
-
                 func();
             },time);
         }
+        
 
         if (ciPopup.dialog.status) {
             ciPopup.dialog.hide();
@@ -92,6 +93,7 @@ var ciPopup = {
                 ciPopup.hide();
             })
         }
+console.log('Show: '+id);
 
         ciPopup.refContent = $('#'+id);
         ciPopup.newContent = $(ciPopup.refContent).clone(true); //pegar o conteudo em HTML
@@ -162,7 +164,6 @@ var ciPopup = {
             $(ciPopup.screen).css('display','none');
             $(ciPopup.screen).css('visibility','visible');
         } cfgDimensoes();
-
         if ( ciPopup.xHide )
         {
             $(ciPopup.content).append(ciPopup.xHide);
@@ -221,9 +222,10 @@ var ciPopup = {
 
         //Criar dialog de mensagem do popup
         ciPopup.dialogCreate();
-
         $(ciPopup.screen).append(ciPopup.bg);
         $(ciPopup.screen).append(ciPopup.content);
+
+        console.log(ciPopup.screen[0]);
 
         $('body').append(ciPopup.screen);
     },

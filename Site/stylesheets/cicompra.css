@@ -42,6 +42,34 @@ div#top{
 	border-top:5px solid #930606;
 }
 
+[class*="btn_"]{
+	padding: 20px 0px;
+}
+
+.btn_gradient{
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#c02c2b+0,931a1d+100 */
+	background: #c02c2b; /* Old browsers */
+	background: -moz-linear-gradient(top,  #c02c2b 0%, #931a1d 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(top,  #c02c2b 0%,#931a1d 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to bottom,  #c02c2b 0%,#931a1d 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c02c2b', endColorstr='#931a1d',GradientType=0 ); /* IE6-9 */
+	/*CI cfg*/
+	border-radius: 3px;
+	padding: 20px 30px;
+	color: #fff;
+	cursor: pointer;
+	transition: color 0.2s;
+}
+div#clube_riachuelo {
+	margin-top: 50px;
+}
+div#clube_riachuelo a:last-child {
+	float: right;
+}
+div#clube_riachuelo a:first-child {
+	float: left;
+}
+
 div#menu_topo{
 	float:left;
 	width:100%;

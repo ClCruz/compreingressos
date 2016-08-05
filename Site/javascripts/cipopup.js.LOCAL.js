@@ -70,10 +70,11 @@ var ciPopup = {
             if ( simples.isInt(timeToCallback) ) { time = timeToCallback; }
 
             var go = setTimeout(function () {
-
-                func();
+                    func();
             },time);
         }
+
+        ciPopup.status = 'hidden';
 
         if (ciPopup.dialog.status) {
             ciPopup.dialog.hide();

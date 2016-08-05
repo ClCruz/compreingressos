@@ -13,6 +13,9 @@ if((isset($_SESSION['usuario_pdv']) and $_SESSION['usuario_pdv'] == 1)
     $meio_pagamento = $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->PaymentMethod;
 }
 
+executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+    array($_SESSION['user'], json_encode(array('descricao' => '5.3. concretizando retorno do pedido=' . $pedido_id, 'post' => $result)))
+);
 
 $query = 'SELECT ID_MEIO_PAGAMENTO
 			 FROM MW_MEIO_PAGAMENTO MP

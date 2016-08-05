@@ -534,6 +534,9 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
 
                     echo "Transação não autorizada.";
                     die();
+                } else {
+                    // se o pedido ja foi negado e por algum motivo a consulta retornar como aprovado (exemplo do que ja aconteceu: SDM na primeira tentativa e APA na consulta)
+                    executeSQL($mainConnection, "UPDATE MW_PEDIDO_VENDA SET IN_SITUACAO = 'P' WHERE ID_PEDIDO_VENDA = ? AND ID_CLIENTE = ? AND IN_SITUACAO = 'N'", array($newMaxId, $_SESSION['user']));
                 }
             }
 

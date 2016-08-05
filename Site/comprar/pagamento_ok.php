@@ -280,7 +280,7 @@ unset($_SESSION['origem']);
 <body>
 	<div class="hidden">
 		<div id="rlo">
-			Deseja se associar ao Clube do Teatro Riachuelo?
+			Quero receber maiores informações e participar do Clube de Vantagens.
 			<div id="clube_riachuelo">
 				<a class="btn_cancel" href="#" onclick="ciPopup.hide()">Não, obrigado!</a>
 				<a class="btn_gradient" href="#" onclick="ciPopup.hide(clubeRchlo())">Sim, eu quero!</a>

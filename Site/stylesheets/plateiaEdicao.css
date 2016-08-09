@@ -1,20 +1,22 @@
-#mapa_de_plateia {
+.mapa_de_plateia {
 	width:630px;
 	height:500px;
 	border:5px solid #006;
 	margin-left:50px;
 	display:inline-block;
+	position:absolute;
+	background-color:white;
 }
 
-	#mapa_de_plateia img {
+	.mapa_de_plateia img {
 	}
 
-#mapa_de_plateia.edicao .ui-selecting {
+.mapa_de_plateia.edicao .ui-selecting {
   border:2px solid #FF0;
   margin: -2px;
 }
 
-#mapa_de_plateia.edicao .ui-selected {
+.mapa_de_plateia.edicao .ui-selected {
   border: 2px solid #F00;
   margin: -2px;
 }
@@ -23,7 +25,6 @@
 	margin:0 10px 0 0;
 	display:inline-block;
 	vertical-align:top;
-	width:260px;
 }
 
 	#containerDados h2 {

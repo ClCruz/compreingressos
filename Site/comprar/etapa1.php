@@ -57,7 +57,8 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
     $query = 'SELECT
              INGRESSONUMERADO,
              DATEDIFF(HH, DATEADD(HH, (ISNULL(P.QT_HR_ANTECED, 24) * -1), CONVERT(DATETIME, CONVERT(VARCHAR, A.DATAPRESENTACAO, 112) + \' \' + LEFT(HORSESSAO,2) + \':\' + RIGHT(HORSESSAO,2) + \':00\')) ,GETDATE() ) AS TELEFONE,
-             S.TAMANHOLUGAR
+             S.TAMANHOLUGAR,
+             CASE WHEN S.FOTOIMAGEMSITE IS NOT NULL THEN 1 ELSE 0 END AS TEM_MAPA
              FROM
              TABAPRESENTACAO A
              INNER JOIN TABSALA S ON S.CODSALA = A.CODSALA
@@ -68,6 +69,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
 
     if (!empty($rs2)) {
       $numerado = $rs2[0];
+      $tem_mapa = $rs2['TEM_MAPA'];
       $vendasPorTelefone = $rs2['TELEFONE'];
     } else {
       $vendaNaoLiberada = true;
@@ -372,7 +374,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
             </div>
           </div>
             <?php if ($vendasPorTelefone < 0 && $vendaNaoLiberada == false) { ?>
-              <?php if ($numerado) { ?>
+              <?php if ($numerado OR $tem_mapa) { ?>
               <div id="mapa_de_plateia_geral">
                 <?php require_once("mapaPlateia.php"); ?>              
               </div>

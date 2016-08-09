@@ -5,7 +5,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
   if ($_GET['action'] == 'load') { /* ------------ LOAD ------------ */
     $conn = getConnection($_POST['teatro']);
 
-    $query = 'SELECT NOMEIMAGEMSITE, ALTURASITE, LARGURASITE, TAMANHOLUGAR, FOTOIMAGEMSITE
+    $query = 'SELECT NOMEIMAGEMSITE, ALTURASITE, LARGURASITE, TAMANHOLUGAR, FOTOIMAGEMSITE, INGRESSONUMERADO
               FROM TABSALA WHERE CODSALA = ?';
     $params = array($_POST['sala']);
     $rs = executeSQL($conn, $query, $params, true);
@@ -23,55 +23,57 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
       $size = $rs[3];
     }
 
-    $query = "SELECT MAX(POSX) MAXX, MAX(POSY) MAXY, MAX(POSXSITE) MAXXSITE, 
-              MAX(POSYSITE) MAXYSITE FROM TABSALDETALHE
-              WHERE CODSALA = ? AND TIPOBJETO = 'C'";
-    $params = array($_POST['sala']);
-    $rs = executeSQL($conn, $query, $params, true);
-
-    $query = 'SELECT S.INDICE, S.NOMOBJETO, S.CODSETOR, SE.NOMSETOR, S.IMGVISAOLUGAR,
-              CASE WHEN S.IMGVISAOLUGARFOTO IS NOT NULL THEN 1 ELSE 0 END IMGVISAOLUGARFOTO, ';
-
-    if ($rs['MAXXSITE'] == '' or $rs['MAXYSITE'] == '' or $_POST['reset']) {
-      $query .= '(((S.POSX * ?) / ?) + ?) POSXSITE, (((S.POSY * ?) / ?) + ?) POSYSITE';
-      $params = array(
-          1 - $_POST['xmargin'],
-          $rs['MAXX'],
-          $_POST['xmargin'],
-          1 - $_POST['ymargin'],
-          $rs['MAXY'],
-          $_POST['ymargin'],
-          $_POST['sala']
-      );
-    } else {
-      $query .= 'S.POSXSITE, S.POSYSITE';
-      $params = array($_POST['sala']);
-    }
-
-    $query .= ' FROM TABSALDETALHE S
-                INNER JOIN TABSETOR SE ON SE.CODSALA = S.CODSALA
-                AND SE.CODSETOR = S.CODSETOR
-                WHERE S.CODSALA = ? AND S.TIPOBJETO = \'C\'';
-
-    $result = executeSQL($conn, $query, $params);
-
     $cadeiras = array();
-    
-    while ($rs = fetchResult($result)) {
-      
-      $rs['STATUS'] = (session_id() == $rs['ID_SESSION']) ? 'S' : $rs['STATUS'];
-      
-      $cadeira = array( 
-        "id" => $rs['INDICE'],
-        "name" => utf8_encode($rs['NOMOBJETO']),
-        "setor" => utf8_encode($rs['NOMSETOR']),
-        "codSetor" => $rs['CODSETOR'],
-        "x" => $rs['POSXSITE'],
-        "y" => $rs['POSYSITE'],
-        "img" => $rs['IMGVISAOLUGARFOTO'] ? 1 : 0
-      );
 
-      $cadeiras[] = $cadeira;
+    if ($rs['INGRESSONUMERADO'] == 1) {
+      $query = "SELECT MAX(POSX) MAXX, MAX(POSY) MAXY, MAX(POSXSITE) MAXXSITE, 
+                MAX(POSYSITE) MAXYSITE FROM TABSALDETALHE
+                WHERE CODSALA = ? AND TIPOBJETO = 'C'";
+      $params = array($_POST['sala']);
+      $rs = executeSQL($conn, $query, $params, true);
+
+      $query = 'SELECT S.INDICE, S.NOMOBJETO, S.CODSETOR, SE.NOMSETOR, S.IMGVISAOLUGAR,
+                CASE WHEN S.IMGVISAOLUGARFOTO IS NOT NULL THEN 1 ELSE 0 END IMGVISAOLUGARFOTO, ';
+
+      if ($rs['MAXXSITE'] == '' or $rs['MAXYSITE'] == '' or $_POST['reset']) {
+        $query .= '(((S.POSX * ?) / ?) + ?) POSXSITE, (((S.POSY * ?) / ?) + ?) POSYSITE';
+        $params = array(
+            1 - $_POST['xmargin'],
+            $rs['MAXX'],
+            $_POST['xmargin'],
+            1 - $_POST['ymargin'],
+            $rs['MAXY'],
+            $_POST['ymargin'],
+            $_POST['sala']
+        );
+      } else {
+        $query .= 'S.POSXSITE, S.POSYSITE';
+        $params = array($_POST['sala']);
+      }
+
+      $query .= ' FROM TABSALDETALHE S
+                  INNER JOIN TABSETOR SE ON SE.CODSALA = S.CODSALA
+                  AND SE.CODSETOR = S.CODSETOR
+                  WHERE S.CODSALA = ? AND S.TIPOBJETO = \'C\'';
+
+      $result = executeSQL($conn, $query, $params);
+      
+      while ($rs = fetchResult($result)) {
+        
+        $rs['STATUS'] = (session_id() == $rs['ID_SESSION']) ? 'S' : $rs['STATUS'];
+        
+        $cadeira = array( 
+          "id" => $rs['INDICE'],
+          "name" => utf8_encode($rs['NOMOBJETO']),
+          "setor" => utf8_encode($rs['NOMSETOR']),
+          "codSetor" => $rs['CODSETOR'],
+          "x" => $rs['POSXSITE'],
+          "y" => $rs['POSYSITE'],
+          "img" => $rs['IMGVISAOLUGARFOTO'] ? 1 : 0
+        );
+
+        $cadeiras[] = $cadeira;
+      }
     }
 
     $data = array(

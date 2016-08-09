@@ -1094,11 +1094,11 @@ function comboTeatro($name, $selected, $funcJavascript = "") {
 
 function comboSala($name, $teatroID) {
     $conn = getConnection($teatroID);
-    $result = executeSQL($conn, 'SELECT CODSALA, NOMSALA FROM TABSALA WHERE STASALA = \'A\' AND INGRESSONUMERADO = \'1\'');
+    $result = executeSQL($conn, 'SELECT CODSALA, NOMSALA, INGRESSONUMERADO FROM TABSALA WHERE STASALA = \'A\'');
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione uma sala...</option>';
     while ($rs = fetchResult($result)) {
-	$combo .= '<option value="' . $rs['CODSALA'] . '">' . utf8_encode($rs['NOMSALA']) . '</option>';
+	$combo .= '<option value="' . $rs['CODSALA'] . '" numerado="'.$rs['INGRESSONUMERADO'].'">' . utf8_encode($rs['NOMSALA']) . '</option>';
     }
     $combo .= '</select>';
 

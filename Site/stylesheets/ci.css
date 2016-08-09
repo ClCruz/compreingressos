@@ -468,7 +468,7 @@ p.maps a {
 	min-height:400px;
 }
 
-#center_right_border #mapa_de_plateia {
+#center_right_border .mapa_de_plateia {
 	margin-bottom:20px;
 	padding:0;
 	height:auto;
@@ -857,7 +857,7 @@ a img { border: none;}
 	margin:0;
 }
 
-#mapa_de_plateia {
+.mapa_de_plateia {
 	height:512px;
 	background-color:#991427;
 	padding:5px;

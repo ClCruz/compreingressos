@@ -39,30 +39,30 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
           <tr>
             <td><span id="celSala"><select><option>Selecione um teatro...</option></select></span></td>
           </tr>
-          <tr>
+          <tr class="opcoes_numerados">
             <td><h3>Espa&ccedil;amento entre lugares:</h3></td>
           </tr>
-          <tr>
+          <tr class="opcoes_numerados">
             <td>
     					Horizontal:
               <span style="float:left">(+)</span><span style="float:right">(-)</span>
               <div id="xMargin"></div>
             </td>
           </tr>
-          <tr>
+          <tr class="opcoes_numerados">
             <td>
     					Vertical:
               <span style="float:left">(+)</span><span style="float:right">(-)</span>
               <div id="yMargin"></div>
             </td>
           </tr>
-          <tr>
+          <tr class="opcoes_numerados">
             <td align="center" valign="middle">
               <input type="button" id="resetEvento" class="button" value="Recalcular" />
             </td>
           </tr>
         </table>
-        <table border="0" cellspacing="0" cellpadding="0">
+        <table border="0" cellspacing="0" cellpadding="0" class="opcoes_numerados">
           <tr>
             <td><h3>Tamanho do Lugar:</h3></td>
           </tr>
@@ -137,7 +137,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
         </table>
       </form>
     </div>
-    <div id="mapa_de_plateia" class="edicao">
+    <div id="mapa_de_plateia" class="mapa_de_plateia" class="edicao">
       <img src="../images/palco.png" width="630" height="500">
     </div>
 

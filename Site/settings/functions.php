@@ -1094,7 +1094,7 @@ function comboTeatro($name, $selected, $funcJavascript = "") {
 
 function comboSala($name, $teatroID) {
     $conn = getConnection($teatroID);
-    $result = executeSQL($conn, 'SELECT CODSALA, NOMSALA, INGRESSONUMERADO FROM TABSALA WHERE STASALA = \'A\'');
+    $result = executeSQL($conn, 'SELECT CODSALA, NOMSALA, INGRESSONUMERADO FROM TABSALA WHERE STASALA = \'A\' ORDER BY NOMSALA');
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione uma sala...</option>';
     while ($rs = fetchResult($result)) {

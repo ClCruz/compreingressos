@@ -24,7 +24,26 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 410, true)) {
                     $cboPeca = $('#cboPeca'),
                     $cboData = $('#cboData'),
                     $cboHora = $('#cboHora'),
-                    $cboSetor = $('#cboSetor');
+                    $cboSetor = $('#cboSetor'),
+                    $cboPeriodo = $('#cboPeriodo'),
+                    $cboDataI = $('#getDataInicio'),
+                    $cboDataF = $('#getDataTermino');
+
+                // function CarregaApresentacao() {
+                //     var CodPeca = $('#cboPeca').val();
+                //     $.ajax({
+                //         url: 'relatorioBorderoActions.php',
+                //         type: 'post',
+                //         data: 'Acao=requestDates&CodPeca='+ CodPeca,
+                //         dataType: 'json',
+                //         success: function(data){
+                //             $('input[name="getDataInicio"]').datepicker('option', 'minDate', data.inicial);
+                //             $('input[name="getDataInicio"]').datepicker('option', 'maxDate', data.final);
+                //             $('input[name="getDataTermino"]').datepicker('option', 'maxDate', data.final);
+                //             $('input[name="getDataTermino"]').datepicker('option', 'minDate', data.inicial);
+                //         }
+                //     });
+                // };
 
                 $('#visualizar').button().on('click', function(e){
                     e.preventDefault();
@@ -44,15 +63,14 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 410, true)) {
                     e.preventDefault();
 
                     if (validacao()) {
-                        document.location = pagina + '?excel=1&' + $('#dados').serialize();
+                         document.location = pagina + '?excel=1&' + $('#dados').serialize();
+
                     }
                 });
 
                 $('#limpar').button().on('click', function(e){
                     e.preventDefault();
-
                     $cboPeca.val('').trigger('change');
-
                     $('#registros').html('');
                 });
 
@@ -76,6 +94,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 410, true)) {
 
                 $cboPeca.on('change', function(){
                     if ($cboPeca.val()) {
+
                         $.ajax({
                             url: pagina + '?action=cboData&cboData=<?php echo $_GET['cboData']; ?>&cboTeatro=' + $cboTeatro.val() + '&cboPeca=' + $cboPeca.val()
                         }).done(function(html){
@@ -83,6 +102,27 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 410, true)) {
                         });
                     } else {
                         $cboData.find('option:not(:first)').remove().end().trigger('change');
+                    }
+
+                    if($cboPeca.val() == ""){
+                        $(".dtC").attr("placeholder","Selecione uma peça");
+                        $(".dtC").attr("disabled", true);
+                        $(".dtC").val("");
+                        
+                    }
+                    else {
+                        $.ajax({
+                            url: pagina + '?action=getDataInicio&getDataInicio=<?php echo $_GET['getDataInicio']; ?>&cboTeatro=' + $cboTeatro.val() + '&cboPeca=' + $cboPeca.val(),
+                            dataType: 'json'
+                        }).done(function(html){
+                            var tamanho_array = parseInt(html.length)-1;
+                            $('input[name="getDataInicio"]').datepicker('option', 'minDate', html[0].data_apresentacao);
+                            $('input[name="getDataInicio"]').datepicker('option', 'maxDate', html[tamanho_array].data_apresentacao);
+                            $('input[name="getDataTermino"]').datepicker('option', 'maxDate', html[tamanho_array].data_apresentacao);
+                            $('input[name="getDataTermino"]').datepicker('option', 'minDate', html[0].data_apresentacao);
+                        }); 
+                        $(".dtC").attr("placeholder","");
+                        $(".dtC").attr("disabled", false);
                     }
                 });
 
@@ -111,22 +151,58 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 410, true)) {
                 });
 
                 function validacao() {
-                    var valido = true,
-                        campos = $('select');
+                    if($("#cboPeriodo").is(':checked')){
+                        var valido = true,
+                        campos = $('.com, .pPeriodo');
 
-                    $.each(campos, function() {
-                        var $this = $(this);
-                        
-                        if ($this.val() == '') {
-                            $this.parent().addClass('ui-state-error');
-                            valido = false;
-                        } else {
-                            $this.parent().removeClass('ui-state-error');
-                        }
-                    });
+                        $.each(campos, function() {
+                            var $this = $(this);
+                            
+                            if ($this.val() == '') {
+                                $this.parent().addClass('ui-state-error');
+                                valido = false;
+                            } else {
+                                $this.parent().removeClass('ui-state-error');
+                            }
+                        });
+                    }
+                    else{
+                        var valido = true,
+                        campos = $('.com, .pData');
 
+                        $.each(campos, function() {
+                            var $this = $(this);
+                            
+                            if ($this.val() == '') {
+                                $this.parent().addClass('ui-state-error');
+                                valido = false;
+                            } else {
+                                $this.parent().removeClass('ui-state-error');
+                            }
+                        });
+                    }
                     return valido;
                 }
+
+                $cboPeriodo.click(function(){
+                    $('.smallH').toggle();
+                    if($cboPeriodo.is(':checked')){
+                        $(".pData").val("");
+
+                    } else {
+                        $(".pPeriodo").val("");
+                    }
+                });
+
+                $('input.datePicker').datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    onSelect: function(date, e) {
+                        if ($(this).is('input[name="getDataInicio"]')) {
+                            $('input[name="getDataTermino"]').datepicker('option', 'minDate', $(this).datepicker('getDate'));
+                        }
+                    }
+                }).datepicker('option', $.datepicker.regional['pt-BR']);
             });
         </script>
         <?php
@@ -137,7 +213,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 410, true)) {
             ?><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><?php
         }
         ?>
+        <div id="qualquer"></div>
         <h2>Demonstrativo de Vendas – Assinaturas X Avulsas</h2>
+        
         <form id="dados" name="dados" method="post">
             <table>
                 <tr>
@@ -148,7 +226,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 410, true)) {
                                 $_GET['action'] = 'cboTeatro';
                                 require('actions/' . $pagina);
                             } else {
-                                ?><select name="cboTeatro" id="cboTeatro"><option value="">Carregando...</option></select><?php
+                                ?><select name="cboTeatro" id="cboTeatro" class="com"><option value="">Carregando...</option></select><?php
                             }
                         ?>
                     </td>
@@ -159,42 +237,73 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 410, true)) {
                                 $_GET['action'] = 'cboPeca';
                                 require('actions/' . $pagina);
                             } else {
-                                ?><select name="cboPeca" id="cboPeca"><option value="">Selecione um Local...</option></select><?php
+                                ?><select name="cboPeca" id="cboPeca" class="com"><option value="">Selecione um Local...</option></select><?php
                             }
                         ?>
                     </td>
-                    <td>
+                    <td class="smallH">
                         <b>Data:</b><br/>
                         <?php
                             if ($_GET['excel']) {
                                 $_GET['action'] = 'cboData';
                                 require('actions/' . $pagina);
                             } else {
-                                ?><select name="cboData" id="cboData"><option value="">Selecione um Evento...</option></select><?php
+                                ?><select name="cboData" id="cboData" class="pData"><option value="">Selecione um Evento...</option></select><?php
+                            }
+                        ?>
+                        
+                    </td>
+                    
+                    <td>
+                        <?php 
+                            if(!$_GET['excel']){
+                        ?>  
+                            <br><label><input type="checkbox" value="cboPeriodo" id="cboPeriodo"> Por periodo</label>
+                        <?php
                             }
                         ?>
                     </td>
                 </tr>
                 <tr>
-                    <td>
+                    <td class='smallH'>
                         <b>Hora:</b><br/>
                         <?php
                             if ($_GET['excel']) {
                                 $_GET['action'] = 'cboHora';
                                 require('actions/' . $pagina);
                             } else {
-                                ?><select name="cboHora" id="cboHora"><option value="">Selecione um Data...</option></select><?php
+                                ?><select name="cboHora" id="cboHora" class="pData"><option value="">Selecione uma Data...</option></select><?php
                             }
                         ?>
                     </td>
-                    <td>
+                    <td class="smallH">
                         <b>Setor:</b><br/>
                         <?php
                             if ($_GET['excel']) {
                                 $_GET['action'] = 'cboSetor';
                                 require('actions/' . $pagina);
                             } else {
-                                ?><select name="cboSetor" id="cboSetor"><option value="">Selecione um Hora...</option></select><?php
+                                ?><select name="cboSetor" id="cboSetor" class="pData"><option value="">Selecione uma Hora...</option></select><?php
+                            }
+                        ?>
+                    </td>
+                    <td class="smallH  ui-helper-hidden">
+                        <b>Dt. Apresentação Inicial</b><br />
+                        <?php
+                            if ($_GET['excel']) {
+                                $_GET['action'] = 'getDataInicio';
+                                require('actions/' . $pagina);
+                            } else {
+                                ?><input type="text" maxlength="10" size="15" class="datePicker dtC pPeriodo" name="getDataInicio" id="getDataInicio" readonly /><?php
+                            }
+                        ?>
+                    </td>
+                    <td class="smallH  ui-helper-hidden">
+                         <b>Dt. Apresentação Final</b><br /><?php
+                            if ($_GET['excel']) {
+                                echo $_GET['getDataTermino'];
+                            } else {
+                                ?><input type="text" maxlength="10" size="15" class="datePicker dtC pPeriodo" name="getDataTermino" id="getDataTermino" readonly /><?php
                             }
                         ?>
                     </td>

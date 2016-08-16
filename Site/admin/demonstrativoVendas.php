@@ -29,22 +29,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 410, true)) {
                     $cboDataI = $('#getDataInicio'),
                     $cboDataF = $('#getDataTermino');
 
-                // function CarregaApresentacao() {
-                //     var CodPeca = $('#cboPeca').val();
-                //     $.ajax({
-                //         url: 'relatorioBorderoActions.php',
-                //         type: 'post',
-                //         data: 'Acao=requestDates&CodPeca='+ CodPeca,
-                //         dataType: 'json',
-                //         success: function(data){
-                //             $('input[name="getDataInicio"]').datepicker('option', 'minDate', data.inicial);
-                //             $('input[name="getDataInicio"]').datepicker('option', 'maxDate', data.final);
-                //             $('input[name="getDataTermino"]').datepicker('option', 'maxDate', data.final);
-                //             $('input[name="getDataTermino"]').datepicker('option', 'minDate', data.inicial);
-                //         }
-                //     });
-                // };
-
                 $('#visualizar').button().on('click', function(e){
                     e.preventDefault();
 
@@ -108,7 +92,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 410, true)) {
                         $(".dtC").attr("placeholder","Selecione uma peça");
                         $(".dtC").attr("disabled", true);
                         $(".dtC").val("");
-                        
                     }
                     else {
                         $.ajax({
@@ -241,14 +224,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 410, true)) {
                             }
                         ?>
                     </td>
-                    <td class="smallH">
-                        <b>Data:</b><br/>
+                    <td class="smallH porData">
                         <?php
                             if ($_GET['excel']) {
                                 $_GET['action'] = 'cboData';
                                 require('actions/' . $pagina);
                             } else {
-                                ?><select name="cboData" id="cboData" class="pData"><option value="">Selecione um Evento...</option></select><?php
+                                ?>
+                                <b>Data:</b><br/>
+                                <select name="cboData" id="cboData" class="pData"><option value="">Selecione um Evento...</option></select><?php
                             }
                         ?>
                         
@@ -265,18 +249,19 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 410, true)) {
                     </td>
                 </tr>
                 <tr>
-                    <td class='smallH'>
-                        <b>Hora:</b><br/>
+                    <td class='smallH porData'>
                         <?php
                             if ($_GET['excel']) {
                                 $_GET['action'] = 'cboHora';
                                 require('actions/' . $pagina);
                             } else {
-                                ?><select name="cboHora" id="cboHora" class="pData"><option value="">Selecione uma Data...</option></select><?php
+                                ?>
+                                <b>Hora:</b><br/>
+                                <select name="cboHora" id="cboHora" class="pData"><option value="">Selecione uma Data...</option></select><?php
                             }
                         ?>
                     </td>
-                    <td class="smallH">
+                    <td class="smallH porData">
                         <b>Setor:</b><br/>
                         <?php
                             if ($_GET['excel']) {
@@ -288,22 +273,27 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 410, true)) {
                         ?>
                     </td>
                     <td class="smallH  ui-helper-hidden">
-                        <b>Dt. Apresentação Inicial</b><br />
                         <?php
                             if ($_GET['excel']) {
                                 $_GET['action'] = 'getDataInicio';
                                 require('actions/' . $pagina);
                             } else {
-                                ?><input type="text" maxlength="10" size="15" class="datePicker dtC pPeriodo" name="getDataInicio" id="getDataInicio" readonly /><?php
+                                ?>
+                                <b>Dt. Apresentação Inicial</b><br />
+                                <input type="text" maxlength="10" size="15" class="datePicker dtC pPeriodo" name="getDataInicio" id="getDataInicio" readonly /><?php
                             }
                         ?>
                     </td>
                     <td class="smallH  ui-helper-hidden">
-                         <b>Dt. Apresentação Final</b><br /><?php
+                         <?php
                             if ($_GET['excel']) {
-                                echo $_GET['getDataTermino'];
+                                if($_GET['getDataTermino'] != ""){
+                                    echo "<b>Dt. Apresentação Final</b><br />".$_GET['getDataTermino'];
+                                }
                             } else {
-                                ?><input type="text" maxlength="10" size="15" class="datePicker dtC pPeriodo" name="getDataTermino" id="getDataTermino" readonly /><?php
+                                ?>
+                                <b>Dt. Apresentação Final</b><br />
+                                <input type="text" maxlength="10" size="15" class="datePicker dtC pPeriodo" name="getDataTermino" id="getDataTermino" readonly /><?php
                             }
                         ?>
                     </td>

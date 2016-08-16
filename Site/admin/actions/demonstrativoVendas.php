@@ -182,8 +182,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 410, true)) {
         while($rs = fetchResult($result)){
             $combo .= '<option value="'. $rs["DATAPRESENTACAO"]->format('Ymd') .'"' . (($_GET['cboData'] == $rs['DATAPRESENTACAO']->format('Ymd')) ? ' selected' : '') . '>'. $rs['DATAPRESENTACAO']->format("d/m/Y") .'</option>';
             if ($_GET['excel'] and $_GET['cboData'] == $rs['DATAPRESENTACAO']->format('Ymd')) {
-                $text = $rs['DATAPRESENTACAO']->format("d/m/Y");
+                $text = "<b>Data: </b><br />".$rs['DATAPRESENTACAO']->format("d/m/Y");
                 break;
+            } else
+            {
+                $text = "";
             }
         }
 
@@ -224,8 +227,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 410, true)) {
 
         while($rs = fetchResult($result)){
             if($_GET['excel'] and $_GET['getDataInicio'] == $rs['DATAPRESENTACAO']->format("d/m/Y")){
-                $text = $rs['DATAPRESENTACAO']->format("d/m/Y");
+                $text = "<b>Dt. Apresentação Inicial</b><br />".$rs['DATAPRESENTACAO']->format("d/m/Y");
                 break;
+            }
+            else
+            {
+                $text = "";
             }
 
             $valores = array("data_apresentacao" => $rs['DATAPRESENTACAO']->format("d/m/Y"));
@@ -247,8 +254,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 410, true)) {
         while($rs = fetchResult($result)){
             $combo .= '<option value="'. $rs["HorSessao"] .'"' . (($_GET['cboHora'] == $rs['HorSessao']) ? ' selected' : '') . '>'. $rs['HorSessao'] .'</option>';
             if ($_GET['excel'] and $_GET['cboHora'] == $rs['HorSessao']) {
-                $text = $rs['HorSessao'];
+                $text = "<b>Hora:</b><br />".$rs['HorSessao'];
                 break;
+            }
+            else{
+                $text = "";
             }
         }
 

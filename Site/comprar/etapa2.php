@@ -71,9 +71,9 @@ require('verificarServicosPedido.php');
 
 		while ($rs = fetchResult($result)) {
 			if ($rs['QT_BILHETES_DISPONIVEIS'] == 1) {
-		        $msg .= "você ainda tem 1 bilhete disponível ({$rs['DS_ASSINATURA']})<br/>";
+		        $msg .= "Você tem 1 ingresso disponível ({$rs['DS_ASSINATURA']}).<br/>";
 		    } else {
-		        $msg .= "você ainda tem {$rs['QT_BILHETES_DISPONIVEIS']} bilhetes disponíveis ({$rs['DS_ASSINATURA']})<br/>";
+		        $msg .= "Você tem {$rs['QT_BILHETES_DISPONIVEIS']} ingressos disponíveis ({$rs['DS_ASSINATURA']}).<br/>";
 		    }
 		}
 

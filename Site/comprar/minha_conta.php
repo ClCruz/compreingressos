@@ -3,6 +3,7 @@ require 'acessoLogado.php';
 
 if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
     require_once('../settings/functions.php');
+    require_once('../settings/pagseguro_functions.php');
 
     if ($is_manutencao === true) {
         header("Location: manutencao.php");
@@ -410,7 +411,25 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                                             <?php
                                             echo comboSituacao('situacao', $rs['IN_SITUACAO'], false);
                                             if (in_array($rs['CD_MEIO_PAGAMENTO'], array('892', '893')) and $rs['IN_SITUACAO'] == 'P') {
+
                                                 echo "<br/><a href='./pagamento_fastcash.php?pedido={$rs['ID_PEDIDO_VENDA']}'>Comprovar Pagamento</a>";
+
+                                            } elseif (in_array($rs['CD_MEIO_PAGAMENTO'], array('900', '901', '902')) and $rs['IN_SITUACAO'] == 'P') {
+
+                                                $query = "SELECT OBJ_PAGSEGURO FROM MW_PEDIDO_PAGSEGURO WHERE ID_PEDIDO_VENDA = ? ORDER BY DT_STATUS DESC";
+                                                $params = array($rs['ID_PEDIDO_VENDA']);
+                                                $rs2 = executeSQL($mainConnection, $query, $params, true);
+
+                                                if (!empty($rs2)) {
+                                                    $transaction =  unserialize(base64_decode($rs2['OBJ_PAGSEGURO']));
+
+                                                    if ($rs['CD_MEIO_PAGAMENTO'] == '900' AND $transaction->getStatus()->getValue() == 1) {
+                                                        echo "<br/><a href='".$transaction->getPaymentLink()."' target='_blank'>Imprimir Boleto</a>";
+                                                    } else {
+                                                        $status = getStatusPagSeguro($transaction->getStatus()->getValue());
+                                                        echo "<br/>".$status['name'];
+                                                    }
+                                                }
                                             }
                                             ?>
                                         </td>

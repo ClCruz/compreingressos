@@ -9,6 +9,7 @@ require_once('../settings/antiFraude.php');
 require('acessoPermitido.php');
 
 require_once('../settings/brandcaptchalib.php');
+require('../settings/pagseguro_functions.php');
 
 $resp = brandcaptcha_check_answer(
             $recaptcha['private_key'],
@@ -54,7 +55,7 @@ $rs = executeSQL($mainConnection, $query, $params, true);
 $horas_antes_apresentacao_pagamento = $rs['QT_HR_ANTECED'];
 
 if ($horas_antes_apresentacao_pagamento != null and $horas_antes_apresentacao_pagamento > $horas_antes_apresentacao) {
-    echo "Esta forma de pagamento não pode ser utilizadas no momento. Por favor, seleciona outra.";
+    echo "Esta forma de pagamento não pode ser utilizada no momento. Por favor, selecione outra.";
     die();
 }
 
@@ -483,9 +484,12 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
     //     array('requestMascarado' => $parametrosLOG));
     // echo "</pre>";
     // die(''.time());
+
+    $pagamento_fastcash = in_array($_POST['codCartao'], array('892', '893'));
+    $pagamento_pagseguro = in_array($_POST['codCartao'], array('900', '901', '902'));
     
-    
-    if ($_SESSION['usuario_pdv'] !== 1 and $PaymentDataCollection['Amount'] != 0 and !in_array($_POST['codCartao'], array('892', '893'))) {
+    // pular o bloco abaixo para vendas pelo fastcash e pagseguro
+    if ($_SESSION['usuario_pdv'] !== 1 and $PaymentDataCollection['Amount'] != 0 and !$pagamento_fastcash and !$pagamento_pagseguro) {
     	try {
             executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
                 array($_SESSION['user'], json_encode(array('descricao' => '3. inicialização do pedido ' . $parametros['OrderData']['OrderId'], 'url' => $url_braspag)))
@@ -561,15 +565,23 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
     if ($descricao_erro == '') {
         setcookie('id_braspag', $result->AuthorizeTransactionResult->OrderData->BraspagOrderId);
 
-        // se o meio de pagamento for fastcash
-        if(in_array($_POST['codCartao'], array('892', '893'))){
-            extenderTempo($horas_antes_apresentacao_pagamento * 60);
+        if ($pagamento_fastcash OR $pagamento_pagseguro){
 
             $query = "UPDATE P SET ID_MEIO_PAGAMENTO = M.ID_MEIO_PAGAMENTO
                         FROM MW_PEDIDO_VENDA P, MW_MEIO_PAGAMENTO M
                         WHERE P.ID_PEDIDO_VENDA = ? AND M.CD_MEIO_PAGAMENTO = ?";
             $params = array($parametros['OrderData']['OrderId'], $_POST['codCartao']);
             $result = executeSQL($mainConnection, $query, $params);
+
+            if ($pagamento_pagseguro) {
+                $response = pagarPedidoPagSeguro($parametros['OrderData']['OrderId'], $_POST);
+
+                if (!$response['success']) {
+                    die($response['error']);
+                }
+            }
+
+            extenderTempo($horas_antes_apresentacao_pagamento * 60);
 
             $query = "SELECT DISTINCT E.ID_BASE FROM MW_RESERVA R
                         INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
@@ -597,7 +609,11 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
 
             limparCookies();
 
-            die("redirect.php?redirect=".urlencode("pagamento_fastcash.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : '')));
+            if ($pagamento_fastcash) {
+                die("redirect.php?redirect=".urlencode("pagamento_fastcash.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : '')));
+            } elseif ($pagamento_pagseguro) {
+                die("redirect.php?redirect=".urlencode("pagamento_pagseguro.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : '')));
+            }
         }
         // se for um usuario do pdv
         elseif(isset($_SESSION['usuario_pdv']) and $_SESSION['usuario_pdv'] == 1){

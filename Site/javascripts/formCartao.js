@@ -21,8 +21,10 @@ $(function(){
             }
         }
 
-        if ($('[name=codCartao]:checked').next('label').next('p.nome').text().toLowerCase().indexOf('fastcash') == -1) {
-		    $this.find(':input:not(.compra_captcha :input, [name=nomePresente], [name=emailPresente])').each(function(i,e) {
+        if ($('[name=codCartao]:checked').next('label').next('p.nome').text().toLowerCase().indexOf('fastcash') == -1
+			&& $('[name=codCartao]:checked').next('label').next('p.nome').text().toLowerCase().indexOf('boleto') == -1
+			&& $('[name=codCartao]:checked').next('label').next('p.nome').text().toLowerCase().indexOf('débito') == -1) {
+		    $this.find(':input:not(.compra_captcha :input, [name=nomePresente], [name=emailPresente], .pagseguro :input)').each(function(i,e) {
 		    	var e = $(e);
 	    		if (e.val().length < e.attr('maxlength')/2 || e.val() == '') {
 	    		    e.addClass('erro');
@@ -108,7 +110,9 @@ $(function(){
 	$('input[name=codCartao]').on('change', function(){
 		var $cartao = $('input[name=codCartao]:checked');
 
-		if ($cartao.next('label').next('p.nome').text().toLowerCase().indexOf('fastcash') > -1) {
+		if ($cartao.next('label').next('p.nome').text().toLowerCase().indexOf('fastcash') > -1
+			|| $cartao.next('label').next('p.nome').text().toLowerCase().indexOf('boleto') > -1
+			|| $cartao.next('label').next('p.nome').text().toLowerCase().indexOf('débito') > -1) {
 			$('.container_dados').find('.linha').eq(0).slideUp().end()
 												.eq(1).slideUp().end().end()
 								.find('.frase .alt').eq(0).text('Presente');

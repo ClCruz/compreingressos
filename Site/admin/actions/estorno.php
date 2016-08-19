@@ -35,7 +35,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                         CASE WHEN P.ID_PEDIDO_PAI IS NOT NULL THEN 1 ELSE 0 END FILHO,
                         P.ID_PEDIDO_VENDA,
                         P.ID_PEDIDO_PAI,
-                        (SELECT COUNT(1) FROM MW_PROMOCAO PROMO WHERE PROMO.ID_PEDIDO_VENDA = P.ID_PEDIDO_VENDA) AS INGRESSOS_PROMOCIONAIS
+                        (SELECT COUNT(1) FROM MW_PROMOCAO PROMO WHERE PROMO.ID_PEDIDO_VENDA = P.ID_PEDIDO_VENDA) AS INGRESSOS_PROMOCIONAIS,
+                        P.ID_PEDIDO_IPAGARE
                 FROM MW_PEDIDO_VENDA P
                 INNER JOIN MW_MEIO_PAGAMENTO M ON M.ID_MEIO_PAGAMENTO = P.ID_MEIO_PAGAMENTO
                 INNER JOIN MW_ITEM_PEDIDO_VENDA I ON P.ID_PEDIDO_VENDA = I.ID_PEDIDO_VENDA
@@ -91,7 +92,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                                 P.IN_PACOTE,
                                 CASE WHEN P.ID_PEDIDO_PAI IS NOT NULL THEN 1 ELSE 0 END FILHO,
                                 P.ID_PEDIDO_VENDA,
-                                (SELECT COUNT(1) FROM MW_PROMOCAO PROMO WHERE PROMO.ID_PEDIDO_VENDA = P.ID_PEDIDO_VENDA) AS INGRESSOS_PROMOCIONAIS
+                                (SELECT COUNT(1) FROM MW_PROMOCAO PROMO WHERE PROMO.ID_PEDIDO_VENDA = P.ID_PEDIDO_VENDA) AS INGRESSOS_PROMOCIONAIS,
+                                P.ID_PEDIDO_IPAGARE
                         FROM MW_PEDIDO_VENDA P
                         INNER JOIN MW_MEIO_PAGAMENTO M ON M.ID_MEIO_PAGAMENTO = P.ID_MEIO_PAGAMENTO
                         INNER JOIN MW_ITEM_PEDIDO_VENDA I ON P.ID_PEDIDO_VENDA = I.ID_PEDIDO_VENDA
@@ -115,7 +117,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
 
             // VENDAS PELO PDV, PEDIDOS FILHOS (DE ASSINATURAS), PEDIDOS COM INGRESSOS PROMOCIONAIS, VALOR 0 E FEITOS PELO POS NÃO SÃO ESTORNADAS DO BRASPAG
             $is_estorno_brasbag = ($pedido["IN_TRANSACAO_PDV"] == 0 and !$pedido["FILHO"] and ($pedido['INGRESSOS_PROMOCIONAIS'] == 0 and $pedido['VALOR'] != 0)
-                                    and !($pedido_principal["BRASPAG_ID"] == 'POS' and isset($_POST['pos_serial'])) and $pedido_principal["BRASPAG_ID"] != 'Fastcash');
+                                    and !($pedido_principal["BRASPAG_ID"] == 'POS' and isset($_POST['pos_serial'])) and $pedido_principal["BRASPAG_ID"] != 'Fastcash'
+                                    and $pedido_principal["ID_PEDIDO_IPAGARE"] != 'PagSeguro');
 
             $options = array(
                 'local_cert' => file_get_contents('../settings/cert.pem'),
@@ -213,6 +216,30 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
 
                     $erros_resposta_braspag['count'] += count(get_object_vars($value['response']->ErrorReportDataCollection));
                     $erros_resposta_braspag['descr'] .= $value['response']->ErrorReportDataCollection->ErrorReportDataResponse->ErrorMessage;
+                }
+            }
+
+            // tratamento para pagseguro
+            elseif ($pedido_principal["ID_PEDIDO_IPAGARE"] == 'PagSeguro') {
+
+                require_once('../settings/pagseguro_functions.php');
+
+                $query = "SELECT OBJ_PAGSEGURO FROM MW_PEDIDO_PAGSEGURO WHERE ID_PEDIDO_VENDA = ? ORDER BY DT_STATUS DESC";
+                $params = array($pedido['ID_PEDIDO_VENDA']);
+                $rs2 = executeSQL($mainConnection, $query, $params, true);
+
+                $transaction =  unserialize(base64_decode($rs2['OBJ_PAGSEGURO']));
+
+                $response = estonarPedidoPagseguro($transaction->getCode());
+
+                if ($response['success']) {
+                    $resposta_geral = "Pedido cancelado/estornado.";
+                    $retorno = 'ok';
+                } else {
+                    $resposta_geral = $response['error']."<br/><br/><b>Não foi possível efetuar o estorno junto à Operadora (Fastcash)</b>, 
+                                                por favor, efetue o procedimento de cancelamento junto a operadora manualmente.<br/><br/>
+                                                Os dados do sistema do Middleway foram atualizados com sucesso.";
+                    $force_system_refund = true;
                 }
             }
 
@@ -333,10 +360,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                                     IN_SITUACAO = 'S',
                                     ID_USUARIO_ESTORNO = ?,
                                     DS_MOTIVO_CANCELAMENTO = ?,
-                                    DT_HORA_CANCELAMENTO = CONVERT(DATETIME, ?, 120)
+                                    DT_HORA_CANCELAMENTO = GETDATE()
                             WHERE ID_PEDIDO_VENDA = ?";
-                    //$params = array($_SESSION['admin'], $_POST['justificativa'], date('d/m/Y H:i:s'), $pedido['ID_PEDIDO_VENDA']);
-                    $params = array($_SESSION['admin'], $_POST['justificativa'], date('Y-m-d H:i:s'), $pedido['ID_PEDIDO_VENDA']);
+                    $params = array($_SESSION['admin'], $_POST['justificativa'], $pedido['ID_PEDIDO_VENDA']);
                     executeSQL($mainConnection, $query, $params);
 
                     $sqlErrors = sqlErrors();

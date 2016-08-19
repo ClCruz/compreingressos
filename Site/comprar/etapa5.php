@@ -24,6 +24,8 @@ if (isset($_COOKIE['entrega'])) {
     require('calculaFrete.php');
 }
 
+require('../settings/pagseguro_functions.php');
+
 $mainConnection = mainConnection();
 $rs = executeSQL($mainConnection, 'SELECT COUNT(1) FROM MW_RESERVA WHERE ID_SESSION = ?', array(session_id()), true);
 $qtdIngressos = $rs[0] >= 9 ? '0'.$rs[0] : $rs[0];
@@ -163,5 +165,19 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 		csdp('app', 'ae6af083e9');
 		csdp('sessionid', '<?php echo session_id(); ?>');
 	</script>
+
+	<?php
+	if ($carregar_pagseguro_lib) {
+		if ($_ENV['IS_TEST']) {
+			echo '<script type="text/javascript" src="https://stc.sandbox.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js"></script>';
+		} else {
+			echo '<script type="text/javascript" src="https://stc.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js"></script>';
+		}
+		$sessionId = getPagSeguroSessionId();
+		$amount = str_replace(',', '.', $_COOKIE['total_exibicao']);
+		echo "<script type='text/javascript'>var pagseguro = {sessionId: '$sessionId', amount: $amount};</script>";
+		echo '<script type="text/javascript" src="../javascripts/pagseguro.js"></script>';
+	}
+	?>
 </body>
 </html>

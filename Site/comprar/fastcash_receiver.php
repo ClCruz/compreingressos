@@ -111,7 +111,7 @@ function OnOnlineCreditReceived($sender, $tid, $prodId, $quant, $valueReceived, 
     require "concretizarAssinatura.php";
     $return = ob_get_clean();
 
-    $return = ($return == '' ? true : array(false, $return));
+    $return = ($return == '' OR substr($return, 0, 12) == 'redirect.php' ? true : array(false, $return));
 
     //Return true/false or an array(false, "Error message")
     return $return;

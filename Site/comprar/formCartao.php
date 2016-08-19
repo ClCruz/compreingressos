@@ -82,13 +82,27 @@ if ($_POST) {
     			<?php
     			}
     			while ($rs = fetchResult($result)) {
-                    if ($bin != '' and in_array($rs['cd_meio_pagamento'], array('892', '893'))) continue;
+                    // nao exibir fastcash e pagseguro se tiver promo bin na reserva
+                    if ($bin != '' and in_array($rs['cd_meio_pagamento'], array('892', '893', '900', '901', '902'))) continue;
+
+                    // pagseguro
+                    if (in_array($rs['cd_meio_pagamento'], array('900', '901', '902'))) {
+                        $carregar_pagseguro_lib = true;
+                        $formatoCartao = '00000000000000000000';
+                        $formatoCodigo = '0000';
+                    }
+                    // outros meios
+                    else {
+                        $formatoCartao = ($rs['nm_cartao_exibicao_site'] == 'Amex' ? '0000-000000-00000' : '0000-0000-0000-0000');
+                        $formatoCodigo = ($rs['nm_cartao_exibicao_site'] == 'Amex' ? '0000' : '000');
+                    }
+
     			?>
     			<div class="container_cartao">
     				<input id="<?php echo $rs['cd_meio_pagamento']; ?>" type="radio" name="codCartao" class="radio" value="<?php echo $rs['cd_meio_pagamento']; ?>"
     					imgHelp="../images/cartoes/help_<?php echo file_exists('../images/cartoes/help_'.$rs['nm_cartao_exibicao_site'].'.png') ? utf8_encode($rs['nm_cartao_exibicao_site']) : 'default'; ?>.png"
-    					formatoCartao="<?php echo $rs['nm_cartao_exibicao_site'] == 'Amex' ? '0000-000000-00000' : '0000-0000-0000-0000'; ?>"
-    					formatoCodigo="<?php echo $rs['nm_cartao_exibicao_site'] == 'Amex' ? '0000' : '000'; ?>">
+    					formatoCartao="<?php echo $formatoCartao ?>"
+    					formatoCodigo="<?php echo $formatoCodigo ?>">
     				<label class="radio" for="<?php echo $rs['cd_meio_pagamento']; ?>">
     					<img src="../images/cartoes/ico_<?php echo file_exists('../images/cartoes/ico_'.$rs['nm_cartao_exibicao_site'].'.png') ? utf8_encode($rs['nm_cartao_exibicao_site']) : 'default'; ?>.png"><br>
     				</label>
@@ -121,7 +135,7 @@ if ($_POST) {
                         <select name="parcelas">
                             <?php
                             for ($i = 1; $i <= $parcelas; $i++) {
-                                $valor = number_format(str_replace(',', '.', $_COOKIE['total_exibicao']) / $i, 2, ',', '');
+                                $valor = number_format(round(str_replace(',', '.', $_COOKIE['total_exibicao']) / $i, 2), 2, ',', '');
                                 $desc = $i == 1 ? 'à vista' : $i . 'x';
 
                                 echo "<option value='$i'>$desc - R$ $valor</option>";

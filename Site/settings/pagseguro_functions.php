@@ -83,7 +83,7 @@ function pagarPedidoPagSeguro($id_pedido, $dados_extra) {
 	$directPaymentRequest->setReference("$id_pedido");
 
 	if ($_ENV['IS_TEST']) {
-		$directPaymentRequest->setNotificationURL('https://homolog.compreingressos.com/comprar/pagseguro_receiver.php');
+		$directPaymentRequest->setNotificationURL('http://homolog.compreingressos.com/comprar/pagseguro_receiver.php');
 	} else {
 		$directPaymentRequest->setNotificationURL('https://compra.compreingressos.com/comprar/pagseguro_receiver.php');
 	}

@@ -44,8 +44,14 @@ if (empty($rs)) {
 
 	$transaction = unserialize(base64_decode($rs['OBJ_PAGSEGURO']));
 	// var_dump($transaction);
+	// se for boleto
 	if ($transaction->getPaymentMethod()->getType()->getValue() == 2) {
 		$boleto_url = $transaction->getPaymentLink();
+	}
+	
+	// se for débito online
+	if ($transaction->getPaymentMethod()->getType()->getValue() == 3) {
+		$debito_url = $transaction->getPaymentLink();
 	}
 }
 ?>
@@ -127,6 +133,9 @@ if (empty($rs)) {
 				</div>
 				<?php if ($boleto_url) { ?>
 				<div class="imprima_agora"><a href="<?php echo $boleto_url; ?>" target="_new"><div class="icone"></div>Imprima agora seu boleto.</a></div>
+				<?php } ?>
+				<?php if ($debito_url) { ?>
+				<div class="imprima_agora"><a href="<?php echo $debito_url; ?>" target="_new"><div class="icone"></div>Clique aqui para efetuar o débito online.</a></div>
 				<?php } ?>
 
 				<?php if ((isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) { ?>

@@ -1168,7 +1168,7 @@ div.container_cartoes div.inputs{
 	margin-top:56px;
 }
 
-div.container_cartoes div.inputs div.container_cartao{
+div.container_cartao{
 	float:left;
 	width:148px;
 	height:110px;
@@ -1210,13 +1210,13 @@ div.presente img {
   margin-right: 10px;
 }
 
-#content div.container_cartoes div.container_cartao label.radio{
+div.container_cartao label.radio{
 	height:33px;
 	width:120px;
 	margin:0;
 }
 
-div.container_cartoes div.container_cartao label.radio img{
+div.container_cartao label.radio img{
 	width:52px;
 	height:52px;
 	background:#FFF;
@@ -1224,7 +1224,7 @@ div.container_cartoes div.container_cartao label.radio img{
 	border:0;
 }
 
-div.container_cartoes div.container_cartao  p.nome{
+div.container_cartao  p.nome{
 	font-size:24px;
 	font-weight:300;
 	margin:10px 0 5px -8px;
@@ -1232,14 +1232,14 @@ div.container_cartoes div.container_cartao  p.nome{
 	text-align:center;
 }
 
-div.container_cartoes div.container_cartao  p.aviso{
+div.container_cartao  p.aviso{
 	font-size:12px;
 	width:140px;
 	text-align:center;
 	margin-left:-14px;
 }
 
-div.container_cartoes div.container_cartao  p.aviso span{
+div.container_cartao  p.aviso span{
 	font-size:16px;
 	font-weight:bold;
 }
@@ -2794,4 +2794,8 @@ div.resumo_carrinho span.frase{
 div.espetaculo_img.assinatura{
 	border:none;
 	background:none;
+}
+
+div#bancos {
+    margin: 30px 0;
 }

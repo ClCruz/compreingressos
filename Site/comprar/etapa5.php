@@ -169,9 +169,9 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	<?php
 	if ($carregar_pagseguro_lib) {
 		if ($_ENV['IS_TEST']) {
-			echo '<script type="text/javascript" src="https://stc.sandbox.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js"></script>';
+			echo '<script id="pagseguro_script" type="text/javascript" src="https://stc.sandbox.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js"></script>';
 		} else {
-			echo '<script type="text/javascript" src="https://stc.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js"></script>';
+			echo '<script id="pagseguro_script" type="text/javascript" src="https://stc.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js"></script>';
 		}
 		$sessionId = getPagSeguroSessionId();
 		$amount = str_replace(',', '.', $_COOKIE['total_exibicao']);

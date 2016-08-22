@@ -131,6 +131,13 @@ function pagarPedidoPagSeguro($id_pedido, $dados_extra) {
 			$directPaymentRequest->setPaymentMethod('BOLETO');
 		break;
 		case 901:
+			$directPaymentRequest->setPaymentMethod('EFT');
+
+			$directPaymentRequest->setOnlineDebit(
+	            array(
+	                "bankName" => $dados_extra['bankName']
+	            )
+	        );
 		break;
 		case 902:
 			$directPaymentRequest->setPaymentMethod('CREDIT_CARD');

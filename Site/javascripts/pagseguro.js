@@ -7,7 +7,20 @@ $(function(){
 
 			}
 			if ($(':radio[value=901]').length == 1) {
+				var $bancos = $('<div id="bancos" class="linha hidden container_cartoes">').insertAfter('.container_dados p.frase'),
+					urlParts = $('#pagseguro_script').attr('src').split( '/' ),
+					url = urlParts[0] + '//' + urlParts[2];
 
+				$.each(data.paymentMethods.ONLINE_DEBIT.options, function(i,e) {
+					$bancos.append('\
+					<div class="container_cartao">\
+	    				<input id="'+e.code+'" type="radio" name="bankName" class="radio" value="'+e.name+'">\
+	    				<label class="radio" for="'+e.code+'">\
+	    					<img src="'+url+e.images.MEDIUM.path+'"><br>\
+	    				</label>\
+	    				<p class="nome">'+e.displayName+'</p>\
+	    			</div>');
+				});
 			}
 			// se credito pagseguro estiver disponivel
 			if ($(':radio[value=902]').length == 1) {
@@ -79,12 +92,11 @@ $(function(){
 	}
 
 	function pagseguroParcelas() {
-		var valorTotal = $(":input[name=parcelas] option:first").text().split('R$ ')[1].replace(',', '.'),
-			maxParcelas = $(":input[name=parcelas] option:last").val(),
+		var maxParcelas = $(":input[name=parcelas] option:last").val(),
 			cardBrand = $(":input[name=cardBrand]").val();
 
 		PagSeguroDirectPayment.getInstallments({
-			amount: valorTotal,
+			amount: pagseguro.amount,
 			brand: cardBrand,
 			maxInstallmentNoInterest: maxParcelas,
 			success: function(data){

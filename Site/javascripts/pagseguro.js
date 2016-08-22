@@ -8,8 +8,7 @@ $(function(){
 			}
 			if ($(':radio[value=901]').length == 1) {
 				var $bancos = $('<div id="bancos" class="linha hidden container_cartoes">').insertAfter('.container_dados p.frase'),
-					urlParts = $('#pagseguro_script').attr('src').split( '/' ),
-					url = urlParts[0] + '//' + urlParts[2];
+					url = 'https://stc.pagseguro.uol.com.br/';
 
 				$.each(data.paymentMethods.ONLINE_DEBIT.options, function(i,e) {
 					$bancos.append('\

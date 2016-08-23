@@ -576,6 +576,10 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
             if ($pagamento_pagseguro) {
                 $response = pagarPedidoPagSeguro($parametros['OrderData']['OrderId'], $_POST);
 
+                executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+                    array($_SESSION['user'], json_encode(array('descricao' => '4. retorno do pedido=' . $parametros['OrderData']['OrderId'], 'pagseguro_obj' => base64_encode(serialize($response['transaction'])))))
+                );
+
                 if (!$response['success']) {
                     die($response['error']);
                 }
@@ -608,6 +612,10 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
             }
 
             limparCookies();
+
+            executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+                array($_SESSION['user'], json_encode(array('descricao' => '5. redirecionamento do pedido=' . $parametros['OrderData']['OrderId'], 'fastcash' => $pagamento_fastcash, 'pagseguro' => $pagamento_pagseguro)))
+            );
 
             if ($pagamento_fastcash) {
                 die("redirect.php?redirect=".urlencode("pagamento_fastcash.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : '')));

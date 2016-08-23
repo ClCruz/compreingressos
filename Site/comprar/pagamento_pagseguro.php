@@ -19,7 +19,7 @@ require_once('../settings/pagseguro_functions.php');
 
 $mainConnection = mainConnection();
 
-$json = json_encode(array('descricao' => 'pagamento pagseguro - tela final do pedido '.$_GET['pedido']));
+$json = json_encode(array('descricao' => '6. pagamento pagseguro - tela final do pedido '.$_GET['pedido']));
 include('logiPagareChamada.php');
 
 $campanha = get_campanha_etapa(basename(__FILE__, '.php'));

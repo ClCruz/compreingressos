@@ -7,7 +7,7 @@ if ($_REQUEST['notificationType'] == 'transaction') {
     $mainConnection = mainConnection();
 
     executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
-        array(-999, json_encode(array('descricao' => 'retorno pagseguro', 'post' => $_REQUEST)))
+        array(-999, json_encode(array('descricao' => '6. retorno pagseguro', 'post' => $_REQUEST)))
     );
 
     $response = getNotificationPagSeguro($_REQUEST['notificationCode']);

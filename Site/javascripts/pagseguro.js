@@ -3,49 +3,65 @@ $(function(){
 
 	PagSeguroDirectPayment.getPaymentMethods({
 		success: function(data) {
-			if (data.paymentMethods.BOLETO.options.BOLETO.status == 'AVAILABLE' && $(':radio[value=900]').length == 1) {
-
+			// se boleto pagseguro estiver disponivel
+			if (data.paymentMethods.BOLETO.options.BOLETO.status != 'AVAILABLE' && $(':radio[value=900]').length == 1) {
+				$(':radio[value=900]').parent().hide();
 			}
+			// se debito pagseguro estiver disponivel
 			if ($(':radio[value=901]').length == 1) {
-				var $bancos = $('<div id="bancos" class="linha hidden container_cartoes">').insertAfter('.container_dados p.frase'),
-					url = 'https://stc.pagseguro.uol.com.br/';
+				var $bancos = $('<div id="bancos" class="linha hidden container_cartoes pagseguro">').insertAfter('.container_dados p.frase'),
+					qtBancos = 0;
 
 				$.each(data.paymentMethods.ONLINE_DEBIT.options, function(i,e) {
-					$bancos.append('\
-					<div class="container_cartao">\
-	    				<input id="'+e.code+'" type="radio" name="bankName" class="radio" value="'+e.name+'">\
-	    				<label class="radio" for="'+e.code+'">\
-	    					<img src="'+url+e.images.MEDIUM.path+'"><br>\
-	    				</label>\
-	    				<p class="nome">'+e.displayName+'</p>\
-	    			</div>');
+					if (e.status == 'AVAILABLE') {
+						qtBancos++;
+						$bancos.append('\
+						<div class="container_cartao">\
+		    				<input id="'+e.code+'" type="radio" name="bankName" class="radio" value="'+e.name+'">\
+		    				<label class="radio" for="'+e.code+'">\
+		    					<img src="../images/cartoes/ico_'+e.name+'.png"><br>\
+		    				</label>\
+		    				<p class="nome">'+e.displayName+'</p>\
+		    			</div>');
+					}
 				});
+
+				if (qtBancos == 0) $(':radio[value=901]').parent().hide();
 			}
 			// se credito pagseguro estiver disponivel
 			if ($(':radio[value=902]').length == 1) {
-				var $inputs = $(":input[name=numCartao], :input[name=cardBrand], :input[name=codCartao], :input[name=validadeMes], :input[name=validadeAno]");
+				var $inputs = $(":input[name=numCartao], :input[name=cardBrand], :input[name=codCartao], :input[name=validadeMes], :input[name=validadeAno]"),
+					qtBandeiras = 0;
 
-				$('input[name=codCartao]').on('change', function(){
-					var $this = $(this);
-					if ($this.is(':radio[value=902]')) {
-						$(":input[name=numCartao]").on('pagseguroBrand', pagseguroBrand);
-						$inputs.on('pagseguroToken', pagseguroToken);
-					} else {
-						$(":input[name=numCartao]").off('pagseguroBrand');
-						$inputs.off('pagseguroToken');
-						$(":input[name=parcelas] option").prop('disabled', false);
-					}
+				$.each(data.paymentMethods.CREDIT_CARD.options, function(i,e) {
+					if (e.status == 'AVAILABLE') qtBandeiras++;
 				});
-				$(":input[name=numCartao]").on('change', function(){$(this).trigger('pagseguroBrand')});
-				$inputs.on('change', function(){
-					var valido = true;
-					
-					$inputs.each(function(){
-						if ($(this).val() == '') valido = false;
+
+				if (qtBandeiras > 0) {
+					$('input[name=codCartao]').on('change', function(){
+						var $this = $(this);
+						if ($this.is(':radio[value=902]')) {
+							$(":input[name=numCartao]").on('pagseguroBrand', pagseguroBrand);
+							$inputs.on('pagseguroToken', pagseguroToken);
+						} else {
+							$(":input[name=numCartao]").off('pagseguroBrand');
+							$inputs.off('pagseguroToken');
+							$(":input[name=parcelas] option").prop('disabled', false);
+						}
 					});
-					
-					if (valido) $(this).trigger('pagseguroToken');
-				});
+					$(":input[name=numCartao]").on('change', function(){$(this).trigger('pagseguroBrand')});
+					$inputs.on('change', function(){
+						var valido = true;
+						
+						$inputs.each(function(){
+							if ($(this).val() == '') valido = false;
+						});
+						
+						if (valido) $(this).trigger('pagseguroToken');
+					});
+				} else {
+					$(':radio[value=902]').parent().hide();
+				}
 			}
 		},
 		error: function() {

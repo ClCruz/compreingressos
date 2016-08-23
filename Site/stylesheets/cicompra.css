@@ -2799,3 +2799,7 @@ div.espetaculo_img.assinatura{
 div#bancos {
     margin: 30px 0;
 }
+
+div.pague_agora div.icone {
+	background: transparent url('../images/ico_debito.png') 0 0 no-repeat;
+}

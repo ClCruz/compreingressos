@@ -135,7 +135,7 @@ if (empty($rs)) {
 				<div class="imprima_agora"><a href="<?php echo $boleto_url; ?>" target="_new"><div class="icone"></div>Imprima agora seu boleto.</a></div>
 				<?php } ?>
 				<?php if ($debito_url) { ?>
-				<div class="imprima_agora"><a href="<?php echo $debito_url; ?>" target="_new"><div class="icone"></div>Clique aqui para efetuar o débito online.</a></div>
+				<div class="imprima_agora pague_agora"><a href="<?php echo $debito_url; ?>" target="_new"><div class="icone"></div>Clique aqui para efetuar o débito online.</a></div>
 				<?php } ?>
 
 				<?php if ((isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) { ?>

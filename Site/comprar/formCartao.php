@@ -104,7 +104,7 @@ if ($_POST) {
     					formatoCartao="<?php echo $formatoCartao ?>"
     					formatoCodigo="<?php echo $formatoCodigo ?>">
     				<label class="radio" for="<?php echo $rs['cd_meio_pagamento']; ?>">
-    					<img src="../images/cartoes/ico_<?php echo file_exists('../images/cartoes/ico_'.$rs['nm_cartao_exibicao_site'].'.png') ? utf8_encode($rs['nm_cartao_exibicao_site']) : 'default'; ?>.png"><br>
+    					<img src="<?php echo getCartaoImgURL($rs['nm_cartao_exibicao_site']); ?>"><br>
     				</label>
     				<p class="nome"><?php echo $rs['nm_cartao_exibicao_site'] ? utf8_encode($rs['nm_cartao_exibicao_site']) : utf8_encode($rs['ds_meio_pagamento']); ?></p>
     			</div>

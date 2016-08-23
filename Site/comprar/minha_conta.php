@@ -425,6 +425,8 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
 
                                                     if ($rs['CD_MEIO_PAGAMENTO'] == '900' AND $transaction->getStatus()->getValue() == 1) {
                                                         echo "<br/><a href='".$transaction->getPaymentLink()."' target='_blank'>Imprimir Boleto</a>";
+                                                    } elseif ($rs['CD_MEIO_PAGAMENTO'] == '901' AND $transaction->getStatus()->getValue() == 1) {
+                                                        echo "<br/><a href='".$transaction->getPaymentLink()."' target='_blank'>Efetuar Débito</a>";
                                                     } else {
                                                         $status = getStatusPagSeguro($transaction->getStatus()->getValue());
                                                         echo "<br/>".$status['name'];

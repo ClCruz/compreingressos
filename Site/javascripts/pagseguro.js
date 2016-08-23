@@ -102,6 +102,9 @@ $(function(){
 						: $('<input type="hidden" name="cardToken" class="pagseguro" />').appendTo('#dadosPagamento');
 
 				$cardToken.val(data.card.token);
+			},
+			error: function() {
+				$.dialog({text:'Dados do cartão inválidos. Favor conferir as informações fornecidas.'});
 			}
 		});
 	}

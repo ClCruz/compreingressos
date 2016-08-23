@@ -1,0 +1,11 @@
+--23/08/2016 - Jefferson
+--Passo a passo para alterar o nome do tipo de bilhete criado através de uma promoção
+--Se atentar para se a promoção foi criada apenas para uma base ou para todas as bases.
+--0--select * from mw_promocao_controle WHERE ds_tipo_bilhete = 'MW_Riachuelo'
+--1--update mw_promocao_controle set ds_tipo_bilhete = 'MW_DESCONTO301' WHERE ds_tipo_bilhete = 'MW_Riachuelo'
+--2--COMENTAR TRIGGER tr_atualiza_ingressos E COMPILAR
+--3--select * from tabtipbilhete where tipbilhete like '%mw_RIA%'order by tipbilhete 
+--4--UPDATE TABTIPBILHETE SET TIPBILHETE = 'MW_DESCONTO301' WHERE TIPBILHETE = 'MW_Riachuelo'
+--5--select * from tabingresso where tipbilhete like '%mw_RIA%' order by tipbilhete
+--6--UPDATE tabingresso SET TIPBILHETE = 'MW_DESCONTO301' where tipbilhete = 'MW_Riachuelo' 
+--7--DESCOMENTAR TRIGGER tr_atualiza_ingressos E COMPILAR

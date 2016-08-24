@@ -24,6 +24,8 @@ require('acessoLogado.php');
 	<script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
 	<script src="../javascripts/jquery.placeholder.js" type="text/javascript"></script>
 	<script src="../javascripts/jquery.selectbox-0.2.min.js" type="text/javascript"></script>
+    <script src="../javascripts/jquery.mask.min.js" type="text/javascript"></script>
+	<script src="../javascripts/cicompra.js" type="text/javascript"></script>
 
 	<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
 	<script src="../javascripts/common.js" type="text/javascript"></script>
@@ -88,19 +90,23 @@ require('acessoLogado.php');
 								WHERE AV.ID_ASSINATURA = ?
 								GROUP BY AV.QT_MES_VIGENCIA, AV.VL_ASSINATURA
 							)
-							SELECT QT_MES_VIGENCIA, VL_ASSINATURA
+							SELECT QT_MES_VIGENCIA, VL_ASSINATURA, (SELECT TOP 1 1 FROM MW_ASSINATURA_CLIENTE WHERE ID_CLIENTE = ?) AS IS_CLIENTE
 							FROM RESULTADO
 							WHERE (EXISTS (SELECT TOP 1 1 FROM MW_ASSINATURA_CLIENTE WHERE ID_CLIENTE = ?) AND VL_ASSINATURA IN (SELECT MAX(VL_ASSINATURA) FROM RESULTADO))
 									OR
 									(NOT EXISTS (SELECT TOP 1 1 FROM MW_ASSINATURA_CLIENTE WHERE ID_CLIENTE = ?))
 							ORDER BY QT_MES_VIGENCIA';
-				$params = array($_GET['id'], $_SESSION['user'], $_SESSION['user']);
+				$params = array($_GET['id'], $_SESSION['user'], $_SESSION['user'], $_SESSION['user']);
 				$result = executeSQL($mainConnection, $query, $params);
 
 				// sqlsrv_num_rows nao esta funcionando - while para obter o numero de registros e execucao da query novamente
 
 				$registros = 0;
-				while ($rsAux = fetchResult($result)) $registros++;
+				$is_cliente = false;
+				while ($rsAux = fetchResult($result)) {
+					$registros++;
+					$is_cliente = ($rsAux['IS_CLIENTE'] == 1);
+				}
 
 				$result = executeSQL($mainConnection, $query, $params);
 
@@ -185,7 +191,26 @@ require('acessoLogado.php');
 
 		<?php include "footer.php"; ?>
 
-		<?php //include "selos.php"; ?>
+		<?php if ($is_cliente) { ?>
+		<script type="text/javascript">
+			$(function(){
+				$.confirmDialog({
+				    text: 'Você já possui uma assinatura.',
+				    detail: 'Deseja efetuar uma nova contratação?',
+				    uiOptions: {
+						buttons: {
+						    'Não': ['leve-me para minha assinatura', function() {
+								document.location = 'minha_conta.php?assinaturas=1';
+						    }],
+						    'Sim': ['quero uma nova assinatura', function() {
+								fecharOverlay();
+						    }]
+						}
+					}
+				});
+			});
+		</script>
+		<?php } ?>
 	</div>
 </body>
 </html>

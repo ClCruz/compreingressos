@@ -136,7 +136,7 @@ $(function(){
 			$('#validadeMes').selectbox('detach');
 			$('#validadeAno').selectbox('detach');
 			$('select[name=parcelas]').selectbox('detach');
-			$('.container_dados :input').val('');
+			$('.container_dados :input:not(:radio)').val('');
 			$('select[name=parcelas]').val(1)
 			$('#validadeMes').selectbox('attach');
 			$('#validadeAno').selectbox('attach');

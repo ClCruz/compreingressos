@@ -1,3 +1,5 @@
+USE CI_MIDDLEWAY;
+
 sp_configure 'show advanced options', 1;
 GO
 RECONFIGURE;

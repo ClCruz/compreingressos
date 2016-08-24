@@ -41,13 +41,13 @@ Select @Start = '20160101'
 Select @End = '20161231'
 ;With CTE as
 (
-Select @Start  as Date,Case When DatePart(mm,@Start)<>DatePart(mm,@Start+1) then 1 else 0 end as [Last]
+Select @Start  as Date,Case When DatePart(mm,@Start)<>DatePart(mm,@Start+1) then 1 else 0 end as [Last],Case When DatePart(dd,@Start)=1 then 1 else 0 end as [First]
 UNION ALL
-Select Date+1,Case When DatePart(mm,Date+1)<>DatePart(mm,Date+2) then 1 else 0 end from CTE
+Select Date+1,Case When DatePart(mm,Date+1)<>DatePart(mm,Date+2) then 1 else 0 end,Case When DatePart(dd,Date+1)=1 then 1 else 0 end from CTE
 Where Date<@End
 )
 
 Select Convert(Date, Date) Date, dbo.GetProximaDataPagamento(Date) nextDate, (DATEDIFF(DD, Date, dbo.GetProximaDataPagamento(Date))) qtDays  from CTE
-where [Last]=1   OPTION ( MAXRECURSION 0 )
+where [Last]=1 or [First]=1   OPTION ( MAXRECURSION 0 )
 
 */

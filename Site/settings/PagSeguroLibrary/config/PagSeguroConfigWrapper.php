@@ -43,7 +43,7 @@ class PagSeguroConfigWrapper
     /**
      *
      */
-    const PAGSEGURO_APP_ID_PRODUCTION = "your_production_application_id";
+    const PAGSEGURO_APP_ID_PRODUCTION = "compreingressoscom";
     /**
      *
      */
@@ -51,7 +51,7 @@ class PagSeguroConfigWrapper
     /**
      *
      */
-    const PAGSEGURO_APP_KEY_PRODUCTION = "your_production_application_key";
+    const PAGSEGURO_APP_KEY_PRODUCTION = "25366A0B4343963EE440AFAF38E9583D";
     /**
      *
      */

@@ -2576,6 +2576,7 @@ a.sbSelector.sbFocus,a.sbSelector:hover,.sbHolder:hover a.sbSelector{
 #pedido_resumo .sbSelector{
 	width:182px;
 	font-size:20px;
+	white-space: nowrap;
 }
 
 div.resumo_espetaculo div.pedido_entrega .sbHolder{

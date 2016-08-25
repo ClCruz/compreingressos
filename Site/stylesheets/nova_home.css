@@ -87,7 +87,7 @@ div#novo_menu .itens > div.meio, div#novo_menu .itens > div.fim {
 
 ul.midias_sociais li.title{  width:100%;  display:block;}
 ul.midias_sociais li{  float: left;  position: relative;}
-ul.midias_sociais li a{  position: absolute;  z-index: 1;  width: 100%;  height: 100%;}
+ul.midias_sociais li a{  position: absolute;  width: 100%;  height: 100%;}
 li.midia .icone {  background-color: #fff;  width: 37px;  height: 37px;  margin: 5px;  border-radius: 30px;  transition:background-color 0.4s;  -webkit-transition:background-color 0.4s}
 li.midia:hover .icone{  background-color: #6d000d;}
 li.midia:hover .icone span.icon{  color:#fff;  }

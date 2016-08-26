@@ -61,7 +61,7 @@ $rows = numRows($mainConnection, "SELECT 1 FROM MW_RESERVA WHERE ID_SESSION = ?"
 		<div class="itens">
 			<div class="primeira">
 				<div class="logo">
-					<a href="/">
+					<a href="http://compreingressos.com/">
 						<img src="../images/menu_logo.png">
 					</a>
 				</div>
@@ -69,10 +69,10 @@ $rows = numRows($mainConnection, "SELECT 1 FROM MW_RESERVA WHERE ID_SESSION = ?"
 			<div class="meio">
 				<div class="div_header">
 					<ul class="opcoes">
-						<li><a target="_blank" href="https://compra.compreingressos.com/comprar/minha_conta.php">Minha Conta</a></li>
-						<li><a target="_blank" href="/espetaculos">Todos os Espetáculos</a></li>
-						<li><a target="_blank" href="/teatros">Teatros e Casas de Show</a></li>
-						<li><a target="_blank" href="http://suporte.compreingressos.com/" >SAC & Suporte</a></li>
+						<li><a href="minha_conta.php">Minha Conta</a></li>
+						<li><a href="http://compreingressos.com/espetaculos">Todos os Espetáculos</a></li>
+						<li><a href="http://compreingressos.com/teatros">Teatros e Casas de Show</a></li>
+						<li><a href="http://suporte.compreingressos.com/" >SAC & Suporte</a></li>
 					</ul>
 				</div>
 

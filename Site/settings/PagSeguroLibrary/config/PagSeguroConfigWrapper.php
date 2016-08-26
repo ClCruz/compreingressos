@@ -35,7 +35,7 @@ class PagSeguroConfigWrapper
     /**
      *
      */
-    const PAGSEGURO_TOKEN_PRODUCTION = "29EDAF1C11BF4D899F30656F431BEC431";
+    const PAGSEGURO_TOKEN_PRODUCTION = "29EDAF1C11BF4D899F30656F431BEC43";
     /**
      *
      */
@@ -67,7 +67,7 @@ class PagSeguroConfigWrapper
     /**
      * Informe o path completo (relativo ao path da lib) para o arquivo, ex.: ../PagSeguroLibrary/logs.txt
      */
-    const PAGSEGURO_LOG_LOCATION = "../settings/PagSeguroLibrary/logs.txt";
+    const PAGSEGURO_LOG_LOCATION = "../settings/PagSeguroLibrary/temp/logs.txt";
 
     /**
      * @return array

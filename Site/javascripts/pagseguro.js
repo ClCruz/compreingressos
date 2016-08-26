@@ -30,7 +30,7 @@ $(function(){
 			}
 			// se credito pagseguro estiver disponivel
 			if ($(':radio[value=902]').length == 1) {
-				var $inputs = $(":input[name=numCartao], :input[name=cardBrand], :input[name=codCartao], :input[name=validadeMes], :input[name=validadeAno]"),
+				var $inputs = $(":input[name=numCartao], :input[name=cardBrand], :input[name=codSeguranca], :input[name=validadeMes], :input[name=validadeAno]"),
 					qtBandeiras = 0;
 
 				$.each(data.paymentMethods.CREDIT_CARD.options, function(i,e) {
@@ -93,7 +93,7 @@ $(function(){
 		PagSeguroDirectPayment.createCardToken({
 			cardNumber: $(":input[name=numCartao]").val(),
 			brand: $(":input[name=cardBrand]").val(),
-			cvv: $(":input[name=codCartao]").val(),
+			cvv: $(":input[name=codSeguranca]").val(),
 			expirationMonth: $(":input[name=validadeMes]").val(),
 			expirationYear: $(":input[name=validadeAno]").val(),
 			success: function(data){

@@ -50,7 +50,7 @@ if ($_POST) {
                       
                       and ((
                         nm_cartao_exibicao_site like '%pagseguro%'
-                        and exists (select top 1 1 from mw_reserva r inner join mw_apresentacao a on a.id_apresentacao = r.ID_APRESENTACAO inner join mw_evento e on e.id_evento = a.id_evento where r.id_session = ? and e.id_base in (186))
+                        and exists (select top 1 1 from mw_reserva r inner join mw_apresentacao a on a.id_apresentacao = r.ID_APRESENTACAO inner join mw_evento e on e.id_evento = a.id_evento where r.id_session = ? and e.id_base in (186,44))
                       ) or nm_cartao_exibicao_site not like '%pagseguro%')
                       
                       order by ds_meio_pagamento";

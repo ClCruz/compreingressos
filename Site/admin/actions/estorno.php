@@ -236,7 +236,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                     $resposta_geral = "Pedido cancelado/estornado.";
                     $retorno = 'ok';
                 } else {
-                    $resposta_geral = $response['error']."<br/><br/><b>Não foi possível efetuar o estorno junto à Operadora (Fastcash)</b>, 
+                    $resposta_geral = $response['error']."<br/><br/><b>Não foi possível efetuar o estorno junto à Operadora (PagSeguro)</b>, 
                                                 por favor, efetue o procedimento de cancelamento junto a operadora manualmente.<br/><br/>
                                                 Os dados do sistema do Middleway foram atualizados com sucesso.";
                     $force_system_refund = true;

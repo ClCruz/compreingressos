@@ -567,7 +567,7 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
 
         if ($pagamento_fastcash OR $pagamento_pagseguro){
 
-            $query = "UPDATE P SET ID_MEIO_PAGAMENTO = M.ID_MEIO_PAGAMENTO
+            $query = "UPDATE P SET ID_MEIO_PAGAMENTO = M.ID_MEIO_PAGAMENTO, IN_SITUACAO = 'P'
                         FROM MW_PEDIDO_VENDA P, MW_MEIO_PAGAMENTO M
                         WHERE P.ID_PEDIDO_VENDA = ? AND M.CD_MEIO_PAGAMENTO = ?";
             $params = array($parametros['OrderData']['OrderId'], $_POST['codCartao']);

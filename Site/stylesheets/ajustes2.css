@@ -177,3 +177,9 @@ table#assinaturas {
 	width: 950px;
 	margin-left: 30px;
 }
+
+body.mini .input_area.sexo,
+body.mini .input_area.nascimento,
+body.mini .input_area.endereco {
+	display: none;
+}

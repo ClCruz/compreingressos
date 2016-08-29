@@ -273,12 +273,18 @@ $(function() {
 
 		} else {
 			var $this = $(this),
-				 naoRequeridos = '#email,[id^=nascimento],[name=sexo],#celular,#complemento,#checkbox_guia,#checkbox_sms,#checkbox_estrangeiro',
-				 especiais = '#fixo,#email1,#email2,#senha1,#senha2,[name="tag"],.recaptcha :input,[type="button"],#cpf,#tipo_documento,#rg'
+				 naoRequeridos = '#email,[id^=nascimento],[name=sexo],#complemento,#checkbox_guia,#checkbox_sms,#checkbox_estrangeiro',
+				 especiais = '#fixo,#email1,#email2,#senha1,#senha2,[name="tag"],.recaptcha :input,[type="button"],#cpf,#tipo_documento,#rg,#celular',
 				 formulario = $('#form_cadastro'),
-				 campos = formulario.find(':input:not(' + naoRequeridos + ',' + especiais +')')
+				 campos,
 				 valido = true;
-				 console.log(campos);
+			
+			if ($('body').is('.assinatura')) {
+				naoRequeridos += ',.endereco :input';
+			}
+
+			campos = formulario.find(':input:not(' + naoRequeridos + ',' + especiais +')');
+
 			campos.each(function() {
 				var $this = $(this);
 				
@@ -298,22 +304,29 @@ $(function() {
 				} else $this.removeClass('erro').findNextMsg().slideUp('slow');
 			});
 
-			// estado != exterior?
-			if ($('#estado').val() != 28) {
-				if ($('#fixo').val().length < 13){
-					$('#fixo').addClass('erro').findNextMsg().slideDown('fast');
-					valido = false;
-				} else $('#fixo').removeClass('erro').findNextMsg().slideUp('slow');
-
-				if ($('#celular').val() != '' && $('#celular').val().length < 13){
+			if ($('body').is('.assinatura')) {
+				if ($('#celular').val().length < 13){
 					$('#celular').addClass('erro').findNextMsg().slideDown('fast');
 					valido = false;
 				} else $('#celular').removeClass('erro').findNextMsg().slideUp('slow');
 			} else {
-				if ($('#fixo').val() == ''){
-					$('#fixo').addClass('erro').findNextMsg().slideDown('fast');
-					valido = false;
-				} else $('#fixo').removeClass('erro').findNextMsg().slideUp('slow');
+				// estado != exterior?
+				if ($('#estado').val() != 28) {
+					if ($('#fixo').val().length < 13){
+						$('#fixo').addClass('erro').findNextMsg().slideDown('fast');
+						valido = false;
+					} else $('#fixo').removeClass('erro').findNextMsg().slideUp('slow');
+
+					if ($('#celular').val() != '' && $('#celular').val().length < 13){
+						$('#celular').addClass('erro').findNextMsg().slideDown('fast');
+						valido = false;
+					} else $('#celular').removeClass('erro').findNextMsg().slideUp('slow');
+				} else {
+					if ($('#fixo').val() == ''){
+						$('#fixo').addClass('erro').findNextMsg().slideDown('fast');
+						valido = false;
+					} else $('#fixo').removeClass('erro').findNextMsg().slideUp('slow');
+				}
 			}
 			
 			if ($.cookie('user') == null) {

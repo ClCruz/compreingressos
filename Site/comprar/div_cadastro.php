@@ -54,13 +54,11 @@ session_start();
 				<div class="inputs">
 					<p class="titulo">Qual o seu nome?</p>
 					<input type="text" name="nome" id="nome" maxlength="50" placeholder="nome/name/nombre<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>" pattern=".{1,50}" value="<?php echo utf8_encode($rs['DS_NOME']); ?>">
-<!--					<input type="text" name="nome" id="nome" maxlength="50" placeholder="nome/name/nombre--><?php //echo ($exibir_msg_obrigatorio ? ' (*)' : '')?><!--" pattern=".{1,50}" value="Felipe">-->
 					<div class="erro_help">
 						<p class="erro">informe seu nome</p>
 						<p class="help"></p>
 					</div>
 					<input type="text" name="sobrenome" id="sobrenome" maxlength="50" placeholder="sobrenome/last name/apellido<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>" pattern=".{1,50}" value="<?php echo utf8_encode($rs['DS_SOBRENOME']); ?>">
-<!--					<input type="text" name="sobrenome" id="sobrenome" maxlength="50" placeholder="sobrenome/last name/apellido--><?php //echo ($exibir_msg_obrigatorio ? ' (*)' : '')?><!--" pattern=".{1,50}" value="Barreiros">-->
 					<div class="erro_help">
 						<p class="erro">informe seu sobrenome</p>
 						<p class="help"></p>
@@ -73,7 +71,6 @@ session_start();
 				<div class="inputs">
 					<p class="titulo">Sexo</p>
 					<input id="radio_masculino" type="radio" name="sexo" class="radio" value="M" <?php echo ($rs['IN_SEXO'] == 'M') ? 'checked ' : ''; ?>>
-<!--					<input id="radio_masculino" type="radio" name="sexo" class="radio" value="M" checked="checked">-->
 					<label class="radio" for="radio_masculino">masculino</label>
 					<input id="radio_feminino" type="radio" name="sexo" class="radio" value="F" <?php echo ($rs['IN_SEXO'] == 'F') ? 'checked ' : ''; ?>>
 					<label class="radio" for="radio_feminino">feminino</label>
@@ -166,7 +163,6 @@ session_start();
 						<p class="help">(ddd + nº)</p>
 					</div>
 					<input type="text" name="celular" id="celular" placeholder="celular/mobile number<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>" maxlength="14" autocomplete="off" value="<?php echo utf8_encode($rs['DS_DDD_CELULAR'].$rs['DS_CELULAR']); ?>">
-<!--					<input type="text" name="celular" id="celular" placeholder="celular/mobile number--><?php //echo ($exibir_msg_obrigatorio ? ' (*)' : '')?><!--" maxlength="14" autocomplete="off" value="11951497542" >-->
 					<div class="erro_help">
 						<p class="erro"></p>
 						<p class="help">opcional</p>
@@ -232,13 +228,11 @@ session_start();
 				<div class="inputs">
 					<p class="titulo">Login</p>
 					<input type="text" name="email1" id="email1" pattern=".{1,200}" placeholder="digite seu e-mail<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>">
-<!--					<input type="text" name="email1" id="email1" pattern=".{1,200}" placeholder="digite seu e-mail--><?php //echo ($exibir_msg_obrigatorio ? ' (*)' : '')?><!--" value="felipe.php@outlook.com">-->
 					<div class="erro_help">
 						<p class="erro">informe seu e-mail</p>
 						<p class="help"></p>
 					</div>
 					<input type="text" name="email2" id="email2" pattern=".{1,200}" placeholder="confirme seu e-mail<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>">
-<!--					<input type="text" name="email2" id="email2" pattern=".{1,200}" placeholder="confirme seu e-mail--><?php //echo ($exibir_msg_obrigatorio ? ' (*)' : '')?><!--" value="felipe.php@outlook.com">-->
 					<div class="erro_help">
 						<p class="erro">confirmação de e-mail não confere</p>
 						<p class="help"></p>

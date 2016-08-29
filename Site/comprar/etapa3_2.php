@@ -78,7 +78,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	</script>
 	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
 </head>
-<body>
+<body<?php echo (isset($_SESSION['usuario_pdv']) and $_SESSION['usuario_pdv'] == 1) ? ' class="mini"' : ''; ?>>
 	<div id="pai">
 		<?php require "header.php"; ?>
 		<div id="content">

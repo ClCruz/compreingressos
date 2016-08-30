@@ -47,12 +47,15 @@ if ($_POST) {
                       from mw_meio_pagamento
                       where in_ativo = 1 ". $queryAux ."
                       and (qt_hr_anteced <= $horas_antes_apresentacao or qt_hr_anteced is null)
-                      
-                      and ((
-                        nm_cartao_exibicao_site like '%pagseguro%'
-                        and exists (select top 1 1 from mw_reserva r inner join mw_apresentacao a on a.id_apresentacao = r.ID_APRESENTACAO inner join mw_evento e on e.id_evento = a.id_evento where r.id_session = ? and e.id_base in (186,44))
-                      ) or nm_cartao_exibicao_site not like '%pagseguro%')
-                      
+                      ".
+                      ($_ENV['IS_TEST']
+                        ? ''
+                        :  "and ((
+                                nm_cartao_exibicao_site like '%pagseguro%'
+                                and exists (select top 1 1 from mw_reserva r inner join mw_apresentacao a on a.id_apresentacao = r.ID_APRESENTACAO inner join mw_evento e on e.id_evento = a.id_evento where r.id_session = ? and e.id_base in (186,44))
+                            ) or nm_cartao_exibicao_site not like '%pagseguro%')"
+                      ).
+                      "
                       order by ds_meio_pagamento";
     	$result = executeSQL($mainConnection, $query, array(session_id()));
 

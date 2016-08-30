@@ -63,7 +63,7 @@ class PagSeguroConfigWrapper
     /**
      *
      */
-    const PAGSEGURO_LOG_ACTIVE = true;
+    const PAGSEGURO_LOG_ACTIVE = false;
     /**
      * Informe o path completo (relativo ao path da lib) para o arquivo, ex.: ../PagSeguroLibrary/logs.txt
      */

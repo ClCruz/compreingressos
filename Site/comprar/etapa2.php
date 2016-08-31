@@ -52,29 +52,46 @@ require('verificarServicosPedido.php');
 
 	<?php
 	$mainConnection = mainConnection();
-	$query = 'SELECT
-                A.DS_ASSINATURA,
-                (SELECT COUNT(1)
-                    FROM MW_PROMOCAO
-                    WHERE ID_ASSINATURA_CLIENTE = AC.ID_ASSINATURA_CLIENTE AND ID_PEDIDO_VENDA IS NULL) AS QT_BILHETES_DISPONIVEIS
+	
+	$query = 'WITH PARTICIPACOES_NA_RESERVA AS (
+					SELECT DISTINCT ASS.ID_ASSINATURA, PC.CODTIPPROMOCAO
+					FROM MW_RESERVA R
+					INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+					INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+					LEFT JOIN MW_CONTROLE_EVENTO CE ON CE.ID_EVENTO = E.ID_EVENTO
+					INNER JOIN MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = CE.ID_PROMOCAO_CONTROLE OR PC.ID_BASE = E.ID_BASE OR (PC.IN_TODOS_EVENTOS = 1 AND PC.ID_BASE IS NULL AND PC.IN_ATIVO = 1)
+					INNER JOIN MW_ASSINATURA_PROMOCAO AP ON AP.ID_PROMOCAO_CONTROLE = PC.ID_PROMOCAO_CONTROLE
+					INNER JOIN MW_ASSINATURA ASS ON ASS.ID_ASSINATURA = AP.ID_ASSINATURA
+					WHERE R.ID_SESSION = ? AND PC.CODTIPPROMOCAO IN (8,9)
+				)
+				SELECT
+	                A.DS_ASSINATURA,
+	                SUM(CASE WHEN P.ID_PROMOCAO IS NULL THEN 0 ELSE 1 END) AS QT_BILHETES_DISPONIVEIS,
+	                PC.CODTIPPROMOCAO
+                
                 FROM MW_ASSINATURA A
                 INNER JOIN MW_ASSINATURA_CLIENTE AC ON AC.ID_ASSINATURA = A.ID_ASSINATURA
+                INNER JOIN MW_ASSINATURA_PROMOCAO AP ON AP.ID_ASSINATURA = AC.ID_ASSINATURA
+                INNER JOIN MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = AP.ID_PROMOCAO_CONTROLE AND PC.CODTIPPROMOCAO IN (8,9)
+                LEFT JOIN MW_PROMOCAO P ON P.ID_ASSINATURA_CLIENTE = AC.ID_ASSINATURA_CLIENTE AND ID_PEDIDO_VENDA IS NULL
+                
+                INNER JOIN PARTICIPACOES_NA_RESERVA PNR ON PNR.ID_ASSINATURA = AC.ID_ASSINATURA AND PNR.CODTIPPROMOCAO = PC.CODTIPPROMOCAO
+                
                 WHERE AC.ID_CLIENTE = ? AND (AC.IN_ATIVO = 1 OR (AC.IN_ATIVO = 0 AND AC.DT_PROXIMO_PAGAMENTO > GETDATE()))
-                AND (SELECT COUNT(1)
-                    FROM MW_PROMOCAO
-                    WHERE ID_ASSINATURA_CLIENTE = AC.ID_ASSINATURA_CLIENTE AND ID_PEDIDO_VENDA IS NULL) > 0';
-	$params = array($_SESSION['user']);
+                
+                GROUP BY A.DS_ASSINATURA, PC.CODTIPPROMOCAO
+                ORDER BY CODTIPPROMOCAO, DS_ASSINATURA';
+	$params = array(session_id(), $_SESSION['user']);
 	$result = executeSQL($mainConnection, $query, $params);
 
 	if (hasRows($result)) {
 		$msg = '';
 
 		while ($rs = fetchResult($result)) {
-			if ($rs['QT_BILHETES_DISPONIVEIS'] == 1) {
-		        $msg .= "Você tem 1 ingresso disponível ({$rs['DS_ASSINATURA']}).<br/>";
-		    } else {
-		        $msg .= "Você tem {$rs['QT_BILHETES_DISPONIVEIS']} ingressos disponíveis ({$rs['DS_ASSINATURA']}).<br/>";
-		    }
+			if ($rs['CODTIPPROMOCAO'] == 9)
+				$msg .= "Você pode utilizar seu DESCONTO de {$rs['DS_ASSINATURA']} para este evento.<br/>";
+			elseif ($rs['CODTIPPROMOCAO'] == 8 AND $rs['QT_BILHETES_DISPONIVEIS'] > 0)
+				$msg .= "Você tem {$rs['QT_BILHETES_DISPONIVEIS']} ingresso(s) disponível(eis) de {$rs['DS_ASSINATURA']} que pode(rão) ser utilizado(s) para neste evento.<br/>";
 		}
 
 		echo '<script type="text/javascript">$(function(){$.dialog({text:"'.$msg.'", icon: "ok"})})</script>';

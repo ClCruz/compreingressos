@@ -268,7 +268,7 @@ if ($descricao_erro == '') {
         $result2 = executeSQL($mainConnection, $query, $params);
 		$id_assinatura_cliente = getLastID($result2);
 
-        $rs = executeSQL($mainConnection, 'SELECT QT_BILHETE FROM MW_ASSINATURA WHERE ID_ASSINATURA = ?', array($_POST['id']), true);
+        $rs = executeSQL($mainConnection, 'SELECT DS_ASSINATURA, QT_BILHETE FROM MW_ASSINATURA WHERE ID_ASSINATURA = ?', array($_POST['id']), true);
 
 		$query = "UPDATE MW_ASSINATURA_HISTORICO SET
                         ID_ASSINATURA_CLIENTE = ?,
@@ -295,11 +295,31 @@ if ($descricao_erro == '') {
         executeSQL($mainConnection, "EXEC PRC_REPOR_CUPONS_ASSINATURA ?", array($id_assinatura_cliente));
 
         // -=========== envio do email de sucesso ===========-
+
+        $dados_pedido['codigo_pedido'] = $dadosExtrasEmail['cpf_cnpj_cliente'];
+        $dados_pedido['data'] = '';
+        $dados_pedido['total'] = '';
+
+        $dados_pedido['evento'] = $rs['DS_ASSINATURA'];
+        $dados_pedido['endereco'] = '';
+        $dados_pedido['nome_teatro'] = 'COMPREINGRESOS.COM';
+        $dados_pedido['horario'] = '';
+
+        $dados_pedido['barcode'] = $dadosExtrasEmail['cpf_cnpj_cliente'];
+        $dados_pedido['local_bilhete'] = '';
+        $dados_pedido['tipo_bilhete'] = '';
+        $dados_pedido['preco_bilhete'] = '';
+        $dados_pedido['servico_bilhete'] = '';
+        $dados_pedido['total_bilhete'] = '';
+
+        $pkpass_url = getPKPass($dados_pedido);
+
         require_once('../settings/Template.class.php');
         $tpl = new Template('./templates/emailAssinatura.html');
 
         $tpl->nome_cliente = $parametros['CustomerData']['CustomerName'];
         $tpl->quantidade_ingressos = $rs['QT_BILHETE'];
+        $tpl->pkpass_url = $pkpass_url;
 
         ob_start();
         $tpl->show();

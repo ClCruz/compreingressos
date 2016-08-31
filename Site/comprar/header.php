@@ -69,6 +69,9 @@ $rows = numRows($mainConnection, "SELECT 1 FROM MW_RESERVA WHERE ID_SESSION = ?"
 			<div class="meio">
 				<div class="div_header">
 					<ul class="opcoes">
+						<?php if (isset($_SESSION['operador']) and $rows == 0) { ?>
+						<li><a href="pesquisa_usuario.php">Pesquisar Cliente</a></li>
+						<?php } ?>
 						<li><a href="minha_conta.php">Minha Conta</a></li>
 						<li><a href="http://compreingressos.com/espetaculos">Todos os Espetáculos</a></li>
 						<li><a href="http://compreingressos.com/teatros">Teatros e Casas de Show</a></li>

@@ -181,8 +181,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                     var dados_atualizados = false,
                         endereco_atualizado = false;
 
-                    $.dialog({text: 'Por favor, para concluir a operação é necessário preencher o endereço completo'});
-                    gotoMainAddress();
+                    $.dialog({text: 'Por favor, para concluir a operação é necessário conferir e atualizar os dados cadastrais.'});
 
                     $('.menu_conta .botao').hide();
 

@@ -91,10 +91,11 @@ require('verificarServicosPedido.php');
 			if ($rs['CODTIPPROMOCAO'] == 9)
 				$msg .= "Você pode utilizar seu DESCONTO de {$rs['DS_ASSINATURA']} para este evento.<br/>";
 			elseif ($rs['CODTIPPROMOCAO'] == 8 AND $rs['QT_BILHETES_DISPONIVEIS'] > 0)
-				$msg .= "Você tem {$rs['QT_BILHETES_DISPONIVEIS']} ingresso(s) disponível(eis) de {$rs['DS_ASSINATURA']} que pode(rão) ser utilizado(s) para neste evento.<br/>";
+				$msg .= "Você tem {$rs['QT_BILHETES_DISPONIVEIS']} ingresso(s) disponível(eis) de {$rs['DS_ASSINATURA']} que pode(rão) ser utilizado(s) para este evento.<br/>";
 		}
 
-		echo '<script type="text/javascript">$(function(){$.dialog({text:"'.$msg.'", icon: "ok"})})</script>';
+		if ($msg != '')
+			echo '<script type="text/javascript">$(function(){$.dialog({text:"'.$msg.'", icon: "ok"})})</script>';
 	}
 	?>
 

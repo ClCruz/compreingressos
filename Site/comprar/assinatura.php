@@ -45,6 +45,92 @@ require('acessoLogado.php');
 	  })();
 	</script>
 
+	<script type="text/javascript">
+		$(function(){
+			$('a.botao.avancar').on('click', function(e) {
+				e.preventDefault();
+				
+				if ($(':checkbox:checked').length == 2) {
+					document.location = $(this).attr('href');
+				} else {
+					$.dialog({text: 'Antes de continuar você deve ler e aceitar os termos do regulamento e os termos da política de privacidade.'});
+				}
+			});
+		});
+	</script>
+
+	<style type="text/css">
+		div#content {
+			color: #FFF;
+		    background: #000;
+		    background: -moz-linear-gradient(left, #000000 0%, #eaeaea 100%);
+		    background: -webkit-linear-gradient(left, #000 0%,#eaeaea 100%);
+		    background: linear-gradient(to right, #000 0%,#eaeaea 100%);
+		    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#eaeaea',GradientType=1 );
+		}
+
+		div.resumo_espetaculo div.resumo {
+			margin: 15px 0 0 53px;
+		}
+
+		table#pedido_resumo {
+			color: #000;
+			background: #fff;
+			background: -moz-linear-gradient(left,  #ffffff 40%, #eaeaea 100%);
+			background: -webkit-linear-gradient(left,  #ffffff 40%,#eaeaea 100%);
+			background: linear-gradient(to right,  #ffffff 40%,#eaeaea 100%);
+			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#eaeaea',GradientType=1 );
+		}
+
+		table#pedido_resumo thead td{
+			padding:8px 0;
+		}
+
+		div.resumo_espetaculo div.resumo p.nome {
+			text-align: center;
+    		border-bottom: 3px solid #fff;
+		}
+
+		div.resumo_espetaculo div.resumo p.descricao {
+			text-align: center;
+		    font-size: 20px;
+		    margin-top: 15px;
+		}
+
+		div.espetaculo_img img {
+			width: auto;
+		}
+
+		div.espetaculo_img {
+			margin: -10px 44px 0 40px;
+		}
+
+		input[type=checkbox].checkbox + label.checkbox {
+			margin: 0;
+			line-height: 36px;
+		}
+
+		div#botoes {
+			padding: 15px 0 0;
+		    float: left;
+		    width: 100%;
+		    border-top: 1px solid #E6E6E6;
+		    background: #FFF;
+		}
+
+		div#botoes p {
+		    color: #000;
+		    font-size: 18px;
+		    line-height: 1.6em;
+		    margin-bottom: 20px;
+		}
+
+		div#botoes p.detalhe {
+		    font-size: 13px;
+		    margin-top: -20px;
+		}
+	</style>
+
 	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
 </head>
 <body>
@@ -60,27 +146,10 @@ require('acessoLogado.php');
 			</div>
 
 			<div class="centraliza">
-				<div class="descricao_pag">
-					<div class="img">
-						<img src="../images/ico_black_passo4.png">
-					</div>
-					<div class="descricao">
-						<p class="nome">Assinatura</p>
-						<p class="descricao">
-							confira os dados abaixo
-						</p>
-						<div class="sessao">
-							<p class="tempo" id="tempoRestante"></p>
-							<p class="mensagem">
-							</p>
-						</div>
-					</div>
-				</div>
-
 				<?php
 				$mainConnection = mainConnection();
 
-				$query = 'SELECT ID_ASSINATURA, DS_ASSINATURA, DS_IMAGEM FROM MW_ASSINATURA WHERE ID_ASSINATURA = ?';
+				$query = 'SELECT ID_ASSINATURA, DS_ASSINATURA, DS_IMAGEM, QT_DIAS_CANCELAMENTO FROM MW_ASSINATURA WHERE ID_ASSINATURA = ?';
 				$params = array($_GET['id']);
 				$rs = executeSQL($mainConnection, $query, $params, true);
 
@@ -120,7 +189,12 @@ require('acessoLogado.php');
 				<div class="espetaculo_img assinatura"><?php echo ($rs['DS_IMAGEM'] ? '<img src="'.$rs['DS_IMAGEM'].'" />' : '<img src="../images/assinante_a.png" />'); ?></div>
 				<div class="resumo_espetaculo" data-evento="<?php echo $rs['ID_ASSINATURA']; ?>">
 					<div class="resumo">
-						<p class="nome"><?php echo utf8_encode($rs['DS_ASSINATURA']); ?></p>
+						<p class="nome">FALTA APENAS UM PASSO!</p>
+
+						<p class="descricao">
+							Se você decidir por não continuar a assinatura, tudo bem,<br/>
+							sem compromisso. Cancele online* em "minha conta".
+						</p>
 					</div>
 
 					<table id="pedido_resumo">
@@ -181,11 +255,21 @@ require('acessoLogado.php');
 			</div>
 		</div>
 
-		<div id="texts">
+		<div id="botoes">
 			<div class="centraliza">
 				<p>Confira atentamente os dados do seu pedido e as condições e endereço de entrega se for o caso.</p>
 
+				<p>
+					<input id="radio_regulamento" type="checkbox" name="regulamento" class="checkbox" value="R" />
+					<label class="checkbox" for="radio_regulamento">Aceito os <a href="#" class="termos_de_uso">termos do regulamento</a></label>
+					<br/>
+					<input id="radio_privacidade" type="checkbox" name="privacidade" class="checkbox" value="P" />
+					<label class="checkbox" for="radio_privacidade">Aceito os <a href="#" class="politica_de_privacidade">termos da política de privacidade</a></label>
+				</p>
+
 				<p>Clique em avançar para efetuar o pagamento.</p>
+
+				<p class="detalhe">*Após <?php echo $rs['QT_DIAS_CANCELAMENTO']; ?> dias de adesão.</p>
 			</div>
 		</div>
 
@@ -211,6 +295,10 @@ require('acessoLogado.php');
 			});
 		</script>
 		<?php } ?>
+	</div>
+
+	<div id="overlay">
+		<?php require 'termosUsoAssinatura.php'; ?>
 	</div>
 </body>
 </html>

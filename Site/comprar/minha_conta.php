@@ -274,7 +274,12 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
             }
             .tabela_assinaturas .logo {
                 width: 130px;
-                padding-right: 30px;
+                background: #000;
+                background: -moz-linear-gradient(-45deg, #000000 23%, #eaeaea 100%);
+                background: -webkit-linear-gradient(-45deg, #000 23%,#eaeaea 100%);
+                background: linear-gradient(135deg, #000 23%,#eaeaea 100%);
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#eaeaea',GradientType=1 );
+                border-radius: 10%;
             }
             .tabela_assinaturas .texto {
                 width: 540px;
@@ -290,6 +295,9 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
             .tabela_assinaturas .bottom_line {
                 border-bottom: 1px dotted #A9A9A9;
                 padding-bottom: 15px;
+            }
+            .tabela_assinaturas .espaco {
+                width: 20px;
             }
         </style>
         <script>
@@ -558,6 +566,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                                 <table class="tabela_assinaturas">
                                     <tr>
                                         <td rowspan="4" class="logo"><img src="<?php echo $rs['DS_IMAGEM']; ?>" /></td>
+                                        <td class="espaco"></td>
                                         <td class="texto"><?php echo $rs['DS_ASSINATURA']; ?></td>
                                         <td class="acao cancelar" rowspan="2">
                                             <?php if ($mostrar_cancelamento) { ?>
@@ -566,9 +575,11 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                                         </td>
                                     </tr>
                                     <tr>
+                                        <td class="espaco"></td>
                                         <td class="texto top_line">**** **** **** <?php echo substr($cipher->decrypt($rs['CD_NUMERO_CARTAO']), -4); ?></td>
                                     </tr>
                                     <tr>
+                                        <td class="espaco"></td>
                                         <td class="texto bottom_line">
                                             <?php
                                             if ($rs['IN_ATIVO']) {
@@ -583,6 +594,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                                         <td class="acao historico" rowspan="2"><a href="minha_conta.php?pedido=<?php echo $rs['ID_ASSINATURA_CLIENTE']; ?>">historico de pagamento</a></td>
                                     </tr>
                                     <tr>
+                                        <td class="espaco"></td>
                                         <td class="texto">
                                             o plano possui <?php echo $rs['QT_BILHETE']; ?> bilhetes<br/>
                                             <?php

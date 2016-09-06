@@ -392,7 +392,7 @@ $(document).ready(function(){
   
   /* FECHA OVERLAY */
   $('#overlay, #overlay div.fechar').on('click',function(){
-
+    fecharOverlay();
    }).children().click(function(e) {
     return false;
   });

@@ -296,13 +296,14 @@ if ($descricao_erro == '') {
 
         // -=========== envio do email de sucesso ===========-
 
-        $dados_pedido['codigo_pedido'] = $dadosExtrasEmail['cpf_cnpj_cliente'];
+        $dados_pedido['assinatura'] = true;
+        $dados_pedido['codigo_pedido'] = 'A'.$_SESSION['order_id'];
         $dados_pedido['data'] = '';
         $dados_pedido['total'] = '';
 
         $dados_pedido['evento'] = $rs['DS_ASSINATURA'];
-        $dados_pedido['endereco'] = '';
-        $dados_pedido['nome_teatro'] = 'COMPREINGRESOS.COM';
+        $dados_pedido['endereco'] = formatCPF($dadosExtrasEmail['cpf_cnpj_cliente']);
+        $dados_pedido['nome_teatro'] = $parametros['CustomerData']['CustomerName'];
         $dados_pedido['horario'] = '';
 
         $dados_pedido['barcode'] = $dadosExtrasEmail['cpf_cnpj_cliente'];
@@ -320,6 +321,7 @@ if ($descricao_erro == '') {
         $tpl->nome_cliente = $parametros['CustomerData']['CustomerName'];
         $tpl->quantidade_ingressos = $rs['QT_BILHETE'];
         $tpl->pkpass_url = $pkpass_url;
+        $tpl->nome_assinatura = $rs['DS_ASSINATURA'];
 
         ob_start();
         $tpl->show();

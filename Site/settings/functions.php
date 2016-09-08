@@ -2516,6 +2516,7 @@ function getPKPass($dados_pedido) {
     }
 
     $data = array(  
+        "assinatura" => $dados_pedido['assinatura'],
         "number" => $dados_pedido['codigo_pedido'],
         "date" => $dados_pedido['data'],
         "total" => $dados_pedido['total'],
@@ -2607,6 +2608,17 @@ function pre() {
     echo '<pre>';
     print_r(func_get_args());
     echo '</pre>';
+}
+
+function formatCPF($nbr_cpf) {
+    $parte_um     = substr($nbr_cpf, 0, 3);
+    $parte_dois   = substr($nbr_cpf, 3, 3);
+    $parte_tres   = substr($nbr_cpf, 6, 3);
+    $parte_quatro = substr($nbr_cpf, 9, 2);
+
+    $monta_cpf = "$parte_um.$parte_dois.$parte_tres-$parte_quatro";
+
+    return $monta_cpf;
 }
 
 function getSalaImg($codSala, $conn)

@@ -153,6 +153,8 @@ require('acessoLogado.php');
 				$params = array($_GET['id']);
 				$rs = executeSQL($mainConnection, $query, $params, true);
 
+				$qt_dias_cancelamento = $rs['QT_DIAS_CANCELAMENTO'];
+
 				$query = 'WITH RESULTADO AS (
 								SELECT AV.QT_MES_VIGENCIA, AV.VL_ASSINATURA, MAX(AV.VL_ASSINATURA) VALOR_MAXIMO
 								FROM MW_ASSINATURA_VALOR AV
@@ -269,7 +271,7 @@ require('acessoLogado.php');
 
 				<p>Clique em avançar para efetuar o pagamento.</p>
 
-				<p class="detalhe">*Após <?php echo $rs['QT_DIAS_CANCELAMENTO']; ?> dias de adesão.</p>
+				<p class="detalhe">*Após <?php echo $qt_dias_cancelamento; ?> dias de adesão.</p>
 			</div>
 		</div>
 

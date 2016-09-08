@@ -408,7 +408,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                                             document.location = './?p=promocoes';
                                         },
                                         'Exibir Códigos Gerados': function(){
-                                            if ($.inArray($cboPromo.val(), [4, 7]) /*BINs*/) {
+                                            if ($.inArray($cboPromo.val(), ['4', '7']) != -1 /*BINs*/) {
                                                 document.location = './?p=cartaoPatrocinado&idPatrocinador='+$('#cboPatrocinador').val();
                                             } else {
                                                 document.location = './?p=codigosPromocionais&id='+id;

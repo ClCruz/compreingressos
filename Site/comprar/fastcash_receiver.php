@@ -97,7 +97,7 @@ function OnOnlineCreditReceived($sender, $tid, $prodId, $quant, $valueReceived, 
                 WHERE ID_PEDIDO_VENDA = ?";
     $params = array($tid);
     $rs = executeSQL($mainConnection, $query, $params, true);
-    $valueSaved = preg_replace('/\.|\,/', '', $rs['VL_TOTAL_PEDIDO_VENDA']);
+    $valueSaved = number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, '.', '');
     
     if ($valueSaved != $valueReceived)
         return array(false, "O valor do pedido não confere com o valor recebido pela Fastcash.");

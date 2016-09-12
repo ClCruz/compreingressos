@@ -1,4 +1,8 @@
 <?php
+require('../settings/Metzli/autoload.php');
+
+use Metzli\Encoder\Encoder;
+use Metzli\Renderer\PngRenderer;
 
 function getSiteLogo() {
     echo "<img src='../images/menu_logo.png' height='60px' id='logo' />";
@@ -2080,27 +2084,23 @@ function requestImage($url) {
 	return $image;
 }
 
-function encodeToBarcode($text, $type = 'Interleaved2of5', $properties = array()) {
-	// http://www.idautomation.com/barcode-components/asp-iis/user-manual.html#Properties
-	$propertiesString = '';
+function encodeToBarcode($text, $type = 'Aztec', $properties = array()) {
 	if (empty($text)) return false;
-	if (!empty($properties)) foreach ($properties as $key => $value) $propertiesString .= '&' . $key . '=' . $value;
+	
+    if ($type == 'Aztec') {
+		$code = Encoder::encode($text);
+        $renderer = new PngRenderer();
 
-	if ($type == 'Interleaved2of5') {
-		$url = 'http'.($_SERVER["HTTPS"] == 'on' ? 's' : '').'://localhost/comprar/idautomation/IDAutomationStreamingLinear.aspx?D='.urlencode($text).'&S=2&CC=F'.$propertiesString;
-	} else if ($type == 'Aztec') {
-		$url = 'http'.($_SERVER["HTTPS"] == 'on' ? 's' : '').'://localhost/comprar/idautomation/IDAutomationStreamingAztec.aspx?D='.urlencode($text).$propertiesString;
+        $image = imagecreatefromstring($renderer->render($code));
 	}
-
-	$image = requestImage($url);
 
 	return $image;
 }
 
 function saveAndGetPath($image, $name) {
-	$path = '../images/temp/' . $name . '.gif';
+	$path = '../images/temp/' . $name . '.png';
 
-	$gif = imagegif($image, $path);
+	$png = imagepng($image, $path);
 
 	return $path;
 }

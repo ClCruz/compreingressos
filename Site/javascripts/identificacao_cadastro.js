@@ -279,7 +279,7 @@ $(function() {
 				 campos,
 				 valido = true;
 			
-			if ($('body').is('.assinatura')) {
+			if ($('body').is('.mini')) {
 				naoRequeridos += ',.endereco :input';
 			}
 
@@ -294,6 +294,7 @@ $(function() {
 					if (!$(radio).is(':checked')) {
 						$this.addClass('erro').findNextMsg().slideDown('fast');
 						valido = false;
+						console.log(this);
 					} else {
 						$this.removeClass('erro').findNextMsg().slideUp('slow');
 					}
@@ -301,10 +302,11 @@ $(function() {
 					($this.is(':checkbox') && !$this.is(':checked'))) {
 					$this.addClass('erro').findNextMsg().slideDown('fast');
 					valido = false;
+					console.log(this);
 				} else $this.removeClass('erro').findNextMsg().slideUp('slow');
 			});
 
-			if ($('body').is('.assinatura')) {
+			if ($('body').is('.mini')) {
 				if ($('#celular').val().length < 13){
 					$('#celular').addClass('erro').findNextMsg().slideDown('fast');
 					valido = false;

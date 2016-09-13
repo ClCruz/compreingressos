@@ -154,6 +154,7 @@ require('acessoLogado.php');
 				$rs = executeSQL($mainConnection, $query, $params, true);
 
 				$qt_dias_cancelamento = $rs['QT_DIAS_CANCELAMENTO'];
+				$ds_assinatura = $rs['DS_ASSINATURA'];
 
 				$query = 'WITH RESULTADO AS (
 								SELECT AV.QT_MES_VIGENCIA, AV.VL_ASSINATURA, MAX(AV.VL_ASSINATURA) VALOR_MAXIMO
@@ -263,10 +264,10 @@ require('acessoLogado.php');
 
 				<p>
 					<input id="radio_regulamento" type="checkbox" name="regulamento" class="checkbox" value="R" />
-					<label class="checkbox" for="radio_regulamento">Aceito os <a href="#" class="termos_de_uso">termos do regulamento</a></label>
+					<label class="checkbox" for="radio_regulamento">Aceito os <a href="#" class="termos_de_uso">termos do regulamento</a> do <?php echo $ds_assinatura; ?></label>
 					<br/>
 					<input id="radio_privacidade" type="checkbox" name="privacidade" class="checkbox" value="P" />
-					<label class="checkbox" for="radio_privacidade">Aceito os <a href="#" class="politica_de_privacidade">termos da política de privacidade</a></label>
+					<label class="checkbox" for="radio_privacidade">Aceito os <a href="#" class="politica_de_privacidade">termos da política de privacidade</a> do <?php echo $ds_assinatura; ?></label>
 				</p>
 
 				<p>Clique em avançar para efetuar o pagamento.</p>

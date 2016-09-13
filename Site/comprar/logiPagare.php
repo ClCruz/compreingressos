@@ -15,7 +15,7 @@ if (!$resultiPagare or !empty($errorsiPagare)) {
 	$subject = 'Erro no LOG do iPagare'; 
 	
 	$namefrom = 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS';
-	$from = 'lembrete@compreingressos.com';
+	$from = '';
 	
 	//define the body of the message.
 	ob_start(); //Turn on output buffering

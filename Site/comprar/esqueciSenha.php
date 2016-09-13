@@ -23,7 +23,7 @@ if (isset($_GET['email'])) {
 			
 			$namefrom = '=?UTF-8?b?' . base64_encode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS').'?=';
 			// $from = 'lembrete@compreingressos.com';
-			$from = ($_ENV['IS_TEST'] ? 'contato@intuiti.com.br' : 'lembrete@compreingressos.com');
+			$from = '';
 
 			//define the body of the message.
 			ob_start(); //Turn on output buffering

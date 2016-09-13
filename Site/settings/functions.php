@@ -287,7 +287,7 @@ function obterValorPercentualServicoPorPedido() {
 function enviarEmailNovaConta ($login, $nome, $email) {
 
 	$subject = 'Aviso de Acesso';
-	$from = 'contato@compreingressos.com';
+	$from = '';
 	$namefrom = 'COMPREINGRESSOS.COM - AGENCIA DE VENDA DE INGRESSOS';
 
 	//define the body of the message.
@@ -2305,7 +2305,7 @@ function getIdClienteBaseSelecionada($idBase){
 
 function sendErrorMail($subject, $message) {
 	$namefrom = 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS';
-	$from = 'contato@intuiti.com.br';
+	$from = '';
 
 	$cc = array('Jefferson => jefferson.ferreira@intuiti.com.br', 'Edicarlos => edicarlos.barbosa@intuiti.com.br');
 
@@ -2353,7 +2353,7 @@ function sendConfirmationMail($id_cliente) {
     $message = ob_get_clean();
 
     $namefrom = '=?UTF-8?b?'.base64_encode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS').'?=';
-    $from = ($_ENV['IS_TEST'] ? 'contato@intuiti.com.br' : 'compreingressos@gmail.com');
+    $from = '';
 
     $successMail = authSendEmail($from, $namefrom, $rs['CD_EMAIL_LOGIN'], $rs['DS_NOME'], $subject, utf8_decode($message));
 

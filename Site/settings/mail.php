@@ -18,14 +18,13 @@ function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copi
 	$mail->SetLanguage('br');
 	
 	$mail->IsSMTP();
-	$mail->Host = 'smtp-relay.gmail.com';//"smtp.compreingressos.com";
+	$mail->Host = 'smtp-relay.gmail.com';
 
 	$mail->SMTPSecure = "tls";
 	
 	$mail->Port = 587;
 	
-	// somente gmail
-	$mail->From = 'compreingressos@siscompre.com';//$from;
+	$mail->From = ($from ? $from : 'compreingressos@siscompre.com');
 	$mail->FromName = $namefrom;
 	
 	$mail->AddAddress($to, $nameto);
@@ -109,11 +108,11 @@ function authSendEmail_alternativo($from, $namefrom, $to, $nameto, $subject, $me
 	
 	$mail->Port = 587;
 	$mail->SMTPAuth = true;
-	$mail->Username = 'compreingressos@gmail.com';//"lembrete@compreingressos.com";
-	$mail->Password = 'cruz79513579';//"lembrete0015";
+	$mail->Username = 'compreingressos@gmail.com';
+	$mail->Password = 'cruz79513579';
 	
 	// somente gmail
-	$mail->From = 'compreingressos@gmail.com';//$from;
+	$mail->From = 'compreingressos@gmail.com';
 	$mail->FromName = $namefrom;
 	
 	$mail->AddAddress($to, $nameto);
@@ -276,18 +275,18 @@ function authSendEmail_alternativo3($from, $namefrom, $to, $nameto, $subject, $m
 	$mail->SetLanguage('br');
 	
 	$mail->IsSMTP();
-	$mail->Host = 'smtp.gmail.com';//"smtp.compreingressos.com";
+	$mail->Host = 'smtp.gmail.com';
 
 	// somente gmail
 	$mail->SMTPSecure = "tls";
 	
 	$mail->Port = 587;
 	$mail->SMTPAuth = true;
-	$mail->Username = 'compreingressos@siscompre.com';//"lembrete@compreingressos.com";
-	$mail->Password = '743081clc@';//"lembrete0015";
+	$mail->Username = ($from == 'assinantea@siscompre.com' ? $from : 'compreingressos@siscompre.com');
+	$mail->Password = ($from == 'assinantea@siscompre.com' ? 'ci2016aa@' : '743081clc@');
 	
 	// somente gmail
-	$mail->From = 'compreingressos@siscompre.com';//$from;
+	$mail->From = ($from ? $from : 'compreingressos@siscompre.com');
 	$mail->FromName = $namefrom;
 	
 	$mail->AddAddress($to, $nameto);

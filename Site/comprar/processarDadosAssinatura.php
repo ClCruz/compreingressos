@@ -329,7 +329,7 @@ if ($descricao_erro == '') {
 
         $subject = 'Assinatura - Pedido '.$_SESSION['order_id'];
         $namefrom = 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS';
-        $from = ($_ENV['IS_TEST'] ? 'contato@intuiti.com.br' : 'compreingressos@gmail.com');
+        $from = 'assinantea@siscompre.com';
 
         authSendEmail($from, $namefrom, $parametros['CustomerData']['CustomerEmail'], $parametros['CustomerData']['CustomerName'], $subject, $message, array(), array(), 'utf-8');
 

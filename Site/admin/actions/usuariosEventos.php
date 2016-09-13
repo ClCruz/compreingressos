@@ -240,7 +240,7 @@
 		$subject = utf8_decode('Notificação de Permissão');
 		
 		$namefrom = utf8_decode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS');
-		$from = 'contato@intuiti.com.br';
+		$from = '';
 
 		echo authSendEmail($from, $namefrom, $to, $nameto, $subject, $body) === true ? 'true' : '<br><br>Se o erro persistir, favor entrar em contato com o suporte.';
 	}

@@ -10,7 +10,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 390, true)) {
                             "SELECT DISTINCT
                                     C.NOME,
                                     S.NOMSALA,
-                                    ISNULL(ST.NOMSETOR, 'SETOR INVÁLIDO') AS NOMSETOR,
+                                    ST.NOMSETOR,
                                     SD.NOMOBJETO,
                                     CSV.DATHRENTRADA,
                                     LG.CODVENDA,
@@ -55,9 +55,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 390, true)) {
                                 INNER JOIN TABSALA S ON
                                 S.CODSALA = A.CODSALA
 
-                                LEFT JOIN TABSETOR ST ON
+                                INNER JOIN TABSETOR ST ON
                                 ST.CODSALA = A.CODSALA 
-                                AND CONVERT(VARCHAR, ST.CODSETOR) = SUBSTRING(CSV.CODBAR, 6 ,1)
+                                AND ST.CODSETOR = SUBSTRING(CSV.CODBAR, 6 ,1)
 
                                 INNER JOIN TABTIPBILHETE TB ON
                                 TB.CODTIPBILHETE = LG.CODTIPBILHETE

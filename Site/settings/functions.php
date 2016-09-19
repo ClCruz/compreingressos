@@ -2312,7 +2312,7 @@ function sendErrorMail($subject, $message) {
 	authSendEmail($from, $namefrom, 'gabriel.monteiro@intuiti.com.br', 'Gabriel', $subject, $message, $cc);
 }
 
-function sendConfirmationMail($id_cliente) {
+function sendConfirmationMail($id_cliente, $assinatura = false) {
     $mainConnection = mainConnection();
 
     $query = "SELECT C.DS_NOME, C.CD_EMAIL_LOGIN, E.CD_CONFIRMACAO
@@ -2334,11 +2334,11 @@ function sendConfirmationMail($id_cliente) {
     require('../settings/settings.php');
     require_once('../settings/Template.class.php');
 
-    $tpl = new Template('../comprar/templates/confirmacaoEmail.html');
+    $tpl = new Template('../comprar/templates/' . ($assinatura ? 'confirmacaoEmailAssinatura.html' : 'confirmacaoEmail.html'));
     $tpl->nome = $rs['DS_NOME'];
     $tpl->codigo = $rs['CD_CONFIRMACAO'];
     $tpl->link = ($_ENV['IS_TEST']
-                    ? 'http://homolog.compreingressos.com:8081/compreingressos2/comprar/confirmacaoEmail.php?codigo='.urlencode($rs['CD_CONFIRMACAO'])
+                    ? 'http://homolog.compreingressos.com:8081/comprar/confirmacaoEmail.php?codigo='.urlencode($rs['CD_CONFIRMACAO'])
                     : 'https://compra.compreingressos.com/comprar/confirmacaoEmail.php?codigo='.urlencode($rs['CD_CONFIRMACAO'])
     );
 

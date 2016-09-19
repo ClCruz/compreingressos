@@ -31,7 +31,7 @@
 
 	} else if ($_GET['action'] == 'reenviar') {
 
-		sendConfirmationMail($_SESSION['user']);
+		sendConfirmationMail($_SESSION['user'], preg_match('/assinatura/', $_GET['redirect']));
 
 		echo json_encode(array('text' => 'Confirmação de e-mail enviada', 'detail' => 'Por favor, confirme o recebimento no e-mail cadastrado.'));
 

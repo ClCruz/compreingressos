@@ -328,7 +328,7 @@ if ($descricao_erro == '') {
         $message = ob_get_clean();
 
         $subject = 'Assinatura - Pedido '.$_SESSION['order_id'];
-        $namefrom = 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS';
+        $namefrom = strtoupper($rs['DS_ASSINATURA']);
         $from = 'assinantea@siscompre.com';
 
         authSendEmail($from, $namefrom, $parametros['CustomerData']['CustomerEmail'], $parametros['CustomerData']['CustomerName'], $subject, $message, array(), array(), 'utf-8');

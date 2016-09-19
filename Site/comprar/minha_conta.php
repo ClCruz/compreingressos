@@ -272,6 +272,9 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                 width: 950px;
                 margin: 0 0 50px 30px;
             }
+            .tabela_assinaturas .logo img {
+                width: 170px;
+            }
             .tabela_assinaturas .logo {
                 width: 130px;
                 background: #000;

@@ -235,7 +235,7 @@ function desktopVersion(){
   function desktop(){
 
     var $link = $('a.link_adptativo');
-console.log($link);
+
     if (!$link[0]) {
       return false;
     }

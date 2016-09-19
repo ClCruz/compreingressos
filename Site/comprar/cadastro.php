@@ -271,7 +271,7 @@ if (isset($_GET['action'])) {
 		if (executeSQL($mainConnection, $query, $params)) {
 
 			if (!(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) {
-				sendConfirmationMail($newID);
+				sendConfirmationMail($newID, preg_match('/assinatura/', $_GET['redirect']));
 			}
 
 			$retorno = 'true';

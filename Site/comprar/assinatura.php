@@ -27,6 +27,8 @@ require('acessoLogado.php');
     <script src="../javascripts/jquery.mask.min.js" type="text/javascript"></script>
 	<script src="../javascripts/cicompra.js" type="text/javascript"></script>
 
+	<script src="../javascripts/jquery-ui.js" type="text/javascript"></script>
+
 	<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
 	<script src="../javascripts/common.js" type="text/javascript"></script>
 	<script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
@@ -62,15 +64,20 @@ require('acessoLogado.php');
 	<style type="text/css">
 		div#content {
 			color: #FFF;
-		    background: #000;
-		    background: -moz-linear-gradient(left, #000000 0%, #eaeaea 100%);
-		    background: -webkit-linear-gradient(left, #000 0%,#eaeaea 100%);
-		    background: linear-gradient(to right, #000 0%,#eaeaea 100%);
-		    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#eaeaea',GradientType=1 );
+			background: #626567;
+		    background: -moz-linear-gradient(top, #626567 0%, #2f2d2e 100%);
+		    background: -webkit-linear-gradient(top, #626567 0%,#2f2d2e 100%);
+		    background: linear-gradient(to bottom, #626567 0%,#2f2d2e 100%);
+		    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#626567', endColorstr='#2f2d2e',GradientType=0 );
 		}
 
+		div.resumo_espetaculo {
+    		margin-left: 180px;
+    	}
+
 		div.resumo_espetaculo div.resumo {
-			margin: 15px 0 0 53px;
+			margin: 40px 0 0 10px;
+			width: 520px;
 		}
 
 		table#pedido_resumo {
@@ -98,11 +105,11 @@ require('acessoLogado.php');
 		}
 
 		div.espetaculo_img img {
-			width: auto;
+			width: 170px;
 		}
 
 		div.espetaculo_img {
-			margin: -10px 44px 0 40px;
+			margin: 0 0 0 -10px;
 		}
 
 		input[type=checkbox].checkbox + label.checkbox {
@@ -129,7 +136,84 @@ require('acessoLogado.php');
 		    font-size: 13px;
 		    margin-top: -20px;
 		}
+
+		div#content .borda_lateral {
+			position: absolute;
+			display: block;
+		}
+
+		div#content .borda_lateral.esquerda {
+			width: 867px;
+			background: url('../images/BG_ASSINANTE_A_polygon_esq.png') no-repeat;
+			background-position: center right;
+		}
+
+		div#content .borda_lateral.direita {
+			width: 731px;
+			background: url('../images/BG_ASSINANTE_A_polygon_direita.png') no-repeat;
+			background-position: center left;
+		}
+
+		@media only screen and (max-width:640px){
+			div.resumo_espetaculo {
+	    		margin-left: 0;
+	    	}
+
+	    	div.resumo_espetaculo div.resumo {
+	    		margin: 20px 0 0 0;
+	    		width: 293px !important;
+	    	}
+
+	    	table#pedido_resumo thead td:nth-child(1), table#pedido_resumo tbody td:nth-child(1) {
+	    		display: none;
+	    	}
+
+	    	table thead td, table#pedido_resumo thead td {
+	    		font-size: 13px !important;
+	    	}
+
+	    	table tbody td, table#pedido_resumo tbody td {
+	    		font-size: 12px !important;
+	    	}
+
+	    	div#content .borda_lateral {
+				display: none;
+			}
+
+			table#pedido_resumo {
+			    margin-top: 20px !important;
+			}
+		}
 	</style>
+
+	<script type="text/javascript">
+	$(function(){
+		function position() {
+			var $relative_obj = $('.resumo_espetaculo'),
+				content_height = $('#content').outerHeight(true);
+
+			$('.borda_lateral.esquerda, .borda_lateral.direita')
+				.height(content_height)
+				.css('background-size', '100% '+(content_height*2)+'px');
+
+			$('.borda_lateral.esquerda').position({
+				of: $relative_obj,
+				my: 'right center',
+				at: 'left+50 center',
+				collision: 'none'
+			});
+
+			$('.borda_lateral.direita').position({
+				of: $relative_obj,
+				my: 'left center',
+				at: 'right+25 center',
+				collision: 'none'
+			});
+		}
+
+		$(window).on('resize', position).trigger('resize');
+	});
+	</script>
 
 	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
 </head>
@@ -189,8 +273,10 @@ require('acessoLogado.php');
 					$ordinal = array('primeiro', 'segundo', 'terceiro', 'quarto', 'quinto', 'sexto', 'sétimo', 'oitavo', 'nono', 'décimo');
 				}
 				?>
-				<div class="espetaculo_img assinatura"><?php echo ($rs['DS_IMAGEM'] ? '<img src="'.$rs['DS_IMAGEM'].'" />' : '<img src="../images/assinante_a.png" />'); ?></div>
+				<div class="borda_lateral esquerda"></div>
+				<div class="borda_lateral direita"></div>
 				<div class="resumo_espetaculo" data-evento="<?php echo $rs['ID_ASSINATURA']; ?>">
+					<div class="espetaculo_img assinatura"><?php echo ($rs['DS_IMAGEM'] ? '<img src="'.$rs['DS_IMAGEM'].'" />' : '<img src="../images/assinante_a.png" />'); ?></div>
 					<div class="resumo">
 						<p class="nome">FALTA APENAS UM PASSO!</p>
 

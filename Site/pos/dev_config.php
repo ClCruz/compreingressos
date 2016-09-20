@@ -11,11 +11,7 @@ echo "<SET TYPE=TIME HOUR=".date('His')." DATE=".date('dmY')." HDSTS=STSSTT>";
 
 echo "<CONSOLE>alterando pagamento...</CONSOLE>";
 
-if ($_ENV['IS_TEST']) {
-	echo "<FILE NAME=CLSIT ADDR=/compreingressos2/pos/CLSIT.txt ERR=ERROARQ>";
-} else {
-	echo "<FILE NAME=CLSIT ADDR=/pos/CLSIT.txt ERR=ERROARQ>";
-}
+echo "<FILE NAME=CLSIT ADDR=/pos/CLSIT.txt ERR=ERROARQ>";
 
 echo "<CONSOLE>alterando configs...</CONSOLE>";
 
@@ -53,10 +49,10 @@ if ($_ENV['IS_TEST']) {
 }
 // se estiver no ambiente de producao configura para homologacao
 else {
-	echo "SERVER_IP=186.237.201.150;";
+	echo "SERVER_IP=homolog.compreingressos.com;";
 	echo "SERVER_PORT=8081;";
-	echo "SERVER_RESOURCE=/compreingressos2/pos/main.php;";
-	echo "SERVER_HOST=;";
+	echo "SERVER_RESOURCE=/pos/main.php;";
+	echo "SERVER_HOST=homolog.compreingressos.com;";
 }
 
 // echo "SERVER_HTTPS_ACTIVE=0;";

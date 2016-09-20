@@ -553,6 +553,20 @@ if ($_GET['bilhete'] == 888888888 or $_GET['bilhete'] == 777777777
 // confirmacao do pedido - pagamento
 if (isset($_GET['confirmacao'])) {
 
+	$query = 'SELECT TOP 1 1
+				FROM MW_RESERVA R
+				INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+				INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+				WHERE ID_SESSION = ? AND E.IN_OBRIGA_CPF_POS = 1';
+	$rs = executeSQL($mainConnection, $query, array(session_id()), true);
+
+	if ($rs[0]) {
+		$validar_limite_cpf = true;
+	} else {
+		$_SESSION['user'] = 493205;
+		$validar_limite_cpf = false;
+	}
+
 	if (verificaCPF($_GET['cpf']) and strlen($_GET['telefone']) > 7) {
 
 		$query = "SELECT ID_CLIENTE FROM MW_CLIENTE WHERE CD_CPF = ?";
@@ -595,12 +609,14 @@ if (isset($_GET['confirmacao'])) {
 			$error[] = $msgServicosPorPedido;
 		}
 
-		ob_start();
-		require('../comprar/verificarLimitePorCPF.php');
-		$response = ob_get_clean();
-		if (count($limitePorCPF_POS) > 0) {
-			foreach ($limitePorCPF_POS as $value) {
-				$error[] = $value;
+		if ($validar_limite_cpf) {
+			ob_start();
+			require('../comprar/verificarLimitePorCPF.php');
+			$response = ob_get_clean();
+			if (count($limitePorCPF_POS) > 0) {
+				foreach ($limitePorCPF_POS as $value) {
+					$error[] = $value;
+				}
 			}
 		}
 
@@ -611,7 +627,7 @@ if (isset($_GET['confirmacao'])) {
 		$strCookie = 'PHPSESSID=' . $_COOKIE['PHPSESSID'] . '; path=/';
 
 		$post_data = http_build_query(array('numCartao' => $bin, 'pos' => 1));
-		$url = 'http'.($_SERVER["HTTPS"] == "on" ? 's' : '').'://'.$_SERVER['SERVER_NAME'].($_ENV['IS_TEST'] ? '/compreingressos2' : '').'/comprar/validarBin.php';
+		$url = 'http'.($_SERVER["HTTPS"] == "on" ? 's' : '').'://'.$_SERVER['SERVER_NAME'].'/comprar/validarBin.php';
 		session_write_close();
 
 		$ch = curl_init(); 
@@ -624,10 +640,10 @@ if (isset($_GET['confirmacao'])) {
 		$response = curl_exec($ch); 
 		curl_close($ch);
 		if ($response != '') {
-			$error[] = $response;
+			$error[] = $url;
 		}
 
-		$url = 'http'.($_SERVER["HTTPS"] == "on" ? 's' : '').'://'.$_SERVER['SERVER_NAME'].($_ENV['IS_TEST'] ? '/compreingressos2' : '').'/comprar/validarLote.php';
+		$url = 'http'.($_SERVER["HTTPS"] == "on" ? 's' : '').'://'.$_SERVER['SERVER_NAME'].'/comprar/validarLote.php';
 		$ch = curl_init(); 
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_USERAGENT, $useragent);
@@ -636,7 +652,7 @@ if (isset($_GET['confirmacao'])) {
 		$response = curl_exec($ch); 
 		curl_close($ch);
 		if ($response != '') {
-			$error[] = $response;
+			$error[] = $url;
 		}
 
 		session_start();

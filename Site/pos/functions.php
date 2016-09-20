@@ -211,6 +211,14 @@ function print_order($pedido, $reprint = false){
 	require_once "../settings/functions.php";
 	$mainConnection = mainConnection();
 
+	$query = 'SELECT COUNT(1)
+				FROM MW_ITEM_PEDIDO_VENDA I
+				INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = I.ID_APRESENTACAO
+				INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+				WHERE I.ID_PEDIDO_VENDA = ? AND E.IN_IMPRIMI_CANHOTO_POS = 1';
+	$rs = executeSQL($mainConnection, $query, array($pedido), true);
+	$imprimir_canhoto = $rs[0] > 0;
+
 	$query = "SELECT
 				UPPER(E.DS_EVENTO) DS_EVENTO,
 				A.DT_APRESENTACAO,
@@ -257,6 +265,9 @@ function print_order($pedido, $reprint = false){
 				WHERE A.CODAPRESENTACAO = ? AND S.INDICE = ?';
 
 	$space = " ";
+
+	ob_start();
+
 	while ($rs = fetchResult($result)) {
 
 		$conn = getConnection($rs['ID_BASE']);
@@ -322,6 +333,30 @@ function print_order($pedido, $reprint = false){
 	}
 
 	echo "<CHGPRNFNT SIZE=4 FACE=FONTE1>";
+
+	$impressao = ob_get_clean();
+
+	if ($imprimir_canhoto) {
+		echo "<CONSOLE><BR> VIA DO ESTABELECIMENTO<BR> Pressione uma tecla<BR> para imprimir o ingresso.</CONSOLE>";
+		echo "<GET TYPE=ANYKEY>";
+
+		echo "<PRINTER>";
+		echo str_pad(" VIA ESTABELECIMENTO ", 42, "-", STR_PAD_BOTH) ."<BR><BR>";
+		echo "</PRINTER>";
+	}
+
+	echo $impressao;
+
+	if ($imprimir_canhoto) {
+		echo "<CONSOLE><BR> VIA DO CLIENTE<BR> Pressione uma tecla<BR> para imprimir o ingresso.</CONSOLE>";
+		echo "<GET TYPE=ANYKEY>";
+
+		echo "<PRINTER>";
+		echo str_pad(" VIA CLIENTE ", 42, "-", STR_PAD_BOTH) ."<BR><BR>";
+		echo "</PRINTER>";
+
+		echo $impressao;
+	}
 }
 
 function unblock_words($string) {

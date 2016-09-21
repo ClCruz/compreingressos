@@ -69,7 +69,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 384, true)) {
             header("Content-type: application/vnd.ms-excel");
             header("Content-type: application/force-download");
             header("Content-Disposition: attachment; filename=codigos.xls");
-            ?><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><?php
+            ?>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+            <style>
+                .text {mso-number-format:"\@";/*force text*/}
+            </style>
+            <?php
         }
         ?>
         <h2>Promoções Cadastradas</h2>

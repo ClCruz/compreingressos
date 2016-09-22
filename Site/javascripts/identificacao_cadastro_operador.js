@@ -56,23 +56,16 @@ $(function() {
 		if ($(this).val() == 28) {
 			$cep = $('#cep');
 			$cep.attr('maxlength',17);
-			$('#cep').mask('00000000000000000').removeAttr('pattern');
-			$('#fixo').mask('AAAAAAAAAAAAAAA').attr('pattern', '.{1,15}');
-			$('#celular').mask('AAAAAAAAAAAAAAA');
 
 			$cep.on('blur', function(){
 				$this = $(this);
 				if ($this.val().length == 8) 
 				{
 					simples.preventGetCEP = false;
-					$this.mask('00000-000').attr('pattern', '.{3,8}');
 					simples.getCEP($this, { getnow: true });
 				}
 			})
 		} else {
-			$('#cep').mask('00000-000').attr('pattern', '.{9}');
-			$('input[name=fixo]').mask('(00) 0000-0000').attr('pattern', '.{14}');
-			$('input[name=celular]').mask('(00) 000000000');
 			simples.preventGetCEP = false;
 		}
 	}).trigger('change');
@@ -144,8 +137,8 @@ $(function() {
 	$('.salvar_dados').click(function(event) {
 		event.preventDefault();	
 		var $this = $(this),
-			 naoRequeridos = '#senha1,#senha2,#fixo,#complemento,#checkbox_guia,#checkbox_sms,#cep,#checkbox_estrangeiro,[name=sexo],#nascimento_dia,#nascimento_mes,#nascimento_ano,#numero_endereco',
-			 especiais = ',#email1,#email2,#rg,#estado,#cidade,#bairro,#endereco,#cpf,#tipo_documento',
+			 naoRequeridos = '#senha1,#senha2,#ddd_fixo,#fixo,#complemento,#checkbox_guia,#checkbox_sms,#cep,#checkbox_estrangeiro,[name=sexo],#nascimento_dia,#nascimento_mes,#nascimento_ano,#numero_endereco',
+			 especiais = ',#email1,#email2,#rg,#estado,#cidade,#bairro,#endereco,#cpf,#tipo_documento,#ddd_celular,#celular',
 			 formulario = $('#form_cadastro'),
 			 campos = formulario.find(':input:not(' + naoRequeridos + especiais +')'),
 			 valido = true,
@@ -179,15 +172,15 @@ $(function() {
 
 		// estado != exterior?
 		if ($('#estado').val() != 28) {
-			if ($('#celular').val().length < 13){
-				$('#celular').addClass('erro').findNextMsg().slideDown('fast');
+			if ($('#celular').val().length < $('#celular').attr('maxlength') || $('#ddd_celular').val() == ''){
+				$('#ddd_celular,#celular').addClass('erro').findNextMsg().slideDown('fast');
 				valido = false;
-			} else $('#celular').removeClass('erro').findNextMsg().slideUp('slow');
+			} else $('#ddd_celular,#celular').removeClass('erro').findNextMsg().slideUp('slow');
 		} else {
-			if ($('#fixo').val() == ''){
-				$('#fixo').addClass('erro').findNextMsg().slideDown('fast');
+			if ($('#fixo').val() == '' || $('#ddd_fixo').val() == ''){
+				$('#ddd_fixo,#fixo').addClass('erro').findNextMsg().slideDown('fast');
 				valido = false;
-			} else $('#fixo').removeClass('erro').findNextMsg().slideUp('slow');
+			} else $('#ddd_fixo,#fixo').removeClass('erro').findNextMsg().slideUp('slow');
 		}
 
 		if ($('#checkbox_estrangeiro').is(':checked')) {

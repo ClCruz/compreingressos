@@ -361,7 +361,6 @@ $(document).ready(function(){
   });
   $('input, textarea').placeholder();
   $('input[name=cpf]').mask('000.000.000-00', {reverse: true});
-  $('input[name=cep]').mask('00000-000');
 
   /* VERIFICA SE ABRE O OVERLAY VIA HASH NO LINK OU NAO */
   /*$(document).ready(function(){

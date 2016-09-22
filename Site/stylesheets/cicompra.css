@@ -2803,3 +2803,24 @@ div#bancos {
 div.pague_agora div.icone {
 	background: transparent url('../images/ico_debito.png') 0 0 no-repeat;
 }
+
+
+#ddd_fixo, #ddd_celular {
+	width: 19%;
+}
+
+#fixo, #celular {
+	width: 69%;
+	float: right;
+}
+
+@media only screen and (max-width: 640px) {
+	#ddd_fixo, #ddd_celular {
+		width: 19% !important;
+	}
+
+	#fixo, #celular {
+		width: 69% !important;
+		float: right !important;
+	}
+}

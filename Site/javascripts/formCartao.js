@@ -64,7 +64,7 @@ $(function(){
     		$('#dadosPagamento').addClass('dirty');
 
     		$.confirmDialog({
-				text: 'O seu pedido está sendo processado e isso pode levar alguns segundos.<br/>Por favor, não feche ou atualize seu navegador. Em instantes você será redirecionado(a) a página de confirmação.',
+				text: 'O seu pedido está sendo processado e isso pode levar alguns segundos.<br/>Por favor, não feche ou atualize seu navegador. Em instantes você será redirecionado(a) a página de confirmação.<br/><br/><img src="../images/ico_loading.gif">',
 				detail: '',
 				uiOptions: {buttons: {'': ['']}}
 			});

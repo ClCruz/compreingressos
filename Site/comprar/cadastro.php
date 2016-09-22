@@ -39,19 +39,9 @@ if (isset($_GET['action'])) {
 		// formatacao dos campos do layout 2.0 para o antigo (para manter compatibilidade)
 		$_POST['cpf'] = preg_replace("/[^0-9]/", "", $_POST['cpf']);
 
-		$_POST['cep'] = preg_replace("/[^0-9]/", "", $_POST['cep']);
-
-		if( !$_POST['checkbox_estrangeiro'] ){
-			$_POST['telefone'] = explode(' ', $_POST['fixo']);
-			$_POST['ddd1'] = preg_replace("/[^0-9]/", "", $_POST['telefone'][0]);
-			$_POST['telefone'] = preg_replace("/[^0-9]/", "", $_POST['telefone'][1]);
-
-			$_POST['celular'] = explode(' ', $_POST['celular']);
-			$_POST['ddd2'] = preg_replace("/[^0-9]/", "", $_POST['celular'][0]);
-			$_POST['celular'] = preg_replace("/[^0-9]/", "", $_POST['celular'][1]);
-		} else {
-			$_POST['telefone'] = $_POST['fixo'];
-		}
+		$_POST['ddd1'] = $_POST['ddd_fixo'];
+		$_POST['telefone'] = $_POST['fixo'];
+		$_POST['ddd2'] = $_POST['ddd_celular'];
 
 		if (!isset($_POST['extra_info'])) $_POST['extra_info'] = 'N';
 		if (!isset($_POST['extra_sms'])) $_POST['extra_sms'] = 'N';

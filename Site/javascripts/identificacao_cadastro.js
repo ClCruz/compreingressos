@@ -157,8 +157,6 @@ $(function() {
 	$('a.bt_cadastro').click(function(event) {
 		event.preventDefault();
 		
-		//if ($.browser.msie && $.browser.version.substr(0, 1) == 7) $('#dados_conta > *').show();
-		
 		if ($('#dados_conta').is(':hidden')) {
 			$('#identificacao').slideUp('slow');
 			$('#dados_conta').slideDown('slow');
@@ -172,22 +170,14 @@ $(function() {
 	$('#estado').on('change', function(){
 		// estado == exterior?
 		if ($(this).val() == 28) {
-			//$('#cpf').val('não se aplica').prop('disabled', true).addClass('disabled').slideUp('slow').findNextMsg().slideUp('slow');
-  			//$('#cep').mask('AAAAAAAA').attr('pattern', '.{3,8}');
-
 			$cep = $('#cep');
 			$cep.attr('maxlength',17);
-			$('#cep').mask('00000000000000000').removeAttr('pattern');
-
-			$('#fixo').mask('AAAAAAAAAAAAAAA').attr('pattern', '.{1,15}');
-			$('#celular').mask('AAAAAAAAAAAAAAA');
 
 			$cep.on('blur', function(){
 				$this = $(this);
 				if ($this.val().length == 8)
 				{
 					simples.preventGetCEP = false;
-					$this.mask('00000-000').attr('pattern', '.{3,8}');
 					simples.getCEP($this, { getnow: true });
 				}
 			})
@@ -196,9 +186,6 @@ $(function() {
 			if ($('#cpf').val() == 'não se aplica') {
 				$('#cpf').val('').prop('disabled', false).removeClass('disabled').slideDown('fast');
 			}
-			$('#cep').mask('00000-000').attr('pattern', '.{9}');
-			$('input[name=fixo]').mask('(00) 0000-0000').attr('pattern', '.{14}');
-			$('input[name=celular]').mask('(00) 000000000');
 
 			simples.preventGetCEP = false;
 		}
@@ -274,7 +261,7 @@ $(function() {
 		} else {
 			var $this = $(this),
 				 naoRequeridos = '#email,[id^=nascimento],[name=sexo],#complemento,#checkbox_guia,#checkbox_sms,#checkbox_estrangeiro',
-				 especiais = '#fixo,#email1,#email2,#senha1,#senha2,[name="tag"],.recaptcha :input,[type="button"],#cpf,#tipo_documento,#rg,#celular',
+				 especiais = '#ddd_fixo,#fixo,#email1,#email2,#senha1,#senha2,[name="tag"],.recaptcha :input,[type="button"],#cpf,#tipo_documento,#rg,#ddd_celular,#celular',
 				 formulario = $('#form_cadastro'),
 				 campos,
 				 valido = true;
@@ -307,27 +294,27 @@ $(function() {
 			});
 
 			if ($('body').is('.mini')) {
-				if ($('#celular').val().length < 13){
-					$('#celular').addClass('erro').findNextMsg().slideDown('fast');
+				if ($('#celular').val().length < $('#celular').attr('maxlength') || $('#ddd_celular').val() == ''){
+					$('#ddd_celular,#celular').addClass('erro').findNextMsg().slideDown('fast');
 					valido = false;
-				} else $('#celular').removeClass('erro').findNextMsg().slideUp('slow');
+				} else $('#ddd_celular,#celular').removeClass('erro').findNextMsg().slideUp('slow');
 			} else {
 				// estado != exterior?
 				if ($('#estado').val() != 28) {
-					if ($('#fixo').val().length < 13){
-						$('#fixo').addClass('erro').findNextMsg().slideDown('fast');
+					if ($('#fixo').val().length < $('#fixo').attr('maxlength')-1 || $('#ddd_fixo').val() == ''){
+						$('#ddd_fixo,#fixo').addClass('erro').findNextMsg().slideDown('fast');
 						valido = false;
-					} else $('#fixo').removeClass('erro').findNextMsg().slideUp('slow');
+					} else $('#ddd_fixo,#fixo').removeClass('erro').findNextMsg().slideUp('slow');
 
-					if ($('#celular').val() != '' && $('#celular').val().length < 13){
-						$('#celular').addClass('erro').findNextMsg().slideDown('fast');
+					if ($('#celular').val() != '' && ($('#celular').val().length < $('#celular').attr('maxlength') || $('#ddd_celular').val() == '')){
+						$('#ddd_celular,#celular').addClass('erro').findNextMsg().slideDown('fast');
 						valido = false;
-					} else $('#celular').removeClass('erro').findNextMsg().slideUp('slow');
+					} else $('#ddd_celular,#celular').removeClass('erro').findNextMsg().slideUp('slow');
 				} else {
-					if ($('#fixo').val() == ''){
-						$('#fixo').addClass('erro').findNextMsg().slideDown('fast');
+					if ($('#fixo').val() == '' || $('#ddd_fixo').val() == ''){
+						$('#ddd_fixo,#fixo').addClass('erro').findNextMsg().slideDown('fast');
 						valido = false;
-					} else $('#fixo').removeClass('erro').findNextMsg().slideUp('slow');
+					} else $('#ddd_fixo,#fixo').removeClass('erro').findNextMsg().slideUp('slow');
 				}
 			}
 			
@@ -364,14 +351,6 @@ $(function() {
 					valido = false;
 				} else $('#rg').removeClass('erro').findNextMsg().slideUp('slow');
 			} else $('#rg').removeClass('erro').findNextMsg().slideUp('slow');
-
-			// estado != exterior?
-			// if ($('#estado').val() != 28) {
-			// 	if ($('#cpf').val().length < 6) {
-			// 		$('#cpf').addClass('erro').findNextMsg().slideDown('fast');
-			// 		valido = false;
-			// 	} else $('#cpf').removeClass('erro').findNextMsg().slideUp('slow');
-			// }
 
 			if (valido) {
 				$.ajax({
@@ -418,15 +397,7 @@ $(function() {
 			} else {
 				$this.addClass('erro').findNextMsg().slideDown('fast');
 			}
-		}/* else if ($this.is(':radio')) {
-			var $radio = $('[name=' + $this.attr('name') + ']');
-			
-			if (!$radio.is(':checked')) {
-				$radio.addClass('erro').findNextMsg().slideDown('fast');
-			} else {
-				$radio.removeClass('erro').findNextMsg().slideUp('slow');
-			}
-		}*/
+		}
 
 		if ($area.find(':input.erro').length > 0) {
 			$area.addClass('erro')

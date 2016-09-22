@@ -157,12 +157,12 @@ session_start();
 				<div class="icone"></div>
 				<div class="inputs">
 					<p class="titulo">Telefones de contato</p>
-					<input type="text" name="fixo" id="fixo" placeholder="fixo/phone number/teléfono" maxlength="14" autocomplete="off" pattern=".{1,15}" value="<?php echo utf8_encode($rs['DS_DDD_TELEFONE'].$rs['DS_TELEFONE']); ?>">
+					<input type="text" name="ddd_fixo" id="ddd_fixo" class="number" placeholder="ddd" maxlength="2" autocomplete="off" value="<?php echo $rs['DS_DDD_TELEFONE']; ?>"><input type="text" name="fixo" id="fixo" class="number" placeholder="fixo/phone number/teléfono" maxlength="9" autocomplete="off" value="<?php echo $rs['DS_TELEFONE']; ?>">
 					<div class="erro_help">
 						<p class="erro">insira o telefone fixo</p>
 						<p class="help">(ddd + nº)</p>
 					</div>
-					<input type="text" name="celular" id="celular" placeholder="celular/mobile number<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>" maxlength="14" autocomplete="off" value="<?php echo utf8_encode($rs['DS_DDD_CELULAR'].$rs['DS_CELULAR']); ?>">
+					<input type="text" name="ddd_celular" id="ddd_celular" class="number" placeholder="ddd<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>" maxlength="2" autocomplete="off" value="<?php echo $rs['DS_DDD_CELULAR']; ?>"><input type="text" name="celular" id="celular" class="number" placeholder="celular/mobile number<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>" maxlength="9" autocomplete="off" value="<?php echo $rs['DS_CELULAR']; ?>">
 					<div class="erro_help">
 						<p class="erro"></p>
 						<p class="help">opcional</p>
@@ -174,7 +174,7 @@ session_start();
 				<div class="icone"></div>
 				<div class="inputs">
 					<p class="titulo">Endereço</p>
-					<input type="text" name="cep" id="cep" placeholder="CEP/ZipCode" maxlength="9" autocomplete="off" pattern=".{9}" value="<?php echo utf8_encode($rs['CD_CEP']); ?>">
+					<input type="text" name="cep" id="cep" class="number" placeholder="CEP/ZipCode" maxlength="8" autocomplete="off" value="<?php echo utf8_encode($rs['CD_CEP']); ?>">
 					<div class="erro_help">
 						<p class="erro">informe seu CEP</p>
 						<p class="help"><a href="http://www.buscacep.correios.com.br/" target="_blank">não sabe seu CEP?</a></p>

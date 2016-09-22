@@ -2352,7 +2352,7 @@ function sendConfirmationMail($id_cliente, $assinatura = false) {
     $tpl->show();
     $message = ob_get_clean();
 
-    $namefrom = '=?UTF-8?b?'.base64_encode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS').'?=';
+    $namefrom = '=?UTF-8?b?'.base64_encode($assinatura ? 'Assinatura A' : 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS').'?=';
     $from = '';
 
     $successMail = authSendEmail($from, $namefrom, $rs['CD_EMAIL_LOGIN'], $rs['DS_NOME'], $subject, utf8_decode($message));

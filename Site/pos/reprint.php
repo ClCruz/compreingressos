@@ -7,9 +7,11 @@ if (!isset($_GET['tipo'])) {
 
 	echo utf8_decode("<WRITE_AT LINE=5 COLUMN=0> Selecione o tipo:</WRITE_AT>");
 
-	$tipo_options = array('Comprovante', 'Ingresso');
+	$tipo_options = array('Comprovante', 'Ingresso', 'Últimos 10 Pedidos');
 
 	echo_select('tipo', $tipo_options, 3);
+
+	echo "<GET TYPE=HIDDEN NAME=ignore_history VALUE=1>";
 
 	echo "<POST>";
 
@@ -29,50 +31,66 @@ switch ($_GET['tipo']) {
 
 	// reimpressao de ingressos
 	case 1:
-	if (isset($_GET["cpf"])) {	
+	case 2:
+	if (isset($_GET["cpf"]) OR isset($_GET['pos_serial'])) {
 
-		$query = "SELECT ID_CLIENTE, DS_NOME, DS_SOBRENOME FROM MW_CLIENTE WHERE CD_CPF = ?";
-	    $params = array($_GET['cpf']);
-	    $rs = executeSQL($mainConnection, $query, $params, true);
-	    $id_cliente = $rs['ID_CLIENTE'];
-	    $nome_cliente = $rs['DS_NOME'] ." ". $rs['DS_SOBRENOME'];
+		if (isset($_GET['pos_serial'])) {
 
-//	    $query ="SELECT DISTINCT PV.ID_PEDIDO_VENDA,
-//	                PV.DT_PEDIDO_VENDA,
-//	                PV.VL_TOTAL_PEDIDO_VENDA
-//	            FROM MW_PEDIDO_VENDA PV
-//	            INNER JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
-//	            INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO AND A.IN_ATIVO = 1
-//	            INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO AND E.IN_ATIVO = 1
-//	            WHERE ID_CLIENTE = ? AND IN_SITUACAO = 'F'
-//	            AND CONVERT(DATETIME, CONVERT(VARCHAR, A.DT_APRESENTACAO, 112) + ' ' + LEFT(A.HR_APRESENTACAO,2) + ':' + RIGHT(A.HR_APRESENTACAO,2) + ':00') >= GETDATE()
-//	            ORDER BY 1 DESC";
+			$query = "SELECT DISTINCT TOP 10
+						PV.ID_PEDIDO_VENDA,                
+						PV.DT_PEDIDO_VENDA, 
+						PV.VL_TOTAL_PEDIDO_VENDA,
+						CONVERT(datetime, A.dt_apresentacao + REPLACE(A.hr_apresentacao, 'h', ':'), 103) AS DT_APRESENTACAO
+					FROM MW_PEDIDO_VENDA PV
+					INNER JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
+					INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO AND A.IN_ATIVO = 1
+					INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO AND E.IN_ATIVO = 1
+					WHERE ID_PEDIDO_IPAGARE = ? AND IN_SITUACAO = 'F'
+					AND CONVERT(DATETIME, CONVERT(VARCHAR, A.DT_APRESENTACAO, 112) + ' ' + LEFT(A.HR_APRESENTACAO,2) + ':' + RIGHT(A.HR_APRESENTACAO,2) + ':00') >= GETDATE()
+					ORDER BY ID_PEDIDO_VENDA DESC";
 
-		$query = "SELECT DISTINCT PV.ID_PEDIDO_VENDA,                
-					PV.DT_PEDIDO_VENDA, 
-					PV.VL_TOTAL_PEDIDO_VENDA,
-					CONVERT(datetime, A.dt_apresentacao + REPLACE(A.hr_apresentacao, 'h', ':'), 103) AS DT_APRESENTACAO
-				FROM MW_PEDIDO_VENDA PV
-				INNER JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
-				INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO AND A.IN_ATIVO = 1
-				INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO AND E.IN_ATIVO = 1
-				WHERE ID_CLIENTE = ? AND IN_SITUACAO = 'F'
-				AND CONVERT(DATETIME, CONVERT(VARCHAR, A.DT_APRESENTACAO, 112) + ' ' + LEFT(A.HR_APRESENTACAO,2) + ':' + RIGHT(A.HR_APRESENTACAO,2) + ':00') >= GETDATE()
-				ORDER BY DT_APRESENTACAO";
+		    $params = array($_GET['pos_serial']);
+		    $result = executeSQL($mainConnection, $query, $params);
 
-	    $params = array($id_cliente);
-	    $result = executeSQL($mainConnection, $query, $params);    
+		    if (!hasRows($result)) {
+		    	display_error("Não existem vendas realizadas nesse POS.", utf8_decode("Atenção"));
+		    	die();
+		    }
 
-	    if (!hasRows($result)) {
-	    	display_error("Não existem ingressos para o CPF informado.", utf8_decode("Atenção"));
-	    	die();
-	    }
+		} else {
+
+			$query = "SELECT ID_CLIENTE, DS_NOME, DS_SOBRENOME FROM MW_CLIENTE WHERE CD_CPF = ?";
+		    $params = array($_GET['cpf']);
+		    $rs = executeSQL($mainConnection, $query, $params, true);
+		    $id_cliente = $rs['ID_CLIENTE'];
+		    $nome_cliente = $rs['DS_NOME'] ." ". $rs['DS_SOBRENOME'];
+
+			$query = "SELECT DISTINCT PV.ID_PEDIDO_VENDA,                
+						PV.DT_PEDIDO_VENDA, 
+						PV.VL_TOTAL_PEDIDO_VENDA,
+						CONVERT(datetime, A.dt_apresentacao + REPLACE(A.hr_apresentacao, 'h', ':'), 103) AS DT_APRESENTACAO
+					FROM MW_PEDIDO_VENDA PV
+					INNER JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
+					INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO AND A.IN_ATIVO = 1
+					INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO AND E.IN_ATIVO = 1
+					WHERE ID_CLIENTE = ? AND IN_SITUACAO = 'F'
+					AND CONVERT(DATETIME, CONVERT(VARCHAR, A.DT_APRESENTACAO, 112) + ' ' + LEFT(A.HR_APRESENTACAO,2) + ':' + RIGHT(A.HR_APRESENTACAO,2) + ':00') >= GETDATE()
+					ORDER BY DT_APRESENTACAO";
+
+		    $params = array($id_cliente);
+		    $result = executeSQL($mainConnection, $query, $params);
+
+		    if (!hasRows($result)) {
+		    	display_error("Não existem ingressos para o CPF informado.", utf8_decode("Atenção"));
+		    	die();
+		    }
+
+		}
 
 	    $pedido_options = array(999999999 => 'Voltar');
 
 		while ($rs = fetchResult($result)) {
-			$pedido_options[$rs['ID_PEDIDO_VENDA'].'_'.count($pedido_options)] = $rs['ID_PEDIDO_VENDA'] ." - ". $rs['DT_APRESENTACAO']->format('d/m/y') . str_pad(number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, ',', ''), 11, ' ', STR_PAD_LEFT);
-			//$pedido_options[$rs['ID_PEDIDO_VENDA']] = $rs['ID_PEDIDO_VENDA'] ." - ". $rs['DT_APRESENTACAO']->format('d/m/y') . str_pad(number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, ',', ''), 11, ' ', STR_PAD_LEFT);
+			$pedido_options[$rs['ID_PEDIDO_VENDA'].'_'.count($pedido_options)] = $rs['ID_PEDIDO_VENDA'] ."   ". $rs['DT_APRESENTACAO']->format('d/m/y') . str_pad(number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, ',', ''), 11, ' ', STR_PAD_LEFT);
 		}
 
 	    echo "<WRITE_AT LINE=5 COLUMN=0> $nome_cliente</WRITE_AT>";
@@ -177,9 +195,13 @@ switch ($_GET['tipo']) {
 
 	} else {
 
-		echo "<WRITE_AT LINE=7 COLUMN=0> Informe o CPF:</WRITE_AT>";
-
-		echo "<GET TYPE=CPF NAME=cpf COL=1 LIN=10>";
+		// ultimos pedidos desse POS
+		if ($_GET['tipo'] == 2) {
+			echo "<GET TYPE=SERIALNO NAME=pos_serial>";
+		} else {
+			echo "<WRITE_AT LINE=7 COLUMN=0> Informe o CPF:</WRITE_AT>";
+			echo "<GET TYPE=CPF NAME=cpf COL=1 LIN=10>";
+		}
 
 	}
 	break;

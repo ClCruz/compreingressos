@@ -34,7 +34,7 @@ switch ($_GET['tipo']) {
 	case 2:
 	if (isset($_GET["cpf"]) OR isset($_GET['pos_serial'])) {
 
-		if (isset($_GET['pos_serial'])) {
+		if ($_GET['tipo'] == 2) {
 
 			$query = "SELECT DISTINCT TOP 10
 						PV.ID_PEDIDO_VENDA,                
@@ -65,6 +65,9 @@ switch ($_GET['tipo']) {
 		    $id_cliente = $rs['ID_CLIENTE'];
 		    $nome_cliente = $rs['DS_NOME'] ." ". $rs['DS_SOBRENOME'];
 
+		    // se foi vendido com o usuario generico
+		    $query_aux = ($id_cliente == 493205 ? 'AND ID_PEDIDO_IPAGARE = ?' : '');
+
 			$query = "SELECT DISTINCT PV.ID_PEDIDO_VENDA,                
 						PV.DT_PEDIDO_VENDA, 
 						PV.VL_TOTAL_PEDIDO_VENDA,
@@ -73,11 +76,12 @@ switch ($_GET['tipo']) {
 					INNER JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
 					INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = IPV.ID_APRESENTACAO AND A.IN_ATIVO = 1
 					INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO AND E.IN_ATIVO = 1
-					WHERE ID_CLIENTE = ? AND IN_SITUACAO = 'F'
+					WHERE ID_CLIENTE = ? AND IN_SITUACAO = 'F' $query_aux
 					AND CONVERT(DATETIME, CONVERT(VARCHAR, A.DT_APRESENTACAO, 112) + ' ' + LEFT(A.HR_APRESENTACAO,2) + ':' + RIGHT(A.HR_APRESENTACAO,2) + ':00') >= GETDATE()
 					ORDER BY DT_APRESENTACAO";
 
-		    $params = array($id_cliente);
+			// se foi vendido com o usuario generico
+		    $params = ($id_cliente == 493205 ? array($id_cliente, $_GET['pos_serial']) : array($id_cliente));
 		    $result = executeSQL($mainConnection, $query, $params);
 
 		    if (!hasRows($result)) {
@@ -195,9 +199,10 @@ switch ($_GET['tipo']) {
 
 	} else {
 
-		// ultimos pedidos desse POS
+		echo "<GET TYPE=SERIALNO NAME=pos_serial>";
+
 		if ($_GET['tipo'] == 2) {
-			echo "<GET TYPE=SERIALNO NAME=pos_serial>";
+			// ultimos pedidos desse POS
 		} else {
 			echo "<WRITE_AT LINE=7 COLUMN=0> Informe o CPF:</WRITE_AT>";
 			echo "<GET TYPE=CPF NAME=cpf COL=1 LIN=10>";

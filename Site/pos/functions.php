@@ -340,8 +340,9 @@ function print_order($pedido, $reprint = false){
 		echo "<CONSOLE><BR> VIA DO ESTABELECIMENTO<BR> Pressione uma tecla<BR> para imprimir o ingresso.</CONSOLE>";
 		echo "<GET TYPE=ANYKEY>";
 
+		echo "<CHGPRNFNT SIZE=4 FACE=FONTE3 BOLD>";
 		echo "<PRINTER>";
-		echo str_pad(" VIA ESTABELECIMENTO ", 42, "-", STR_PAD_BOTH) ."<BR><BR>";
+		echo str_pad(" VIA ESTABELECIMENTO-URNA-CANHOTO ", 42, "-", STR_PAD_BOTH) ."<BR><BR>";
 		echo "</PRINTER>";
 	}
 
@@ -351,6 +352,7 @@ function print_order($pedido, $reprint = false){
 		echo "<CONSOLE><BR> VIA DO CLIENTE<BR> Pressione uma tecla<BR> para imprimir o ingresso.</CONSOLE>";
 		echo "<GET TYPE=ANYKEY>";
 
+		echo "<CHGPRNFNT SIZE=4 FACE=FONTE1>";
 		echo "<PRINTER>";
 		echo str_pad(" VIA CLIENTE ", 42, "-", STR_PAD_BOTH) ."<BR><BR>";
 		echo "</PRINTER>";

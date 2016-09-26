@@ -205,7 +205,7 @@ switch ($_GET['tipo']) {
 			// ultimos pedidos desse POS
 		} else {
 			echo "<WRITE_AT LINE=7 COLUMN=0> Informe o CPF:</WRITE_AT>";
-			echo "<GET TYPE=CPF NAME=cpf COL=1 LIN=10>";
+			echo "<GET TYPE=FIELD NAME=cpf SIZE=11 COL=1 LIN=10>";
 		}
 
 	}

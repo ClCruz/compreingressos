@@ -14,7 +14,7 @@ if (!(isset($_SESSION['usuario_pdv']) and $_SESSION['usuario_pdv'] == 1) OR isse
 		$redirect = 'minha_conta.php?atualizar_dados=1';
 	}
 
-	if ($_COOKIE['entrega'] != -1) {
+	if (isset($_COOKIE['entrega']) AND $_COOKIE['entrega'] != -1) {
 		$query = "SELECT NR_ENDERECO FROM MW_ENDERECO_CLIENTE WHERE ID_ENDERECO_CLIENTE = ?";
 		$params = array($_COOKIE['entrega']);
 		$rs = executeSQL($mainConnection, $query, $params, true);

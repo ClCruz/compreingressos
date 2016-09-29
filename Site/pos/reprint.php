@@ -12,6 +12,7 @@ if (!isset($_GET['tipo'])) {
 	echo_select('tipo', $tipo_options, 3);
 
 	echo "<GET TYPE=HIDDEN NAME=ignore_history VALUE=1>";
+	echo "<GET TYPE=SERIALNO NAME=pos_serial>";
 
 	echo "<POST>";
 
@@ -25,6 +26,7 @@ switch ($_GET['tipo']) {
 	if ($_GET['RESPAG'] == 'APROVADO') {
 		echo "<GET TYPE=HIDDEN NAME=reset VALUE=1>";
 	} else {
+		$idterm_tef = getIDPOS($_GET['pos_serial']);
 		echo "<PAGAMENTO IPTEF=$ip_tef PORTATEF=$porta_tef CODLOJA=$codloja_tef IDTERM=$idterm_tef TIPO=GERENCIAL VALOR=$valor PAGRET=RESPAG BIN=BINCARTAO NINST=NOMEINST NSU=NSUAUT AUT=CAUT NPAR=PARC MODPAG=TIPOTRANS>";
 	}
 	break;

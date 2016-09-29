@@ -54,6 +54,8 @@ if ($_GET['RESPAG'] == 'APROVADO') {
 
 		// se for cartao de credito ou debito usar o estorno do pos
 		if (in_array($rs['CD_MEIO_PAGAMENTO'], array(888, 889))) {
+			$idterm_tef = getIDPOS($_GET['pos_serial']);
+
 			echo "<PAGAMENTO IPTEF=$ip_tef PORTATEF=$porta_tef CODLOJA=$codloja_tef IDTERM=$idterm_tef TIPO=ESTORNO VALOR= PAGRET=RESPAG BIN=BINCARTAO NINST=NOMEINST NSU=NSUAUT AUT=CAUT NPAR=PARC MODPAG=TIPOTRANS>";
 			echo "<GET TYPE=HIDDEN NAME=pedido VALUE={$_GET['pedido']}>";
 		} else {
@@ -66,6 +68,8 @@ if ($_GET['RESPAG'] == 'APROVADO') {
 		echo utf8_decode("<WRITE_AT LINE=5 COLUMN=0> Informe o Nº do Pedido:</WRITE_AT>");
 
 		echo "<GET TYPE=FIELD NAME=pedido SIZE=10 COL=2 LIN=9>";
+
+		echo "<GET TYPE=SERIALNO NAME=pos_serial>";
 	}
 }
 

@@ -379,6 +379,16 @@ function unblock_words($string) {
 	return preg_replace(array_keys($words), array_values($words), $string);
 }
 
+function getIDPOS($serial) {
+
+	require_once "../settings/functions.php";
+
+	$mainConnection = mainConnection();
+
+	$rs = executeSQL($mainConnection, "SELECT ID FROM MW_POS WHERE SERIAL = ?", array($serial), true);
+
+	return 'ID'.str_pad($rs['ID'], 6, '0', STR_PAD_LEFT);
+}
 
 
 

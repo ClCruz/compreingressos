@@ -7,12 +7,10 @@ if ($_ENV['IS_TEST']) {
 	$ip_tef = '152.250.250.64';
 	$porta_tef = '4096';
 	$codloja_tef = '00000000';
-	$idterm_tef = 'ID000001';
 } else {
 	$ip_tef = '192.168.102.1';
 	$porta_tef = '10101';
 	$codloja_tef = '72850161';
-	$idterm_tef = 'ID000001';
 }
 
 if ($_GET['config']) {

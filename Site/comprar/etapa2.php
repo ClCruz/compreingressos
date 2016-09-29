@@ -95,10 +95,21 @@ require('verificarServicosPedido.php');
 		}
 
 		if ($msg != '')
-			echo '<script type="text/javascript">$(function(){$.dialog({text:"'.$msg.'", icon: "ok"})})</script>';
+			echo '<script type="text/javascript">$(function(){
+				$.confirmDialog({
+					text:"",
+					detail:"'.$msg.'",
+					uiOptions: {
+						buttons: {
+							"Ok, entendi": ["", function(){
+								fecharOverlay();
+							}]
+						}
+					}
+				})
+			})</script>';
 	}
 	?>
-
 	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
 </head>
 <body>

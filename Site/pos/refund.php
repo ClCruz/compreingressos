@@ -4,6 +4,19 @@ echo_header();
 
 echo "<GET TYPE=SERIALNO NAME=pos_serial>";
 
+
+
+$mainConnection = mainConnection();
+
+if (!acessoPermitido($mainConnection, $_SESSION['admin'], 250)) {
+	display_error("Acesso negado.");
+	echo "<GET TYPE=HIDDEN NAME=reset VALUE=1>";
+	echo "<POST>";
+	die();
+}
+
+
+
 if ($_GET['RESPAG'] == 'APROVADO') {
 
 	$useragent = $_SERVER['HTTP_USER_AGENT'];

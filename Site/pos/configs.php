@@ -4,7 +4,7 @@ $header_lines = 4;
 $body_lines = $total_lines - $header_lines;
 
 if ($_ENV['IS_TEST']) {
-	$ip_tef = '152.250.250.64';
+	$ip_tef = '184.172.45.130';
 	$porta_tef = '4096';
 	$codloja_tef = '00000000';
 } else {

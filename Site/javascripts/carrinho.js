@@ -122,16 +122,16 @@ $(function() {
 				qtBinSelecionado = $mesmoBinSelecionado.length;
 
 				// ja existe algum ingresso promocional nao validado selecionado?
-				if (qtBinSelecionado > 1 && $('.beneficio:visible').filter(function(){return $(this).find("input[name='tipoBin\\[\\]']").val() == 'itau'}).find('.icone_validador:not(.valido)').length > 0) {
-					$this.selectbox('detach');
-					$this.val($this.data('lastValue'));
-					$this.selectbox('attach');
-					// IMPORTANT!: Firefox will not act properly without this:
-					$this.blur();
+				// if (qtBinSelecionado > 1 && $('.beneficio:visible').filter(function(){return $(this).find("input[name='tipoBin\\[\\]']").val() == 'itau'}).find('.icone_validador:not(.valido)').length > 0) {
+				// 	$this.selectbox('detach');
+				// 	$this.val($this.data('lastValue'));
+				// 	$this.selectbox('attach');
+				// 	// IMPORTANT!: Firefox will not act properly without this:
+				// 	$this.blur();
 
-					$.dialog({text: "É necessário efetuar a validação do primeiro ingresso participante da promoção antes de selecionar o segundo ingresso promocional."});
-					return false;
-				}
+				// 	$.dialog({text: "É necessário efetuar a validação do primeiro ingresso participante da promoção antes de selecionar o segundo ingresso promocional."});
+				// 	return false;
+				// }
 
 				// o limite de quantidade ainda nao foi atingido?
 				if (qtBinSelecionado > $this.find('option:selected').attr('qtBin')) {
@@ -188,7 +188,7 @@ $(function() {
 				$promocoesSelecionadas = $('.resumo_espetaculo').filter(function(){
 					return $(this).data('evento') == evento_id;
 				}).find('option:selected').filter(function(){
-					return $(this).attr('codpromocao') != undefined;
+					return $(this).attr('codpromocao') == $this.find('option:selected').attr('codpromocao');
 				});
 
 				qtPromocoesSelecionadas = $promocoesSelecionadas.length;

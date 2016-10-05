@@ -1619,15 +1619,16 @@ function comboPromocoes($name, $selected, $isCombo = true) {
 
 function comboTipoPromocao($name, $selected) {
     $tipos = array(
-        1 => 'Código Fixo',
-        2 => 'Código Aleatório',
-        3 => 'Arquivo CSV',
-        4 => 'BIN',
-        5 => 'Convite',
-        // 6 => 'WebService'
-        7 => 'BIN Riachuelo',
-        8 => 'Assinatura',
-        9 => 'Benefício Assinatura'
+        1   => 'Código Fixo',
+        2   => 'Código Aleatório',
+        3   => 'Arquivo CSV',
+        4   => 'BIN',
+        5   => 'Convite',
+        // 6    => 'WebService'
+        7   => 'BIN Riachuelo',
+        8   => 'Assinatura',
+        9   => 'Benefício Assinatura',
+        10  => 'Compre X Leve Y'
     );
 
     asort($tipos);

@@ -42,8 +42,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                                         WHEN PC.ID_BASE IS NOT NULL THEN 'teatro'
                                         WHEN PC.IN_TODOS_EVENTOS = 1 THEN 'geral'
                                         ELSE 'especifico'
-                                    END AS ABRANGENCIA
+                                    END AS ABRANGENCIA,
+                                    XY.ID_PROMOCAO_CONTROLE_FILHA,
+                                    XY.QT_INGRESSOS
                                 FROM MW_PROMOCAO_CONTROLE PC
+                                LEFT JOIN MW_PROMOCAO_COMPREXLEVEY XY ON XY.ID_PROMOCAO_CONTROLE_PAI = PC.ID_PROMOCAO_CONTROLE
                                 WHERE PC.ID_PROMOCAO_CONTROLE = ?
                                 ORDER BY PC.DS_PROMOCAO",
                                 array($_GET['id']), true);
@@ -250,11 +253,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                         case '8': case '9':
                             mostrar = 'assinatura';
                         break;
+                        // Compre X Leve Y
+                        case '10':
+                            mostrar = 'xy';
+                        break;
                     }
 
                     $('[class*=promo_'+mostrar+'], .promo_geral').show();
 
-                    if (mostrar == 'csv' || mostrar == 'bin') {
+                    if (mostrar == 'csv' || mostrar == 'bin' || mostrar == 'xy') {
                         if ($('[name=diretorio_temp]').val() == '') {
                             $.get(pagina, {
                                 'action': 'diretorio_temp'
@@ -452,30 +459,34 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
 
                     $cboPromo.parent().removeClass('ui-state-error');
 
-                    switch ($cboPromo.val().substring(0,1)) {
+                    switch ($cboPromo.val().toString()) {
                         // Código Fixo
                         case '1':
-                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], .chosen-container *, #cboAssinatura, [name=cboPatrocinador])');
+                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], .chosen-container *, #cboAssinatura, [name=cboPatrocinador], [name=promoMonitorada], [name=qt_ingressos])');
                         break;
                         // Código Aleatório
                         case '2':
-                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], .chosen-container *, #cboAssinatura, [name=cboPatrocinador], [name=ds_codigo])');
+                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], .chosen-container *, #cboAssinatura, [name=cboPatrocinador], [name=ds_codigo], [name=promoMonitorada], [name=qt_ingressos])');
                         break;
                         // Código de Arquivo CSV
                         case '3':
-                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], .chosen-container *, #cboAssinatura, [name=cboPatrocinador], [name=ds_codigo], [name=qt_codigo])');
+                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], .chosen-container *, #cboAssinatura, [name=cboPatrocinador], [name=ds_codigo], [name=qt_codigo], [name=promoMonitorada], [name=qt_ingressos])');
                         break;
                         // BINs CSV
                         case '4': case '7':
-                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], .chosen-container *, #cboAssinatura, [name=ds_codigo], [name=qt_codigo])');
+                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], .chosen-container *, #cboAssinatura, [name=ds_codigo], [name=qt_codigo], [name=promoMonitorada], [name=qt_ingressos])');
                         break;
                         // Convite
                         case '5':
-                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], .chosen-container *, #cboAssinatura, [name=cboPatrocinador], [name=ds_codigo], [name=qt_codigo], [name=ds_img1], [name=ds_img2])');
+                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], .chosen-container *, #cboAssinatura, [name=cboPatrocinador], [name=ds_codigo], [name=qt_codigo], [name=ds_img1], [name=ds_img2], [name=promoMonitorada], [name=qt_ingressos])');
                         break;
                         // Assinatura
                         case '8': case '9':
-                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], .chosen-container *, [name=cboPatrocinador], [name=ds_codigo], [name=qt_codigo], [name=ds_img1], [name=ds_img2])');
+                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], .chosen-container *, [name=cboPatrocinador], [name=ds_codigo], [name=qt_codigo], [name=ds_img1], [name=ds_img2], [name=promoMonitorada], [name=qt_ingressos])');
+                        break;
+                        // Compre X Leve Y
+                        case '10':
+                            campos = $('#dados :input:not(button, [type=file], [type=hidden], [type=radio], [name=limite_cpf\\[\\]], .chosen-container *, [name=cboPatrocinador], #cboAssinatura, [name=ds_codigo], [name=qt_codigo])');
                         break;
                         // inválido
                         default:
@@ -632,7 +643,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                             <a class="promo_convite button ui-icon ui-icon-help" href="#"
                                 title="Quando o código fixo for igual à 'CONVITE' o cliente não terá que efetuar a validação no momento da compra. Qualquer outro código fixo será necessário a digitação no momento da compra."></a>
                         </div>
-                        <div class="promo_csv promo_bin">
+                        <div class="promo_csv promo_bin promo_xy">
                             <input type="hidden" name="diretorio_temp" value="" />
                             
                             <div style="width:300px; height:16px;">
@@ -661,6 +672,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                             <b>Patrocinador:</b><br/>
                             <?php echo comboPatrocinador('cboPatrocinador', $rs['ID_PATROCINADOR']); ?>
                         </div>
+                        <div class="promo_xy">
+                            <b>Promoção Monitorada:</b><br/>
+                            <?php echo comboPromocoes('promoMonitorada', $rs['ID_PROMOCAO_CONTROLE_FILHA']); ?>
+                        </div>
                     </td>
                 </tr>
                 <tr>
@@ -676,6 +691,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                         </div>
                     </td>
                     <td>
+                        <div class="promo_xy">
+                            <b>Quantidade mínima de ingressos da promoção monitorada:</b><br/>
+                            <input type="text" name="qt_ingressos" class="numbersOnly int" size="10" maxlength="2" value="<?php echo $rs['QT_INGRESSOS']; ?>" />
+                        </div>
                     </td>
                 </tr>
             </table>

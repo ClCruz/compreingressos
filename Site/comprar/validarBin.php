@@ -65,7 +65,8 @@ if ($_GET['carrinho']) {
                         P.ID_SESSION,
                         P.ID_PEDIDO_VENDA,
                         PC.CODTIPPROMOCAO,
-                        PC.ID_PROMOCAO_CONTROLE
+                        PC.ID_PROMOCAO_CONTROLE,
+                        PC.DS_NOME_SITE
                     FROM CI_MIDDLEWAY..MW_RESERVA R
                     INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB
                         ON AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
@@ -86,6 +87,24 @@ if ($_GET['carrinho']) {
 
         if ($rs = fetchResult($result)) {
 
+            $erros = array(
+                // codigo fixo
+                '1' => 'Não existem mais ingressos disponíveis para este tipo de promoção. Por favor, selecione outro tipo de ingresso.',
+                // codigo aleatorio
+                '2' => 'Este código promocional já foi utilizado. Por favor, informe outro código promocional ou selecione outro tipo de ingresso.',
+                // importacao do csv
+                '3' => 'Este código promocional já foi utilizado. Por favor, informe outro código promocional ou selecione outro tipo de ingresso.',
+                // convite
+                '5' => 'Convites esgotados.',
+                // assinatura
+                '8' => 'Os bilhetes de assinatura disponíveis já foram utilizados. Por favor, selecione outro tipo de ingresso.',
+                // assinatura
+                '9' => 'Este bilhete só pode ser utilizado por assinantes CompreIngressos.com',
+                // compre x leve y (msg padrao, pode mudar na checagem abaixo)
+                '10' => 'Não existem mais ingressos disponíveis para este tipo de promoção. Por favor, selecione outro tipo de ingresso.'
+            );
+
+
             // se for beneficio de assinante checar por validade e adicionar cupom
             if ($rs['CODTIPPROMOCAO'] == 9 AND ($rs['ID_PROMOCAO'] == NULL OR !empty($rs['ID_SESSION']) OR !empty($rs['ID_PEDIDO_VENDA']))) {
                 $rs_assinatura = executeSQL($mainConnection,
@@ -104,21 +123,33 @@ if ($_GET['carrinho']) {
                     $rs['ID_SESSION'] = $rs['ID_PEDIDO_VENDA'] = NULL;
                 }
             }
+            // se for cupom compre x leve y checar se ainda tem disponivel e se a pessoa selecionou x
+            else if ($rs['CODTIPPROMOCAO'] == 10 AND !empty($rs['ID_PROMOCAO']) AND empty($rs['ID_SESSION']) AND empty($rs['ID_PEDIDO_VENDA'])) {
 
-            $erros = array(
-                // codigo fixo
-                '1' => 'Não existem mais ingressos disponíveis para este tipo de promoção. Por favor, selecione outro tipo de ingresso.',
-                // codigo aleatorio
-                '2' => 'Este código promocional já foi utilizado. Por favor, informe outro código promocional ou selecione outro tipo de ingresso.',
-                // importacao do csv
-                '3' => 'Este código promocional já foi utilizado. Por favor, informe outro código promocional ou selecione outro tipo de ingresso.',
-                // convite
-                '5' => 'Convites esgotados.',
-                // assinatura
-                '8' => 'Os bilhetes de assinatura disponíveis já foram utilizados. Por favor, selecione outro tipo de ingresso.',
-                // assinatura
-                '9' => 'Este bilhete só pode ser utilizado por assinantes CompreIngressos.com'
-            );
+                $query = "SELECT C.ID_PROMOCAO_CONTROLE_FILHA, C.QT_INGRESSOS, P.DS_NOME_SITE
+                            FROM MW_PROMOCAO_COMPREXLEVEY C
+                            INNER JOIN MW_PROMOCAO_CONTROLE P ON P.ID_PROMOCAO_CONTROLE = C.ID_PROMOCAO_CONTROLE_FILHA
+                            WHERE C.ID_PROMOCAO_CONTROLE_PAI = ?";
+                $params = array($rs['ID_PROMOCAO_CONTROLE']);
+                $rs2 = executeSQL($mainConnection, $query, $params, true);
+
+                $qt_minima = $rs2['QT_INGRESSOS'];
+                $ds_nome_site = $rs2['DS_NOME_SITE'];
+
+                $query = "prc_obtem_quantidade_ingressos_validos_selecionados_da_promocao ?,?";
+                $params = array(session_id(), $rs2['ID_PROMOCAO_CONTROLE_FILHA']);
+                $rs2 = executeSQL($mainConnection, $query, $params, true);
+
+                if ($rs2['TOTAL'] < $qt_minima) {
+                    $erros[10] = "Para participar dessa promoção um mínimo de $qt_minima ingresso(s) \"$ds_nome_site\" deve(m) ser selecionado(s).";
+
+                    // forcar conteudo nas variaveis para exibicao do erro acima
+                    $rs['ID_SESSION'] = "not empty";
+                    $rs['ID_PEDIDO_VENDA'] = "not empty";
+                }
+            }
+
+
 
             if (!empty($rs['ID_PROMOCAO']) AND (!empty($rs['ID_SESSION']) OR !empty($rs['ID_PEDIDO_VENDA']))) {
                 echo $erros[$rs['CODTIPPROMOCAO']];
@@ -291,7 +322,7 @@ if ($_GET['carrinho']) {
 
     // retorna quantidade de ingressos promocionais selecionados e o máximo por evento
     $query4 = "WITH RESULTADO AS (
-                    SELECT ISNULL(CE.QT_PROMO_POR_CPF, ISNULL(PC.QT_PROMO_POR_CPF, 0)) QT_PROMO_POR_CPF, E.ID_EVENTO, TTB.ID_PROMOCAO_CONTROLE
+                    SELECT ISNULL(CE.QT_PROMO_POR_CPF, ISNULL(PC.QT_PROMO_POR_CPF, 0)) QT_PROMO_POR_CPF, E.ID_EVENTO, TTB.ID_PROMOCAO_CONTROLE, PC.CODTIPPROMOCAO
                     FROM CI_MIDDLEWAY..MW_RESERVA R
                     INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A2 ON A2.ID_APRESENTACAO = R.ID_APRESENTACAO
                     INNER JOIN CI_MIDDLEWAY..MW_EVENTO E ON E.ID_EVENTO = A2.ID_EVENTO
@@ -302,9 +333,9 @@ if ($_GET['carrinho']) {
                         AND CE.ID_EVENTO = E.ID_EVENTO
                     WHERE R.NR_BENEFICIO IS NOT NULL AND R.ID_SESSION = ? AND E.ID_EVENTO = ?
                 )
-                SELECT QT_PROMO_POR_CPF, ID_EVENTO, COUNT(1) AS COMPRANDO, ID_PROMOCAO_CONTROLE
+                SELECT QT_PROMO_POR_CPF, ID_EVENTO, COUNT(1) AS COMPRANDO, ID_PROMOCAO_CONTROLE, CODTIPPROMOCAO
                 FROM RESULTADO
-                GROUP BY QT_PROMO_POR_CPF, ID_EVENTO, ID_PROMOCAO_CONTROLE";
+                GROUP BY QT_PROMO_POR_CPF, ID_EVENTO, ID_PROMOCAO_CONTROLE, CODTIPPROMOCAO";
 
     // quantos ingressos promocionais da apresentacao na reserva o cliente ja comprou
     $query5 = "SELECT ISNULL(SUM(CASE H.CODTIPLANCAMENTO WHEN 1 THEN 1 ELSE -1 END), 0) AS TOTAL
@@ -330,12 +361,12 @@ if ($_GET['carrinho']) {
 
         $result2 = executeSQL($conn, $query4, array(session_id(), $id_evento));
 
-        if (hasRows($result2)) {
-            $rs = fetchResult($result2);
+        while ($rs = fetchResult($result2)) {
 
             $limite = $rs['QT_PROMO_POR_CPF'];
             $comprando = $rs['COMPRANDO'];
             $id_promocao_controle = $rs['ID_PROMOCAO_CONTROLE'];
+            $codtippromocao = $rs['CODTIPPROMOCAO'];
 
             if ($limite > 0) {
                 $rs = executeSQL($conn, $query5, array($cpf, $data, $hora, $codpeca, $id_promocao_controle), true);
@@ -344,6 +375,26 @@ if ($_GET['carrinho']) {
                     $erro = 'Você atingiu o limite de ' . $limite . ' ingresso(s) promocional(is) em um ou mais eventos.<br><br>'.($_POST['pos'] ? 'Favor cancelar a venda atual, refazendo-a com outro tipo de bilhete.' : 'Favor revisar o pedido.');
                 } else if ($rs['TOTAL'] + $comprando > $limite) {
                     $erro = 'Você pode comprar apenas ' . ($limite - $rs['TOTAL']) . ' ingresso(s) promocional(is).<br><br>'.($_POST['pos'] ? 'Favor cancelar a venda atual, refazendo-a com outro tipo de bilhete.' : 'Retorne ao passo 2 e selecione outro tipo de ingresso.');
+                }
+            }
+
+            if ($codtippromocao == 10) {
+                $query = "SELECT C.ID_PROMOCAO_CONTROLE_FILHA, C.QT_INGRESSOS, P.DS_NOME_SITE
+                            FROM MW_PROMOCAO_COMPREXLEVEY C
+                            INNER JOIN MW_PROMOCAO_CONTROLE P ON P.ID_PROMOCAO_CONTROLE = C.ID_PROMOCAO_CONTROLE_FILHA
+                            WHERE C.ID_PROMOCAO_CONTROLE_PAI = ?";
+                $params = array($id_promocao_controle);
+                $rs2 = executeSQL($mainConnection, $query, $params, true);
+
+                $qt_minima = $rs2['QT_INGRESSOS'];
+                $ds_nome_site = $rs2['DS_NOME_SITE'];
+
+                $query = "prc_obtem_quantidade_ingressos_validos_selecionados_da_promocao ?,?";
+                $params = array(session_id(), $rs2['ID_PROMOCAO_CONTROLE_FILHA']);
+                $rs2 = executeSQL($mainConnection, $query, $params, true);
+
+                if ($rs2['TOTAL'] < $qt_minima) {
+                    $erro = "Para participar dessa promoção um mínimo de $qt_minima ingresso(s) \"$ds_nome_site\" deve(m) ser selecionado(s).";
                 }
             }
         }

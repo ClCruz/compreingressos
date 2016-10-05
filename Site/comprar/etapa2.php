@@ -67,7 +67,9 @@ require('verificarServicosPedido.php');
 				SELECT
 	                A.DS_ASSINATURA,
 	                SUM(CASE WHEN P.ID_PROMOCAO IS NULL THEN 0 ELSE 1 END) AS QT_BILHETES_DISPONIVEIS,
-	                PC.CODTIPPROMOCAO
+	                PC.CODTIPPROMOCAO,
+	                MAX(PC.PERC_DESCONTO_VR_NORMAL) AS PERC_DESCONTO_VR_NORMAL,
+	                PC.IN_VALOR_SERVICO
                 
                 FROM MW_ASSINATURA A
                 INNER JOIN MW_ASSINATURA_CLIENTE AC ON AC.ID_ASSINATURA = A.ID_ASSINATURA
@@ -79,19 +81,32 @@ require('verificarServicosPedido.php');
                 
                 WHERE AC.ID_CLIENTE = ? AND (AC.IN_ATIVO = 1 OR (AC.IN_ATIVO = 0 AND AC.DT_PROXIMO_PAGAMENTO > GETDATE()))
                 
-                GROUP BY A.DS_ASSINATURA, PC.CODTIPPROMOCAO
-                ORDER BY CODTIPPROMOCAO, DS_ASSINATURA';
+                GROUP BY A.DS_ASSINATURA, PC.CODTIPPROMOCAO, PC.IN_VALOR_SERVICO
+                ORDER BY DS_ASSINATURA, CODTIPPROMOCAO';
 	$params = array(session_id(), $_SESSION['user']);
 	$result = executeSQL($mainConnection, $query, $params);
 
 	if (hasRows($result)) {
 		$msg = '';
-
+		$lastRS = array();
 		while ($rs = fetchResult($result)) {
-			if ($rs['CODTIPPROMOCAO'] == 9)
-				$msg .= "Você pode utilizar seu DESCONTO de {$rs['DS_ASSINATURA']} para este evento.<br/>";
-			elseif ($rs['CODTIPPROMOCAO'] == 8 AND $rs['QT_BILHETES_DISPONIVEIS'] > 0)
+			if ($rs['CODTIPPROMOCAO'] == 8 AND $rs['QT_BILHETES_DISPONIVEIS'] > 0) {
 				$msg .= "Você tem {$rs['QT_BILHETES_DISPONIVEIS']} ingresso(s) disponível(eis) de {$rs['DS_ASSINATURA']} que pode(rão) ser utilizado(s) para este evento.<br/>";
+			} elseif ($rs['CODTIPPROMOCAO'] == 9) {
+				if ($lastRS['DS_ASSINATURA'] == $rs['DS_ASSINATURA']) {
+					$rs['PERC_DESCONTO_VR_NORMAL'] = number_format($rs['PERC_DESCONTO_VR_NORMAL'], 0);
+					$msg = substr($msg, 0, -6) . ",<br/>além disto você também pode utilizar seu DESCONTO de até {$rs['PERC_DESCONTO_VR_NORMAL']}%";
+				} else {
+					$msg .= "Você pode utilizar seu DESCONTO de {$rs['DS_ASSINATURA']}";
+				}
+
+				if (!$rs['IN_VALOR_SERVICO']) {
+					$msg .= " e ainda não pagar a taxa de serviço para este evento";
+				}
+
+				$msg .= ".<br/>";
+			}
+			$lastRS = $rs;
 		}
 
 		if ($msg != '')

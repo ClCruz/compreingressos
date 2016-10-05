@@ -132,9 +132,10 @@ require('acessoLogado.php');
 		    margin-bottom: 20px;
 		}
 
-		div#botoes p.detalhe {
-		    font-size: 13px;
-		    margin-top: -20px;
+		div.resumo p.detalhe {
+			font-size: 13px;
+		    text-align: right;
+		    padding: 10px 40px 0 0;
 		}
 
 		div#content .borda_lateral {
@@ -284,6 +285,8 @@ require('acessoLogado.php');
 							Se você decidir por não continuar a assinatura, tudo bem,<br/>
 							sem compromisso. Cancele online* em "minha conta".
 						</p>
+
+						<p class="detalhe">*Após <?php echo $qt_dias_cancelamento; ?> dias de adesão.</p>
 					</div>
 
 					<table id="pedido_resumo">
@@ -356,9 +359,7 @@ require('acessoLogado.php');
 					<label class="checkbox" for="radio_privacidade">Aceito os <a href="#" class="politica_de_privacidade">termos da política de privacidade</a> do <?php echo $ds_assinatura; ?></label>
 				</p>
 
-				<p>Clique em avançar para efetuar o pagamento.</p>
-
-				<p class="detalhe">*Após <?php echo $qt_dias_cancelamento; ?> dias de adesão.</p>
+				<p align="right">Clique em avançar para concluir sua assinatura.</p>
 			</div>
 		</div>
 

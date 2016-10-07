@@ -1,55 +1,66 @@
-Programador Ruby
-Intuiti Soluções em Tecnologia - São Paulo e Região, Brasil
-Descrição da vaga
+/*
+select e.ds_evento, a.dt_apresentacao, b.id_apresentacao, CodTipBilhete, MAX(id_apresentacao_bilhete) as id_apresentacao_bilhete, count(1)
+from 
+mw_evento e
+inner join
+mw_apresentacao a
+on a.id_evento = e.id_evento
+inner join 
+mw_apresentacao_bilhete b
+on a.id_apresentacao = b.id_apresentacao
+and b.in_ativo = 1
+where a.in_ativo = 1
+and dt_apresentacao > GETDATE()
+and ds_evento like '%circo%'
+--and a.id_apresentacao = 120620
+group by e.ds_evento, a.dt_apresentacao, b.id_apresentacao, CodTipBilhete
+having count(1) > 1
+*/
 
-Programador com sólida experiêcia em Ruby, MySql e Linux;
- 
-Contratação CLT + benefícios.
- 
-Local de trabalho próximo à Praça da Republica, São Paulo/SP.
- 
-Interessados enviar curriculum e pretensão salarial.
-Criar um cadastro básico de pessoa (nome, endereço, telefone, email) que seja desenvolvido com Ruby em Linux e enviar link para avaliação.
- 
- 
- 
-Competências e experiência desejadas
+declare @id_apresentacao int, @id_apresentacao_bilhete int, @codtipbilhete int
 
-Linux
-Ruby
-MYSQL
-PHP
-Javascript
-HTML 
-CSS
+declare c1 cursor for
+select b.id_apresentacao, CodTipBilhete, MAX(id_apresentacao_bilhete) as id_apresentacao_bilhete
+from 
+mw_evento e
+inner join
+mw_apresentacao a
+on a.id_evento = e.id_evento
+inner join 
+mw_apresentacao_bilhete b
+on a.id_apresentacao = b.id_apresentacao
+where a.in_ativo = 1
+and b.in_ativo = 1
+and dt_apresentacao > GETDATE()
+and a.id_apresentacao in (select id_apresentacao from mw_apresentacao_bilhete x where x.id_apresentacao = a.id_apresentacao and in_ativo = 1 group by id_apresentacao having COUNT(1) > 1)
+--and a.id_apresentacao = 120240
+group by e.ds_evento, a.dt_apresentacao, b.id_apresentacao, CodTipBilhete
+having count(1) > 1
+
+open c1
+
+fetch next from c1 into @id_apresentacao, @codtipbilhete, @id_apresentacao_bilhete
+
+while @@FETCH_STATUS = 0
+begin
+
+
+	update mw_apresentacao_bilhete 
+	set in_ativo = 0
+	where id_apresentacao = @id_apresentacao 
+	 and CodTipBilhete = @codtipbilhete 
+	 and in_ativo = 1
+	 and id_apresentacao_bilhete < @id_apresentacao_bilhete
  
-Descrição da empresa
+/*
+	select * from mw_apresentacao_bilhete 
+	where id_apresentacao = @id_apresentacao 
+	 and CodTipBilhete = @codtipbilhete 
+	 and in_ativo = 1
+	 and id_apresentacao_bilhete < @id_apresentacao_bilhete
+*/
+	fetch next from c1 into @id_apresentacao, @codtipbilhete, @id_apresentacao_bilhete
+end
 
-Empresa de tecnologia com foco em desenvolvimento de novas tecnologias com sólida base de clientes e em crescimento.
-Informações adicionais
-
-Tipo: Tempo integral Experiência: Pleno-sênior Funções: Tecnologia da informação Setores: Tecnologia da informação e serviços
-http://www.ondetrabalhar.com/vagas/5862
-
-quality suite alphiv
-
-imento
-adriana - AA005TO4LC
-kaiam - AA005TO6EW 
-http://www.usembassy.gov/
-http://portuguese.brazil.usembassy.gov/
-https://ais.usvisa-info.com/pt-br/niv -agendamento e tx visto
-
-TEMP. BUSINESS PLEASURE VISITOR (B) 
- Specify: BUSINESS & TOURISM (TEMPORARY VISITOR) (B1/B2) 
- 
-Intended Date of Arrival: 15 JULY 2016 
-Intended Length of Stay in U.S.: 11 DAY(S)  
-Address where you will stay in the U.S.: 5820 W IRLO BRONSON HIGHWAY, KISSIMMEE, 
- ORLANDO, FLORIDA 34746 
-Person/Entity Paying for Your Trip: OTHER PERSON 
-Name of Person Paying for Your Trip: FERREIRA, JEFFERSON 
-Telephone Number: 551123350770 
-Email Address: fer.jeff@hotmail.com 
-Relationship to You: SPOUSE 
-Is the address of the party paying for your trip the same as your Home or Mailing Address? YES 
+close c1
+deallocate c1

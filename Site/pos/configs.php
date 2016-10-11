@@ -53,7 +53,7 @@ if (!$_SESSION['is_pos_configured']) {
 			echo "<FILE NAME=logo_scroll.bmp ADDR=$imgs_dir/logo_scroll.bmp ERR=erroarq WRT=SIM>";
 
 			// envia arquivo de configuracao do <PAGAMENTO>
-			echo "<FILE NAME=CLSIT ADDR=/pos2/CLSIT.txt ERR=ERROARQ>";
+			echo "<FILE NAME=CLSIT ADDR=/pos/CLSIT.txt ERR=ERROARQ>";
 
 			// configuracoes gerais
 			echo "<CONFIG_NAVS RETURN=STS_ALTERA_SERVER>";

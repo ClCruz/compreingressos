@@ -704,7 +704,7 @@ if (isset($_GET['confirmacao'])) {
 				echo "<GET TYPE=HIDDEN NAME=TIPOTRANS VALUE=CHEQUE>";
 			} else {
 				$idterm_tef = getIDPOS($_GET['pos_serial']);
-				$valor = number_format($total_geral * 100, 0);
+				$valor = number_format($total_geral * 100, 0, '', '');
 				
 				echo "<PAGAMENTO IPTEF=$ip_tef PORTATEF=$porta_tef CODLOJA=$codloja_tef IDTERM=$idterm_tef TIPO=MENU VALOR=$valor PAGRET=RESPAG BIN=BINCARTAO NINST=NOMEINST NSU=NSUAUT AUT=CAUT NPAR=PARC MODPAG=TIPOTRANS>";
 			}

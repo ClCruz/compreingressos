@@ -623,39 +623,21 @@ if (isset($_GET['confirmacao'])) {
 		$bin = executeSQL($mainConnection, "SELECT CD_BINITAU FROM MW_RESERVA WHERE ID_SESSION = ? AND CD_BINITAU IS NOT NULL", array(session_id()), true);
 		$bin = $bin[0];
 
-		$useragent = $_SERVER['HTTP_USER_AGENT'];
-		$strCookie = 'PHPSESSID=' . $_COOKIE['PHPSESSID'] . '; path=/';
-
-		$post_data = http_build_query(array('numCartao' => $bin, 'pos' => 1));
-		$url = 'http'.($_SERVER["HTTPS"] == "on" ? 's' : '').'://'.$_SERVER['SERVER_NAME'].'/comprar/validarBin.php';
-		session_write_close();
-
-		$ch = curl_init(); 
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_USERAGENT, $useragent);
-		curl_setopt($ch, CURLOPT_COOKIE, $strCookie);
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		$response = curl_exec($ch); 
-		curl_close($ch);
+		ob_start();
+		$_POST['numCartao'] = $bin;
+		$_POST['pos'] = 1;
+		require('../comprar/validarBin.php');
+		$response = ob_get_clean();
 		if ($response != '') {
-			$error[] = $url;
+			$error[] = $response;
 		}
 
-		$url = 'http'.($_SERVER["HTTPS"] == "on" ? 's' : '').'://'.$_SERVER['SERVER_NAME'].'/comprar/validarLote.php';
-		$ch = curl_init(); 
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_USERAGENT, $useragent);
-		curl_setopt($ch, CURLOPT_COOKIE, $strCookie);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		$response = curl_exec($ch); 
-		curl_close($ch);
+		ob_start();
+		require('../comprar/validarLote.php');
+		$response = ob_get_clean();
 		if ($response != '') {
-			$error[] = $url;
+			$error[] = $response;
 		}
-
-		session_start();
 
 		// se estiver tudo ok pedir pelo pagarmento
 		if (!isset($error)) {

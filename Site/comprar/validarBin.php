@@ -405,7 +405,8 @@ if ($_GET['carrinho']) {
 
     if ($erro != '') {
         echo $erro;
-        die();
+        if (!isset($_POST['pos']))
+            die();
     }
 }
 ?>

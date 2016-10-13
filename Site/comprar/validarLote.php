@@ -57,8 +57,12 @@ while ($rs = fetchResult($result)) {
 
             $disponiveis = (($comprando + $disponiveis) < 0 ? 0 : ($comprando + $disponiveis));
 
-            $erro = 'Neste momento existe(m) apenas a quantidade disponível de '.$disponiveis.' ingresso(s) "'.$rs['DS_TIPO_BILHETE'].'", retorne até a etapa "2. Tipo de Ingresso" e selecione outro tipo de ingresso para efetuar a compra.<br/><br/>
+            if ($_POST['pos']) {
+                $erro = 'Neste momento existe(m) apenas a quantidade disponível de '.$disponiveis.' ingresso(s) "'.$rs['DS_TIPO_BILHETE'].'". Selecione outro tipo de ingresso para efetuar a compra.';
+            } else {
+                $erro = 'Neste momento existe(m) apenas a quantidade disponível de '.$disponiveis.' ingresso(s) "'.$rs['DS_TIPO_BILHETE'].'", retorne até a etapa "2. Tipo de Ingresso" e selecione outro tipo de ingresso para efetuar a compra.<br/><br/>
                         Importante: a quantidade disponível poderá ser alterada de acordo com a procura do evento.';
+            }
 
         }
     }
@@ -66,6 +70,7 @@ while ($rs = fetchResult($result)) {
 
 if ($erro != '') {
     echo $erro;
-    die();
+    if (!$_POST['pos'])
+        die();
 }
 ?>

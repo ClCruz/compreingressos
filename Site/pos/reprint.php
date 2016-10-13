@@ -34,7 +34,7 @@ switch ($_GET['tipo']) {
 	// reimpressao de ingressos
 	case 1:
 	case 2:
-	if (isset($_GET["cpf"]) OR isset($_GET['pos_serial'])) {
+	if (isset($_GET["cpf"]) OR $_GET['tipo'] == 2) {
 
 		if ($_GET['tipo'] == 2) {
 

@@ -221,7 +221,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
 					$Codigo .= validaDados($tip['CODTIPBILHETE'], 3);
 					$Codigo .= validaDados($i, 5);
 
-					$filtro = $setor['NomSala'].';'.$setor['NomSetor'].';';
+					$filtro = $setor['NomSala'].';'.$setor['NomSetor'].';'.$setor['CODSALA'].';'.$setor['CODSETOR'].';';
 
 					fputcsv($FILE, array($Codigo.';'.$filtro));
 					//fputcsv($FILE, array($Codigo.';'));

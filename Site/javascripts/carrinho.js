@@ -107,6 +107,12 @@ $(function() {
 
 		// verifica se esta na etapa 2 ou etapa 4 (select = etapa 2)
 		if ($this.is('select')) {
+			$this.closest('tr').next('.beneficio').removeClass(function(i, css){ return (css.match(/promo_\d+/g) || []).join(' '); });
+
+			if ($this.find('option:selected').attr('tipoPromo')) {
+				$this.closest('tr').next('.beneficio').addClass('promo_'+$this.find('option:selected').attr('tipoPromo'));
+			}
+
 			// ingresso selecionado é bin itaucard? tem bin associado?
 			if ($this.find('option:selected').attr('codeBin') != undefined) {
 				$mesmoBinSelecionado = $('option:selected').filter(function(){
@@ -116,16 +122,16 @@ $(function() {
 				qtBinSelecionado = $mesmoBinSelecionado.length;
 
 				// ja existe algum ingresso promocional nao validado selecionado?
-				if (qtBinSelecionado > 1 && $('.beneficio:visible').filter(function(){return $(this).find("input[name='tipoBin\\[\\]']").val() == 'itau'}).find('.icone_validador:not(.valido)').length > 0) {
-					$this.selectbox('detach');
-					$this.val($this.data('lastValue'));
-					$this.selectbox('attach');
-					// IMPORTANT!: Firefox will not act properly without this:
-					$this.blur();
+				// if (qtBinSelecionado > 1 && $('.beneficio:visible').filter(function(){return $(this).find("input[name='tipoBin\\[\\]']").val() == 'itau'}).find('.icone_validador:not(.valido)').length > 0) {
+				// 	$this.selectbox('detach');
+				// 	$this.val($this.data('lastValue'));
+				// 	$this.selectbox('attach');
+				// 	// IMPORTANT!: Firefox will not act properly without this:
+				// 	$this.blur();
 
-					$.dialog({text: "É necessário efetuar a validação do primeiro ingresso participante da promoção antes de selecionar o segundo ingresso promocional."});
-					return false;
-				}
+				// 	$.dialog({text: "É necessário efetuar a validação do primeiro ingresso participante da promoção antes de selecionar o segundo ingresso promocional."});
+				// 	return false;
+				// }
 
 				// o limite de quantidade ainda nao foi atingido?
 				if (qtBinSelecionado > $this.find('option:selected').attr('qtBin')) {
@@ -152,7 +158,7 @@ $(function() {
 
 						$this.closest('tr').addClass('complementar')
 							.next('.beneficio')
-							.find('input[name=bin\\[\\]]').attr('maxlength', sizeBin).attr('placeholder', placeholder).end()
+							.find('input[name=bin\\[\\]]').val('').attr('maxlength', sizeBin).attr('placeholder', placeholder).end()
 							.find('.img_complemento img').attr('src', $this.find('option:selected').attr('img1')).end()
 							.find('.container_validador img').attr('src', $this.find('option:selected').attr('img2')).end()
 							.slideDown();
@@ -172,7 +178,7 @@ $(function() {
 						}
 					}
 
-					$this.closest('tr').next('.beneficio').find('input[name=tipoBin\\[\\]]').val('itau');
+					$this.closest('tr').next('.beneficio').find('input[name=tipoBin\\[\\]]').val('itau').end();
 				}
 
 			// ingresso selecionado é promocional?
@@ -182,7 +188,7 @@ $(function() {
 				$promocoesSelecionadas = $('.resumo_espetaculo').filter(function(){
 					return $(this).data('evento') == evento_id;
 				}).find('option:selected').filter(function(){
-					return $(this).attr('codpromocao') != undefined;
+					return $(this).attr('codpromocao') == $this.find('option:selected').attr('codpromocao');
 				});
 
 				qtPromocoesSelecionadas = $promocoesSelecionadas.length;
@@ -216,7 +222,7 @@ $(function() {
 
 				$this.closest('tr').addClass('complementar')
 					.next('.beneficio')
-					.find('input[name=bin\\[\\]]').attr('maxlength', sizeBin).attr('placeholder', placeholder).end()
+					.find('input[name=bin\\[\\]]').val('').attr('maxlength', sizeBin).attr('placeholder', placeholder).end()
 					.find('.img_complemento img').attr('src', $this.find('option:selected').attr('img1')).end()
 					.find('.container_validador img').attr('src', $this.find('option:selected').attr('img2')).end()
 					.find('input[name=tipoBin\\[\\]]').val('promocao').end()
@@ -549,4 +555,20 @@ function updateValorServicoPorPedido(bilhete, target) {
 			updateAllValues();
 		}
 	});
+}
+
+//Função de testes para exibir imagem do bin validado
+function validamanual()
+{
+	$this = $(document.forms.pedido['4']);
+
+	var	$tr = $this.closest('tr').next('.beneficio'),
+		$hidden = $tr.find('.hidden'),
+		$notHidden = $tr.find('.notHidden'),
+		$bin = $tr.find('.validador_itau');
+
+	$hidden.removeClass('hidden').addClass('notHidden');
+	$notHidden.removeClass('notHidden').addClass('hidden');
+	$tr.find('.icone_validador').addClass('valido');
+	$bin.prop('readonly', true);
 }

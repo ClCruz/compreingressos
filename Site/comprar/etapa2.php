@@ -50,6 +50,81 @@ require('verificarServicosPedido.php');
 	  })();
 	</script>
 
+	<?php
+	$mainConnection = mainConnection();
+	
+	$query = 'WITH PARTICIPACOES_NA_RESERVA AS (
+					SELECT DISTINCT ASS.ID_ASSINATURA, PC.CODTIPPROMOCAO
+					FROM MW_RESERVA R
+					INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+					INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+					LEFT JOIN MW_CONTROLE_EVENTO CE ON CE.ID_EVENTO = E.ID_EVENTO
+					INNER JOIN MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = CE.ID_PROMOCAO_CONTROLE OR PC.ID_BASE = E.ID_BASE OR (PC.IN_TODOS_EVENTOS = 1 AND PC.ID_BASE IS NULL AND PC.IN_ATIVO = 1)
+					INNER JOIN MW_ASSINATURA_PROMOCAO AP ON AP.ID_PROMOCAO_CONTROLE = PC.ID_PROMOCAO_CONTROLE
+					INNER JOIN MW_ASSINATURA ASS ON ASS.ID_ASSINATURA = AP.ID_ASSINATURA
+					WHERE R.ID_SESSION = ? AND PC.CODTIPPROMOCAO IN (8,9)
+				)
+				SELECT
+	                A.DS_ASSINATURA,
+	                SUM(CASE WHEN P.ID_PROMOCAO IS NULL THEN 0 ELSE 1 END) AS QT_BILHETES_DISPONIVEIS,
+	                PC.CODTIPPROMOCAO,
+	                MAX(PC.PERC_DESCONTO_VR_NORMAL) AS PERC_DESCONTO_VR_NORMAL,
+	                PC.IN_VALOR_SERVICO
+                
+                FROM MW_ASSINATURA A
+                INNER JOIN MW_ASSINATURA_CLIENTE AC ON AC.ID_ASSINATURA = A.ID_ASSINATURA
+                INNER JOIN MW_ASSINATURA_PROMOCAO AP ON AP.ID_ASSINATURA = AC.ID_ASSINATURA
+                INNER JOIN MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = AP.ID_PROMOCAO_CONTROLE AND PC.CODTIPPROMOCAO IN (8,9)
+                LEFT JOIN MW_PROMOCAO P ON P.ID_ASSINATURA_CLIENTE = AC.ID_ASSINATURA_CLIENTE AND ID_PEDIDO_VENDA IS NULL
+                
+                INNER JOIN PARTICIPACOES_NA_RESERVA PNR ON PNR.ID_ASSINATURA = AC.ID_ASSINATURA AND PNR.CODTIPPROMOCAO = PC.CODTIPPROMOCAO
+                
+                WHERE AC.ID_CLIENTE = ? AND (AC.IN_ATIVO = 1 OR (AC.IN_ATIVO = 0 AND AC.DT_PROXIMO_PAGAMENTO > GETDATE()))
+                
+                GROUP BY A.DS_ASSINATURA, PC.CODTIPPROMOCAO, PC.IN_VALOR_SERVICO
+                ORDER BY DS_ASSINATURA, CODTIPPROMOCAO';
+	$params = array(session_id(), $_SESSION['user']);
+	$result = executeSQL($mainConnection, $query, $params);
+
+	if (hasRows($result)) {
+		$msg = '';
+		$lastRS = array();
+		while ($rs = fetchResult($result)) {
+			if ($rs['CODTIPPROMOCAO'] == 8 AND $rs['QT_BILHETES_DISPONIVEIS'] > 0) {
+				$msg .= "Você tem {$rs['QT_BILHETES_DISPONIVEIS']} ingresso(s) disponível(eis) de {$rs['DS_ASSINATURA']} que pode(rão) ser utilizado(s) para este evento.<br/>";
+			} elseif ($rs['CODTIPPROMOCAO'] == 9) {
+				if ($lastRS['DS_ASSINATURA'] == $rs['DS_ASSINATURA']) {
+					$rs['PERC_DESCONTO_VR_NORMAL'] = number_format($rs['PERC_DESCONTO_VR_NORMAL'], 0);
+					$msg = substr($msg, 0, -6) . ",<br/>além disto você também pode utilizar seu DESCONTO de até {$rs['PERC_DESCONTO_VR_NORMAL']}%";
+				} else {
+					$msg .= "Você pode utilizar seu DESCONTO de {$rs['DS_ASSINATURA']}";
+				}
+
+				if (!$rs['IN_VALOR_SERVICO']) {
+					$msg .= " e ainda não pagar a taxa de serviço para este evento";
+				}
+
+				$msg .= ".<br/>";
+			}
+			$lastRS = $rs;
+		}
+
+		if ($msg != '')
+			echo '<script type="text/javascript">$(function(){
+				$.confirmDialog({
+					text:"",
+					detail:"'.$msg.'",
+					uiOptions: {
+						buttons: {
+							"Ok, entendi": ["", function(){
+								fecharOverlay();
+							}]
+						}
+					}
+				})
+			})</script>';
+	}
+	?>
 	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
 </head>
 <body>
@@ -113,7 +188,7 @@ require('verificarServicosPedido.php');
 
 		<?php include "footer.php"; ?>
 
-		<?php include "selos.php"; ?>
+		<?php //include "selos.php"; ?>
 	</div>
 </body>
 </html>

@@ -17,6 +17,20 @@ header("Cache-Control: no-cache, must-revalidate, proxy-revalidate");
 
 require_once "../settings/fastcash/Fastcash.php";
 
+
+
+
+require_once "../settings/functions.php";
+
+$mainConnection = mainConnection();
+
+executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+    array(-888, json_encode(array('descricao' => '6. retorno fastcash', 'post' => $_REQUEST)))
+);
+
+
+
+
 $function = null;
 $handler = null;
 
@@ -75,8 +89,6 @@ if ($handler != null)
 */
 function OnOnlineCreditReceived($sender, $tid, $prodId, $quant, $valueReceived, $custom)
 {
-    require_once "../settings/functions.php";
-
     $mainConnection = mainConnection();
 
     $query = "SELECT M.CD_MEIO_PAGAMENTO, P.IN_SITUACAO, P.VL_TOTAL_PEDIDO_VENDA
@@ -85,7 +97,7 @@ function OnOnlineCreditReceived($sender, $tid, $prodId, $quant, $valueReceived, 
                 WHERE ID_PEDIDO_VENDA = ?";
     $params = array($tid);
     $rs = executeSQL($mainConnection, $query, $params, true);
-    $valueSaved = preg_replace('/\.|\,/', '', $rs['VL_TOTAL_PEDIDO_VENDA']);
+    $valueSaved = number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, '.', '');
     
     if ($valueSaved != $valueReceived)
         return array(false, "O valor do pedido não confere com o valor recebido pela Fastcash.");
@@ -111,7 +123,7 @@ function OnOnlineCreditReceived($sender, $tid, $prodId, $quant, $valueReceived, 
     require "concretizarAssinatura.php";
     $return = ob_get_clean();
 
-    $return = ($return == '' ? true : array(false, $return));
+    $return = ($return == '' OR substr($return, 0, 12) == 'redirect.php' ? true : array(false, $return));
 
     //Return true/false or an array(false, "Error message")
     return $return;
@@ -128,8 +140,6 @@ function OnCreditConsultReceived($sender, $tid, $custom)
     //TODO: Implement your logic for the CreditConsult function:
     //Check your system to verify if the realtime and most updated status of the $tid.
     //We call this function when needed to double check the delivery.
-
-    require_once "../settings/functions.php";
 
     $mainConnection = mainConnection();
 
@@ -160,8 +170,6 @@ function OnCancelationReceived($sender, $tid, $custom, $source, $reason)
     //Check to see if the $tid has now yet been approved by the OnlineCredit
     //If its still pending, cancel the $tid.
     //This function may be called more than once, so ensure that it will not cause any problems.
-
-    require_once "../settings/functions.php";
 
     $mainConnection = mainConnection();
 

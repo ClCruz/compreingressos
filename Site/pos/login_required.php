@@ -15,7 +15,7 @@ if (isset($_GET['user']) && isset($_GET['password'])) {
 			$_SESSION['pos_user']['id'] = $rs['ID_USUARIO'];
 			$_SESSION['pos_user']['name'] = $rs['DS_NOME'];
 
-			executeSQL($mainConnection, "UPDATE MW_POS SET LAST_ACCESS = GETDATE() WHERE SERIAL = ?", array($_SESSION['pos_user']['serial']));
+			executeSQL($mainConnection, "UPDATE MW_POS SET LAST_ACCESS = GETDATE(), OS_VERSION = ? WHERE SERIAL = ?", array($_GET['os_version'], $_GET['pos_serial']));
 
 			// para permissao do sistema administrativo
 			$_SESSION['admin'] = $rs['ID_USUARIO'];
@@ -44,6 +44,9 @@ if (!isset($_SESSION['pos_user']['id'])) {
 
 	echo_header(false);
 	echo "<WRITE_AT LINE=9 COLUMN=0>          Aguarde...</WRITE_AT>";
+
+	echo "<GET TYPE=SERIALNO NAME=pos_serial>";
+	echo "<GET TYPE=VERSION NAME=os_version>";
 
 	echo "<POST>";
 

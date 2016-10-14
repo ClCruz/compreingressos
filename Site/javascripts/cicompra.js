@@ -233,6 +233,13 @@ function mapaDePlateia(){
 
 function desktopVersion(){
   function desktop(){
+
+    var $link = $('a.link_adptativo');
+
+    if (!$link[0]) {
+      return false;
+    }
+
     var href = $('a.link_adptativo').attr('href').split('desktop=');
     if(location.search === "") {
       href = location.href+"?desktop=";
@@ -267,58 +274,65 @@ function desktopVersion(){
 $(document).ready(function(){
   desktopVersion();
 
-  /* MENU CIDADES E GENEROS */
-  $(".container.cidade").click(function(){
-    if($('.menu_busca.cidade').css('display')=='block'){
-      $('.menu_busca.cidade').slideUp();
-    } else {
-      function menuBuscaCidade(){
-        $('.menu_busca.cidade').slideDown();
-        $(".menu_busca.cidade").hover(
-          function(){
-            $('.menu_busca.cidade').css('display', 'block');
-          }, 
-          function(){
-            $('.menu_busca.cidade').slideUp(150);
-          }
-        );
+  var topCidade = $("#buscaCidade");
+  var btnCidade = $("#btnbuscaCidade");
+
+  var topGenero = $("#buscaGenero");
+  var btnGenero = $("#btnbuscaGenero");
+
+  cfgShow(btnCidade, topCidade);
+  cfgShow(btnGenero, topGenero);
+
+  function cfgShow(btn, div)
+  {
+    $(div).on('click mouseleave',function () {
+      $(this).slideUp();
+      $(this).removeAttr('data-topstatus');
+    });
+
+
+    $(btn).click(function(){
+
+      var outro = $('[data-topstatus="show"]');
+
+      //Se for o mesmo, apenas esconder.
+      if (outro[0] == div[0])
+      {
+        $(div[0]).slideUp();
+        $(div[0]).removeAttr('data-topstatus');
+        return false;
       }
-      
-      if($('.menu_busca.genero').css('display')=='block'){
-        $('.menu_busca.genero').slideUp(150,function(){
-          menuBuscaCidade();
+
+      //Se houver outro em exibição, esconder e depois mostrar o novo
+      if (outro[0])
+      {
+        $(outro).removeAttr('data-topstatus');
+        $(outro).slideUp('fast', function () {
+          show(div);
         });
-      } else {
-        menuBuscaCidade();
+      }
+      else
+      {
+        show(div);
+      }
+    });
+
+
+    function show(div)
+    {
+      $div = $(div);
+      var status = $div.css('display');
+
+      if (status == 'none')
+      {
+        var menuHeight = $('#novo_menu').outerHeight();
+        $div.css('top', menuHeight );
+        $div.slideDown();
+        $div.attr('data-topstatus','show');
       }
     }
-  });
-  $(".container.genero").click(function(){
-    if($('.menu_busca.genero').css('display')=='block'){
-      $('.menu_busca.genero').slideUp();
-    } else {
-      function menuBuscaGenero(){
-        $('.menu_busca.genero').slideDown();
-        $(".menu_busca.genero").hover(
-          function(){
-            $('.menu_busca.genero').css('display', 'block');
-          }, 
-          function(){
-            $('.menu_busca.genero').slideUp(150);
-          }
-        );
-      }
-      
-      if($('.menu_busca.cidade').css('display')=='block'){
-        $('.menu_busca.cidade').slideUp(150,function(){
-          menuBuscaGenero();
-        });
-      } else {
-        menuBuscaGenero();
-      }
-    }
-  });
-  
+  }
+
   /* Fixa janela de erro */
   if($('div.alert').length > 0){
   $('div.alert, div.alert a').on('click',function(){
@@ -347,7 +361,6 @@ $(document).ready(function(){
   });
   $('input, textarea').placeholder();
   $('input[name=cpf]').mask('000.000.000-00', {reverse: true});
-  $('input[name=cep]').mask('00000-000');
 
   /* VERIFICA SE ABRE O OVERLAY VIA HASH NO LINK OU NAO */
   /*$(document).ready(function(){
@@ -379,7 +392,7 @@ $(document).ready(function(){
   /* FECHA OVERLAY */
   $('#overlay, #overlay div.fechar').on('click',function(){
     fecharOverlay();
-  }).children().click(function(e) {
+   }).children().click(function(e) {
     return false;
   });
   $('#overlay .unica').on('click',function(){

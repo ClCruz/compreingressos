@@ -64,16 +64,6 @@
     width:300px;
     margin-top:0;
   }
-  #footer ul li a.facebook, #footer ul li a.twitter {
-    font-size:12px;
-    background-size:50px 100px;
-    padding: 18px 0 2px 55px;
-    height:30px;
-    margin:6px 0 0;
-  }
-  #footer ul li a.facebook:hover, #footer ul li a.twitter:hover{
-    background-position:0 -50px;
-  }
   #footer ul li.midia{
     width:150px;
     float:left;
@@ -1157,9 +1147,12 @@ div.input_area.endereco .sbHolder, div.input_area.identificacao .sbHolder{
     display:none;
   }
 
-
   #fastcashPaymentFrame {
     margin: 150px 0 -40px 0;
+  }
+
+  div#novo_menu .centraliza {
+    width: 100%;
   }
 }
 

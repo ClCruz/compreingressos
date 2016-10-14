@@ -3,10 +3,13 @@ require_once('../settings/functions.php');
 require_once('../settings/settings.php');
 require_once('../settings/Log.class.php');
 
+require_once('../settings/antiFraude.php');
+
 // verifica se o acesso via operador/pdv esta vendendo apenas aquilo que tem permissao
 require('acessoPermitido.php');
 
 require_once('../settings/brandcaptchalib.php');
+require('../settings/pagseguro_functions.php');
 
 $resp = brandcaptcha_check_answer(
             $recaptcha['private_key'],
@@ -52,7 +55,7 @@ $rs = executeSQL($mainConnection, $query, $params, true);
 $horas_antes_apresentacao_pagamento = $rs['QT_HR_ANTECED'];
 
 if ($horas_antes_apresentacao_pagamento != null and $horas_antes_apresentacao_pagamento > $horas_antes_apresentacao) {
-    echo "Esta forma de pagamento não pode ser utilizadas no momento. Por favor, seleciona outra.";
+    echo "Esta forma de pagamento não pode ser utilizada no momento. Por favor, selecione outra.";
     die();
 }
 
@@ -364,8 +367,8 @@ $query = 'UPDATE MW_PEDIDO_VENDA SET
                         ,DS_EMAIL_VOUCHER = ?
                         ,CD_BIN_CARTAO = ?
                         ,ID_ORIGEM = ?
-			WHERE ID_PEDIDO_VENDA = ?
-				AND ID_CLIENTE = ?';
+                        ,NM_TITULAR_CARTAO = ? 
+                        WHERE ID_PEDIDO_VENDA = ? AND ID_CLIENTE = ?';
 
 if ($_POST['nomePresente']) {
     $nome_presente = $_POST['nomePresente'];
@@ -375,11 +378,22 @@ if ($_POST['nomePresente']) {
     $email_presente = null;
 }
 
-$params = array(($totalIngressos + $frete + $totalConveniencia), $totalIngressos, $totalConveniencia,
-                $_SERVER["REMOTE_ADDR"], $PaymentDataCollection['NumberOfPayments'],
-                $nr_beneficio, $nome_presente, $email_presente, $PaymentDataCollection['CardNumber'],
-                $_SESSION['origem'],
-                $newMaxId, $_SESSION['user']);
+$params = array
+        (
+                ($totalIngressos + $frete + $totalConveniencia)
+                ,$totalIngressos
+                ,$totalConveniencia
+                ,$_SERVER["REMOTE_ADDR"]
+                ,$PaymentDataCollection['NumberOfPayments']
+                ,$nr_beneficio
+                ,$nome_presente
+                ,$email_presente
+                ,$PaymentDataCollection['CardNumber']
+                ,$_SESSION['origem']
+                ,$PaymentDataCollection['CardHolder']
+                ,$newMaxId
+                ,$_SESSION['user']
+        );
 
 if ($itensPedido > 0) {
     $gravacao = executeSQL($mainConnection, $query, $params);
@@ -470,9 +484,12 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
     //     array('requestMascarado' => $parametrosLOG));
     // echo "</pre>";
     // die(''.time());
+
+    $pagamento_fastcash = in_array($_POST['codCartao'], array('892', '893'));
+    $pagamento_pagseguro = in_array($_POST['codCartao'], array('900', '901', '902'));
     
-    
-    if ($_SESSION['usuario_pdv'] !== 1 and $PaymentDataCollection['Amount'] != 0 and !in_array($_POST['codCartao'], array('892', '893'))) {
+    // pular o bloco abaixo para vendas pelo fastcash e pagseguro
+    if ($_SESSION['usuario_pdv'] !== 1 and $PaymentDataCollection['Amount'] != 0 and !$pagamento_fastcash and !$pagamento_pagseguro) {
     	try {
             executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
                 array($_SESSION['user'], json_encode(array('descricao' => '3. inicialização do pedido ' . $parametros['OrderData']['OrderId'], 'url' => $url_braspag)))
@@ -493,7 +510,7 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
         } catch (SoapFault $e) {
             $descricao_erro = $e->getMessage();
         } catch (Exception $e) {
-            var_dump($e);
+            $descricao_erro = $e->getMessage();
         }
 
 
@@ -504,8 +521,6 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
                         INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
                         WHERE R.ID_SESSION = ? AND E.IN_ANTI_FRAUDE = 1";
             $rs = executeSQL($mainConnection, $query, array(session_id()), true);
-
-            require_once('../settings/antiFraude.php');
 
             if ($rs['IN_ANTI_FRAUDE']) {
                 $array_dados_extra = array();
@@ -519,8 +534,13 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
 
                     cancelarPedido($result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId);
 
+                    executeSQL($mainConnection, "UPDATE MW_PEDIDO_VENDA SET IN_SITUACAO = 'N' WHERE ID_PEDIDO_VENDA = ? AND ID_CLIENTE = ?", array($newMaxId, $_SESSION['user']));
+
                     echo "Transação não autorizada.";
                     die();
+                } else {
+                    // se o pedido ja foi negado e por algum motivo a consulta retornar como aprovado (exemplo do que ja aconteceu: SDM na primeira tentativa e APA na consulta)
+                    executeSQL($mainConnection, "UPDATE MW_PEDIDO_VENDA SET IN_SITUACAO = 'P' WHERE ID_PEDIDO_VENDA = ? AND ID_CLIENTE = ? AND IN_SITUACAO = 'N'", array($newMaxId, $_SESSION['user']));
                 }
             }
 
@@ -545,15 +565,27 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
     if ($descricao_erro == '') {
         setcookie('id_braspag', $result->AuthorizeTransactionResult->OrderData->BraspagOrderId);
 
-        // se o meio de pagamento for fastcash
-        if(in_array($_POST['codCartao'], array('892', '893'))){
-            extenderTempo($horas_antes_apresentacao_pagamento);
+        if ($pagamento_fastcash OR $pagamento_pagseguro){
 
-            $query = "UPDATE P SET ID_MEIO_PAGAMENTO = M.ID_MEIO_PAGAMENTO
+            $query = "UPDATE P SET ID_MEIO_PAGAMENTO = M.ID_MEIO_PAGAMENTO, IN_SITUACAO = 'P'
                         FROM MW_PEDIDO_VENDA P, MW_MEIO_PAGAMENTO M
                         WHERE P.ID_PEDIDO_VENDA = ? AND M.CD_MEIO_PAGAMENTO = ?";
             $params = array($parametros['OrderData']['OrderId'], $_POST['codCartao']);
             $result = executeSQL($mainConnection, $query, $params);
+
+            if ($pagamento_pagseguro) {
+                $response = pagarPedidoPagSeguro($parametros['OrderData']['OrderId'], $_POST);
+
+                executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+                    array($_SESSION['user'], json_encode(array('descricao' => '4. retorno do pedido=' . $parametros['OrderData']['OrderId'], 'pagseguro_obj' => base64_encode(serialize($response['transaction'])))))
+                );
+
+                if (!$response['success']) {
+                    die($response['error']);
+                }
+            }
+
+            extenderTempo($horas_antes_apresentacao_pagamento * 60);
 
             $query = "SELECT DISTINCT E.ID_BASE FROM MW_RESERVA R
                         INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
@@ -581,7 +613,15 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
 
             limparCookies();
 
-            die("redirect.php?redirect=".urlencode("pagamento_fastcash.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : '')));
+            executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+                array($_SESSION['user'], json_encode(array('descricao' => '5. redirecionamento do pedido=' . $parametros['OrderData']['OrderId'], 'fastcash' => $pagamento_fastcash, 'pagseguro' => $pagamento_pagseguro)))
+            );
+
+            if ($pagamento_fastcash) {
+                die("redirect.php?redirect=".urlencode("pagamento_fastcash.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : '')));
+            } elseif ($pagamento_pagseguro) {
+                die("redirect.php?redirect=".urlencode("pagamento_pagseguro.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : '')));
+            }
         }
         // se for um usuario do pdv
         elseif(isset($_SESSION['usuario_pdv']) and $_SESSION['usuario_pdv'] == 1){
@@ -594,6 +634,38 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
         }
         // compra normal
         else{
+            executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+                array($_SESSION['user'], json_encode(array('descricao' => '5.1. retorno do pedido=' . $parametros['OrderData']['OrderId'], 'post' => $result)))
+            );
+
+            if ($result->AuthorizeTransactionResult->ErrorReportDataCollection->ErrorReportDataResponse->ErrorCode == '135') {
+                $dados = obterDadosPedidoPago($parametros['OrderData']['OrderId']);
+
+                if (!empty($dados)) {
+                    $result->AuthorizeTransactionResult->OrderData->BraspagOrderId = $dados->BraspagOrderId;
+                    $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId = $dados->BraspagTransactionId;
+                    $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId = $dados->AcquirerTransactionId;
+                    $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AuthorizationCode = $dados->AuthorizationCode;
+                    $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->PaymentMethod = $dados->PaymentMethod;
+
+                    $result->AuthorizeTransactionResult->CorrelationId = $ri;
+                    $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->Status = '0';
+                }
+
+                // email temporario para checar novo tratamento de erro (nao é possivel forcar o erro em homologacao)
+                ob_start();
+                echo "[ErrorCode] => 135<br/>[ErrorMessage] => OrderId was already registered<br/><br/>";
+                echo "Não é um erro grave. Apenas checar os dados abaixo para o pedido {$parametros['OrderData']['OrderId']}:<br/><br/>";
+                echo "<pre>"; var_dump($dados); echo "</pre>";
+                $message = ob_get_clean();
+
+                sendErrorMail('Erro no Sistema COMPREINGRESSOS.COM', $message);
+
+                executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+                    array($_SESSION['user'], json_encode(array('descricao' => '5.2. erro 135, retorno do pedido=' . $parametros['OrderData']['OrderId'], 'post' => $dados)))
+                );
+            }
+
             if (($result->AuthorizeTransactionResult->CorrelationId == $ri and $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->Status == '0')
                 or ($PaymentDataCollection['Amount'] == 0 and $is_promocional)) {
 

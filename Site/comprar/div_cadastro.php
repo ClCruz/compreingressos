@@ -54,13 +54,11 @@ session_start();
 				<div class="inputs">
 					<p class="titulo">Qual o seu nome?</p>
 					<input type="text" name="nome" id="nome" maxlength="50" placeholder="nome/name/nombre<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>" pattern=".{1,50}" value="<?php echo utf8_encode($rs['DS_NOME']); ?>">
-<!--					<input type="text" name="nome" id="nome" maxlength="50" placeholder="nome/name/nombre--><?php //echo ($exibir_msg_obrigatorio ? ' (*)' : '')?><!--" pattern=".{1,50}" value="Felipe">-->
 					<div class="erro_help">
 						<p class="erro">informe seu nome</p>
 						<p class="help"></p>
 					</div>
 					<input type="text" name="sobrenome" id="sobrenome" maxlength="50" placeholder="sobrenome/last name/apellido<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>" pattern=".{1,50}" value="<?php echo utf8_encode($rs['DS_SOBRENOME']); ?>">
-<!--					<input type="text" name="sobrenome" id="sobrenome" maxlength="50" placeholder="sobrenome/last name/apellido--><?php //echo ($exibir_msg_obrigatorio ? ' (*)' : '')?><!--" pattern=".{1,50}" value="Barreiros">-->
 					<div class="erro_help">
 						<p class="erro">informe seu sobrenome</p>
 						<p class="help"></p>
@@ -73,7 +71,6 @@ session_start();
 				<div class="inputs">
 					<p class="titulo">Sexo</p>
 					<input id="radio_masculino" type="radio" name="sexo" class="radio" value="M" <?php echo ($rs['IN_SEXO'] == 'M') ? 'checked ' : ''; ?>>
-<!--					<input id="radio_masculino" type="radio" name="sexo" class="radio" value="M" checked="checked">-->
 					<label class="radio" for="radio_masculino">masculino</label>
 					<input id="radio_feminino" type="radio" name="sexo" class="radio" value="F" <?php echo ($rs['IN_SEXO'] == 'F') ? 'checked ' : ''; ?>>
 					<label class="radio" for="radio_feminino">feminino</label>
@@ -160,13 +157,12 @@ session_start();
 				<div class="icone"></div>
 				<div class="inputs">
 					<p class="titulo">Telefones de contato</p>
-					<input type="text" name="fixo" id="fixo" placeholder="fixo/phone number/teléfono" maxlength="14" autocomplete="off" pattern=".{1,15}" value="<?php echo utf8_encode($rs['DS_DDD_TELEFONE'].$rs['DS_TELEFONE']); ?>">
+					<input type="text" name="ddd_fixo" id="ddd_fixo" class="number" placeholder="ddd" maxlength="2" autocomplete="off" value="<?php echo $rs['DS_DDD_TELEFONE']; ?>"><input type="text" name="fixo" id="fixo" class="number" placeholder="fixo/phone number/teléfono" maxlength="9" autocomplete="off" value="<?php echo $rs['DS_TELEFONE']; ?>">
 					<div class="erro_help">
 						<p class="erro">insira o telefone fixo</p>
 						<p class="help">(ddd + nº)</p>
 					</div>
-					<input type="text" name="celular" id="celular" placeholder="celular/mobile number<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>" maxlength="14" autocomplete="off" value="<?php echo utf8_encode($rs['DS_DDD_CELULAR'].$rs['DS_CELULAR']); ?>">
-<!--					<input type="text" name="celular" id="celular" placeholder="celular/mobile number--><?php //echo ($exibir_msg_obrigatorio ? ' (*)' : '')?><!--" maxlength="14" autocomplete="off" value="11951497542" >-->
+					<input type="text" name="ddd_celular" id="ddd_celular" class="number" placeholder="ddd<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>" maxlength="2" autocomplete="off" value="<?php echo $rs['DS_DDD_CELULAR']; ?>"><input type="text" name="celular" id="celular" class="number" placeholder="celular/mobile number<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>" maxlength="9" autocomplete="off" value="<?php echo $rs['DS_CELULAR']; ?>">
 					<div class="erro_help">
 						<p class="erro"></p>
 						<p class="help">opcional</p>
@@ -178,7 +174,7 @@ session_start();
 				<div class="icone"></div>
 				<div class="inputs">
 					<p class="titulo">Endereço</p>
-					<input type="text" name="cep" id="cep" placeholder="CEP/ZipCode" maxlength="9" autocomplete="off" pattern=".{9}" value="<?php echo utf8_encode($rs['CD_CEP']); ?>">
+					<input type="text" name="cep" id="cep" class="number" placeholder="CEP/ZipCode" maxlength="8" autocomplete="off" value="<?php echo utf8_encode($rs['CD_CEP']); ?>">
 					<div class="erro_help">
 						<p class="erro">informe seu CEP</p>
 						<p class="help"><a href="http://www.buscacep.correios.com.br/" target="_blank">não sabe seu CEP?</a></p>
@@ -205,7 +201,7 @@ session_start();
 						<p class="erro">informe seu logradouro</p>
 						<p class="help"></p>
 					</div>
-					<input type="text" name="numero_endereco" id="numero_endereco" placeholder="Número do Endereço/Address Number" maxlength="50" pattern=".{1,150}" value="<?php echo utf8_encode($rs['NR_ENDERECO']); ?>">
+					<input type="text" name="numero_endereco" id="numero_endereco" placeholder="Número do Endereço/Address Number" maxlength="15" pattern=".{1,150}" value="<?php echo utf8_encode($rs['NR_ENDERECO']); ?>">
 					<div class="erro_help">
 						<p class="erro">Número</p>
 						<p class="help"></p>
@@ -232,13 +228,11 @@ session_start();
 				<div class="inputs">
 					<p class="titulo">Login</p>
 					<input type="text" name="email1" id="email1" pattern=".{1,200}" placeholder="digite seu e-mail<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>">
-<!--					<input type="text" name="email1" id="email1" pattern=".{1,200}" placeholder="digite seu e-mail--><?php //echo ($exibir_msg_obrigatorio ? ' (*)' : '')?><!--" value="felipe.php@outlook.com">-->
 					<div class="erro_help">
 						<p class="erro">informe seu e-mail</p>
 						<p class="help"></p>
 					</div>
 					<input type="text" name="email2" id="email2" pattern=".{1,200}" placeholder="confirme seu e-mail<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>">
-<!--					<input type="text" name="email2" id="email2" pattern=".{1,200}" placeholder="confirme seu e-mail--><?php //echo ($exibir_msg_obrigatorio ? ' (*)' : '')?><!--" value="felipe.php@outlook.com">-->
 					<div class="erro_help">
 						<p class="erro">confirmação de e-mail não confere</p>
 						<p class="help"></p>
@@ -278,14 +272,14 @@ session_start();
 				<label class="checkbox" for="checkbox_guia">quero receber o guia de espetáculos, com atrações específicas para a minha localidade</label>
 				<input id="checkbox_sms" type="checkbox" name="extra_sms" class="checkbox" value="S" <?php echo ($rs['IN_RECEBE_SMS'] == 'S') ? 'checked' : ''; ?>>
 				<label class="checkbox" for="checkbox_sms" id="label_sms">autorizo o envio de mensagens SMS</label>
-				
-				<?php if (!(isset($_SESSION['user']) and is_numeric($_SESSION['user'])) or preg_match('/etapa/', basename($_SERVER['SCRIPT_FILENAME']))) { ?>
-				<input id="checkbox_politica" type="checkbox" name="concordo" class="checkbox" value="S">
+				<?php
+					$url = explode("/", $_SERVER['PHP_SELF']);
+				?>	
+				<input id="checkbox_politica" type="checkbox" name="concordo" class="checkbox" value="S" <?php echo (($url[2] != "login.php") and isset($_SESSION['user']) and is_numeric($_SESSION['user'])) ? ' checked disabled' : ''; ?>>
 				<label class="checkbox" for="checkbox_politica" id="label_politica">
-					concordo com os <a href="" target="_blank" class="termos_de_uso">termos de uso</a> e a 
-					<a href="" target="_blank" class="politica_de_privacidade">política de privacidade</a>
+					concordo com os <a href="" target="_blank" class="termos_de_uso">termos de uso</a>, a 
+					<a href="" target="_blank" class="politica_de_privacidade">política de privacidade</a> e a <a href="http://www.compreingressos.com/politica" target="_blank" class="politica_de_venda">política de venda</a>
 				</label>
-				<?php } ?>
 			</div>
 
 			<?php if (!(isset($_SESSION['user']) and is_numeric($_SESSION['user'])) and !(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) { ?>

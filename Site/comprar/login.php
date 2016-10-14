@@ -27,7 +27,7 @@ require_once('../settings/functions.php');
 
 	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
 </head>
-<body>
+<body<?php echo (preg_match('/assinatura/', $_GET['redirect']) ? ' class="mini"' : ''); ?>>
 	<div id="pai">
 		<?php require "header.php"; ?>
 		<div id="content">
@@ -69,7 +69,7 @@ require_once('../settings/functions.php');
 
 		<?php include "footer.php"; ?>
 
-		<?php include "selos.php"; ?>
+		<?php //include "selos.php"; ?>
 
 		<div id="overlay">
 			<?php require 'termosUso.php'; ?>

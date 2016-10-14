@@ -13,6 +13,9 @@ if((isset($_SESSION['usuario_pdv']) and $_SESSION['usuario_pdv'] == 1)
     $meio_pagamento = $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->PaymentMethod;
 }
 
+executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+    array($_SESSION['user'], json_encode(array('descricao' => '5.3. concretizando retorno do pedido=' . $pedido_id, 'post' => $result)))
+);
 
 $query = 'SELECT ID_MEIO_PAGAMENTO
 			 FROM MW_MEIO_PAGAMENTO MP
@@ -53,7 +56,7 @@ executeSQL($mainConnection, 'INSERT INTO tab_log_gabriel (data, passo, parametro
 
 $sqlErrors = sqlErrors();
 if ($noErrors and empty($sqlErrors)) {
-	$session_id = (in_array($meio_pagamento, array('892', '893')) ? $pedido_id : session_id());
+	$session_id = (in_array($meio_pagamento, array('892', '893', '900', '901', '902')) ? $pedido_id : session_id());
 
 	executeSQL($mainConnection, 'UPDATE MW_PROMOCAO SET ID_SESSION = NULL, ID_PEDIDO_VENDA = ? WHERE ID_SESSION = ?', array($pedido_id, $session_id));
 	executeSQL($mainConnection, 'DELETE MW_RESERVA WHERE ID_SESSION = ?', array($session_id));

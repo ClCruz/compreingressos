@@ -19,7 +19,7 @@ if ($_POST) {
         // e variavel usuario_pdv = 1 para o javascript nao validar dads do cartao
         ?>
         <div class="container_cartoes">
-            <p class="frase">Finalize sua reserva.</p>
+            <p class="frase">Finalize seu pedido.</p>
             <br/>
             <input type="hidden" name="codCartao" value="887" />
             <input type="hidden" name="usuario_pdv" value="1" />
@@ -47,15 +47,23 @@ if ($_POST) {
                       from mw_meio_pagamento
                       where in_ativo = 1 ". $queryAux ."
                       and (qt_hr_anteced <= $horas_antes_apresentacao or qt_hr_anteced is null)
+                      ".
+                      ($_ENV['IS_TEST']
+                        ? ''
+                        :  "and ((
+                                nm_cartao_exibicao_site like '%pagseguro%'
+                                and exists (select top 1 1 from mw_reserva r inner join mw_apresentacao a on a.id_apresentacao = r.ID_APRESENTACAO inner join mw_evento e on e.id_evento = a.id_evento where r.id_session = ? and e.id_base in (186,44))
+                            ) or nm_cartao_exibicao_site not like '%pagseguro%')"
+                      ).
+                      "
                       order by ds_meio_pagamento";
-    	$result = executeSQL($mainConnection, $query);
+    	$result = executeSQL($mainConnection, $query, array(session_id()));
 
         $query = "SELECT top 1 cd_binitau from mw_reserva r
                     inner join mw_apresentacao a on a.id_apresentacao = r.id_apresentacao
                     inner join mw_evento e on e.id_evento = a.id_evento
                     where cd_binitau is not null and id_session = ?";
     	$bin = executeSQL($mainConnection, $query, array(session_id()), true);
-    	$bin = empty($bin) ? '' : substr($bin['cd_binitau'], 0, 4) . '-' . substr($bin['cd_binitau'], -2);
 
     	$query = "select e.id_base, e.codpeca from mw_evento e inner join mw_apresentacao a on a.id_evento = e.id_evento inner join mw_reserva r on r.id_apresentacao = a.id_apresentacao where r.id_session = ?";
     	$rsParcelas = executeSQL($mainConnection, $query, array(session_id()), true);
@@ -83,15 +91,29 @@ if ($_POST) {
     			<?php
     			}
     			while ($rs = fetchResult($result)) {
-                    if ($bin != '' and in_array($rs['cd_meio_pagamento'], array('892', '893'))) continue;
+                    // nao exibir fastcash e pagseguro se tiver promo bin na reserva
+                    if ($bin != '' and in_array($rs['cd_meio_pagamento'], array('892', '893', '900', '901', '902'))) continue;
+
+                    // pagseguro
+                    if (in_array($rs['cd_meio_pagamento'], array('900', '901', '902'))) {
+                        $carregar_pagseguro_lib = true;
+                        $formatoCartao = '00000000000000000000';
+                        $formatoCodigo = '0000';
+                    }
+                    // outros meios
+                    else {
+                        $formatoCartao = ($rs['nm_cartao_exibicao_site'] == 'Amex' ? '0000-000000-00000' : '0000-0000-0000-0000');
+                        $formatoCodigo = ($rs['nm_cartao_exibicao_site'] == 'Amex' ? '0000' : '000');
+                    }
+
     			?>
     			<div class="container_cartao">
     				<input id="<?php echo $rs['cd_meio_pagamento']; ?>" type="radio" name="codCartao" class="radio" value="<?php echo $rs['cd_meio_pagamento']; ?>"
     					imgHelp="../images/cartoes/help_<?php echo file_exists('../images/cartoes/help_'.$rs['nm_cartao_exibicao_site'].'.png') ? utf8_encode($rs['nm_cartao_exibicao_site']) : 'default'; ?>.png"
-    					formatoCartao="<?php echo $rs['nm_cartao_exibicao_site'] == 'Amex' ? '0000-000000-00000' : '0000-0000-0000-0000'; ?>"
-    					formatoCodigo="<?php echo $rs['nm_cartao_exibicao_site'] == 'Amex' ? '0000' : '000'; ?>">
+    					formatoCartao="<?php echo $formatoCartao ?>"
+    					formatoCodigo="<?php echo $formatoCodigo ?>">
     				<label class="radio" for="<?php echo $rs['cd_meio_pagamento']; ?>">
-    					<img src="../images/cartoes/ico_<?php echo file_exists('../images/cartoes/ico_'.$rs['nm_cartao_exibicao_site'].'.png') ? utf8_encode($rs['nm_cartao_exibicao_site']) : 'default'; ?>.png"><br>
+    					<img src="<?php echo getCartaoImgURL($rs['nm_cartao_exibicao_site']); ?>"><br>
     				</label>
     				<p class="nome"><?php echo $rs['nm_cartao_exibicao_site'] ? utf8_encode($rs['nm_cartao_exibicao_site']) : utf8_encode($rs['ds_meio_pagamento']); ?></p>
     			</div>
@@ -105,7 +127,7 @@ if ($_POST) {
                 <?php
                 if($_SESSION['usuario_pdv'] == 0){
                 ?>
-                <p class="frase">5.2 Dados do cartão</p>
+                <p class="frase">5.2 <span class="alt">Dados do cartão</span></p>
                 <div class="linha">
                     <div class="input">
                         <p class="titulo">nome do titular</p>
@@ -122,7 +144,7 @@ if ($_POST) {
                         <select name="parcelas">
                             <?php
                             for ($i = 1; $i <= $parcelas; $i++) {
-                                $valor = number_format(str_replace(',', '.', $_COOKIE['total_exibicao']) / $i, 2, ',', '');
+                                $valor = number_format(round(str_replace(',', '.', $_COOKIE['total_exibicao']) / $i, 2), 2, ',', '');
                                 $desc = $i == 1 ? 'à vista' : $i . 'x';
 
                                 echo "<option value='$i'>$desc - R$ $valor</option>";
@@ -137,7 +159,7 @@ if ($_POST) {
                 <div class="linha">
                     <div class="input">
                         <p class="titulo">número do cartão</p>
-                        <input type="text" name="numCartao" value="<?php echo $bin; ?>">
+                        <input type="text" name="numCartao" value="">
                         <div class="erro_help">
                             <p class="help">XXXX-XXXX-XXXX-XXXX</p>
                         </div>

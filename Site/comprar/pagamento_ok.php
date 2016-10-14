@@ -7,6 +7,25 @@ require_once('../settings/settings.php');
 require_once('../settings/MCAPI.class.php');
 
 $mainConnection = mainConnection();
+if ( isset($_POST['action']) && $_POST['action'] == 'clube_rchlo' ) {
+	$query = 'INSERT INTO mw_riachuelo_clube (id_cliente, id_pedido_venda) VALUES(?,?)';
+	$paramns = array(
+		$_SESSION['user'],
+		$_GET['pedido']
+	);
+
+	fetchAssoc( executeSQL($mainConnection, $query, $paramns) );
+	$status = array(
+		'status' => true
+	);
+
+	//TODO - ajustar cipopup para poder receber um Popup como callback, adaptação técnica para aguardar alguns segundos para evitar bug
+	sleep(3);
+	
+	echo json_encode($status);
+	die();
+}
+
 
 $json = json_encode(array('descricao' => '8. chamada do pagamento_ok - codigo_pedido=' . $_GET['pedido'], 'Post='=>$_GET ));
 include('logiPagareChamada.php');
@@ -62,7 +81,7 @@ $dados_pedido = array(
 );
 
 $query = "SELECT COUNT(1) QUANTIDADE, R.ID_APRESENTACAO_BILHETE,
-				E.ID_EVENTO, E.DS_EVENTO, ISNULL(LE.DS_LOCAL_EVENTO, B.DS_NOME_TEATRO) DS_NOME_TEATRO,
+				E.ID_EVENTO, E.DS_EVENTO, ISNULL(LE.DS_LOCAL_EVENTO, B.DS_NOME_TEATRO) DS_NOME_TEATRO, B.ds_nome_base_sql,
 				AB.VL_LIQUIDO_INGRESSO, AB.DS_TIPO_BILHETE
 			FROM MW_ITEM_PEDIDO_VENDA R
 			INNER JOIN MW_PEDIDO_VENDA PV ON PV.ID_PEDIDO_VENDA = R.ID_PEDIDO_VENDA
@@ -72,12 +91,13 @@ $query = "SELECT COUNT(1) QUANTIDADE, R.ID_APRESENTACAO_BILHETE,
 			INNER JOIN MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE AND AB.IN_ATIVO = '1'
 			LEFT JOIN MW_LOCAL_EVENTO LE ON E.ID_LOCAL_EVENTO = LE.ID_LOCAL_EVENTO
 			WHERE R.ID_PEDIDO_VENDA = ? AND PV.ID_CLIENTE = ?
-			GROUP BY R.ID_APRESENTACAO_BILHETE,
+			GROUP BY R.ID_APRESENTACAO_BILHETE, B.ds_nome_base_sql,
 				E.ID_EVENTO, E.DS_EVENTO, ISNULL(LE.DS_LOCAL_EVENTO, B.DS_NOME_TEATRO),
 				AB.VL_LIQUIDO_INGRESSO, AB.DS_TIPO_BILHETE";
 $params = array($_GET['pedido'], $_SESSION['user']);
 $result = executeSQL($mainConnection, $query, $params);
 
+$has_riachuelo = false;
 while ($rs = fetchResult($result)) {
 	$evento_info = getEvento($rs['ID_EVENTO']);
 
@@ -106,6 +126,19 @@ while ($rs = fetchResult($result)) {
 		'qty' => $quantidade,
 		'cost' => $valor
 	);
+
+	//if ($rs['ds_nome_base_sql'] == 'CI_THEATRO_MUNICIPAL') {
+	if ($rs['ds_nome_base_sql'] == 'CI_RIACHUELO') {
+		//Verifica se o cliente ja aceitou alguma vez
+		$query = 'SELECT COUNT(1) as participa FROM mw_riachuelo_clube WHERE id_cliente = '.$_SESSION['user'];
+		$participa = fetchAssoc( executeSQL($mainConnection, $query) );
+		$participa = $participa[0]['participa'];
+
+		if ($participa == 0) {
+			$has_riachuelo = true;
+		}
+	}
+
 }
 
 if ($_COOKIE['mc_eid'] and $_COOKIE['mc_cid']) {
@@ -136,6 +169,8 @@ unset($_SESSION['origem']);
 	<script src="../javascripts/jquery.cookie.js" type="text/javascript"></script>
 	<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
 	<script src="../javascripts/common.js" type="text/javascript"></script>
+	<script src="../javascripts/simpleFunctions.js" type="text/javascript"></script>
+	<script src="../javascripts/cipopup.js" type="text/javascript"></script>
 	
 	<style type="text/css">
 	#selos {
@@ -181,6 +216,33 @@ unset($_SESSION['origem']);
 	  })();
 	</script>
 
+	<?php if($has_riachuelo): ?>
+		<script type="text/javascript">
+			$(document).ready(function () {
+				ciPopup.init('rlo');
+			});
+
+			function clubeRchlo() {
+				$.ajax({
+					method: 'post',
+					data: { action: 'clube_rchlo' },
+					dataType: 'json',
+					success: function (data) {
+						if (data.status) {
+							console.log('success');
+							console.log(data);
+							//ciPopup.init('rlo_ok',3000);
+						}
+					},
+					error: function (data) {
+						console.log('error');
+						console.log(data);
+					}
+				})
+			}
+		</script>
+	<?php endif;?>
+
 	<script type="text/javascript">
 	var fb_param = {};
 	fb_param.pixel_id = '6009548174001';
@@ -216,6 +278,19 @@ unset($_SESSION['origem']);
 	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
 </head>
 <body>
+	<div class="hidden">
+		<div id="rlo">
+			Quero receber maiores informações e participar do Clube de Vantagens.
+			<div id="clube_riachuelo">
+				<a class="btn_cancel" href="#" onclick="ciPopup.hide()">Não, obrigado!</a>
+				<a class="btn_gradient" href="#" onclick="ciPopup.hide(clubeRchlo())">Sim, eu quero!</a>
+			</div>
+			<img src="../images/promocional/rchlo_popup_logo.jpg" style="margin-top: 25px">
+		</div>
+		<div id="rlo_ok">
+			Obrigado por se Cadastrar no Clube do Teatro Riachuelo!
+		</div>
+	</div>
 	<div id="pai">
 		<?php require "header.php"; ?>
 		<div id="content">
@@ -277,7 +352,7 @@ unset($_SESSION['origem']);
 
 		<?php include "footer.php"; ?>
 
-		<?php include "selos.php"; ?>
+		<?php //include "selos.php"; ?>
 	</div>
 
 	<!-- Google Code for Compra de Ingresso Conversion Page -->

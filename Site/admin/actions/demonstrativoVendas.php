@@ -2,16 +2,27 @@
 
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 410, true)) {
 
-    if ($_GET['action'] == 'busca' and isset($_GET['cboPeca']) and isset($_GET['cboData']) and isset($_GET['cboHora'])) {
+    if ($_GET['action'] == 'busca' and isset($_GET['cboPeca']) and (isset($_GET['cboData']) and isset($_GET['cboHora'])) || (isset($_GET['getDataInicio']) and isset($_GET['getDataTermino']))) {
 
         $conn = getConnectionTsp();
 
         $nm_sql_teatro = executeSQL($mainConnection, 'SELECT DS_NOME_BASE_SQL FROM MW_BASE WHERE ID_BASE = ?', array($_GET['cboTeatro']), true);
         $nm_sql_teatro = $nm_sql_teatro[0];
 
+        if($_GET['getDataInicio'] != ""){
+            $data1 = explode("/", $_GET['getDataInicio']);
+            $data2 = explode("/", $_GET['getDataTermino']);
+
+            $_GET['getDataInicio'] = $data1[2]."".$data1[1]."".$data1[0];
+            $_GET['getDataTermino'] = $data2[2]."".$data2[1]."".$data2[0];
+            $vetorValores = array($_GET['getDataInicio'], $_GET['getDataTermino'], $_GET['cboPeca'], '', $nm_sql_teatro, '');
+        } else {
+            $vetorValores = array($_GET['cboData'], $_GET['cboData'], $_GET['cboPeca'], $_GET['cboHora'], $nm_sql_teatro, $_GET['cboSetor']);
+        }
+
         $result = executeSQL($conn,
                             "EXEC SP_REL_DEMO_AVULSO_ASSINATURA ?,?,?,?,?,?",
-                            array($_GET['cboData'], $_GET['cboData'], $_GET['cboPeca'], $_GET['cboHora'], $nm_sql_teatro, $_GET['cboSetor']));
+                            $vetorValores);
 
         $lines = array();
         while ($rs = fetchResult($result)) {
@@ -171,12 +182,64 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 410, true)) {
         while($rs = fetchResult($result)){
             $combo .= '<option value="'. $rs["DATAPRESENTACAO"]->format('Ymd') .'"' . (($_GET['cboData'] == $rs['DATAPRESENTACAO']->format('Ymd')) ? ' selected' : '') . '>'. $rs['DATAPRESENTACAO']->format("d/m/Y") .'</option>';
             if ($_GET['excel'] and $_GET['cboData'] == $rs['DATAPRESENTACAO']->format('Ymd')) {
-                $text = $rs['DATAPRESENTACAO']->format("d/m/Y");
+                $text = "<b>Data: </b><br />".$rs['DATAPRESENTACAO']->format("d/m/Y");
                 break;
+            } else
+            {
+                $text = "";
             }
         }
 
         $retorno = $_GET['excel'] ? $text : $combo;
+
+    } elseif($_GET['action'] == 'getDataInicio' and isset($_GET['cboTeatro']) and isset($_GET['cboPeca'])){
+        $conn = getConnection($_GET['cboTeatro']);
+
+        $query = "SELECT TBAP.DATAPRESENTACAO
+                    FROM TABAPRESENTACAO TBAP (NOLOCK)
+                    INNER JOIN TABPECA TBPC (NOLOCK)
+                        ON TBPC.CODPECA = TBAP.CODPECA
+                    INNER JOIN CI_MIDDLEWAY..MW_ACESSO_CONCEDIDO IAC (NOLOCK)
+                        ON IAC.ID_BASE = ?
+                        AND IAC.ID_USUARIO = ?
+                        AND IAC.CODPECA = TBAP.CODPECA
+                                        
+                    INNER JOIN CI_MIDDLEWAY..MW_EVENTO E
+                        ON E.CODPECA = TBPC.CODPECA
+                        AND E.ID_BASE = IAC.ID_BASE
+                        AND E.ID_EVENTO IN (
+                            SELECT E2.ID_EVENTO
+                            FROM CI_MIDDLEWAY..MW_APRESENTACAO A
+                            INNER JOIN CI_MIDDLEWAY..MW_EVENTO E2
+                                ON E2.ID_EVENTO = A.ID_EVENTO
+                                AND E2.ID_BASE = E.ID_BASE
+                            INNER JOIN CI_MIDDLEWAY..MW_PACOTE_APRESENTACAO PA
+                                ON A.ID_APRESENTACAO = PA.ID_APRESENTACAO
+                        )
+
+                    WHERE TBPC.CODPECA = ?
+                    GROUP BY TBAP.DATAPRESENTACAO
+                    ORDER BY TBAP.DATAPRESENTACAO";
+        $params = array($_GET['cboTeatro'], $_SESSION['admin'], $_GET['cboPeca']);
+        $result = executeSQL($conn, $query, $params);
+
+        $array = array();
+
+        while($rs = fetchResult($result)){
+            if($_GET['excel'] and $_GET['getDataInicio'] == $rs['DATAPRESENTACAO']->format("d/m/Y")){
+                $text = "<b>Dt. Apresentação Inicial</b><br />".$rs['DATAPRESENTACAO']->format("d/m/Y");
+                break;
+            }
+            else
+            {
+                $text = "";
+            }
+
+            $valores = array("data_apresentacao" => $rs['DATAPRESENTACAO']->format("d/m/Y"));
+            $array[] = $valores;
+        }
+
+        $retorno = $_GET['excel'] ? $text : json_encode($array);
 
     } elseif ($_GET['action'] == 'cboHora' and isset($_GET['cboTeatro']) and isset($_GET['cboPeca']) and isset($_GET['cboData'])) {
 
@@ -191,8 +254,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 410, true)) {
         while($rs = fetchResult($result)){
             $combo .= '<option value="'. $rs["HorSessao"] .'"' . (($_GET['cboHora'] == $rs['HorSessao']) ? ' selected' : '') . '>'. $rs['HorSessao'] .'</option>';
             if ($_GET['excel'] and $_GET['cboHora'] == $rs['HorSessao']) {
-                $text = $rs['HorSessao'];
+                $text = "<b>Hora:</b><br />".$rs['HorSessao'];
                 break;
+            }
+            else{
+                $text = "";
             }
         }
 

@@ -37,7 +37,7 @@ $valores['data_hora_impressao'] = date('d/m/Y H:i');
 $valores['valor_total'] = number_format($PaymentDataCollection['Amount'] / 100, 2, ',', '');
 $valores['nome_status'] = 'Pago';
 $valores['total_pagamento'] = $valores['valor_total'];
-$valores['meio_pagamento'] = $rs['ds_meio_pagamento'];
+$valores['meio_pagamento'] = utf8_encode($rs['ds_meio_pagamento']);
 $valores['codigo_cliente'] = $parametros['CustomerData']['CustomerIdentity'];
 $valores['email_cliente'] = $parametros['CustomerData']['CustomerEmail'];
 $valores['cpf_cnpj_cliente'] = $dadosExtrasEmail['cpf_cnpj_cliente'];
@@ -127,7 +127,14 @@ foreach ($itensPedido as $item) {
             }
             $CodApresentacao = $item['CodApresentacao'];
         } else {
-            $rsCodigo = fetchResult($codigos);
+            // remover esse codigo depois do dia 31/07/2016 -------------- issue #129
+            if ($rsCodigo = fetchResult($codigos)) {}
+            else {
+                $codigos = executeSQL($conn, $queryCodigos, array($item['CodApresentacao'], $item['CodVenda']));
+                $rsCodigo = fetchResult($codigos);
+            }
+            // adicionar esse codigo depois do dia 31/07/2016 ------------ issue #129
+            // $rsCodigo = fetchResult($codigos)
         }
 
         $code = $rsCodigo['codbar'];

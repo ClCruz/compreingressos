@@ -1,3 +1,26 @@
+// Avoid `console` errors in browsers that lack a console.
+(function() {
+    var method;
+    var noop = function () {};
+    var methods = [
+        'assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error',
+        'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log',
+        'markTimeline', 'profile', 'profileEnd', 'table', 'time', 'timeEnd',
+        'timeline', 'timelineEnd', 'timeStamp', 'trace', 'warn'
+    ];
+    var length = methods.length;
+    var console = (window.console = window.console || {});
+
+    while (length--) {
+        method = methods[length];
+
+        // Only stub undefined methods.
+        if (!console[method]) {
+            console[method] = noop;
+        }
+    }
+}());
+
 $(document).ready(function () {
     simples.init();
 });
@@ -148,9 +171,24 @@ var simples =
         this.getUrlParamns();
     },
 
+    serverURL: function ()
+    {
+        from = location.pathname.split('/');
+        from = from[from.length-1];
+        return from;
+    },
+
     setVars: function ()
     {
 
+    },
+
+    isInt: function (n){
+        return Number(n) === n && n % 1 === 0;
+    },
+
+    isFloat: function(n) {
+        return Number(n) === n && n % 1 !== 0;
     },
 
     /*
@@ -265,42 +303,57 @@ var simples =
         return str.replace(/[^a-z0-9]/gi,'');
     },
 
+    preventGetCEP: false, //Qdo a opção é EXTERIOR (estrangeiro) não pegar cep
+
     getCEP: function (element, paramns)
     {
-        if ( typeof paramns != 'object' ) { paramns = { prefix: '' } }
+        if ( typeof paramns != 'object' ) { paramns = {} }
+
+        if ( !paramns.prefix ) { paramns.prefix = ''; }
+        if ( !paramns.getnow ) { paramns.getnow = false; }
+
         var prefix = paramns.prefix;
 
-        $(element).keyup(function () {
-            var leng = this.value.length;
-            if (leng == 9)
-            {
-                $('.alert').hide();
-                var cep = this.value.replace('-', '');
+        if ( !paramns.getnow ) {
+            $(element).keyup(function (){
 
-                $.ajax({
-                    url: 'https://api.postmon.com.br/v1/cep/'+cep,
-                    dataType: 'json',
-                    success: function (data) {
-                        try{
-                            SetFormEndereco(data);
-                        } catch (e){
-                            console.log({e:e});
-                            $.dialog({ text: 'O CEP foi encontrado, mas ocorreu algum erro ao preencher o formulário de endereço. Favor entrar em contato com o administrador do Sistema e preencher o endereço manualmente.' });
-                        }
-                    },
-                    error: function (error) {
-                        console.log(error);
-                        SetFormEndereco('reset');
-                        $.dialog({ text: 'CEP não encontrado. Por favor, verifique se foi digitado corretamente.', autoHide: { set: true, time: 6000 } });
-                    }
-                });
-            }else{
-                SetFormEndereco('reset');
-            }
-        });
+                var leng = this.value.length;
+                if (leng == this.maxLength && !simples.preventGetCEP)
+                {
+                    __get(this);
+                }else{
+                    SetFormEndereco('reset');
+                }
+            });
+        }else{
+            __get($(element)[0]);
+        }
         
         function setData(data, param, from) {
             
+        }
+
+        function __get(input){
+            $('.alert').hide();
+            var cep = input.value.replace('-', '');
+
+            $.ajax({
+                url: 'https://api.postmon.com.br/v1/cep/'+cep,
+                dataType: 'json',
+                success: function (data) {
+                    try{
+                        SetFormEndereco(data);
+                    } catch (e){
+                        console.log({e:e});
+                        $.dialog({ text: 'O CEP foi encontrado, mas ocorreu algum erro ao preencher o formulário de endereço. Favor entrar em contato com o administrador do Sistema e preencher o endereço manualmente.' });
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                    SetFormEndereco('reset');
+                    $.dialog({ text: 'CEP não encontrado. Por favor, verifique se foi digitado corretamente.', autoHide: { set: true, time: 6000 } });
+                }
+            });
         }
         
         function verificaEstadoSigla(sigla)
@@ -349,7 +402,7 @@ var simples =
 
             if ( typeof data == 'string' &&  data == 'reset')
             {
-                estado.options.selectedIndex = 0;
+                estado.options.selectedIndex = ( estado.options.selectedIndex == 28 ) ? 28 : 0;
                 $(estado).selectbox('detach');
                 $(estado).selectbox('attach');
 
@@ -384,10 +437,36 @@ var simples =
             $(bairro).val(data.bairro);
             $(endereco).val(data.logradouro);
 
-            //console.log(data.logradouro);
             nextFocus = ( data.logradouro != undefined ) ? 'numero_endereco' : 'bairro';
             $('#'+prefix+nextFocus).focus();
 
         }
+    },
+
+    createElement: function (tag, paramns)
+    {
+        var element = document.createElement(tag);
+
+
+        if ( paramns.attrs != undefined )
+        {
+            for(attr in paramns.attrs)
+            {
+                element.setAttribute(attr, paramns.attrs[attr]);
+            }
+        }
+
+        if ( paramns.html != undefined )
+        {
+            element.innerHTML = paramns.html;
+        }
+
+        if ( paramns.style != undefined )
+        {
+            element.setAttribute('style', paramns.style);
+        }
+
+        return element;
     }
+
 };

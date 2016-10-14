@@ -450,7 +450,7 @@ function obterDadosPedidoPago($orderId) {
 
     $rs_gateway_pagamento = executeSQL($mainConnection, 'SELECT ID_GATEWAY_PAGAMENTO, DS_GATEWAY_PAGAMENTO, CD_GATEWAY_PAGAMENTO, DS_URL FROM MW_GATEWAY_PAGAMENTO WHERE IN_ATIVO = 1', array(), true);
 
-    $url_braspag = 'https://homologacao.pagador.com.br/services/pagadorQuery.asmx?WSDL';//$rs_gateway_pagamento['DS_URL'];
+    $url_braspag = ($_ENV['IS_TEST'] ? 'https://homologacao.pagador.com.br/services/pagadorQuery.asmx?WSDL' : 'https://transaction.pagador.com.br/services/pagadorQuery.asmx?WSDL');
     $parametros['MerchantId'] = $rs_gateway_pagamento['CD_GATEWAY_PAGAMENTO'];
     $parametros['OrderId'] = "$orderId";
 
@@ -463,9 +463,13 @@ function obterDadosPedidoPago($orderId) {
 	        $result = $client->GetOrderIdData(array('orderIdDataRequest' => $parametros));
 	        $response = $result->GetOrderIdDataResult;
 	        
-	        $braspagOrderId = $response->OrderIdDataCollection->OrderIdTransactionResponse->BraspagOrderId;
+	        if (count($response->OrderIdDataCollection->OrderIdTransactionResponse) > 1)
+	        	$braspagOrderIds = $response->OrderIdDataCollection->OrderIdTransactionResponse;
+	        else
+	        	$braspagOrderIds = array($response->OrderIdDataCollection->OrderIdTransactionResponse);
+	        
 	        $tentativas--;
-	    } while (($braspagOrderId == '' or $braspagOrderId == NULL) and $tentativas > 0);
+	    } while (empty($braspagOrderIds) and $tentativas > 0);
 
     } catch (SoapFault $e) {
 		$descricao_erro = $e->getMessage();
@@ -473,70 +477,75 @@ function obterDadosPedidoPago($orderId) {
 		$descricao_erro = $e->getMessage();
 	}
 
-	//RequestID
-    $ri = md5(time());
-    $ri = substr($ri, 0, 8) . '-' . substr($ri, 8, 4) . '-' . substr($ri, 12, 4) . '-' . substr($ri, 16, 4) . '-' . substr($ri, -12);
+	foreach($braspagOrderIds as $obj) {
 
-	$parametros = array();
-	$parametros['RequestId'] = $ri;
-    $parametros['Version'] = '1.0';
+		$braspagOrderId = $obj->BraspagOrderId;
 
-    $options = array(
-        'trace' => true,
-        'exceptions' => true,
-        'cache_wsdl' => WSDL_CACHE_NONE
-    );
+		//RequestID
+	    $ri = md5(time());
+	    $ri = substr($ri, 0, 8) . '-' . substr($ri, 8, 4) . '-' . substr($ri, 12, 4) . '-' . substr($ri, 16, 4) . '-' . substr($ri, -12);
 
-    $rs_gateway_pagamento = executeSQL($mainConnection, 'SELECT ID_GATEWAY_PAGAMENTO, DS_GATEWAY_PAGAMENTO, CD_GATEWAY_PAGAMENTO, DS_URL FROM MW_GATEWAY_PAGAMENTO WHERE IN_ATIVO = 1', array(), true);
+		$parametros = array();
+		$parametros['RequestId'] = $ri;
+	    $parametros['Version'] = '1.0';
 
-    $url_braspag = 'https://homologacao.pagador.com.br/services/pagadorQuery.asmx?WSDL';//$rs_gateway_pagamento['DS_URL'];
-    $parametros['MerchantId'] = $rs_gateway_pagamento['CD_GATEWAY_PAGAMENTO'];
-    $parametros['BraspagOrderId'] = $braspagOrderId;
+	    $options = array(
+	        'trace' => true,
+	        'exceptions' => true,
+	        'cache_wsdl' => WSDL_CACHE_NONE
+	    );
 
-    try {
-        $client = @new SoapClient($url_braspag, $options);
+	    $parametros['MerchantId'] = $rs_gateway_pagamento['CD_GATEWAY_PAGAMENTO'];
+	    $parametros['BraspagOrderId'] = $braspagOrderId;
 
-        $tentativas = 3;
-        
-        do {
-	        $result = $client->GetOrderData(array('orderDataRequest' => $parametros));
-	        $response = $result->GetOrderDataResult;
-	        $tentativas--;
-	    } while (!isset($response->TransactionDataCollection->OrderTransactionDataResponse) and $tentativas > 0);
+	    try {
+	        $client = @new SoapClient($url_braspag, $options);
 
-    } catch (SoapFault $e) {
-		$descricao_erro = $e->getMessage();
-	} catch (Exception $e) {
-		$descricao_erro = $e->getMessage();
-	}
+	        $tentativas = 3;
+	        
+	        do {
+		        $result = $client->GetOrderData(array('orderDataRequest' => $parametros));
+		        $response = $result->GetOrderDataResult;
+		        $tentativas--;
+		    } while (!isset($response->TransactionDataCollection->OrderTransactionDataResponse) and $tentativas > 0);
 
-	if ($descricao_erro == '') {
+	    } catch (SoapFault $e) {
+			$descricao_erro = $e->getMessage();
+		} catch (Exception $e) {
+			$descricao_erro = $e->getMessage();
+		}
 
-		$rs = executeSQL($mainConnection, 'SELECT VL_TOTAL_PEDIDO_VENDA FROM MW_PEDIDO_VENDA WHERE ID_PEDIDO_VENDA = ?', array($orderId), true);
-		$valor_pedido = $rs[0];
+		if ($descricao_erro == '') {
 
-		$is_pedido_pago = false;
-		$is_pedido_cancelado = false;
+			$rs = executeSQL($mainConnection, 'SELECT VL_TOTAL_PEDIDO_VENDA FROM MW_PEDIDO_VENDA WHERE ID_PEDIDO_VENDA = ?', array($orderId), true);
+			$valor_pedido = $rs[0];
 
-		if (count($response->TransactionDataCollection->OrderTransactionDataResponse) > 1) {
-			foreach($response->TransactionDataCollection->OrderTransactionDataResponse as $transaction) {
-				if ($transaction->Status == '1') {
+			$is_pedido_pago = false;
+			$is_pedido_cancelado = false;
+
+			if (count($response->TransactionDataCollection->OrderTransactionDataResponse) > 1) {
+				foreach($response->TransactionDataCollection->OrderTransactionDataResponse as $transaction) {
+					if ($transaction->Status == '1') {
+						$is_pedido_pago = true;
+						$return_transaction = $transaction;
+						$return_transaction->BraspagOrderId = $braspagOrderId;
+
+						break 2;
+
+					} else if(in_array($transaction->Status, array('4', '5', '7'))) {
+						$is_pedido_cancelado = true;
+					}
+				}
+			} else {
+				if ($response->TransactionDataCollection->OrderTransactionDataResponse->Status == '1') {
 					$is_pedido_pago = true;
-					$return_transaction = $transaction;
+					$return_transaction = $response->TransactionDataCollection->OrderTransactionDataResponse;
 					$return_transaction->BraspagOrderId = $braspagOrderId;
+					break;
 
-				} else if(in_array($transaction->Status, array('4', '5', '7'))) {
+				} else if(in_array($response->TransactionDataCollection->OrderTransactionDataResponse->Status, array('4', '5', '7'))) {
 					$is_pedido_cancelado = true;
 				}
-			}
-		} else {
-			if ($response->TransactionDataCollection->OrderTransactionDataResponse->Status == '1') {
-				$is_pedido_pago = true;
-				$return_transaction = $response->TransactionDataCollection->OrderTransactionDataResponse;
-				$return_transaction->BraspagOrderId = $braspagOrderId;
-
-			} else if(in_array($response->TransactionDataCollection->OrderTransactionDataResponse->Status, array('4', '5', '7'))) {
-				$is_pedido_cancelado = true;
 			}
 		}
 	}

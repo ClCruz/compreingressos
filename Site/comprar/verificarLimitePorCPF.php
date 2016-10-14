@@ -15,7 +15,7 @@ if (isset($_SESSION['user'])) {
 	$result = executeSQL($mainConnection, $query, array(session_id()));
 	
 	$start = 'Caro Sr(a)., o(s) seguinte(s) evento(s) permite(m) apenas a compra de um número limitado de ingressos.';
-	$start .= '<br><br><table class=\'ui-widget ui-widget-content\' style=\'width:100%; text-align:left\'><thead><th>Evento</th><th>Limite</th><th>Saldo Atual</th></thead><tbody>';
+	$start .= "<br><br><table class='ui-widget ui-widget-content' style='width:100%; text-align:left'><thead><th style='text-align:left'>Evento</th><th style='text-align:left'>Limite</th><th style='text-align:left'>Saldo Atual</th></thead><tbody>";
 	$limitePorCPF = $start;
 	$limitePorCPF_POS = array();
 	

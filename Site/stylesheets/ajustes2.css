@@ -44,7 +44,7 @@ div#mapa_de_plateia_geral{
 	display: none;
 }
 
-div#mapa_de_plateia {
+div.mapa_de_plateia {
 	float: none;
 	margin: auto;
 }
@@ -166,7 +166,7 @@ span.pedido_resumo table tbody td {
 }
 
 input[type="checkbox"]:disabled+label {
-	opacity: .3;
+	opacity: .9;
 }
 
 a.botao.voltar.passo0 {
@@ -176,4 +176,31 @@ a.botao.voltar.passo0 {
 table#assinaturas {
 	width: 950px;
 	margin-left: 30px;
+}
+
+body.mini #form_cadastro .coluna p.frase,
+body.mini #form_cadastro .input_area.sexo,
+body.mini #form_cadastro .input_area.nascimento,
+body.mini #form_cadastro .input_area.identificacao p.titulo,
+body.mini #form_cadastro .input_area.identificacao #checkbox_estrangeiro,
+body.mini #form_cadastro .input_area.identificacao #checkbox_estrangeiro+label,
+body.mini #form_cadastro .input_area.identificacao #rg,
+body.mini #form_cadastro .input_area.identificacao #rg+div,
+body.mini #form_cadastro .input_area.identificacao br,
+body.mini #form_cadastro .input_area.telefones #ddd_fixo,
+body.mini #form_cadastro .input_area.telefones #fixo,
+body.mini #form_cadastro .input_area.telefones #fixo+div,
+body.mini #form_cadastro .input_area.endereco,
+body.mini #form_cadastro .erro_help,
+body.mini #form_cadastro .input_area.robo,
+body.mini #form_cadastro .input_area.recaptcha {
+	display: none;
+}
+
+body.mini #form_cadastro .input_area.identificacao {
+	margin-top: 0;
+}
+
+body.mini #form_cadastro input[type=checkbox].checkbox + label.checkbox {
+	margin: 0;
 }

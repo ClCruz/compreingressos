@@ -153,12 +153,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                 $path = "\\\\".$_SERVER['LOCAL_ADDR']."\\csv\\".$file_path;
             }
 
-            if ($cod_tip_promocao == 3) {
+            if ($cod_tip_promocao == 3 || $cod_tip_promocao == 10) {
                 
                 $query = 'EXEC prc_importa_codigos_promocionais ?,?';
                 $params = array($path, $id_promocao);
 
-            } else if ($cod_tip_promocao == 4) {
+            } else if (in_array($cod_tip_promocao, array(4, 7))) {
                 
                 $rs = executeSQL($conn,
                                 'SELECT ID_PATROCINADOR FROM MW_PROMOCAO_CONTROLE WHERE ID_PROMOCAO_CONTROLE = ?',
@@ -188,6 +188,55 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
         limparTempAdmin();
 
         return ($erro != '' ? $erro : true);
+    }
+
+    function associar_assinaturas($conn, $id_promocao, $assinaturas) {
+
+        $query = 'DELETE FROM MW_ASSINATURA_PROMOCAO WHERE ID_PROMOCAO_CONTROLE = ?';
+        $params = array($id_promocao);
+
+        executeSQL($conn, $query, $params);
+
+        $log = new Log($_SESSION['admin']);
+        $log->__set('funcionalidade', 'Gestão de Promoções');
+        $log->__set('parametros', $params);
+        $log->__set('log', $query);
+        $log->save($conn);
+
+        $query = 'INSERT INTO MW_ASSINATURA_PROMOCAO (ID_ASSINATURA, ID_PROMOCAO_CONTROLE) VALUES (?,?)';
+        
+        foreach ($assinaturas as $id_assinatura) {
+            $params = array($id_assinatura, $id_promocao);
+            executeSQL($conn, $query, $params);
+
+            $log = new Log($_SESSION['admin']);
+            $log->__set('funcionalidade', 'Gestão de Promoções');
+            $log->__set('parametros', $params);
+            $log->__set('log', $query);
+            $log->save($conn);
+        }
+    }
+
+    function monitorar_promocao($conn, $id_promocao_pai, $id_promocao_filha, $qt_ingressos) {
+        executeSQL($conn, 'DELETE MW_PROMOCAO_COMPREXLEVEY WHERE ID_PROMOCAO_CONTROLE_PAI = ?', array($id_promocao_pai));
+        executeSQL($conn, 'INSERT INTO MW_PROMOCAO_COMPREXLEVEY (ID_PROMOCAO_CONTROLE_PAI, ID_PROMOCAO_CONTROLE_FILHA, QT_INGRESSOS)
+                            VALUES (?,?,?)', array($id_promocao_pai, $id_promocao_filha, $qt_ingressos));
+    }
+
+    
+    
+    if ($_GET['action'] == 'save' AND $_POST['cboAssinatura'] AND $_POST['cboPromo'] == 8) {
+
+        $query = "SELECT 1 FROM MW_ASSINATURA_PROMOCAO AP
+                    INNER JOIN MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = AP.ID_PROMOCAO_CONTROLE
+                    WHERE AP.ID_ASSINATURA = ? AND PC.CODTIPPROMOCAO = 8 AND PC.IN_ATIVO = 1";
+
+        $params = array($_POST['cboAssinatura'][0]);
+        $rs = executeSQL($mainConnection, $query, $params, true);
+
+        if (!empty($rs)) {
+            die("false?erro=Essa assinatura já está em uso em outra promoção.&id=".$_POST['id']);
+        }
     }
 
 
@@ -306,13 +355,22 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
             gerar_codigos($mainConnection, $_POST['id'], $rs['CODTIPPROMOCAO'], $_POST['qt_codigo'], $codigo_fixo);
         }
         // remover codigos
-        else if ($_POST['qt_codigo'] < 0) {
+        elseif ($_POST['qt_codigo'] < 0) {
             apagar_codigos($mainConnection, $_POST['id'], $_POST['qt_codigo'] * -1);
         }
         // carrega arquivos csv com codigos e cpf ou bins
-        else if ($rs['CODTIPPROMOCAO'] == 3 or $rs['CODTIPPROMOCAO'] == 4 and $_POST['diretorio_temp']) {
+        elseif (in_array($rs['CODTIPPROMOCAO'], array(3, 4, 7, 10)) and $_POST['diretorio_temp']) {
             $import = importar_conteudo_dos_arquivos($mainConnection, $_POST['id'], $_POST['diretorio_temp'], $rs['CODTIPPROMOCAO']);
             $retorno = $import === true ? '' : 'true?id='.$_POST['id'].'&msg=A promoção foi alterada, porém o processo de importação encontrou problemas no(s) arquivo(s):<br/><br/>'.$import;
+        }
+        // associa as assinaturas a promocao
+        elseif (in_array($rs['CODTIPPROMOCAO'], array(8, 9))) {
+            // associar_assinaturas($mainConnection, $_POST['id'], $_POST['cboAssinatura']);
+        }
+
+        // para gerar o relacionamento entre a promocao atual e a promocao monitorada
+        if ($rs['CODTIPPROMOCAO'] == 10) {
+            monitorar_promocao($mainConnection, $id, $_POST['promoMonitorada'], $_POST['qt_ingressos']);
         }
 
         $retorno = $retorno
@@ -366,8 +424,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                     IN_EXIBICAO
                     )
                 VALUES (?,?,?,?,?,?,?,1,?,?,?,?,?,?,?,?,?,?);
-                SELECT SCOPE_IDENTITY() as ID;';
-        $params = array($_POST['cboPromo'],
+                SELECT
+                    ID_PROMOCAO_CONTROLE as ID,
+                    CODTIPPROMOCAO
+                FROM MW_PROMOCAO_CONTROLE
+                WHERE ID_PROMOCAO_CONTROLE = SCOPE_IDENTITY();';
+        $params = array(
+            $_POST['cboPromo'],
             utf8_decode($_POST['ds_promo']),
             utf8_decode($_POST['ds_bilhete']),
             $_POST['vl_desconto'],
@@ -383,7 +446,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
             $_POST['in_servico'],
             $_POST['cboPatrocinador'],
             $_POST['qt_limite_cpf'],
-                        $_POST['cboExibicao']);
+            $_POST['cboExibicao']
+        );
 
         $result = executeSQL($mainConnection, $query, $params);
 
@@ -415,13 +479,22 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
         executeSQL($mainConnection, 'exec prc_insere_bilhete_promocao ?', array($id));
 
         // carrega arquivos csv com codigos e cpf ou bins
-        if ($_POST['cboPromo'] == 3 or $_POST['cboPromo'] == 4 and $_POST['diretorio_temp']) {
+        if (in_array($rs['CODTIPPROMOCAO'], array(3, 4, 7, 10)) and $_POST['diretorio_temp']) {
             $import = importar_conteudo_dos_arquivos($mainConnection, $id, $_POST['diretorio_temp'], $_POST['cboPromo']);
             $retorno = $import === true ? '' : 'true?id='.$id.'&msg=A promoção foi criada, porém o processo de importação encontrou problemas no(s) arquivo(s):<br/><br/>'.$import;
+        }
+        // associa as assinaturas a promocao
+        elseif (in_array($rs['CODTIPPROMOCAO'], array(8, 9))) {
+            associar_assinaturas($mainConnection, $id, $_POST['cboAssinatura']);
         }
         // gera os codigos dos cupons
         else {
             gerar_codigos($mainConnection, $id, $_POST['cboPromo'], $_POST['qt_codigo'], $_POST['ds_codigo']);
+        }
+
+        // para gerar o relacionamento entre a promocao atual e a promocao monitorada
+        if ($rs['CODTIPPROMOCAO'] == 10) {
+            monitorar_promocao($mainConnection, $id, $_POST['promoMonitorada'], $_POST['qt_ingressos']);
         }
 
         $retorno = $retorno

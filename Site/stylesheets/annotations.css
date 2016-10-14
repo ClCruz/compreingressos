@@ -36,14 +36,14 @@
   background-color: #cccccc;
 }
 
-#mapa_de_plateia .ui-selecting {
+.mapa_de_plateia .ui-selecting {
   border:2px solid #FF0;
 }
 
-#mapa_de_plateia .ui-selected {
+.mapa_de_plateia .ui-selected {
   /**border:2px solid #F00;**/
 }
 
-#mapa_de_plateia {
+.mapa_de_plateia {
   position:relative;
 }

@@ -67,7 +67,7 @@ if (isset($_GET['quantidade']) and $_GET['quantidade'] != '') {
 		if (isset($_GET['validar_codigos'])) {
 
 			// se for promocao BIN
-			if ($rs['CODTIPPROMOCAO'] == 4) {
+			if (in_array($rs['CODTIPPROMOCAO'], array(4, 7))) {
 
 				$query = "SELECT 1 FROM MW_RESERVA R WHERE R.ID_SESSION = ? AND CD_BINITAU IS NOT NULL AND CD_BINITAU != ?";
 			    $result = executeSQL($mainConnection, $query, array(session_id(), $_GET['codigo'][0]));
@@ -86,10 +86,13 @@ if (isset($_GET['quantidade']) and $_GET['quantidade'] != '') {
 			                INNER JOIN TABTIPBILHETE TTB ON TTB.CODTIPBILHETE = AB.CODTIPBILHETE
 			                INNER JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = TTB.ID_PROMOCAO_CONTROLE AND A.DT_APRESENTACAO BETWEEN PC.DT_INICIO_PROMOCAO AND PC.DT_FIM_PROMOCAO
 			                INNER JOIN CI_MIDDLEWAY..MW_CARTAO_PATROCINADO CP ON CP.ID_PATROCINADOR = PC.ID_PATROCINADOR
-			                AND CP.CD_BIN = ?
-			                WHERE PC.CODTIPPROMOCAO = 4
+			                WHERE (
+			                    (PC.CODTIPPROMOCAO in (4, 7) AND CP.CD_BIN = ?)
+			                    OR
+			                    (PC.CODTIPPROMOCAO = 7 AND CP.CD_BIN = SUBSTRING(?, 1, 5))
+			                )
 			                AND AB.ID_APRESENTACAO_BILHETE = ?";
-			        $params = array($_GET['codigo'][0], $_GET['bilhete']);
+			        $params = array($_GET['codigo'][0], $_GET['codigo'][0], $_GET['bilhete']);
 
 			        $result = executeSQL($conn, $query, $params);
 
@@ -226,7 +229,7 @@ if (isset($_GET['quantidade']) and $_GET['quantidade'] != '') {
 				}
 
 				// se for bin pegar o codigo promocional apenas uma vez
-				$codes_to_get = (($rs['CODTIPPROMOCAO'] == 4 and $_GET['quantidade'] > 0) ? 1 : $_GET['quantidade']);
+				$codes_to_get = ((in_array($rs['CODTIPPROMOCAO'], array(4, 7)) and $_GET['quantidade'] > 0) ? 1 : $_GET['quantidade']);
 
 				if ($codes_to_get > 0) {
 					for ($i=1; $i <= $codes_to_get; $i++) {
@@ -550,6 +553,20 @@ if ($_GET['bilhete'] == 888888888 or $_GET['bilhete'] == 777777777
 // confirmacao do pedido - pagamento
 if (isset($_GET['confirmacao'])) {
 
+	$query = 'SELECT TOP 1 1
+				FROM MW_RESERVA R
+				INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+				INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+				WHERE ID_SESSION = ? AND E.IN_OBRIGA_CPF_POS = 1';
+	$rs = executeSQL($mainConnection, $query, array(session_id()), true);
+
+	if ($rs[0]) {
+		$validar_limite_cpf = true;
+	} else {
+		$_SESSION['user'] = 493205;
+		$validar_limite_cpf = false;
+	}
+
 	if (verificaCPF($_GET['cpf']) and strlen($_GET['telefone']) > 7) {
 
 		$query = "SELECT ID_CLIENTE FROM MW_CLIENTE WHERE CD_CPF = ?";
@@ -592,51 +609,35 @@ if (isset($_GET['confirmacao'])) {
 			$error[] = $msgServicosPorPedido;
 		}
 
-		ob_start();
-		require('../comprar/verificarLimitePorCPF.php');
-		$response = ob_get_clean();
-		if (count($limitePorCPF_POS) > 0) {
-			foreach ($limitePorCPF_POS as $value) {
-				$error[] = $value;
+		if ($validar_limite_cpf) {
+			ob_start();
+			require('../comprar/verificarLimitePorCPF.php');
+			$response = ob_get_clean();
+			if (count($limitePorCPF_POS) > 0) {
+				foreach ($limitePorCPF_POS as $value) {
+					$error[] = $value;
+				}
 			}
 		}
 
 		$bin = executeSQL($mainConnection, "SELECT CD_BINITAU FROM MW_RESERVA WHERE ID_SESSION = ? AND CD_BINITAU IS NOT NULL", array(session_id()), true);
 		$bin = $bin[0];
 
-		$useragent = $_SERVER['HTTP_USER_AGENT'];
-		$strCookie = 'PHPSESSID=' . $_COOKIE['PHPSESSID'] . '; path=/';
-
-		$post_data = http_build_query(array('numCartao' => $bin, 'pos' => 1));
-		$url = 'http'.($_SERVER["HTTPS"] == "on" ? 's' : '').'://'.$_SERVER['SERVER_NAME'].($_ENV['IS_TEST'] ? '/compreingressos2' : '').'/comprar/validarBin.php';
-		session_write_close();
-
-		$ch = curl_init(); 
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_USERAGENT, $useragent);
-		curl_setopt($ch, CURLOPT_COOKIE, $strCookie);
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		$response = curl_exec($ch); 
-		curl_close($ch);
+		ob_start();
+		$_POST['numCartao'] = $bin;
+		$_POST['pos'] = 1;
+		require('../comprar/validarBin.php');
+		$response = ob_get_clean();
 		if ($response != '') {
 			$error[] = $response;
 		}
 
-		$url = 'http'.($_SERVER["HTTPS"] == "on" ? 's' : '').'://'.$_SERVER['SERVER_NAME'].($_ENV['IS_TEST'] ? '/compreingressos2' : '').'/comprar/validarLote.php';
-		$ch = curl_init(); 
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_USERAGENT, $useragent);
-		curl_setopt($ch, CURLOPT_COOKIE, $strCookie);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		$response = curl_exec($ch); 
-		curl_close($ch);
+		ob_start();
+		require('../comprar/validarLote.php');
+		$response = ob_get_clean();
 		if ($response != '') {
 			$error[] = $response;
 		}
-
-		session_start();
 
 		// se estiver tudo ok pedir pelo pagarmento
 		if (!isset($error)) {
@@ -684,7 +685,9 @@ if (isset($_GET['confirmacao'])) {
 				echo "<GET TYPE=HIDDEN NAME=PARC VALUE=0>";
 				echo "<GET TYPE=HIDDEN NAME=TIPOTRANS VALUE=CHEQUE>";
 			} else {
-				$valor = number_format($total_geral * 100, 0);
+				$idterm_tef = getIDPOS($_GET['pos_serial']);
+				$valor = number_format($total_geral * 100, 0, '', '');
+				
 				echo "<PAGAMENTO IPTEF=$ip_tef PORTATEF=$porta_tef CODLOJA=$codloja_tef IDTERM=$idterm_tef TIPO=MENU VALOR=$valor PAGRET=RESPAG BIN=BINCARTAO NINST=NOMEINST NSU=NSUAUT AUT=CAUT NPAR=PARC MODPAG=TIPOTRANS>";
 			}
 		}

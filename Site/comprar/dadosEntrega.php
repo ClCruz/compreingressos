@@ -3,7 +3,7 @@ require_once('../settings/functions.php');
 require_once('../settings/settings.php');
 session_start();
 
-$mainConnection = mainConnection();
+$mainConnection = isset($mainConnection) ? $mainConnection : mainConnection();
 
 $enderecoMain = getEnderecoCliente($_SESSION['user'], -1);
 ?>
@@ -88,7 +88,7 @@ while ($rs = fetchResult($result)) {
 				<p class="erro"></p>
 				<p class="help">ex. casa, trabalho...</p>
 			</div>
-			<input type="text" name="cep" placeholder="CEP" maxlength="9" autocomplete="off" id="novo_cep">
+			<input type="text" name="cep" placeholder="CEP" maxlength="8" autocomplete="off" id="novo_cep">
 			<div class="erro_help">
 				<p class="erro"></p>
 				<p class="help"><a href="http://www.buscacep.correios.com.br/" target="_blank">não sabe seu CEP?</a></p>

@@ -20,7 +20,7 @@ $is_assinatura = hasRows($result);
 $subject = 'Pedido ' . $parametros['OrderData']['OrderId'] . ' - Pago';
 
 $namefrom = 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS';
-$from = ($_ENV['IS_TEST'] ? 'contato@intuiti.com.br' : 'compreingressos@gmail.com');
+$from = '';
 
 $query = 'SELECT ds_meio_pagamento FROM mw_meio_pagamento WHERE cd_meio_pagamento = ?';
 $rs = executeSQL($mainConnection, $query, array($PaymentDataCollection['PaymentMethod']), true);
@@ -143,7 +143,7 @@ foreach ($itensPedido as $item) {
 }
 
 $valores['link_voucher'] = ($_ENV['IS_TEST']
-                                ? 'http://186.237.201.150:8081/compreingressos2/comprar/reimprimirEmail.php?pedido='.$parametros['OrderData']['OrderId']
+                                ? 'http://homolog.compreingressos.com:8081/comprar/reimprimirEmail.php?pedido='.$parametros['OrderData']['OrderId']
                                 : 'https://compra.compreingressos.com/comprar/reimprimirEmail.php?pedido='.$parametros['OrderData']['OrderId']);
 
 $tpl = new Template('../comprar/templates/emailComprador.html');
@@ -182,7 +182,7 @@ if (filter_var($valores['email_presenteado'], FILTER_VALIDATE_EMAIL)) {
     $cipher_var = urlencode(base64_encode($cipher->encrypt($parametros['OrderData']['OrderId'].'|'.$valores['email_presenteado'])));
 
     $valores['link_voucher'] = ($_ENV['IS_TEST']
-                                ? 'http://186.237.201.150:8081/compreingressos2/comprar/reimprimirEmail.php?pedido='.$cipher_var
+                                ? 'http://homolog.compreingressos.com:8081/comprar/reimprimirEmail.php?pedido='.$cipher_var
                                 : 'https://compra.compreingressos.com/comprar/reimprimirEmail.php?pedido='.$cipher_var);
 
     $tpl = new Template('../comprar/templates/emailPresente.html');

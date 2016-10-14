@@ -63,7 +63,7 @@ a img { border: none;}
 	margin:15px;
 }
 
-#mapa_de_plateia {
+.mapa_de_plateia {
 	height:512px;
 	background-color:red;
 	padding:5px;

@@ -21,7 +21,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
   $query = 'SELECT A.CODAPRESENTACAO, E.ID_BASE, E.ID_EVENTO,E.DS_EVENTO,
               B.DS_NOME_TEATRO, CONVERT(VARCHAR(10), A.DT_APRESENTACAO, 103) DT_APRESENTACAO,
               A.HR_APRESENTACAO, LE.DS_LOCAL_EVENTO, M.DS_MUNICIPIO, ES.SG_ESTADO, A.DS_PISO,
-              E.QT_INGR_POR_PEDIDO
+              E.QT_INGR_POR_PEDIDO, E.in_exibe_tela_assinante
             FROM MW_APRESENTACAO A
             INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO AND E.IN_ATIVO = \'1\'
             INNER JOIN MW_BASE B ON B.ID_BASE = E.ID_BASE AND B.IN_ATIVO = \'1\'
@@ -33,6 +33,8 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
   $rs = executeSQL($mainConnection, $query, $params, true);
 
   $maxIngressos = $rs['QT_INGR_POR_PEDIDO'];
+
+  $exibePopUpAssinante = ($rs['in_exibe_tela_assinante'] == '1' AND !isset($_SESSION['operador']) AND !isset($_SESSION['user']));
 
   $evento_info = getEvento($rs['ID_EVENTO']);
   $is_pacote = is_pacote($_GET['apresentacao']);
@@ -55,7 +57,8 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
     $query = 'SELECT
              INGRESSONUMERADO,
              DATEDIFF(HH, DATEADD(HH, (ISNULL(P.QT_HR_ANTECED, 24) * -1), CONVERT(DATETIME, CONVERT(VARCHAR, A.DATAPRESENTACAO, 112) + \' \' + LEFT(HORSESSAO,2) + \':\' + RIGHT(HORSESSAO,2) + \':00\')) ,GETDATE() ) AS TELEFONE,
-             S.TAMANHOLUGAR
+             S.TAMANHOLUGAR,
+             CASE WHEN S.FOTOIMAGEMSITE IS NOT NULL THEN 1 ELSE 0 END AS TEM_MAPA
              FROM
              TABAPRESENTACAO A
              INNER JOIN TABSALA S ON S.CODSALA = A.CODSALA
@@ -66,6 +69,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
 
     if (!empty($rs2)) {
       $numerado = $rs2[0];
+      $tem_mapa = $rs2['TEM_MAPA'];
       $vendasPorTelefone = $rs2['TELEFONE'];
     } else {
       $vendaNaoLiberada = true;
@@ -196,7 +200,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
     <script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
     <script src="../javascripts/common.js" type="text/javascript"></script>
     <script src="../javascripts/jquery.annotate.js" type="text/javascript"></script>
-   
+
     <script type="text/javascript" src="../javascripts/plateia.js?<?php echo $vars; ?>"></script>
     <script type="text/javascript" src="../javascripts/overlay_datas.js?evento=<?php echo $rs['ID_EVENTO']; ?>"></script>
 
@@ -227,18 +231,39 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
       })();
     </script>
     <?php if(!empty($rs2) && $rs2["TAMANHOLUGAR"] != 0){ ?>
-    <style type="text/css">
-      .diametro{
-        width: <?php echo $rs2["TAMANHOLUGAR"]; ?>px;
-        height: <?php echo $rs2["TAMANHOLUGAR"]; ?>px;
-      }
-    </style>
+      <style type="text/css">
+        .diametro{
+          width: <?php echo $rs2["TAMANHOLUGAR"]; ?>px;
+          height: <?php echo $rs2["TAMANHOLUGAR"]; ?>px;
+        }
+      </style>
     <?php } ?>
-  </head>
+
+    <?php if ($exibePopUpAssinante) { ?>
+      <script src="../javascripts/simpleFunctions.js" type="text/javascript"></script>
+      <script src="../javascripts/identificacao_cadastro.js" type="text/javascript"></script>
+      <script src="../javascripts/cipopup.js" type="text/javascript"></script>
+      <script type="text/javascript">
+        $(document).ready(function (){
+          ciPopup.init('login_assinante');
+        });
+      </script>
+    <?php } ?>
+    
+      </head>
   <body style="height: 0px; overflow: visible; position: static;">
-    <div style="margin-top: 0px;" id="pai">
-      <?php include_once("header.php"); ?>
-      <div id="content">
+  <!-- conteudo para exibir em popup -->
+  <div class="hidden">
+    <div id="login_assinante">
+      <?php require_once ('div_identificacao.php'); ?>
+      <div class="ui-helper-clearfix"></div>
+    </div>
+  </div>
+  <!-- conteudo para exibir em popup -->
+
+  <div style="margin-top: 0px;" id="pai">
+    <?php include_once("header.php"); ?>
+    <div id="content">
         <div class="alert">
           <div class="centraliza">
             <img src="../images/ico_erro_notificacao.png" alt="Notificação" />
@@ -349,7 +374,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
             </div>
           </div>
             <?php if ($vendasPorTelefone < 0 && $vendaNaoLiberada == false) { ?>
-              <?php if ($numerado) { ?>
+              <?php if ($numerado OR $tem_mapa) { ?>
               <div id="mapa_de_plateia_geral">
                 <?php require_once("mapaPlateia.php"); ?>              
               </div>
@@ -378,7 +403,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
           </div>
 
       <?php include "footer.php"; ?>
-      <?php include "selos.php"; ?>
+      <?php //include "selos.php"; ?>
 
       <div id="overlay">
         <div class="centraliza hidden" id="outras_datas">
@@ -400,6 +425,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
           </div>
         </div>
       </div>
+
     </div>
   </body>
 </html>

@@ -233,25 +233,32 @@ $(function() {
           
           changeScale(data.xScale, data.yScale);
           size = data['size'];
+
+          if ($('#celSala :selected').attr('numerado') == '1') {
+
+            $('.opcoes_numerados').show();
           
-          $('#mapa_de_plateia').addAnnotations(annotation, data.cadeiras);
-          $('#mapa_de_plateia span').tooltip({
-            track: true,
-            content: function() {
-              var element = $(this),
-                  text = element.attr("title"),
-                  img;
+            $('#mapa_de_plateia').addAnnotations(annotation, data.cadeiras);
+            $('#mapa_de_plateia span').tooltip({
+              track: true,
+              content: function() {
+                var element = $(this),
+                    text = element.attr("title"),
+                    img;
 
-              if (element.data('img')) {
-                img = element.data('new_img')
-                  ? element.data('new_img')
-                  : "mapaPlateia.php?action=loadImage&teatro="+$('#teatroID').val()+"&sala="+$('#salaID').val()+'&indice='+element.data('id');
-                text += "<br /><br /><img src='"+img+"' class='foto-plateia' />";
+                if (element.data('img')) {
+                  img = element.data('new_img')
+                    ? element.data('new_img')
+                    : "mapaPlateia.php?action=loadImage&teatro="+$('#teatroID').val()+"&sala="+$('#salaID').val()+'&indice='+element.data('id');
+                  text += "<br /><br /><img src='"+img+"' class='foto-plateia' />";
+                }
+
+                return text;
               }
-
-              return text;
-            }
-          });
+            });
+          } else {
+            $('.opcoes_numerados').hide();
+          }
           
           if (data.imagem) {
             changeImage(data.imagem);
@@ -376,6 +383,13 @@ $(function() {
       fileExt: '*.gif;*.jpg;*.jpeg;*.png;',
       queueID:'uploadifyQueue2',
       width: 300,
+      sizeLimit: 150 * 1024,// 150kb
+      onSelect: function(event, queueID, fileObj) {
+        if (fileObj.size > 150 * 1034) {
+          $.dialog({text:'O tamanho da imagem não pode exceder 150KB.'});
+          return false;
+        }
+      },
       onComplete: function(event, queueID, fileObj, response, data) {
         if (response.substr(0, 4) == 'true') {
           changeImage(response.split('?')[1]);

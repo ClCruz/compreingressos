@@ -42,6 +42,34 @@ div#top{
 	border-top:5px solid #930606;
 }
 
+[class*="btn_"]{
+	padding: 20px 0px;
+}
+
+.btn_gradient{
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#c02c2b+0,931a1d+100 */
+	background: #c02c2b; /* Old browsers */
+	background: -moz-linear-gradient(top,  #c02c2b 0%, #931a1d 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(top,  #c02c2b 0%,#931a1d 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to bottom,  #c02c2b 0%,#931a1d 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c02c2b', endColorstr='#931a1d',GradientType=0 ); /* IE6-9 */
+	/*CI cfg*/
+	border-radius: 3px;
+	padding: 20px 30px;
+	color: #fff;
+	cursor: pointer;
+	transition: color 0.2s;
+}
+div#clube_riachuelo {
+	margin-top: 50px;
+}
+div#clube_riachuelo a:last-child {
+	float: right;
+}
+div#clube_riachuelo a:first-child {
+	float: left;
+}
+
 div#menu_topo{
 	float:left;
 	width:100%;
@@ -280,7 +308,7 @@ div.descricao_pag{
 	float:left;
 	width:100%;
 	overflow:visible;
-	margin-bottom:50px;
+	margin-bottom:25px;
 }
 
 div.descricao_pag div.img{
@@ -391,6 +419,12 @@ div.identificacao a.esqueci_senha{
 	font-size:18px;
 	margin:20px 0 0;
 	display:block;
+}
+
+div.identificacao a#lembrei_senha {
+	height: 55px;
+	float: right;
+	line-height: 55px;
 }
 
 div.identificacao div.container_esqueci_senha{
@@ -826,6 +860,10 @@ table#pedido_resumo tbody tr.beneficio div.img_complemento{
 	margin:0 5px;
 }
 
+table#pedido_resumo tbody tr.beneficio div.img_complemento img{
+	height: 100%;
+}
+
 table#pedido_resumo tbody tr.beneficio div.ajuda{
 	float:left;
 	width:139px;
@@ -858,12 +896,12 @@ table#pedido_resumo tbody tr.beneficio div.icone_validador{
 	width:20px;
 	margin:28px 0 0 10px;
 	height:20px;
-	background:transparent url('beneficio_validacao.png') 0 0 no-repeat;
+	background:transparent url('../images/beneficio_validacao.png') 0 0 no-repeat;
 }
 
 table#pedido_resumo tbody tr.beneficio div.icone_validador.valido{
 	background:#CEA;
-	background:transparent url('beneficio_validacao.png') 0 -20px no-repeat;
+	background:transparent url('../images/beneficio_validacao.png') 0 -20px no-repeat;
 }
 
 table#pedido_resumo tbody tr.beneficio div.container_validador{
@@ -1004,7 +1042,7 @@ div.resumo_espetaculo div.outras_datas p{
 div.container_escolha_ingresso{
 	float:left;
 	width:596px;
-	margin-bottom:30px;
+	margin-bottom:15px;
 }
 
 div.container_escolha_ingresso div.locais{
@@ -1130,7 +1168,7 @@ div.container_cartoes div.inputs{
 	margin-top:56px;
 }
 
-div.container_cartoes div.inputs div.container_cartao{
+div.container_cartao{
 	float:left;
 	width:148px;
 	height:110px;
@@ -1172,21 +1210,20 @@ div.presente img {
   margin-right: 10px;
 }
 
-#content div.container_cartoes div.container_cartao label.radio{
+div.container_cartao label.radio{
 	height:33px;
 	width:120px;
 	margin:0;
 }
 
-div.container_cartoes div.container_cartao label.radio img{
+div.container_cartao label.radio img{
 	width:52px;
 	height:52px;
-	background:#FFF;
 	margin-top:-19px;
 	border:0;
 }
 
-div.container_cartoes div.container_cartao  p.nome{
+div.container_cartao  p.nome{
 	font-size:24px;
 	font-weight:300;
 	margin:10px 0 5px -8px;
@@ -1194,14 +1231,14 @@ div.container_cartoes div.container_cartao  p.nome{
 	text-align:center;
 }
 
-div.container_cartoes div.container_cartao  p.aviso{
+div.container_cartao  p.aviso{
 	font-size:12px;
 	width:140px;
 	text-align:center;
 	margin-left:-14px;
 }
 
-div.container_cartoes div.container_cartao  p.aviso span{
+div.container_cartao  p.aviso span{
 	font-size:16px;
 	font-weight:bold;
 }
@@ -1285,7 +1322,7 @@ div.container_dados div.input.codigo div.erro_help{
 	margin-left:42px;
 }
 
-div#mapa_de_plateia{
+div.mapa_de_plateia{
 	float:left;
 	width:960px;
 	margin:0 0 20px;
@@ -1358,31 +1395,6 @@ div#detalhes_busca{
 	margin-bottom:10px;
 	text-transform:none;
 	font-variant:small-caps;
-}
-
-#footer ul li a.facebook{
-	display:block;
-	padding:30px 0 15px 95px;
-	text-transform:none;
-	background:transparent url('../images/ico_facebook.png') 0 0 no-repeat;
-	line-height:1.2em;
-}
-
-#footer ul li a.facebook:hover{
-  background-position:0 -92px;
-}
-
-#footer ul li a.twitter{
-	display:block;
-	margin-top:30px;
-	text-transform:none;
-	padding:30px 0 15px 95px;
-	background:transparent url('../images/ico_twitter.png') 0 0 no-repeat;
-	line-height:1.2em;
-}
-
-#footer ul li a.twitter:hover{
-  background-position:0 -92px;
 }
 
 #selos{
@@ -2329,6 +2341,29 @@ div.alert a{
   margin:30px 55px 0;
 }
 
+/*MODAL ASSIANNTE A*/
+#cipopup { width: 100%; height: 100%; position: fixed; z-index: 99; top: 0px; left: 0px; }
+#cipopup .bg { width: 100%; height: 100%;  background: rgba(0,0,0,0.8); position: absolute; top: 0px; left: 0px; }
+#cipopup .content { min-width: 300px; min-height: 300px; background: #fff; position: absolute; top: 50%; left: 50%; margin-top: -150px; margin-left: -150px; border-radius: 5px 0 5px 5px; padding: 35px; }
+#cipopup .content .default.popup_hide {  position: absolute;  background: #c02a2c;  top: -30px;  right: 0;  height: 30px;  line-height: 30px;  color: #fff;  padding: 0 15px;  text-transform: uppercase;  font-size: 12px;  font-weight: bold;  transition: all 0.3s;   }
+#cipopup .content .default.popup_hide:hover {  background: #961a1e;  cursor: pointer;   }
+
+
+div#popup_dialog_out {  z-index: 99;;  position: absolute;  background: #c02a2c;  bottom: 50px;  right: -370px;  width: 340px;  min-height: 90px;  padding: 10px;  color: #fff;   }
+div#popup_dialog_out .x_dialog {  position: absolute;  top: -20px;  right: 5px;  cursor: pointer;  transition: all 0.3s;  text-transform: uppercase;  font-size: 12px;   }
+div#popup_dialog_out .x_dialog:hover {  color: #c02a2c;   }
+div#popup_dialog_in .x_dialog {  position: absolute;  top: -27px;  right: -1px;  padding: 5px;  background: #ff5050;  border: 1px solid red;  cursor: pointer;  color: #fff;  transition: all 0.3s;   }
+div#popup_dialog_in .x_dialog:hover {  background: red;   }
+div#popup_dialog_in { display: none; padding: 10px;  border: 1px solid #961a1e;  font-size: 12px;  color: #981c1e;  text-transform: uppercase;  position: relative;  margin-top: 30px;   }
+div#login_assinante .identificacao.cadastro {  display: none;   }
+
+
+div#login_assinante div.identificacao {  margin: 0px;   }
+div#cipopup div#login_assinante input{  margin-bottom: 25px;   }
+div#cipopup div#login_assinante div.erro_help{  display: none;   }
+
+/*MODAL ASSIANNTE A*/
+
 /* Select Box */
 .sbHolder{
 	float:left;
@@ -2541,6 +2576,7 @@ a.sbSelector.sbFocus,a.sbSelector:hover,.sbHolder:hover a.sbSelector{
 #pedido_resumo .sbSelector{
 	width:182px;
 	font-size:20px;
+	white-space: nowrap;
 }
 
 div.resumo_espetaculo div.pedido_entrega .sbHolder{
@@ -2742,6 +2778,49 @@ div.resumo_carrinho span.frase{
     margin: 150px 0 0 70px;
     border: 3px solid #D3D3D3;
 }
+
 .meia_entrada a:hover{
 	text-decoration: underline;
+}
+
+.beneficio.promo_8 p.frase1.notHidden,
+.beneficio.promo_8 p.frase2.notHidden,
+.beneficio.promo_8 .icone_validador:not(.valido),
+.beneficio.promo_8 .icone_validador:not(.valido) + .container_validador {
+    display: none;
+}
+
+
+div.espetaculo_img.assinatura{
+	border:none;
+	background:none;
+}
+
+div#bancos {
+    margin: 30px 0;
+}
+
+div.pague_agora div.icone {
+	background: transparent url('../images/ico_debito.png') 0 0 no-repeat;
+}
+
+
+#ddd_fixo, #ddd_celular {
+	width: 19%;
+}
+
+#fixo, #celular {
+	width: 69%;
+	float: right;
+}
+
+@media only screen and (max-width: 640px) {
+	#ddd_fixo, #ddd_celular {
+		width: 19% !important;
+	}
+
+	#fixo, #celular {
+		width: 69% !important;
+		float: right !important;
+	}
 }

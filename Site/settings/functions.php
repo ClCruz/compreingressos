@@ -1,4 +1,8 @@
 <?php
+require('../settings/Metzli/autoload.php');
+
+use Metzli\Encoder\Encoder;
+use Metzli\Renderer\PngRenderer;
 
 function getSiteLogo() {
     echo "<img src='../images/menu_logo.png' height='60px' id='logo' />";
@@ -283,7 +287,7 @@ function obterValorPercentualServicoPorPedido() {
 function enviarEmailNovaConta ($login, $nome, $email) {
 
 	$subject = 'Aviso de Acesso';
-	$from = 'contato@compreingressos.com';
+	$from = '';
 	$namefrom = 'COMPREINGRESSOS.COM - AGENCIA DE VENDA DE INGRESSOS';
 
 	//define the body of the message.
@@ -506,6 +510,54 @@ function getURLApresentacaoAtual() {
 	return 'etapa1.php?apresentacao='.$rs['ID_APRESENTACAO'].'&eventoDS='.utf8_encode($rs['DS_EVENTO']);
 }
 
+function getPrimeiroValorAssinatura($id_usuario, $id_assinatura) {
+    $mainConnection = mainConnection();
+
+    $query = 'WITH RESULTADO AS (
+                    SELECT AV.QT_MES_VIGENCIA, AV.VL_ASSINATURA, MAX(AV.VL_ASSINATURA) VALOR_MAXIMO
+                    FROM MW_ASSINATURA_VALOR AV
+                    WHERE AV.ID_ASSINATURA = ?
+                    GROUP BY AV.QT_MES_VIGENCIA, AV.VL_ASSINATURA
+                )
+                SELECT TOP 1 VL_ASSINATURA
+                FROM RESULTADO
+                WHERE (EXISTS (SELECT TOP 1 1 FROM MW_ASSINATURA_CLIENTE WHERE ID_CLIENTE = ?) AND VL_ASSINATURA IN (SELECT MAX(VL_ASSINATURA) FROM RESULTADO))
+                        OR
+                        (NOT EXISTS (SELECT TOP 1 1 FROM MW_ASSINATURA_CLIENTE WHERE ID_CLIENTE = ?))
+                ORDER BY QT_MES_VIGENCIA';
+    $params = array($id_assinatura, $id_usuario, $id_usuario);
+    $rs = executeSQL($mainConnection, $query, $params, true);
+
+    return $rs['VL_ASSINATURA'];
+}
+
+function getProximoValorAssinatura($id_assinatura_cliente) {
+    $mainConnection = mainConnection();
+
+    $query = "WITH RESULTADO AS (
+                    SELECT AC.ID_CLIENTE, AC.ID_ASSINATURA_CLIENTE, AV.QT_MES_VIGENCIA, AV.VL_ASSINATURA, COUNT(AH.ID_ASSINATURA_CLIENTE) AS QT_PAGAMENTOS
+                    FROM MW_ASSINATURA_VALOR AV
+                    INNER JOIN MW_ASSINATURA_CLIENTE AC ON AC.ID_ASSINATURA = AV.ID_ASSINATURA
+                    INNER JOIN MW_ASSINATURA_HISTORICO AH ON AH.ID_ASSINATURA_CLIENTE = AC.ID_ASSINATURA_CLIENTE
+                    WHERE AC.ID_ASSINATURA_CLIENTE = ?
+                    GROUP BY AC.ID_CLIENTE, AC.ID_ASSINATURA_CLIENTE, AV.QT_MES_VIGENCIA, AV.VL_ASSINATURA
+                )
+                SELECT TOP 1 VL_ASSINATURA
+                FROM RESULTADO
+                WHERE
+                    (QT_MES_VIGENCIA >= QT_PAGAMENTOS
+                        AND ID_ASSINATURA_CLIENTE IN (SELECT MIN(ID_ASSINATURA_CLIENTE)
+                                                        FROM MW_ASSINATURA_CLIENTE
+                                                        WHERE ID_CLIENTE = RESULTADO.ID_CLIENTE))
+                    OR
+                    (QT_MES_VIGENCIA IN (SELECT MAX(QT_MES_VIGENCIA) FROM RESULTADO))
+                ORDER BY QT_MES_VIGENCIA";
+    $params = array($id_assinatura_cliente);
+    $rs = executeSQL($mainConnection, $query, $params, true);
+
+    return $rs['VL_ASSINATURA'];
+}
+
 
 
 
@@ -540,7 +592,6 @@ function executeSQL($conn, $strSql, $params = array(), $returnRs = false) {
     } else {
 	$result = sqlsrv_query($conn, $strSql, $params);
     }
-    
 
     if ($returnRs) {
 	return fetchResult($result);
@@ -613,7 +664,7 @@ function comboEvento($name, $teatro, $selected, $paramns = array())
                         INNER JOIN mw_evento AS B ON A.id_evento = B.id_evento
                         WHERE B.id_base = ? AND A.in_ativo = '1'
                         GROUP BY A.id_evento, B.ds_evento
-                        HAVING MAX(A.dt_apresentacao) >= GETDATE()
+                        HAVING CONVERT(DATE, MAX(A.dt_apresentacao), 103) >= CONVERT(DATE, GETDATE(), 103)
                         ORDER BY B.ds_evento";
     }
     else
@@ -756,6 +807,7 @@ function comboTipoLocalOptions($name, $selected, $isCombo = true) {
 }
 
 function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NULL, $isCombo = true, $isArray = false) {
+    session_start();
     $mainConnection = mainConnection();
 
     $query = 'SELECT B.ID_BASE, E.ID_EVENTO
@@ -896,7 +948,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
     		or ($is_lote and $is_lote_no_carrinho)) {
 			
 			// se for bin itau
-			if ($rs['CODTIPPROMOCAO'] == 4) {
+			if (in_array($rs['CODTIPPROMOCAO'], array(4, 7))) {
 				$rs['IMG1PROMOCAO'] = '../images/promocional/' . basename($rs['IMG1PROMOCAO']);
 				$rs['IMG2PROMOCAO'] = '../images/promocional/' . basename($rs['IMG2PROMOCAO']);
 
@@ -913,7 +965,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 			} elseif ($rs['CODTIPPROMOCAO'] != NULL) {
 
                 if ($rs['IMG1PROMOCAO'] === '') {
-                    $imgs = '';
+                    $imgs = 'img1="" img2="" ';
                 } else {
                     $imgs = 'img1="' . '../images/promocional/' . basename($rs['IMG1PROMOCAO']) .
                             '" img2="' . '../images/promocional/' . basename($rs['IMG2PROMOCAO']) . '" ';
@@ -922,13 +974,13 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
                 // se for promocao convite
                 if ($rs['CODTIPPROMOCAO'] == 5) {
                     $rs_cod_convite = executeSQL($mainConnection,
-                        'SELECT TOP 1 P.CD_PROMOCIONAL
+                        'SELECT TOP 1 P.CD_PROMOCIONAL, P.ID_PEDIDO_VENDA, P.ID_SESSION
                          FROM MW_PROMOCAO P
                          WHERE P.ID_PROMOCAO_CONTROLE = ?
                          ORDER BY P.ID_PEDIDO_VENDA, P.ID_SESSION, P.CD_PROMOCIONAL DESC', array($rs['ID_PROMOCAO_CONTROLE']), true);
 
                     // se nao tiver mais cupons ignorar esse tipo de bilhete
-                    if ((!empty($rs['ID_SESSION']) or !empty($rs['ID_PEDIDO_VENDA'])) and $rs['ID_APRESENTACAO_BILHETE'] != $selected) {
+                    if ((!empty($rs_cod_convite['ID_SESSION']) or !empty($rs_cod_convite['ID_PEDIDO_VENDA'])) and $rs['ID_APRESENTACAO_BILHETE'] != $selected) {
                         continue;
                     }
 
@@ -936,6 +988,47 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
                         $imgs .= 'codigo="CONVITE" ';
                         $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['codPreValidado'] = 'CONVITE';
                     }
+
+                // se for promocao assinatura
+                } elseif ($rs['CODTIPPROMOCAO'] == 8) {
+                    $rs_assinatura = executeSQL($mainConnection,
+                        'SELECT TOP 1 P.CD_PROMOCIONAL, P.ID_PEDIDO_VENDA, P.ID_SESSION, C.CD_CPF
+                         FROM MW_PROMOCAO P
+                         INNER JOIN MW_ASSINATURA_PROMOCAO AP ON AP.ID_PROMOCAO_CONTROLE = P.ID_PROMOCAO_CONTROLE
+                         INNER JOIN MW_ASSINATURA_CLIENTE AC ON AC.ID_ASSINATURA = AP.ID_ASSINATURA
+                         INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = AC.ID_CLIENTE
+                         WHERE P.ID_PROMOCAO_CONTROLE = ? AND C.ID_CLIENTE = ?
+                         AND (AC.IN_ATIVO = 1 OR (AC.IN_ATIVO = 0 AND AC.DT_PROXIMO_PAGAMENTO >= CAST(GETDATE() AS DATE)))
+                         ORDER BY P.ID_PEDIDO_VENDA, P.ID_SESSION, P.CD_PROMOCIONAL DESC', array($rs['ID_PROMOCAO_CONTROLE'], $_SESSION['user']), true);
+
+                    // se nao tiver mais cupons ignorar esse tipo de bilhete
+                    if (empty($rs_assinatura)
+                        OR
+                        ((!empty($rs_assinatura['ID_SESSION']) OR !empty($rs_assinatura['ID_PEDIDO_VENDA']))
+                            AND $rs['ID_APRESENTACAO_BILHETE'] != $selected)) {
+                        continue;
+                    }
+
+                    $imgs .= 'codigo="'.$rs_assinatura['CD_CPF'].'" ';
+                    $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['codPreValidado'] = $rs_assinatura['CD_CPF'];
+
+                // se for beneficio para assinante
+                } elseif ($rs['CODTIPPROMOCAO'] == 9) {
+                    $rs_assinatura = executeSQL($mainConnection,
+                        "SELECT TOP 1 C.CD_CPF
+                         FROM MW_ASSINATURA_PROMOCAO AP
+                         INNER JOIN MW_ASSINATURA_CLIENTE AC ON AC.ID_ASSINATURA = AP.ID_ASSINATURA
+                         INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = AC.ID_CLIENTE
+                         WHERE C.ID_CLIENTE = ?
+                         AND (AC.IN_ATIVO = 1 OR (AC.IN_ATIVO = 0 AND AC.DT_PROXIMO_PAGAMENTO >= CAST(GETDATE() AS DATE)))", array($_SESSION['user']), true);
+
+                    // se nao tiver assinatura para o beneficio ignorar esse tipo de bilhete
+                    if (empty($rs_assinatura)) {
+                        continue;
+                    }
+
+                    $imgs .= 'codigo="'.$rs_assinatura['CD_CPF'].'" ';
+                    $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['codPreValidado'] = $rs_assinatura['CD_CPF'];
                 }
 
 				$BIN = '';
@@ -957,9 +1050,11 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 			$lote = ($rs['QTDVENDAPORLOTE'] > 0 and $rs['STATIPBILHMEIAESTUDANTE'] == 'N') ? ' lote="1"' : '';
             $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['lote'] = ($rs['QTDVENDAPORLOTE'] > 0 and $rs['STATIPBILHMEIAESTUDANTE'] == 'N');
 
+            $tipoPromo = ' tipoPromo="'.$rs['CODTIPPROMOCAO'].'"';
+
 			if (($selected == $rs['ID_APRESENTACAO_BILHETE'])) {
 			    $isSelected = 'selected';
-			    $text = '<input type="hidden" name="' . $name . '" value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $BIN . $promocao .
+			    $text = '<input type="hidden" name="' . $name . '" value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $BIN . $promocao . $tipoPromo .
 		    			' valor="'.number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', '').'"><span class="' . $name . ' inputStyle">' . utf8_encode($rs['DS_TIPO_BILHETE']) . '</span>';
 			} else {
 			    $isSelected = '';
@@ -973,7 +1068,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 
             // checar exibicao da promocao
             if ($rs['IN_EXIBICAO'] == null or $rs['IN_EXIBICAO'] == 'T' or $rs['IN_EXIBICAO'] == 'W') {
-    			$combo .= '<option value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $isSelected . ' ' . $BIN . $promocao . $meia_estudante . $lote .
+    			$combo .= '<option value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $isSelected . ' ' . $BIN . $promocao . $meia_estudante . $lote . $tipoPromo .
     					  ' valor="'.number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', '').'">' . utf8_encode($rs['DS_TIPO_BILHETE']) . '</option>';
             }
 
@@ -1003,11 +1098,11 @@ function comboTeatro($name, $selected, $funcJavascript = "") {
 
 function comboSala($name, $teatroID) {
     $conn = getConnection($teatroID);
-    $result = executeSQL($conn, 'SELECT CODSALA, NOMSALA FROM TABSALA WHERE STASALA = \'A\' AND INGRESSONUMERADO = \'1\'');
+    $result = executeSQL($conn, 'SELECT CODSALA, NOMSALA, INGRESSONUMERADO FROM TABSALA WHERE STASALA = \'A\' ORDER BY NOMSALA');
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione uma sala...</option>';
     while ($rs = fetchResult($result)) {
-	$combo .= '<option value="' . $rs['CODSALA'] . '">' . utf8_encode($rs['NOMSALA']) . '</option>';
+	$combo .= '<option value="' . $rs['CODSALA'] . '" numerado="'.$rs['INGRESSONUMERADO'].'">' . utf8_encode($rs['NOMSALA']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1081,7 +1176,8 @@ function comboSituacao($name, $situacao = null, $isCombo = true) {
 					"P" => "Em Processamento",
 					"C" => "Cancelado pelo Usuário",
 					"E" => "Expirado",
-					"S" => "Estornado");
+                    "S" => "Estornado",
+                    "N" => "Negado");
     
 	$combo = "<select name=\"" . $name . "\" id=\"" . $name . "\">";
 	foreach ($dados as $key => $valor) {
@@ -1523,13 +1619,19 @@ function comboPromocoes($name, $selected, $isCombo = true) {
 
 function comboTipoPromocao($name, $selected) {
     $tipos = array(
-        1 => 'Código Fixo',
-        2 => 'Código Aleatório',
-        3 => 'Arquivo CSV',
-        4 => 'BIN',
-        5 => 'Convite',
-        6 => 'WebService'
+        1   => 'Código Fixo',
+        2   => 'Código Aleatório',
+        3   => 'Arquivo CSV',
+        4   => 'BIN',
+        5   => 'Convite',
+        // 6    => 'WebService'
+        7   => 'BIN Riachuelo',
+        8   => 'Assinatura',
+        9   => 'Benefício Assinatura',
+        10  => 'Compre X Leve Y'
     );
+
+    asort($tipos);
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione...</option>';
     foreach ($tipos as $key => $value) {
@@ -1557,6 +1659,21 @@ function comboExibicaoPromocao($name, $selected) {
     return $combo;
 }
 
+function comboAssinatura($name, $selected, $multiSelect = false) {
+    $mainConnection = mainConnection();
+    $result = executeSQL($mainConnection, 'SELECT ID_ASSINATURA, DS_ASSINATURA FROM MW_ASSINATURA ORDER BY DS_ASSINATURA');
+
+    $multi = $multiSelect ? ' multiple data-placeholder="Selecione..."' : '';
+
+    $combo = '<select name="' . $name . '" class="inputStyle" id="'.preg_replace('/\[|\]/', '', $name).'"'.$multi.'>'.($multiSelect ? '' : '<option value="">Selecione...</option>');
+    while ($rs = fetchResult($result)) {
+        $combo .= '<option value="' . $rs['ID_ASSINATURA'] . '"' . ((in_array($rs['ID_ASSINATURA'], $selected) OR $rs['ID_ASSINATURA'] === $selected) ? ' selected' : '') . '>' . $rs['DS_ASSINATURA'] . '</option>';
+    }
+    $combo .= '</select>';
+
+    return $combo;
+}
+
 function comboGenerico(array $dados, $selectedDados)
 {
     $strValue           = $selectedDados['strValue'];
@@ -1578,7 +1695,7 @@ function comboGenerico(array $dados, $selectedDados)
     return $opt;
 }
 
-// INICIO DOS COMBOS PARA O SISTEMA DE ASSINATURA ------------------------------------------
+// INICIO DOS COMBOS PARA O SISTEMA DE ASSINATURA (PACOTE) ------------------------------------------
 
 // combo para os eventos que podem ser pacote
 function comboEventoPacotePorUsuario($name, $local, $usuario, $selected) {
@@ -1631,7 +1748,7 @@ function comboPacote($name, $usuario, $selected, $id_base = null, $fase = null) 
     return $combo;
 }
 
-// FIM DOS COMBOS PARA O SISTEMA DE ASSINATURA ------------------------------------------
+// FIM DOS COMBOS PARA O SISTEMA DE ASSINATURA (PACOTE) ------------------------------------------
 
 function is_pacote($id_apresentacao) {
     $mainConnection = mainConnection();
@@ -1968,27 +2085,23 @@ function requestImage($url) {
 	return $image;
 }
 
-function encodeToBarcode($text, $type = 'Interleaved2of5', $properties = array()) {
-	// http://www.idautomation.com/barcode-components/asp-iis/user-manual.html#Properties
-	$propertiesString = '';
+function encodeToBarcode($text, $type = 'Aztec', $properties = array()) {
 	if (empty($text)) return false;
-	if (!empty($properties)) foreach ($properties as $key => $value) $propertiesString .= '&' . $key . '=' . $value;
+	
+    if ($type == 'Aztec') {
+		$code = Encoder::encode($text);
+        $renderer = new PngRenderer();
 
-	if ($type == 'Interleaved2of5') {
-		$url = 'http'.($_SERVER["HTTPS"] == 'on' ? 's' : '').'://localhost/comprar/idautomation/IDAutomationStreamingLinear.aspx?D='.urlencode($text).'&S=2&CC=F'.$propertiesString;
-	} else if ($type == 'Aztec') {
-		$url = 'http'.($_SERVER["HTTPS"] == 'on' ? 's' : '').'://localhost/comprar/idautomation/IDAutomationStreamingAztec.aspx?D='.urlencode($text).$propertiesString;
+        $image = imagecreatefromstring($renderer->render($code));
 	}
-
-	$image = requestImage($url);
 
 	return $image;
 }
 
 function saveAndGetPath($image, $name) {
-	$path = '../images/temp/' . $name . '.gif';
+	$path = '../images/temp/' . $name . '.png';
 
-	$gif = imagegif($image, $path);
+	$png = imagepng($image, $path);
 
 	return $path;
 }
@@ -2105,6 +2218,17 @@ function getEnderecoCliente($id_cliente, $id_endereco) {
 	return $retorno;
 }
 
+function getCartaoImgURL($nm_cartao_exibicao_site) {
+
+    $nm_cartao_exibicao_site = remove_accents($nm_cartao_exibicao_site, false);
+    $nm_cartao_exibicao_site = preg_replace('/\s+/', '_', $nm_cartao_exibicao_site);
+
+    $file_name = 'ico_'.$nm_cartao_exibicao_site.'.png';
+    $path = '../images/cartoes/';
+    
+    return $path.(file_exists($path.$file_name) ? $file_name : 'ico_default.png');
+}
+
 function limparImagesTemp() {
 	$dir_name = '../images/temp/';
 
@@ -2182,14 +2306,14 @@ function getIdClienteBaseSelecionada($idBase){
 
 function sendErrorMail($subject, $message) {
 	$namefrom = 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS';
-	$from = 'contato@intuiti.com.br';
+	$from = '';
 
 	$cc = array('Jefferson => jefferson.ferreira@intuiti.com.br', 'Edicarlos => edicarlos.barbosa@intuiti.com.br');
 
 	authSendEmail($from, $namefrom, 'gabriel.monteiro@intuiti.com.br', 'Gabriel', $subject, $message, $cc);
 }
 
-function sendConfirmationMail($id_cliente) {
+function sendConfirmationMail($id_cliente, $assinatura = false) {
     $mainConnection = mainConnection();
 
     $query = "SELECT C.DS_NOME, C.CD_EMAIL_LOGIN, E.CD_CONFIRMACAO
@@ -2211,11 +2335,11 @@ function sendConfirmationMail($id_cliente) {
     require('../settings/settings.php');
     require_once('../settings/Template.class.php');
 
-    $tpl = new Template('../comprar/templates/confirmacaoEmail.html');
+    $tpl = new Template('../comprar/templates/' . ($assinatura ? 'confirmacaoEmailAssinatura.html' : 'confirmacaoEmail.html'));
     $tpl->nome = $rs['DS_NOME'];
     $tpl->codigo = $rs['CD_CONFIRMACAO'];
     $tpl->link = ($_ENV['IS_TEST']
-                    ? 'http://homolog.compreingressos.com:8081/compreingressos2/comprar/confirmacaoEmail.php?codigo='.urlencode($rs['CD_CONFIRMACAO'])
+                    ? 'http://homolog.compreingressos.com:8081/comprar/confirmacaoEmail.php?codigo='.urlencode($rs['CD_CONFIRMACAO'])
                     : 'https://compra.compreingressos.com/comprar/confirmacaoEmail.php?codigo='.urlencode($rs['CD_CONFIRMACAO'])
     );
 
@@ -2229,8 +2353,8 @@ function sendConfirmationMail($id_cliente) {
     $tpl->show();
     $message = ob_get_clean();
 
-    $namefrom = '=?UTF-8?b?'.base64_encode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS').'?=';
-    $from = ($_ENV['IS_TEST'] ? 'contato@intuiti.com.br' : 'compreingressos@gmail.com');
+    $namefrom = '=?UTF-8?b?'.base64_encode($assinatura ? 'Assinatura A' : 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS').'?=';
+    $from = '';
 
     $successMail = authSendEmail($from, $namefrom, $rs['CD_EMAIL_LOGIN'], $rs['DS_NOME'], $subject, utf8_decode($message));
 
@@ -2393,6 +2517,7 @@ function getPKPass($dados_pedido) {
     }
 
     $data = array(  
+        "assinatura" => $dados_pedido['assinatura'],
         "number" => $dados_pedido['codigo_pedido'],
         "date" => $dados_pedido['data'],
         "total" => $dados_pedido['total'],
@@ -2486,6 +2611,17 @@ function pre() {
     echo '</pre>';
 }
 
+function formatCPF($nbr_cpf) {
+    $parte_um     = substr($nbr_cpf, 0, 3);
+    $parte_dois   = substr($nbr_cpf, 3, 3);
+    $parte_tres   = substr($nbr_cpf, 6, 3);
+    $parte_quatro = substr($nbr_cpf, 9, 2);
+
+    $monta_cpf = "$parte_um.$parte_dois.$parte_tres-$parte_quatro";
+
+    return $monta_cpf;
+}
+
 function getSalaImg($codSala, $conn)
 {
     if ( $codSala == 'TODOS' )
@@ -2506,6 +2642,174 @@ function getSalaImg($codSala, $conn)
     $imagem = $imagem[0]['Imagem'];
 
     return $imagem;
+}
+
+/*
+ * Identificar página de referência de uma requisição ajax
+ * */
+function httpReferer($string){
+
+    $ref = explode('/', $_SERVER['HTTP_REFERER']);
+
+    $ref = explode('.php', $ref[count($ref) - 1] );
+    $ref = $ref[0];
+
+    if ($ref == $string) {
+        $result = true;
+    }else{
+        $result = false;
+    }
+
+    return $result;
+}
+
+
+
+/**
+ * Unaccent the input string string. An example string like `ÀØėÿᾜὨζὅБю`
+ * will be translated to `AOeyIOzoBY`. More complete than :
+ *   strtr( (string)$str,
+ *          "ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ",
+ *          "aaaaaaaaaaaaooooooooooooeeeeeeeecciiiiiiiiuuuuuuuuynn" );
+ *
+ * @param $str input string
+ * @param $utf8 if null, function will detect input string encoding
+ * @author http://www.evaisse.net/2008/php-translit-remove-accent-unaccent-21001
+ * @return string input string without accent
+ */
+function remove_accents( $str, $utf8=true )
+{
+    $str = (string)$str;
+    if( is_null($utf8) ) {
+        if( !function_exists('mb_detect_encoding') ) {
+            $utf8 = (strtolower( mb_detect_encoding($str) )=='utf-8');
+        } else {
+            $length = strlen($str);
+            $utf8 = true;
+            for ($i=0; $i < $length; $i++) {
+                $c = ord($str[$i]);
+                if ($c < 0x80) $n = 0; # 0bbbbbbb
+                elseif (($c & 0xE0) == 0xC0) $n=1; # 110bbbbb
+                elseif (($c & 0xF0) == 0xE0) $n=2; # 1110bbbb
+                elseif (($c & 0xF8) == 0xF0) $n=3; # 11110bbb
+                elseif (($c & 0xFC) == 0xF8) $n=4; # 111110bb
+                elseif (($c & 0xFE) == 0xFC) $n=5; # 1111110b
+                else return false; # Does not match any model
+                for ($j=0; $j<$n; $j++) { # n bytes matching 10bbbbbb follow ?
+                    if ((++$i == $length)
+                        || ((ord($str[$i]) & 0xC0) != 0x80)) {
+                        $utf8 = false;
+                        break;
+                    }
+
+                }
+            }
+        }
+
+    }
+
+    if(!$utf8)
+        $str = utf8_encode($str);
+
+    $transliteration = array(
+        'Ĳ' => 'I','Ö' => 'O','Œ' => 'O','Ü' => 'U','ä' => 'a','æ' => 'a',
+        'ĳ' => 'i','ö' => 'o','œ' => 'o','ü' => 'u','ß' => 's','ſ' => 's',
+        'À' => 'A','Á' => 'A','Â' => 'A','Ã' => 'A','Ä' => 'A','Å' => 'A',
+        'Æ' => 'A','Ā' => 'A','Ą' => 'A','Ă' => 'A','Ç' => 'C','Ć' => 'C',
+        'Č' => 'C','Ĉ' => 'C','Ċ' => 'C','Ď' => 'D','Đ' => 'D','È' => 'E',
+        'É' => 'E','Ê' => 'E','Ë' => 'E','Ē' => 'E','Ę' => 'E','Ě' => 'E',
+        'Ĕ' => 'E','Ė' => 'E','Ĝ' => 'G','Ğ' => 'G','Ġ' => 'G','Ģ' => 'G',
+        'Ĥ' => 'H','Ħ' => 'H','Ì' => 'I','Í' => 'I','Î' => 'I','Ï' => 'I',
+        'Ī' => 'I','Ĩ' => 'I','Ĭ' => 'I','Į' => 'I','İ' => 'I','Ĵ' => 'J',
+        'Ķ' => 'K','Ľ' => 'K','Ĺ' => 'K','Ļ' => 'K','Ŀ' => 'K','Ł' => 'L',
+        'Ñ' => 'N','Ń' => 'N','Ň' => 'N','Ņ' => 'N','Ŋ' => 'N','Ò' => 'O',
+        'Ó' => 'O','Ô' => 'O','Õ' => 'O','Ø' => 'O','Ō' => 'O','Ő' => 'O',
+        'Ŏ' => 'O','Ŕ' => 'R','Ř' => 'R','Ŗ' => 'R','Ś' => 'S','Ş' => 'S',
+        'Ŝ' => 'S','Ș' => 'S','Š' => 'S','Ť' => 'T','Ţ' => 'T','Ŧ' => 'T',
+        'Ț' => 'T','Ù' => 'U','Ú' => 'U','Û' => 'U','Ū' => 'U','Ů' => 'U',
+        'Ű' => 'U','Ŭ' => 'U','Ũ' => 'U','Ų' => 'U','Ŵ' => 'W','Ŷ' => 'Y',
+        'Ÿ' => 'Y','Ý' => 'Y','Ź' => 'Z','Ż' => 'Z','Ž' => 'Z','à' => 'a',
+        'á' => 'a','â' => 'a','ã' => 'a','ā' => 'a','ą' => 'a','ă' => 'a',
+        'å' => 'a','ç' => 'c','ć' => 'c','č' => 'c','ĉ' => 'c','ċ' => 'c',
+        'ď' => 'd','đ' => 'd','è' => 'e','é' => 'e','ê' => 'e','ë' => 'e',
+        'ē' => 'e','ę' => 'e','ě' => 'e','ĕ' => 'e','ė' => 'e','ƒ' => 'f',
+        'ĝ' => 'g','ğ' => 'g','ġ' => 'g','ģ' => 'g','ĥ' => 'h','ħ' => 'h',
+        'ì' => 'i','í' => 'i','î' => 'i','ï' => 'i','ī' => 'i','ĩ' => 'i',
+        'ĭ' => 'i','į' => 'i','ı' => 'i','ĵ' => 'j','ķ' => 'k','ĸ' => 'k',
+        'ł' => 'l','ľ' => 'l','ĺ' => 'l','ļ' => 'l','ŀ' => 'l','ñ' => 'n',
+        'ń' => 'n','ň' => 'n','ņ' => 'n','ŉ' => 'n','ŋ' => 'n','ò' => 'o',
+        'ó' => 'o','ô' => 'o','õ' => 'o','ø' => 'o','ō' => 'o','ő' => 'o',
+        'ŏ' => 'o','ŕ' => 'r','ř' => 'r','ŗ' => 'r','ś' => 's','š' => 's',
+        'ť' => 't','ù' => 'u','ú' => 'u','û' => 'u','ū' => 'u','ů' => 'u',
+        'ű' => 'u','ŭ' => 'u','ũ' => 'u','ų' => 'u','ŵ' => 'w','ÿ' => 'y',
+        'ý' => 'y','ŷ' => 'y','ż' => 'z','ź' => 'z','ž' => 'z','Α' => 'A',
+        'Ά' => 'A','Ἀ' => 'A','Ἁ' => 'A','Ἂ' => 'A','Ἃ' => 'A','Ἄ' => 'A',
+        'Ἅ' => 'A','Ἆ' => 'A','Ἇ' => 'A','ᾈ' => 'A','ᾉ' => 'A','ᾊ' => 'A',
+        'ᾋ' => 'A','ᾌ' => 'A','ᾍ' => 'A','ᾎ' => 'A','ᾏ' => 'A','Ᾰ' => 'A',
+        'Ᾱ' => 'A','Ὰ' => 'A','ᾼ' => 'A','Β' => 'B','Γ' => 'G','Δ' => 'D',
+        'Ε' => 'E','Έ' => 'E','Ἐ' => 'E','Ἑ' => 'E','Ἒ' => 'E','Ἓ' => 'E',
+        'Ἔ' => 'E','Ἕ' => 'E','Ὲ' => 'E','Ζ' => 'Z','Η' => 'I','Ή' => 'I',
+        'Ἠ' => 'I','Ἡ' => 'I','Ἢ' => 'I','Ἣ' => 'I','Ἤ' => 'I','Ἥ' => 'I',
+        'Ἦ' => 'I','Ἧ' => 'I','ᾘ' => 'I','ᾙ' => 'I','ᾚ' => 'I','ᾛ' => 'I',
+        'ᾜ' => 'I','ᾝ' => 'I','ᾞ' => 'I','ᾟ' => 'I','Ὴ' => 'I','ῌ' => 'I',
+        'Θ' => 'T','Ι' => 'I','Ί' => 'I','Ϊ' => 'I','Ἰ' => 'I','Ἱ' => 'I',
+        'Ἲ' => 'I','Ἳ' => 'I','Ἴ' => 'I','Ἵ' => 'I','Ἶ' => 'I','Ἷ' => 'I',
+        'Ῐ' => 'I','Ῑ' => 'I','Ὶ' => 'I','Κ' => 'K','Λ' => 'L','Μ' => 'M',
+        'Ν' => 'N','Ξ' => 'K','Ο' => 'O','Ό' => 'O','Ὀ' => 'O','Ὁ' => 'O',
+        'Ὂ' => 'O','Ὃ' => 'O','Ὄ' => 'O','Ὅ' => 'O','Ὸ' => 'O','Π' => 'P',
+        'Ρ' => 'R','Ῥ' => 'R','Σ' => 'S','Τ' => 'T','Υ' => 'Y','Ύ' => 'Y',
+        'Ϋ' => 'Y','Ὑ' => 'Y','Ὓ' => 'Y','Ὕ' => 'Y','Ὗ' => 'Y','Ῠ' => 'Y',
+        'Ῡ' => 'Y','Ὺ' => 'Y','Φ' => 'F','Χ' => 'X','Ψ' => 'P','Ω' => 'O',
+        'Ώ' => 'O','Ὠ' => 'O','Ὡ' => 'O','Ὢ' => 'O','Ὣ' => 'O','Ὤ' => 'O',
+        'Ὥ' => 'O','Ὦ' => 'O','Ὧ' => 'O','ᾨ' => 'O','ᾩ' => 'O','ᾪ' => 'O',
+        'ᾫ' => 'O','ᾬ' => 'O','ᾭ' => 'O','ᾮ' => 'O','ᾯ' => 'O','Ὼ' => 'O',
+        'ῼ' => 'O','α' => 'a','ά' => 'a','ἀ' => 'a','ἁ' => 'a','ἂ' => 'a',
+        'ἃ' => 'a','ἄ' => 'a','ἅ' => 'a','ἆ' => 'a','ἇ' => 'a','ᾀ' => 'a',
+        'ᾁ' => 'a','ᾂ' => 'a','ᾃ' => 'a','ᾄ' => 'a','ᾅ' => 'a','ᾆ' => 'a',
+        'ᾇ' => 'a','ὰ' => 'a','ᾰ' => 'a','ᾱ' => 'a','ᾲ' => 'a','ᾳ' => 'a',
+        'ᾴ' => 'a','ᾶ' => 'a','ᾷ' => 'a','β' => 'b','γ' => 'g','δ' => 'd',
+        'ε' => 'e','έ' => 'e','ἐ' => 'e','ἑ' => 'e','ἒ' => 'e','ἓ' => 'e',
+        'ἔ' => 'e','ἕ' => 'e','ὲ' => 'e','ζ' => 'z','η' => 'i','ή' => 'i',
+        'ἠ' => 'i','ἡ' => 'i','ἢ' => 'i','ἣ' => 'i','ἤ' => 'i','ἥ' => 'i',
+        'ἦ' => 'i','ἧ' => 'i','ᾐ' => 'i','ᾑ' => 'i','ᾒ' => 'i','ᾓ' => 'i',
+        'ᾔ' => 'i','ᾕ' => 'i','ᾖ' => 'i','ᾗ' => 'i','ὴ' => 'i','ῂ' => 'i',
+        'ῃ' => 'i','ῄ' => 'i','ῆ' => 'i','ῇ' => 'i','θ' => 't','ι' => 'i',
+        'ί' => 'i','ϊ' => 'i','ΐ' => 'i','ἰ' => 'i','ἱ' => 'i','ἲ' => 'i',
+        'ἳ' => 'i','ἴ' => 'i','ἵ' => 'i','ἶ' => 'i','ἷ' => 'i','ὶ' => 'i',
+        'ῐ' => 'i','ῑ' => 'i','ῒ' => 'i','ῖ' => 'i','ῗ' => 'i','κ' => 'k',
+        'λ' => 'l','μ' => 'm','ν' => 'n','ξ' => 'k','ο' => 'o','ό' => 'o',
+        'ὀ' => 'o','ὁ' => 'o','ὂ' => 'o','ὃ' => 'o','ὄ' => 'o','ὅ' => 'o',
+        'ὸ' => 'o','π' => 'p','ρ' => 'r','ῤ' => 'r','ῥ' => 'r','σ' => 's',
+        'ς' => 's','τ' => 't','υ' => 'y','ύ' => 'y','ϋ' => 'y','ΰ' => 'y',
+        'ὐ' => 'y','ὑ' => 'y','ὒ' => 'y','ὓ' => 'y','ὔ' => 'y','ὕ' => 'y',
+        'ὖ' => 'y','ὗ' => 'y','ὺ' => 'y','ῠ' => 'y','ῡ' => 'y','ῢ' => 'y',
+        'ῦ' => 'y','ῧ' => 'y','φ' => 'f','χ' => 'x','ψ' => 'p','ω' => 'o',
+        'ώ' => 'o','ὠ' => 'o','ὡ' => 'o','ὢ' => 'o','ὣ' => 'o','ὤ' => 'o',
+        'ὥ' => 'o','ὦ' => 'o','ὧ' => 'o','ᾠ' => 'o','ᾡ' => 'o','ᾢ' => 'o',
+        'ᾣ' => 'o','ᾤ' => 'o','ᾥ' => 'o','ᾦ' => 'o','ᾧ' => 'o','ὼ' => 'o',
+        'ῲ' => 'o','ῳ' => 'o','ῴ' => 'o','ῶ' => 'o','ῷ' => 'o','А' => 'A',
+        'Б' => 'B','В' => 'V','Г' => 'G','Д' => 'D','Е' => 'E','Ё' => 'E',
+        'Ж' => 'Z','З' => 'Z','И' => 'I','Й' => 'I','К' => 'K','Л' => 'L',
+        'М' => 'M','Н' => 'N','О' => 'O','П' => 'P','Р' => 'R','С' => 'S',
+        'Т' => 'T','У' => 'U','Ф' => 'F','Х' => 'K','Ц' => 'T','Ч' => 'C',
+        'Ш' => 'S','Щ' => 'S','Ы' => 'Y','Э' => 'E','Ю' => 'Y','Я' => 'Y',
+        'а' => 'A','б' => 'B','в' => 'V','г' => 'G','д' => 'D','е' => 'E',
+        'ё' => 'E','ж' => 'Z','з' => 'Z','и' => 'I','й' => 'I','к' => 'K',
+        'л' => 'L','м' => 'M','н' => 'N','о' => 'O','п' => 'P','р' => 'R',
+        'с' => 'S','т' => 'T','у' => 'U','ф' => 'F','х' => 'K','ц' => 'T',
+        'ч' => 'C','ш' => 'S','щ' => 'S','ы' => 'Y','э' => 'E','ю' => 'Y',
+        'я' => 'Y','ð' => 'd','Ð' => 'D','þ' => 't','Þ' => 'T','ა' => 'a',
+        'ბ' => 'b','გ' => 'g','დ' => 'd','ე' => 'e','ვ' => 'v','ზ' => 'z',
+        'თ' => 't','ი' => 'i','კ' => 'k','ლ' => 'l','მ' => 'm','ნ' => 'n',
+        'ო' => 'o','პ' => 'p','ჟ' => 'z','რ' => 'r','ს' => 's','ტ' => 't',
+        'უ' => 'u','ფ' => 'p','ქ' => 'k','ღ' => 'g','ყ' => 'q','შ' => 's',
+        'ჩ' => 'c','ც' => 't','ძ' => 'd','წ' => 't','ჭ' => 'c','ხ' => 'k',
+        'ჯ' => 'j','ჰ' => 'h'
+    );
+    $str = str_replace( array_keys( $transliteration ),
+                        array_values( $transliteration ),
+                        $str);
+    return $str;
 }
 
 /*  EVAL  */

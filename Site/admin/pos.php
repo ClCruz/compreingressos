@@ -17,12 +17,35 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 450, true)) {
                         CONVERT(VARCHAR, LAST_ACCESS, 103) + ' ' + CONVERT(VARCHAR, LAST_ACCESS, 108) LAST_ACCESS,
                         CONVERT(VARCHAR, LAST_CONFIG, 103) + ' ' + CONVERT(VARCHAR, LAST_CONFIG, 108) LAST_CONFIG,
                         VENDA_DINHEIRO,
-                        VENDA_PROMO_CONVITE
+                        VENDA_PROMO_CONVITE,
+                        CONVERT(VARCHAR, LAST_ACCESS, 126) LAST_ACCESS_ORDER
                 FROM MW_POS ORDER BY DESCRICAO, SERIAL");
 ?>
         <style type="text/css">
             .center{
                 text-align: center;
+            }
+
+            th.sortable div {
+                width: 0;
+                height: 0;
+                border-left: 5px solid transparent;
+                border-right: 5px solid transparent;
+                margin-left: 6px;
+                display: inline-block;
+            }
+
+            th.sortable.asc div {
+                border-bottom: 5px solid white;
+            }
+
+            th.sortable.desc div {
+                border-top: 5px solid white;
+            }
+
+            th.sortable:hover {
+                text-decoration: underline;
+                cursor: pointer;
             }
         </style>
         <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
@@ -125,6 +148,21 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 450, true)) {
                     });
                     return valido;
                 }
+
+                $('.sortable').on('click', function(){
+                    var $this = $(this);
+
+                    if ($this.is('.asc')) {
+                        $this.removeClass('asc').addClass('desc');
+                    } else if ($this.is('.desc')) {
+                        $this.removeClass('desc').addClass('asc');
+                    } else {
+                        $('.sortable').removeClass('asc').removeClass('desc');
+                        $this.addClass('asc');
+                    }
+
+                    sortColumn($this[0], true);
+                }).eq(1).trigger('click');
             });
         </script>
         <h2>Máquinas POS</h2>
@@ -132,11 +170,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 450, true)) {
             <table class="ui-widget ui-widget-content">
                 <thead>
                     <tr class="ui-widget-header ">
-                        <th>Serial</th>
-                        <th>Descrição</th>
+                        <th class="sortable">Serial <div/></th>
+                        <th class="sortable">Descrição <div/></th>
                         <th>Venda em Dinheiro</th>
                         <th>Venda de Promoção Convite</th>
-                        <th>Último Acesso</th>
+                        <th class="sortable">Último Acesso <div/></th>
                         <th>Última Atualização</th>
                         <th colspan="2">A&ccedil;&otilde;es</th>
                     </tr>
@@ -151,7 +189,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 450, true)) {
                 <td><?php echo utf8_encode($rs['DESCRICAO']); ?></td>
                 <td><?php echo $rs['VENDA_DINHEIRO'] ? 'sim' : 'não'; ?></td>
                 <td><?php echo $rs['VENDA_PROMO_CONVITE'] ? 'sim' : 'não'; ?></td>
-                <td><?php echo $rs['LAST_ACCESS']; ?></td>
+                <td data-tosort="<?php echo $rs['LAST_ACCESS_ORDER']; ?>"><?php echo $rs['LAST_ACCESS']; ?></td>
                 <td><?php echo $rs['LAST_CONFIG']; ?></td>
                 <td class="button"><a href="<?php echo $pagina; ?>?action=edit&id=<?php echo $id; ?>">Editar</a></td>
                 <td class="button"><a href="<?php echo $pagina; ?>?action=delete&id=<?php echo $id; ?>">Apagar</a></td>

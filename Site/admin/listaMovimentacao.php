@@ -40,7 +40,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                     U.DS_NOME,
                     PV.ID_IP,
                     PV.ID_USUARIO_ESTORNO,
-                    PV.DS_MOTIVO_CANCELAMENTO ";
+                    PV.DS_MOTIVO_CANCELAMENTO,
+                    PV.DT_HORA_CANCELAMENTO ";
 
         $from = " FROM MW_PEDIDO_VENDA PV INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE
                           LEFT JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
@@ -69,7 +70,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                       PV.ID_IP,
                       PV.ID_USUARIO_ESTORNO,
                       PV.DS_MOTIVO_CANCELAMENTO,
-                      PV.VL_TOTAL_TAXA_CONVENIENCIA";
+                      PV.VL_TOTAL_TAXA_CONVENIENCIA,
+                      PV.DT_HORA_CANCELAMENTO";
 
         if (!empty($_GET["num_pedido"])) {
             $where .= " AND PV.ID_PEDIDO_VENDA = ?";
@@ -108,7 +110,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                             C.DS_CELULAR,
                             PV.ID_IP,
                             PV.ID_USUARIO_ESTORNO,
-                            PV.DS_MOTIVO_CANCELAMENTO ";
+                            PV.DS_MOTIVO_CANCELAMENTO,
+                            PV.DT_HORA_CANCELAMENTO ";
 
                 $group = " GROUP BY
                               (CONVERT(VARCHAR(10), PV.DT_PEDIDO_VENDA, 103) + ' - ' + CONVERT(VARCHAR(8), PV.DT_PEDIDO_VENDA, 114)),
@@ -125,7 +128,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                               C.DS_CELULAR,
                               PV.ID_IP,
                               PV.ID_USUARIO_ESTORNO,
-                              PV.DS_MOTIVO_CANCELAMENTO ";
+                              PV.DS_MOTIVO_CANCELAMENTO,
+                              PV.DT_HORA_CANCELAMENTO ";
 
                 $from = "FROM MW_PEDIDO_VENDA PV INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE AND PV.ID_USUARIO_CALLCENTER IS NULL
                           LEFT JOIN MW_ITEM_PEDIDO_VENDA_HIST IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA ";
@@ -212,6 +216,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                 $where .
                 $group . ")
                   SELECT * FROM RESULTADO WHERE LINHA BETWEEN " . $offset . " AND " . $final . " ORDER BY ID_PEDIDO_VENDA DESC";
+
 
         // EXECUTA QUERY PRINCIPAL PARA CONSULTAR PEDIDOS VENDIDOS
         $result = executeSQL($mainConnection, $strSql, $params);
@@ -547,10 +552,20 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                </tr>
         <?php
                         if ($rs['IN_SITUACAO'] == 'S') {
+                          if($rs['DT_HORA_CANCELAMENTO'] != NULL || $rs['DT_HORA_CANCELAMENTO'] != "")
+                          {
+                            $dt_estorno = date_format($rs['DT_HORA_CANCELAMENTO'], 'd/m/Y').' às '.date_format($rs['DT_HORA_CANCELAMENTO'], 'H:i').'hs';
+                          }
+                          else
+                          {
+                            $dt_estorno = 'Sem informação';
+                          }
         ?>
+
                     <tr class="estorno">
                         <td colspan="4">Estornado pelo usuário: <?php echo comboAdmins('admin', $rs['ID_USUARIO_ESTORNO'], false); ?></td>
-                        <td colspan="6">Motivo: <?php echo $rs['DS_MOTIVO_CANCELAMENTO']; ?></td>
+                        <td colspan="4">Motivo: <?php echo $rs['DS_MOTIVO_CANCELAMENTO']; ?></td>
+                        <td colspan="3">Data de estorno: <?php echo $dt_estorno ?></td>
                     </tr>
         <?php
                         }

@@ -55,9 +55,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 390, true)) {
                                 INNER JOIN TABSALA S ON
                                 S.CODSALA = A.CODSALA
 
-                                INNER JOIN TABSETOR ST ON
+                                LEFT JOIN TABSETOR ST ON
                                 ST.CODSALA = A.CODSALA 
-                                AND ST.CODSETOR = SUBSTRING(CSV.CODBAR, 6 ,1)
+                                AND CONVERT(VARCHAR, ST.CODSETOR) = SUBSTRING(CSV.CODBAR, 6 ,1)
 
                                 INNER JOIN TABTIPBILHETE TB ON
                                 TB.CODTIPBILHETE = LG.CODTIPBILHETE
@@ -108,7 +108,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 390, true)) {
             <tr>
                 <td><?php echo utf8_encode($rs['NOME']); ?></td>
                 <td><?php echo utf8_encode($rs['NOMSALA']); ?></td>
-                <td><?php echo utf8_encode($rs['NOMSETOR']); ?></td>
+                <td><?php echo utf8_encode($rs['NOMSETOR'] ? $rs['NOMSETOR'] : $rs['NOMSALA']); ?></td>
                 <td><?php echo utf8_encode($rs['NOMOBJETO']); ?></td>
                 <td><?php echo $rs['DATHRENTRADA'] ? $rs['DATHRENTRADA']->format("d/m/Y H:i:s") : $rs['DATHRENTRADA']; ?></td>
                 <td><?php echo $rs['PACOTE'] ? 'Sim' : ($rs['IN_ASSINANTE_EVENTO'] ? 'Sim' : 'Não'); ?></td>

@@ -30,6 +30,7 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
         <script type="text/javascript">
             $(function() {
                 $('#teatro').selectbox('detach');
+                $('#assinatura').selectbox('detach');
 
                 $('#teatro').on('change', function() {
                     $.ajax({
@@ -48,6 +49,10 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
                     if ($(this).val() != '') document.location = $(this).val();
                 });
 
+                $('#assinatura').on('change', function() {
+                    if ($(this).val() != '') document.location = 'etapa3_2.php?assinatura=1&redirect='+encodeURIComponent('assinatura.php?id='+$(this).val());
+                });
+
                 if ($('#teatro').val() != '') {
                     $('#teatro').trigger('change');
                 }
@@ -57,15 +62,16 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
         <title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
     </head>
     <body>
-        <div id="pai">
-            <?php require "header.php"; ?>
-            <div id="content">
-                <div class="alert">
-                    <div class="centraliza">
-                        <img alt="" src="../images/ico_erro_notificacao.png" />
-                        <div class="container_erros"></div>
-                        <a>fechar</a>
-                    </div>
+    <div id="pai">
+        <?php require "header.php"; ?>
+        
+        <div id="content">
+            <div class="alert">
+                <div class="centraliza">
+                    <img alt="" src="../images/ico_erro_notificacao.png" />
+                    <div class="container_erros"></div>
+                    <a>fechar</a>
+                </div>
                 </div>
 
                 <div class="centraliza">
@@ -100,6 +106,16 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
                         ?>
                     </span>
 
+                    <span style="display: inline-block; margin-bottom: 20px; margin-left: 20px;">
+                        <?php
+                        if (isset($_SESSION['usuario_pdv']) and $_SESSION['usuario_pdv'] == 1) {
+                        } else {
+                            echo "<p>OU selecione a assinatura desejada:</p>";
+                            echo comboAssinatura('assinatura');
+                        }
+                        ?>
+                    </span>
+
                     <div id="eventos"></div>
 
                 </div>
@@ -111,7 +127,7 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
 
             <?php include "footer.php"; ?>
 
-            <?php include "selos.php"; ?>
+            <?php //include "selos.php"; ?>
         </div>
     </body>
 </html>

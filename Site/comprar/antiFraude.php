@@ -1,6 +1,6 @@
 <?php
 //se for operador ignorar as regras anti-fraude
-if (!isset($_SESSION['operador'])) {
+if (!isset($_SESSION['operador']) AND !$_ENV['IS_TEST']) {
 
 	$cartao = $_POST['numCartao'];
 

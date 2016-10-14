@@ -21,9 +21,11 @@ $(function(){
             }
         }
 
-        if ($('[name=codCartao]:checked').next('label').next('p.nome').text().toLowerCase().indexOf('fastcash') == -1) {
-		    $this.find(':input:not(.compra_captcha :input, [name=nomePresente], [name=emailPresente])').each(function(i,e) {
-	    		var e = $(e);
+        if ($('[name=codCartao]:checked').next('label').next('p.nome').text().toLowerCase().indexOf('fastcash') == -1
+			&& $('[name=codCartao]:checked').next('label').next('p.nome').text().toLowerCase().indexOf('boleto') == -1
+			&& $('[name=codCartao]:checked').next('label').next('p.nome').text().toLowerCase().indexOf('débito') == -1) {
+		    $this.find(':input:not(.compra_captcha :input, [name=nomePresente], [name=emailPresente], .pagseguro :input)').each(function(i,e) {
+		    	var e = $(e);
 	    		if (e.val().length < e.attr('maxlength')/2 || e.val() == '') {
 	    		    e.addClass('erro');
 	    		    valido = false;
@@ -37,7 +39,7 @@ $(function(){
                 valido = false;
             } else titular.removeClass('erro');
 
-            if (!nomePresente.is(':hidden')) {
+            if (nomePresente[0] && !nomePresente.is(':hidden')) {
 	            if (trim(nomePresente.val()).length < 3) {
 	                nomePresente.addClass('erro');
 	                valido = false;
@@ -62,7 +64,7 @@ $(function(){
     		$('#dadosPagamento').addClass('dirty');
 
     		$.confirmDialog({
-				text: 'O seu pagamento está sendo processado e isso pode levar alguns segundos.<br/>Por favor, não feche ou atualize seu navegador. Em instantes você será redirecionado(a) a página de confirmação.',
+				text: 'O seu pedido está sendo processado e isso pode levar alguns segundos.<br/>Por favor, não feche ou atualize seu navegador. Em instantes você será redirecionado(a) a página de confirmação.<br/><br/><img src="../images/ico_loading.gif">',
 				detail: '',
 				uiOptions: {buttons: {'': ['']}}
 			});
@@ -80,7 +82,7 @@ $(function(){
 					fecharOverlay();
 					$.dialog({text: data});
 		    		// continuar contagem regressiva
-		    		CountStepper = 1;
+		    		CountStepper = -1;
     			}
     		});
 
@@ -108,14 +110,22 @@ $(function(){
 	$('input[name=codCartao]').on('change', function(){
 		var $cartao = $('input[name=codCartao]:checked');
 
-		if ($cartao.next('label').next('p.nome').text().toLowerCase().indexOf('fastcash') > -1) {
-			$('.container_dados').find('.linha').eq(0).slideUp().end()
+		if ($cartao.next('label').next('p.nome').text().toLowerCase().indexOf('fastcash') > -1
+			|| $cartao.next('label').next('p.nome').text().toLowerCase().indexOf('boleto') > -1) {
+			$('.container_dados').find('.linha:not(#bancos)').eq(0).slideUp().end()
 												.eq(1).slideUp().end().end()
-								.find('.frase').eq(0).text('5.2 Presente');
+								.find('#bancos').slideUp().end()
+								.find('.frase .alt').eq(0).text('Presente');
+		} else if ($cartao.next('label').next('p.nome').text().toLowerCase().indexOf('débito') > -1) {
+			$('.container_dados').find('.linha:not(#bancos)').eq(0).slideUp().end()
+												.eq(1).slideUp().end().end()
+								.find('#bancos').slideDown().end()
+								.find('.frase .alt').eq(0).text('Dados do Banco');
 		} else {
-			$('.container_dados').find('.linha').eq(0).slideDown().end()
+			$('.container_dados').find('.linha:not(#bancos)').eq(0).slideDown().end()
 												.eq(1).slideDown().end().end()
-								.find('.frase').eq(0).text('5.2 Dados do cartão');
+								.find('#bancos').slideUp().end()
+								.find('.frase .alt').eq(0).text('Dados do cartão');
 
 			if (!$('div.img_cod_cartao').is(':hidden')) {
 				$('div.img_cod_cartao').fadeOut(200, function(){
@@ -126,7 +136,7 @@ $(function(){
 			$('#validadeMes').selectbox('detach');
 			$('#validadeAno').selectbox('detach');
 			$('select[name=parcelas]').selectbox('detach');
-			$('.container_dados :input').val('');
+			$('.container_dados :input:not(:radio)').val('');
 			$('select[name=parcelas]').val(1)
 			$('#validadeMes').selectbox('attach');
 			$('#validadeAno').selectbox('attach');
@@ -152,5 +162,10 @@ $(function(){
 	$('a.envio_presente_explicao').on('click',function(e){
 		e.preventDefault();
 		$('.explicacao_envio_presente').fadeToggle();
+	});
+
+	$('.botao_pagamento').on('click', function(e){
+		e.preventDefault();
+		$('#dadosPagamento').submit();
 	});
 });

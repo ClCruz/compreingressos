@@ -1,5 +1,7 @@
 <?php
 if (isset($_GET['email'])) {
+	$mail_sent = false;
+
 	require_once('../settings/functions.php');
 	
 	$mainConnection = mainConnection();
@@ -21,7 +23,7 @@ if (isset($_GET['email'])) {
 			
 			$namefrom = '=?UTF-8?b?' . base64_encode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS').'?=';
 			// $from = 'lembrete@compreingressos.com';
-			$from = ($_ENV['IS_TEST'] ? 'contato@intuiti.com.br' : 'lembrete@compreingressos.com');
+			$from = '';
 
 			//define the body of the message.
 			ob_start(); //Turn on output buffering
@@ -54,9 +56,39 @@ if (isset($_GET['email'])) {
 			
 			$mail_sent = authSendEmail($from, $namefrom, $to, $nameto, $subject, utf8_decode($message));
 		}
-		echo ($mail_sent === true ? 'true' : 'Verifique o endereço informado e tente novamente.<br><br>Se o erro persistir, favor entrar em contato com o suporte.');
+
+		if ( httpReferer('etapa1') )
+		{
+			$arr = array();
+			$arr['status'] = $mail_sent;
+
+			//Msg só é exibida se mail_sent for FALSE
+			$arr['msg'] = 'Verifique o endereço informado e tente novamente. Se o erro persistir, favor entrar em contato com o suporte.';
+
+			$resp = json_encode($arr);
+		}
+		else
+		{
+			$resp = ($mail_sent === true ? 'true' : 'Verifique o endereço informado e tente novamente.<br><br>Se o erro persistir, favor entrar em contato com o suporte.');
+		}
+
+
 	} else {
-		echo 'Esse e-mail não está cadastrado ainda.<br><br>Clique no botão ao lado para se cadastrar!';
+
+		if ( httpReferer('etapa1') )
+		{
+			$arr = array();
+			$arr['status'] = false;
+			$arr['msg'] = 'Este e-mail ainda não esta cadastrado';
+
+			$resp = json_encode($arr);
+		}
+		else
+		{
+			$resp = 'Esse e-mail não está cadastrado ainda.<br><br>Clique no botão ao lado para se cadastrar!';
+		}
 	}
+
+	echo $resp;
 }
 ?>

@@ -1,5 +1,59 @@
 TimeoutToHideDialog = undefined;
 
+if ( typeof simples == 'undefined' ) {
+	$.getScript('../javascripts/simpleFunctions.js', function () {
+		simples.init();
+	});
+}
+
+$(document).ready(function () {
+	enterSubmit();
+	function enterSubmit()
+	{
+		try{
+			cfgForm();
+		}catch (E){
+			console.log(E);
+		}
+
+		function cfgForm()
+		{
+			var form = document.forms.identificacao;
+			var iptPass 	= null;
+			var iptSubmit 	= null;
+
+			var i = 0;
+			while (i < form.length)
+			{
+				var input = form[i];
+				if (input.getAttribute('name') == 'senha')
+				{
+					iptPass = input;
+				}
+
+				if (input.getAttribute('type') == 'button' && input.getAttribute('id') == 'logar')
+				{
+					iptSubmit = input;
+				}
+				i++;
+			}
+
+			if (iptPass != null && iptSubmit != null) {
+				setDynamicClick(iptPass, iptSubmit);
+			}
+
+			function setDynamicClick(pass, submit)
+			{
+				pass.onkeyup = function (key) {
+					if (key.keyCode == 13) {
+						submit.click();
+					}
+				}
+			}
+		}
+	}
+});
+
 function trimAll(text) {
 	return text.replace(/[ \t\r\n\v\f]/g,"");
 }
@@ -82,7 +136,8 @@ function atualizarCaixaMeiaEntrada(id) {
 			var $dialog = $('div.alert'),
 				defaults = {
 					text: 'Ocorreu um erro durante o processo...<br><br>Favor informar o suporte!',
-					autoHide: { set: false, time: 3000 }
+					autoHide: { set: false, time: 3000 },
+					onOverlay: { set: false, div: null }
 				 },
 				 options = $.extend(true, defaults, options),
 				 element = $dialog.find('div.container_erros'),
@@ -96,14 +151,24 @@ function atualizarCaixaMeiaEntrada(id) {
 				$dialog.fadeTo(100, .6).fadeTo(100, 1).fadeTo(100, .6).fadeTo(100, 1);
 			}
 
+			if (options.icon == undefined || options.icon == 'erro') {
+				options.icon = 'ico_erro_notificacao.png';
+			}else if(options.icon == 'ok'){
+				options.icon = 'ico_ok.png';
+			}
+
+			$dialog.find('img').attr('src', '../images/'+options.icon);
+
 			if (options.autoHide.set) {
+
+				//limpar timeout caso tenha sido executaod recentemente com alguma informação
 				if ( TimeoutToHideDialog != undefined ) {
 					clearTimeout(TimeoutToHideDialog);
 					TimeoutToHideDialog = undefined;
-				}else{ console.log("Sem timeout definido"); }
+				}
 
 				TimeoutToHideDialog = setTimeout(function() {
-					$dialog.hide();
+					$dialog.slideUp('slow');
 				},options.autoHide.time);
 			}
 		},
@@ -114,11 +179,12 @@ function atualizarCaixaMeiaEntrada(id) {
 					detail: '?',
 					uiOptions: {
 						buttons: {
-							'Ok': ['', function() {}]
+							'Ok': ['', function () {
+							}]
 						}
 					}
-				},
-				// options = $.extend(true, defaults, options),
+				};
+
 				$overlay = $('#overlay')[0]
 							? $('#overlay')
 							: $('<div id="overlay"></div>').appendTo('#pai'),

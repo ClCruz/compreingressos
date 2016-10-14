@@ -41,7 +41,9 @@ function comparer(index) {
         return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.localeCompare(valB)
     }
 }
-function getCellValue(row, index){ return $(row).children('td').eq(index).html() }
+function getCellValue(row, index){
+	return $(row).children('td').eq(index).data("tosort") != undefined ? $(row).children('td').eq(index).data("tosort") : $(row).children('td').eq(index).html();
+}
 
 (function($){
 	$.ajaxSetup({cache: false});

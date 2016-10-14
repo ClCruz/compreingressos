@@ -1,10 +1,32 @@
+Cadastro = {
+	showForm: function(wich)
+	{
+		var esqueci = $('#esqueciForm');
+		var login 	= $('#loginForm');
+
+		if ( wich == 'esqueci' )
+		{
+			$(login).slideUp(function () {
+				$(esqueci).slideDown();
+			});
+		}
+		else if('login')
+		{
+			$(esqueci).slideUp(function () {
+				$(login).slideDown();
+			})
+		}
+
+	}
+};
+
 $(function() {
 	$('#dados_conta, #esqueciForm, p.erro').hide();
 	
 	$('.number').onlyNumbers();
 
 	var email_pattern = /\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/i;
-	
+
 	$('#logar').click(function(event) {
 		event.preventDefault();
 		var $this = $(this),
@@ -31,22 +53,50 @@ $(function() {
 				data: form.serialize(),
 				type: form.attr('method'),
 				success: function(data) {
-					if (data.substr(0, 4) == 'redi') {
-						document.location = data;
-					} else {
-						$.dialog({text:'Combinação de usuário e senha incorreto'});
+					try
+					{
+						var obj = JSON.parse(data);
+						if (obj.status) {
+							ciPopup.hide(function () {
+								$.dialog({text:'Login efetuado com sucesso!', icon: 'ok'});
+							}, 1000);
+						}else{
+							ciPopup.msgDialog('Combinação de usuário e senha incorreta')
+						}
+					}
+					catch (Ex)
+					{
+						if (data.substr(0, 4) == 'redi') {
+							document.location = data;
+						} else {
+							$.dialog({text:'Combinação de usuário e senha incorreta'});
+						}
 					}
 				}
 			});
 		}
 	});
-	
+
+	$('#lembrei_senha').click(function () {
+		Cadastro.showForm('login');
+	});
+
+
+
 	$('#esqueci').click(function(event) {
-		event.preventDefault();
-		if ($('#esqueciForm').is(':hidden')) {
-			$('#esqueciForm').slideDown('slow');
-		} else {
-			$('#esqueciForm').slideUp('slow');
+
+		if (simples.serverURL() == 'etapa1.php')
+		{
+			Cadastro.showForm('esqueci');
+		}
+		else
+		{
+			event.preventDefault();
+			if ($('#esqueciForm').is(':hidden')) {
+				$('#esqueciForm').slideDown('slow');
+			} else {
+				$('#esqueciForm').slideUp('slow');
+			}
 		}
 	});
 	
@@ -65,24 +115,47 @@ $(function() {
 			url: $this.attr('href'),
 			data: 'email=' + email_txt,
 			success: function(data) {
-				if (data == 'true') {
-					email.val('');
-					$this.next('.resultado').find('span').text(email_txt).end()
-						.slideDown('fast')
-						.delay(6000)
-						.slideUp('slow');
-					$('#esqueciForm').slideDown().delay(6500).slideUp('slow');
-				} else {
-					$.dialog({title: 'Aviso...', text: data});
+
+				try{
+					var obj = JSON.parse(data);
+					if ( obj.status )
+					{
+						ciPopup.msgDialog('Um e-mail com instruções para recuperar sua senha foi enviado para '+email_txt,
+							{
+								autoHide: { set: true }
+							});
+						Cadastro.showForm('login');
+					}
+					else
+					{
+						ciPopup.msgDialog(obj.msg, {
+							options: { autoHide: { set:true } }
+						});
+					}
+				}catch (Ex){
+					if (data == 'true') {
+						successOnRedefine();
+					} else {
+						$.dialog({title: 'Aviso...', text: data});
+					}
 				}
+
 			}
 		});
+
+		//Exibe mesnagem de sucesso abaixo do form
+		function successOnRedefine() {
+			email.val('');
+			$this.next('.resultado').find('span').text(email_txt).end()
+				.slideDown('fast')
+				.delay(6000)
+				.slideUp('slow');
+			$('#esqueciForm').slideDown().delay(6500).slideUp('slow');
+		}
 	});
 	
 	$('a.bt_cadastro').click(function(event) {
 		event.preventDefault();
-		
-		//if ($.browser.msie && $.browser.version.substr(0, 1) == 7) $('#dados_conta > *').show();
 		
 		if ($('#dados_conta').is(':hidden')) {
 			$('#identificacao').slideUp('slow');
@@ -97,28 +170,42 @@ $(function() {
 	$('#estado').on('change', function(){
 		// estado == exterior?
 		if ($(this).val() == 28) {
-			$('#cpf').val('não se aplica').prop('disabled', true).addClass('disabled').slideUp('slow').findNextMsg().slideUp('slow');
-  			$('#cep').mask('AAAAAAAA').attr('pattern', '.{3,8}');
-			$('#fixo').mask('AAAAAAAAAAAAAAA').attr('pattern', '.{1,15}');
-			$('#celular').mask('AAAAAAAAAAAAAAA');
+			$cep = $('#cep');
+			$cep.attr('maxlength',17);
+
+			$cep.on('blur', function(){
+				$this = $(this);
+				if ($this.val().length == 8)
+				{
+					simples.preventGetCEP = false;
+					simples.getCEP($this, { getnow: true });
+				}
+			})
+
 		} else {
 			if ($('#cpf').val() == 'não se aplica') {
 				$('#cpf').val('').prop('disabled', false).removeClass('disabled').slideDown('fast');
 			}
-			$('#cep').mask('00000-000').attr('pattern', '.{9}');
-			$('input[name=fixo]').mask('(00) 0000-0000').attr('pattern', '.{14}');
-			$('input[name=celular]').mask('(00) 000000000');
+
+			simples.preventGetCEP = false;
 		}
 	}).trigger('change');
 
 	$('#checkbox_estrangeiro').on('change', function(){
 		$('#estado').selectbox('detach');
 		if ($(this).is(':checked')) {
+			$('#cpf').val('não se aplica').prop('disabled', true).addClass('disabled').slideUp('slow').findNextMsg().slideUp('slow');
 			$('#estado').append('<option value="28">Exterior</option>').val(28);
-			$('#estado').selectbox('attach').selectbox('disable');
+			//$('#estado').selectbox('attach').selectbox('disable');
 			$('#tipo_documento').parent('span').slideDown('fast');
 			$('#tipo_documento').parent('span').next('div').slideDown('fast');
+			simples.preventGetCEP = true;
 		} else {
+			if ($('#cpf').val() == 'não se aplica') {
+				$('#cpf').val('').prop('disabled', false).removeClass('disabled').slideDown('fast');
+			}
+			simples.preventGetCEP = false;
+			
 			$('#estado').find('option[value=28]').remove();
 			$('#estado').selectbox('attach').selectbox('enable');
 			$('#tipo_documento').parent('span').slideUp('slow', function(){$('#tipo_documento').selectbox('detach').val('').selectbox('attach');});
@@ -172,13 +259,18 @@ $(function() {
 			return;
 
 		} else {
-		
 			var $this = $(this),
-				 naoRequeridos = '#email,[id^=nascimento],[name=sexo],#celular,#complemento,#checkbox_guia,#checkbox_sms,#checkbox_estrangeiro',
-				 especiais = '#fixo,#email1,#email2,#senha1,#senha2,[name="tag"],.recaptcha :input,[type="button"],#cpf,#tipo_documento,#rg'
+				 naoRequeridos = '#email,[id^=nascimento],[name=sexo],#complemento,#checkbox_guia,#checkbox_sms,#checkbox_estrangeiro',
+				 especiais = '#ddd_fixo,#fixo,#email1,#email2,#senha1,#senha2,[name="tag"],.recaptcha :input,[type="button"],#cpf,#tipo_documento,#rg,#ddd_celular,#celular',
 				 formulario = $('#form_cadastro'),
-				 campos = formulario.find(':input:not(' + naoRequeridos + ',' + especiais +')'),
+				 campos,
 				 valido = true;
+			
+			if ($('body').is('.mini')) {
+				naoRequeridos += ',.endereco :input';
+			}
+
+			campos = formulario.find(':input:not(' + naoRequeridos + ',' + especiais +')');
 
 			campos.each(function() {
 				var $this = $(this);
@@ -189,6 +281,7 @@ $(function() {
 					if (!$(radio).is(':checked')) {
 						$this.addClass('erro').findNextMsg().slideDown('fast');
 						valido = false;
+						console.log(this);
 					} else {
 						$this.removeClass('erro').findNextMsg().slideUp('slow');
 					}
@@ -196,25 +289,33 @@ $(function() {
 					($this.is(':checkbox') && !$this.is(':checked'))) {
 					$this.addClass('erro').findNextMsg().slideDown('fast');
 					valido = false;
+					console.log(this);
 				} else $this.removeClass('erro').findNextMsg().slideUp('slow');
 			});
 
-			// estado != exterior?
-			if ($('#estado').val() != 28) {
-				if ($('#fixo').val().length < 13){
-					$('#fixo').addClass('erro').findNextMsg().slideDown('fast');
+			if ($('body').is('.mini')) {
+				if ($('#celular').val().length < $('#celular').attr('maxlength') || $('#ddd_celular').val() == ''){
+					$('#ddd_celular,#celular').addClass('erro').findNextMsg().slideDown('fast');
 					valido = false;
-				} else $('#fixo').removeClass('erro').findNextMsg().slideUp('slow');
-
-				if ($('#celular').val() != '' && $('#celular').val().length < 13){
-					$('#celular').addClass('erro').findNextMsg().slideDown('fast');
-					valido = false;
-				} else $('#celular').removeClass('erro').findNextMsg().slideUp('slow');
+				} else $('#ddd_celular,#celular').removeClass('erro').findNextMsg().slideUp('slow');
 			} else {
-				if ($('#fixo').val() == ''){
-					$('#fixo').addClass('erro').findNextMsg().slideDown('fast');
-					valido = false;
-				} else $('#fixo').removeClass('erro').findNextMsg().slideUp('slow');
+				// estado != exterior?
+				if ($('#estado').val() != 28) {
+					if ($('#fixo').val().length < $('#fixo').attr('maxlength')-1 || $('#ddd_fixo').val() == ''){
+						$('#ddd_fixo,#fixo').addClass('erro').findNextMsg().slideDown('fast');
+						valido = false;
+					} else $('#ddd_fixo,#fixo').removeClass('erro').findNextMsg().slideUp('slow');
+
+					if ($('#celular').val() != '' && ($('#celular').val().length < $('#celular').attr('maxlength') || $('#ddd_celular').val() == '')){
+						$('#ddd_celular,#celular').addClass('erro').findNextMsg().slideDown('fast');
+						valido = false;
+					} else $('#ddd_celular,#celular').removeClass('erro').findNextMsg().slideUp('slow');
+				} else {
+					if ($('#fixo').val() == '' || $('#ddd_fixo').val() == ''){
+						$('#ddd_fixo,#fixo').addClass('erro').findNextMsg().slideDown('fast');
+						valido = false;
+					} else $('#ddd_fixo,#fixo').removeClass('erro').findNextMsg().slideUp('slow');
+				}
 			}
 			
 			if ($.cookie('user') == null) {
@@ -250,14 +351,6 @@ $(function() {
 					valido = false;
 				} else $('#rg').removeClass('erro').findNextMsg().slideUp('slow');
 			} else $('#rg').removeClass('erro').findNextMsg().slideUp('slow');
-
-			// estado != exterior?
-			if ($('#estado').val() != 28) {
-				if ($('#cpf').val().length < 6) {
-					$('#cpf').addClass('erro').findNextMsg().slideDown('fast');
-					valido = false;
-				} else $('#cpf').removeClass('erro').findNextMsg().slideUp('slow');
-			}
 
 			if (valido) {
 				$.ajax({
@@ -304,15 +397,7 @@ $(function() {
 			} else {
 				$this.addClass('erro').findNextMsg().slideDown('fast');
 			}
-		}/* else if ($this.is(':radio')) {
-			var $radio = $('[name=' + $this.attr('name') + ']');
-			
-			if (!$radio.is(':checked')) {
-				$radio.addClass('erro').findNextMsg().slideDown('fast');
-			} else {
-				$radio.removeClass('erro').findNextMsg().slideUp('slow');
-			}
-		}*/
+		}
 
 		if ($area.find(':input.erro').length > 0) {
 			$area.addClass('erro')
@@ -320,7 +405,9 @@ $(function() {
 			$area.removeClass('erro')
 		}
 	});
-	
 
-	simples.getCEP($('#cep'));
+	//evitar erro ao carregar modal do assinante A por causa de tempo de execução
+	if (simples != undefined) {
+		simples.getCEP($('#cep'));
+	}
 });

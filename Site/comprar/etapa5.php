@@ -24,6 +24,8 @@ if (isset($_COOKIE['entrega'])) {
     require('calculaFrete.php');
 }
 
+require('../settings/pagseguro_functions.php');
+
 $mainConnection = mainConnection();
 $rs = executeSQL($mainConnection, 'SELECT COUNT(1) FROM MW_RESERVA WHERE ID_SESSION = ?', array(session_id()), true);
 $qtdIngressos = $rs[0] >= 9 ? '0'.$rs[0] : $rs[0];
@@ -58,15 +60,6 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 
 	<script type="text/javascript" src="../javascripts/contagemRegressiva.js?until=<?php echo tempoRestante(); ?>"></script>
 	<script type="text/javascript" src="../javascripts/formCartao.js"></script>
-
-	<script>
-	$(function(){
-		$('.botao_pagamento').click(function(e){
-			e.preventDefault();
-			$('#dadosPagamento').submit();
-		});
-	});
-	</script>
 
 	<?php echo $campanha['script']; ?>
 
@@ -105,9 +98,9 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 							<img src="../images/ico_black_passo5.png">
 						</div>
 						<div class="descricao">
-							<p class="nome">5. Pagamento</p>
+							<p class="nome">5. <?php echo ($_COOKIE['total_exibicao'] != 0 ? 'Pagamento' : 'Finalização'); ?></p>
 							<p class="descricao">
-								passo <b>5 de 5</b> escolha a bandeira de sua preferência
+								passo <b>5 de 5</b> <?php echo ($_COOKIE['total_exibicao'] != 0 ? 'escolha a bandeira de sua preferência' : 'clique em finalizar para processamento do pedido'); ?>
 							</p>
 							<div class="sessao">
 								<p class="tempo" id="tempoRestante"></p>
@@ -152,13 +145,19 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 
 		<div id="texts">
 			<div class="centraliza">
-				<p>Escolha o cartão de crédito de sua preferência, preencha os dados e clique em Pagar para finalizar o seu pedido.</p>
+				<p>
+					<?php if ($_COOKIE['total_exibicao'] != 0) { ?>
+					Escolha o cartão de crédito de sua preferência, preencha os dados e clique em Pagar para finalizar o seu pedido.
+					<?php } else { ?>
+					Clique em finalizar para o processar o seu pedido.
+					<?php } ?>
+				</p>
 			</div>
 		</div>
 
 		<?php include "footer.php"; ?>
 
-		<?php include "selos.php"; ?>
+		<?php //include "selos.php"; ?>
 	</div>
 
 	<script>
@@ -166,5 +165,19 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 		csdp('app', 'ae6af083e9');
 		csdp('sessionid', '<?php echo session_id(); ?>');
 	</script>
+
+	<?php
+	if ($carregar_pagseguro_lib) {
+		if ($_ENV['IS_TEST']) {
+			echo '<script type="text/javascript" src="https://stc.sandbox.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js"></script>';
+		} else {
+			echo '<script type="text/javascript" src="https://stc.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js"></script>';
+		}
+		$sessionId = getPagSeguroSessionId();
+		$amount = str_replace(',', '.', $_COOKIE['total_exibicao']);
+		echo "<script type='text/javascript'>var pagseguro = {sessionId: '$sessionId', amount: $amount};</script>";
+		echo '<script type="text/javascript" src="../javascripts/pagseguro.js"></script>';
+	}
+	?>
 </body>
 </html>

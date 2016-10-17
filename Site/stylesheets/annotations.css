@@ -1,10 +1,6 @@
 .annotation {
   width:10px;
   height:10px;
-  /**background:url('../images/cadeira.gif') no-repeat;
-  color: #8cc63f;
-  font-family: arial;
-  font-size: 30px;**/
   cursor: pointer;
   border-radius: 50%;
   -webkit-border-radius: 50%;
@@ -27,21 +23,21 @@
 .open {}
 
 .standby {
-  /**background:url('../images/cadeiraEmEspera.gif') no-repeat;**/
   background-color: #006837;    
 }
 
 .closed {
-  /**background:url('../images/cadeiraOcupada.gif') no-repeat;**/
   background-color: #cccccc;
 }
 
 .mapa_de_plateia .ui-selecting {
+  margin: -2px;
   border:2px solid #FF0;
 }
 
 .mapa_de_plateia .ui-selected {
-  /**border:2px solid #F00;**/
+  margin: -2px;
+  border: 2px solid #F00;
 }
 
 .mapa_de_plateia {

@@ -55,6 +55,7 @@ if (isset($_SESSION['operador']) and in_array($etapa_atual, $etapas_para_exibir)
             <li><a href="http://compreingressos.com/politica">Política de venda</a></li>
             <li><a href="http://compreingressos.com/privacidade">Privacidade</a></li>
             <li><a href="http://compreingressos.com/meia_entrada.html" rel="publisher" target="_blank">Política de Meia Entrada</a></li>
+            <li><a href="http://compreingressos.com/pontosdevenda" rel="publisher">Pontos de Venda</a></li>
             <li><a class="minha_conta_mobile" href="minha_conta.php">Minha conta</a>
         </ul>
         <ul class="midias_sociais">

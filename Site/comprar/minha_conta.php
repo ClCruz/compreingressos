@@ -126,10 +126,12 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                     CASE WHEN CAST(CONVERT(VARCHAR(10), GETDATE(), 120) AS SMALLDATETIME) BETWEEN P.DT_INICIO_FASE1 AND P.DT_FIM_FASE2 THEN 1 ELSE 0 END IN_RENOVAR
                     ,CASE WHEN CAST(CONVERT(VARCHAR(10), GETDATE(), 120) AS SMALLDATETIME) BETWEEN P.DT_INICIO_FASE1 AND P.DT_FIM_FASE1 THEN 1 ELSE 0 END IN_SOLICITAR
                     ,CASE WHEN CAST(CONVERT(VARCHAR(10), GETDATE(), 120) AS SMALLDATETIME) BETWEEN P.DT_INICIO_FASE2 AND P.DT_FIM_FASE2 THEN 1 ELSE 0 END IN_TROCAR
-                    ,CASE WHEN CAST(CONVERT(VARCHAR(10), GETDATE(), 120) AS SMALLDATETIME) BETWEEN P.DT_INICIO_FASE1 AND P.DT_FIM_FASE2 THEN 1 ELSE 0 END IN_CANCELAR	
+                    ,CASE WHEN CAST(CONVERT(VARCHAR(10), GETDATE(), 120) AS SMALLDATETIME) BETWEEN P.DT_INICIO_FASE1 AND P.DT_FIM_FASE2 THEN 1 ELSE 0 END IN_CANCELAR   
                     ,P.DT_INICIO_FASE2
                     ,P.DT_FIM_FASE2
-                    ,CASE WHEN CAST(CONVERT(VARCHAR(10), GETDATE(), 120) AS SMALLDATETIME) BETWEEN P.DT_INICIO_FASE3 AND P.DT_FIM_FASE3 THEN 1 ELSE 0 END IN_ACAO
+                    ,CASE WHEN P.DT_INICIO_FASE2 = P.DT_INICIO_FASE3 AND P.DT_FIM_FASE2 = P.DT_FIM_FASE3 THEN 1
+                        WHEN CAST(CONVERT(VARCHAR(10), GETDATE(), 120) AS SMALLDATETIME) BETWEEN P.DT_INICIO_FASE3 AND P.DT_FIM_FASE3 THEN 0
+                    ELSE 1 END IN_ACAO
                 FROM 
                     MW_PACOTE_RESERVA PR
                 INNER JOIN MW_PACOTE P ON P.ID_PACOTE = PR.ID_PACOTE
@@ -518,7 +520,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                                         <select name="acao" id="acao">
                                             <option value="-" selected>ações possíveis nesta fase</option>
                                 <?php
-                                if($visible == 0){
+                                if($visible){
                                 ?>
                                     <?php foreach ($arrAcoes as $key => $val) {
                                     ?>
@@ -560,10 +562,18 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                             <?php
                             while ($rs = fetchResult($resultAssinaturas)) {
 
+                                $texto_alterar = 'alterar cartão de crédito';
+
                                 if ((isset($_SESSION['operador']) OR $rs['DIAS_DESDE_COMPRA'] > $rs['QT_DIAS_CANCELAMENTO']) AND $rs['IN_ATIVO']) {
                                     $mostrar_cancelamento = true;
+                                    $mostrar_alteracao = true;
+                                } elseif (!$rs['IN_ATIVO']) {
+                                    $mostrar_cancelamento = false;
+                                    $mostrar_alteracao = true;
+                                    $texto_alterar = 'reativar assinatura';
                                 } else {
                                     $mostrar_cancelamento = false;
+                                    $mostrar_alteracao = false;
                                 }
                             ?>
                                 <table class="tabela_assinaturas">
@@ -594,7 +604,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                                             }
                                             ?>
                                         </td>
-                                        <td class="acao historico" rowspan="2"><a href="minha_conta.php?pedido=<?php echo $rs['ID_ASSINATURA_CLIENTE']; ?>">historico de pagamento</a></td>
+                                        <td class="acao historico"><a href="minha_conta.php?pedido=<?php echo $rs['ID_ASSINATURA_CLIENTE']; ?>">historico de pagamento</a></td>
                                     </tr>
                                     <tr>
                                         <td class="espaco"></td>
@@ -609,6 +619,11 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                                                 echo "e você ainda tem {$rs['QT_BILHETES_DISPONIVEIS']} bilhetes disponíveis até o dia ".$rs['DT_VALIDADE_BILHETES']->format('d/m');
                                             }
                                             ?>
+                                        </td>
+                                        <td class="acao alterar">
+                                            <?php if ($mostrar_alteracao) { ?>
+                                            <a href="assinaturaPagamento.php?action=alterar_assinatura&id=<?php echo $rs['ID_ASSINATURA_CLIENTE']; ?>"><?php echo $texto_alterar; ?></a>
+                                            <?php } ?>
                                         </td>
                                     </tr>
                                 </table>

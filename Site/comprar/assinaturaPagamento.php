@@ -4,9 +4,37 @@ require_once('../settings/functions.php');
 require('acessoLogado.php');
 
 if ($_POST) {
-	require('processarDadosAssinatura.php');
+	if ($_POST['alterar_assinatura']) {
+		require('alterarDadosAssinatura.php');
+	} else {
+		require('processarDadosAssinatura.php');
+	}
 	die('Um erro inesperado ocorreu. Por favor, tente novamente e caso o erro persista entre em contato com o suporte.');
 }
+
+$mainConnection = mainConnection();
+
+if ($_GET['action'] == 'alterar_assinatura') {
+	$editar = true;
+		$query = "SELECT 1, DC.DS_NOME_TITULAR, DC.CD_NUMERO_CARTAO
+				FROM MW_DADOS_CARTAO DC
+				INNER JOIN MW_ASSINATURA_CLIENTE AC ON AC.ID_DADOS_CARTAO = DC.ID_DADOS_CARTAO
+				WHERE AC.ID_ASSINATURA_CLIENTE = ? AND AC.ID_CLIENTE = ?";
+	$params = array($_GET['id'], $_SESSION['user']);
+	$rs = executeSQL($mainConnection, $query, $params, true);
+
+	$cipher = new Cipher('1ngr3ss0s');
+
+	$titular_cartao = $cipher->decrypt($rs['DS_NOME_TITULAR']);
+	$numero_cartao = '************' . substr($cipher->decrypt($rs['CD_NUMERO_CARTAO']), -4);
+
+} else {
+	$query = "SELECT 1 FROM MW_ASSINATURA WHERE ID_ASSINATURA = ?";
+	$params = array($_GET['id']);
+	$rs = executeSQL($mainConnection, $query, $params, true);
+}
+
+if ($rs[0] != 1) header("Location: http://www.compreingressos.com");
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -63,6 +91,9 @@ if ($_POST) {
 			</div>
 
 			<form id="dadosPagamento" action="assinaturaPagamento.php" method="post">
+				<?php if ($_GET['action'] == 'alterar_assinatura') { ?>
+				<input type="hidden" name="alterar_assinatura" value="1"/>
+				<?php } ?>
 				<input type="hidden" name="id" value="<?php echo $_GET['id']; ?>"/>
 				<div class="centraliza">
 					<div class="descricao_pag">
@@ -70,14 +101,12 @@ if ($_POST) {
 							<img src="../images/ico_black_passo5.png">
 						</div>
 						<div class="descricao">
-							<p class="nome">Pagamento</p>
+							<p class="nome"><?php echo $editar ? 'Alterar ' : ''; ?>Pagamento</p>
 							<p class="descricao">
 								escolha a bandeira de sua preferência
 							</p>
 						</div>
 						<?php
-						$mainConnection = mainConnection();
-
 						$valor_primeiro_pagamento = getPrimeiroValorAssinatura($_SESSION['user'], $_GET['id']);
  
 				    	$query = "SELECT cd_meio_pagamento, ds_meio_pagamento, nm_cartao_exibicao_site 
@@ -133,7 +162,7 @@ if ($_POST) {
 				                <div class="linha">
 				                    <div class="input">
 				                        <p class="titulo">nome do titular</p>
-				                        <input type="text" name="nomeCartao">
+				                        <input type="text" name="nomeCartao" value="<?php echo $titular_cartao; ?>">
 				                        <div class="erro_help">
 				                            <p class="help">como impresso no cartão</p>
 				                        </div>
@@ -165,7 +194,7 @@ if ($_POST) {
 				                <div class="linha">
 				                    <div class="input">
 				                        <p class="titulo">número do cartão</p>
-				                        <input type="text" name="numCartao" value="">
+				                        <input type="text" name="numCartao" value="<?php echo $numero_cartao; ?>">
 				                        <div class="erro_help">
 				                            <p class="help">XXXX-XXXX-XXXX-XXXX</p>
 				                        </div>
@@ -203,9 +232,11 @@ if ($_POST) {
 					
 					<div class="container_botoes_etapas">
 						<div class="centraliza">
+							<?php if (!$editar) { ?>
 							<a href="assinatura.php?id=<?php echo $_GET['id']; ?>" class="botao voltar passo4">confirmação</a>
+							<?php } ?>
 
-							<a href="assinaturaPagamento.php" class="botao avancar passo6 botao_pagamento <?php echo $valor_primeiro_pagamento == 0 ? 'finalizar' : '' ?>">pagamento</a>
+							<a href="assinaturaPagamento.php" class="<?php echo 'botao avancar passo6 botao_pagamento'.($editar ? ' submit salvar_dados' : ($valor_primeiro_pagamento == 0 ? ' finalizar' : '')); ?>">pagamento</a>
 						</div>
 					</div>
 					<div class="img_cod_cartao"><img src=""><p></p></div>

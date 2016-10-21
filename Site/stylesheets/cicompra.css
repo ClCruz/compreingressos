@@ -2012,7 +2012,7 @@ input.submit.trocar_senha{
 	background-image:url('../images/bot_trocarsenha.png');
 }
 
-input.submit.salvar_dados{
+input.submit.salvar_dados, a.botao.avancar.passo6.salvar_dados{
 	background-image:url('../images/bot_salvardados.png');
 }
 

@@ -53,7 +53,10 @@ if (!$_SESSION['is_pos_configured']) {
 			echo "<FILE NAME=logo_scroll.bmp ADDR=$imgs_dir/logo_scroll.bmp ERR=erroarq WRT=SIM>";
 
 			// envia arquivo de configuracao do <PAGAMENTO>
-			echo "<FILE NAME=CLSIT ADDR=/pos/CLSIT.txt ERR=ERROARQ>";
+			echo "<FILE NAME=CLSIT ADDR=/pos/CLSIT.txt ERR=ERROARQ WRT=SIM>";
+
+			// altera a hora
+			echo "<SET TYPE=TIME HOUR=".date('His')." DATE=".date('dmY')." HDSTS=STSSTT>";
 
 			// configuracoes gerais
 			echo "<CONFIG_NAVS RETURN=STS_ALTERA_SERVER>";
@@ -97,6 +100,8 @@ if (!$_SESSION['is_pos_configured']) {
 			$query = "UPDATE MW_POS SET LAST_CONFIG = GETDATE() WHERE SERIAL = ?";
 			$params = array($_GET['pos_serial']);
 			executeSQL($mainConnection, $query, $params);
+
+			echo "<RESET>";
 
 			$config = 2;
 		} else {

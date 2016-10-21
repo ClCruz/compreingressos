@@ -14,6 +14,7 @@ if (isset($_GET['user']) && isset($_GET['password'])) {
 		if ($rs['ID_USUARIO']) {			
 			$_SESSION['pos_user']['id'] = $rs['ID_USUARIO'];
 			$_SESSION['pos_user']['name'] = $rs['DS_NOME'];
+			$_SESSION['pos_user']['serial'] = $_GET['pos_serial'];
 
 			executeSQL($mainConnection, "UPDATE MW_POS SET LAST_ACCESS = GETDATE(), OS_VERSION = ? WHERE SERIAL = ?", array($_GET['os_version'], $_GET['pos_serial']));
 

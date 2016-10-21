@@ -23,13 +23,17 @@ if (isset($_GET['evento']) and is_numeric($_GET['evento'])) {
 	$nomeEvento = $rs['DS_EVENTO'];
 	
 	if (!empty($rs)) {
-		// Verifica se o evento está ativo e se pode vender pela web
-		$query = "SELECT (ISNULL(QT_HR_ANTECED, 24) * -1) AS QT_HR_ANTECED
-					 FROM ".$nomeBase."..TABPECA
-					 WHERE CODPECA = ? AND STAPECA = 'A' AND CONVERT(CHAR(8), DATFINPECA,112) >= CONVERT(CHAR(8), GETDATE(),112)";
-		
-		$params = array($rs['CODPECA']);
-		$rs = executeSQL($mainConnection, $query, $params, true);
+		if ($_POST['pos']) {
+			$rs['QT_HR_ANTECED'] = 0;
+		} else {
+			// Verifica se o evento está ativo e se pode vender pela web
+			$query = "SELECT (ISNULL(QT_HR_ANTECED, 24) * -1) AS QT_HR_ANTECED
+						 FROM ".$nomeBase."..TABPECA
+						 WHERE CODPECA = ? AND STAPECA = 'A' AND CONVERT(CHAR(8), DATFINPECA,112) >= CONVERT(CHAR(8), GETDATE(),112)";
+			
+			$params = array($rs['CODPECA']);
+			$rs = executeSQL($mainConnection, $query, $params, true);
+		}
 		
 		if (!empty($rs)) {
 			$query = "WITH RESULTADO AS (

@@ -965,6 +965,7 @@ switch ($_GET['subscreen']) {
 		echo utf8_decode("<WRITE_AT LINE=5 COLUMN=0> Selecione uma apresentação:</WRITE_AT>");
 
 		ob_start();
+		$_POST['pos'] = 1;
 		require_once '../comprar/timeTable.php';
 		$json = ob_get_clean();
 

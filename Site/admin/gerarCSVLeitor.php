@@ -146,6 +146,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
                     case '02':
                         action = 'defaultcsv';
                         break;
+
+                    case '03':
+                        action = 'vendidos';
+                        break;
                 }
 
                 var url = "gerarCSVLeitor.php?action=" + action +
@@ -155,7 +159,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
                     "&HorSessao=" + document.fPeca.cboHorario.value;
 
                 
-                if (tipoExport == '01' || tipoExport == '02') {
+                if (tipoExport) {
                     document.location = url;
                 } else {
                     alert("Selecione um tipo de exportação válido");
@@ -212,6 +216,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
                             <select name="tipoExport">
                                 <option value="01">01-CSV-Modelo Específico</option>
                                 <option value="02">02-CSV-Modelo Padrão</option>
+                                <option value="03">03-CSV-Só Ingressos Vendidos</option>
                             </select>
                         </label>
                     </td>

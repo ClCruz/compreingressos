@@ -261,6 +261,72 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
 
 		exit();
 	}
+	/*
+	 * Gerar todos os codigos vendidos para este evento conforme apresentação e local da aprensetação
+	 * */
+	else if ($_GET['action'] == 'vendidos')
+	{
+		$dadosPeca = getDadosPeca();
+		
+		$fileName = 'ING';
+		$fileName .= $_GET['DatApresentacao'];
+		$fileName .= $hora = str_replace(':','',$_GET['HorSessao']);
+		$fileName .= $nome = substr($dadosPeca['NOMPECA'], 0, 14);
+
+		$FILE = fopen('temp/'.$fileName.'.csv', 'x');
+
+		$conn = getConnection($_GET['CodTeatro']);
+		$query = "SELECT csv.codbar, L.CODSETOR, L.CODSALA, S.NomSala, SE.NomSetor
+					FROM TABSALDETALHE L
+					INNER JOIN TABAPRESENTACAO A ON L.CODSALA = A.CODSALA
+					INNER JOIN tabSala AS S ON S.CodSala = L.CodSala
+					INNER JOIN tabSetor AS SE ON SE.CodSetor = L.CodSetor AND SE.CodSala = L.CodSala
+					inner join tabControleSeqVenda csv on csv.CodApresentacao = a.CodApresentacao and csv.Indice = l.Indice
+					WHERE A.CODPECA = ? AND A.DATAPRESENTACAO = ? AND A.HORSESSAO = ? AND TIPOBJETO <> 'I'";
+		$params = array($_GET['CodPeca'], $_GET['DatApresentacao'], $_GET['HorSessao']);
+
+		$result = executeSQL($conn, $query, $params);
+
+		while ($rs = fetchResult($result))
+		{
+			$codigo = $rs['codbar'];
+
+			$filtro = $rs['NomSala'].';'.$rs['NomSetor'].';'.$rs['CODSALA'].';'.$rs['CODSETOR'].';';
+
+			fputcsv($FILE, array($codigo.';'.$filtro));
+		}
+
+		fclose($FILE);
+
+		$zip_file = 'temp/'.$fileName.'.zip';
+		$zip = new ZipArchive;
+		$zip->open($zip_file, ZipArchive::CREATE);
+		$zip->addFile("temp/$fileName.csv");
+		$zip->close();
+
+		/*
+		 * Abrir arquivo na URL para disponibilizar download
+		 * */
+		//locationFile($caminhoArquivo);
+		header('Content-Description: File Transfer');
+		header('Content-Type: application/zip');
+		header('Content-Disposition: attachment; filename="' . $fileName . '.zip"');
+		header('Content-Transfer-Encoding: binary');
+		header('Expires: 0');
+		header('Cache-Control: must-revalidate');
+		header('Pragma: public');
+		header('Content-Length: ' . filesize($zip_file));
+
+		ob_clean();
+		flush();
+
+		readfile($zip_file);
+
+		unlink($zip_file);
+		unlink("temp/$fileName.csv");
+
+		exit();
+	}
 	else
 	{
 		echo 'Action '.$_GET['action'].' não existe!';

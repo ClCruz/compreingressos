@@ -15,13 +15,13 @@ if ($_POST) {
     // se o pedido tiver valor zero ele pode continuar se tiver um ingresso promocional
     // essa variavel nao representao o valor final, este sera recalculado no servidor
     if ($_COOKIE['total_exibicao'] == 0) {
-        // meio de pagamento fixado como 887 (cd_meio_pagamento / dinheiro)
+        // meio de pagamento fixado como 885 (cd_meio_pagamento / pdv cc)
         // e variavel usuario_pdv = 1 para o javascript nao validar dads do cartao
         ?>
         <div class="container_cartoes">
             <p class="frase">Finalize seu pedido.</p>
             <br/>
-            <input type="hidden" name="codCartao" value="887" />
+            <input type="hidden" name="codCartao" value="885" />
             <input type="hidden" name="usuario_pdv" value="1" />
         </div>
         <?php

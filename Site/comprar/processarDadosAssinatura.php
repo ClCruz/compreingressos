@@ -59,8 +59,7 @@ foreach($rs as $key => $val) {
 $valor_pagar = getPrimeiroValorAssinatura($_SESSION['user'], $_POST['id']);
 
 if ($valor_pagar == 0) {
-	$rsAux = executeSQL($mainConnection, "SELECT MAX(VL_ASSINATURA) FROM MW_ASSINATURA_VALOR WHERE ID_ASSINATURA = ?", array($_POST['id']), true);
-	$valor_pagar = $rsAux[0];
+	$valor_pagar = 0.01;
 	$cancelar_em_sucesso = true;
 } else {
 	$cancelar_em_sucesso = false;

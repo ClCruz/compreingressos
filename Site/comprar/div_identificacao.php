@@ -39,7 +39,7 @@
 				</div>
 				<input type="password" name="senha" placeholder="digite sua senha" id="senha" maxlength="30">
 				<div class="erro_help">
-					<p class="erro"></p>
+					<p class="erro">no mínimo 6 caracteres</p>
 					<p class="help"></p>
 				</div>
 

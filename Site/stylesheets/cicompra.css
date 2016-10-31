@@ -2359,8 +2359,7 @@ div#login_assinante .identificacao.cadastro {  display: none;   }
 
 
 div#login_assinante div.identificacao {  margin: 0px;   }
-div#cipopup div#login_assinante input{  margin-bottom: 25px;   }
-div#cipopup div#login_assinante div.erro_help{  display: none;   }
+div#cipopup div#login_assinante p.help {  display: none;   }
 
 /*MODAL ASSIANNTE A*/
 

@@ -18,6 +18,8 @@ if (!empty($rs)) {
 	$id_cliente = $rs['ID_CLIENTE'];
 	$id_assinatura = $rs['ID_ASSINATURA'];
 
+
+	$_POST['numCartao'] = preg_replace("/[^0-9]/", "", $_POST['numCartao']);
 	$cartao_titular = $_POST['nomeCartao'];
 	$cartao_numero = $_POST['numCartao'];
 	$cartao_cod_seguranca = $_POST['codSeguranca'];

@@ -563,17 +563,15 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                             while ($rs = fetchResult($resultAssinaturas)) {
 
                                 $texto_alterar = 'alterar cartão de crédito';
+                                $mostrar_alteracao = true;
 
                                 if ((isset($_SESSION['operador']) OR $rs['DIAS_DESDE_COMPRA'] > $rs['QT_DIAS_CANCELAMENTO']) AND $rs['IN_ATIVO']) {
                                     $mostrar_cancelamento = true;
-                                    $mostrar_alteracao = true;
                                 } elseif (!$rs['IN_ATIVO']) {
                                     $mostrar_cancelamento = false;
-                                    $mostrar_alteracao = true;
                                     $texto_alterar = 'reativar assinatura';
                                 } else {
                                     $mostrar_cancelamento = false;
-                                    $mostrar_alteracao = false;
                                 }
                             ?>
                                 <table class="tabela_assinaturas">

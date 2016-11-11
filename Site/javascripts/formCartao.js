@@ -88,6 +88,7 @@ $(function(){
 
     		fechaLoading();
 
+    		if (typeof(grecaptcha) !== 'undefined') grecaptcha.reset();
     		if (typeof(BrandCaptcha) !== 'undefined') BrandCaptcha.reload();
 	    } else {
 	    	$.dialog({text: 'Preencha os campos em vermelho'});

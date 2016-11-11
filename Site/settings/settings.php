@@ -23,8 +23,8 @@ $isContagemAcessos = true;
 $is_manutencao = false;
 
 $recaptcha = array(
-	'private_key' => 'bafa46035b840f10dc064ebae573bfd5c2959b78',
-	'public_key' => '7b7a9872fd5c7e434400b347ae315973579c21cc'
+	'private_key' => '6LehdNkSAAAAAPgQZU83DKb0L7Wu8RI4Bvy7oYZq',
+	'public_key' => '6LehdNkSAAAAAAk9orcTupYUPYngqXfn1Kdf6fDs'
 );
 
 $recaptcha_cadastro = array(

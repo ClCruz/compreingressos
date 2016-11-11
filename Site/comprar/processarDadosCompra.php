@@ -8,20 +8,26 @@ require_once('../settings/antiFraude.php');
 // verifica se o acesso via operador/pdv esta vendendo apenas aquilo que tem permissao
 require('acessoPermitido.php');
 
-require_once('../settings/brandcaptchalib.php');
 require('../settings/pagseguro_functions.php');
 
-$resp = brandcaptcha_check_answer(
-            $recaptcha['private_key'],
-            $_SERVER["REMOTE_ADDR"],
-            $_POST["brand_cap_challenge"],
-            $_POST["brand_cap_answer"]
-        );
+// reCAPTCHA v2 ---------------
+$post_data = http_build_query(array('secret'    => $recaptcha['private_key'],
+                                    'response'  => $_POST["g-recaptcha-response"],
+                                    'remoteip'  => $_SERVER["REMOTE_ADDR"]));
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, "https://www.google.com/recaptcha/api/siteverify");
+curl_setopt($ch, CURLOPT_POST, 1);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+$server_output = curl_exec($ch);
+curl_close($ch);
+
+$resp = json_decode($server_output, true);
 
 if (!$_ENV['IS_TEST'] and !isset($_SESSION['operador'])) {
-    if (!$resp->is_valid) {
-        // set the error code so that we can display it
-        $error = $resp->error;
+    if (!$resp['success']) {
         echo "Entre com a informação solicitada no campo Autenticidade.";
         exit();
     }

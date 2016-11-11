@@ -46,6 +46,8 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
     <?php require("desktopMobileVersion.php"); ?>
 	<link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
 
+	<script src='https://www.google.com/recaptcha/api.js' async defer></script>
+
 	<script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
 	<script src="../javascripts/jquery.placeholder.js" type="text/javascript"></script>
 	<script src="../javascripts/jquery.selectbox-0.2.min.js" type="text/javascript"></script>
@@ -130,11 +132,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 
 					<?php if (!isset($_SESSION['operador'])) { ?>
 					<div class="compra_captcha">
-						<script type="text/javascript">var brandcaptchaOptions = {lang: 'pt'};</script>
-						<?php
-						require_once('../settings/brandcaptchalib.php');
-						echo brandcaptcha_get_html($recaptcha['public_key']);
-						?>
+						<div class="g-recaptcha" data-sitekey="<?php echo $recaptcha['public_key']; ?>"></div>
 					</div>
 					<?php } ?>
 				</div>

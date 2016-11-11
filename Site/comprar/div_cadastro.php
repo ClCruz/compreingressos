@@ -283,6 +283,7 @@ session_start();
 			</div>
 
 			<?php if (!(isset($_SESSION['user']) and is_numeric($_SESSION['user'])) and !(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) { ?>
+			<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
 			<div class="input_area nome robo">
 				<div class="icone"></div>
@@ -291,11 +292,7 @@ session_start();
 				</div>
 			</div>
 			<div class="input_area recaptcha">
-				<script type="text/javascript">var brandcaptchaOptions = {lang: 'pt'};</script>
-				<?php
-				require_once('../settings/brandcaptchalib.php');
-				echo brandcaptcha_get_html($recaptcha_cadastro['public_key']);
-				?>
+				<div class="g-recaptcha" data-sitekey="<?php echo $recaptcha['public_key']; ?>"></div>
 			</div>
 			<?php } ?>
 

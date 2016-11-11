@@ -360,7 +360,7 @@ $(function() {
 					success: function(data) {
 						if (data != 'true') {
 							formulario.trigger('dados_salvos');
-							if (typeof(BrandCaptcha) !== 'undefined') BrandCaptcha.reload();
+							if (typeof(grecaptcha) !== 'undefined') grecaptcha.reset();
 
 							if (data == 'Seus dados foram atualizados com sucesso!') {
 								$this.next('.erro_help').find('.help').slideDown('fast').delay(3000).slideUp('slow');

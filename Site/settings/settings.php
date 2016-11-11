@@ -28,8 +28,8 @@ $recaptcha = array(
 );
 
 $recaptcha_cadastro = array(
-	'private_key' => '2ad59bf7ce630c07e311f04a95b5af57030eff39',
-	'public_key' => 'd4850db05abab66f0b86be092ad11c842883db9d'
+	'private_key' => '6LehdNkSAAAAAPgQZU83DKb0L7Wu8RI4Bvy7oYZq',
+	'public_key' => '6LehdNkSAAAAAAk9orcTupYUPYngqXfn1Kdf6fDs'
 );
 
 $mail_mkt = array(

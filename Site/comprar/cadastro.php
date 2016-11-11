@@ -60,15 +60,26 @@ if (isset($_GET['action'])) {
 	if ($_GET['action'] == 'add') {
 		if (!(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) {
 			require_once('../settings/settings.php');
-			require_once('../settings/brandcaptchalib.php');
+			// reCAPTCHA v2 ---------------
+			$post_data = http_build_query(array('secret'    => $recaptcha_cadastro['private_key'],
+			                                    'response'  => $_POST["g-recaptcha-response"],
+			                                    'remoteip'  => $_SERVER["REMOTE_ADDR"]));
 
-			$resp = brandcaptcha_check_answer($recaptcha_cadastro['private_key'],
-			    $_SERVER["REMOTE_ADDR"],
-			    $_POST["brand_cap_challenge"],
-			    $_POST["brand_cap_answer"]);
+
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, "https://www.google.com/recaptcha/api/siteverify");
+			curl_setopt($ch, CURLOPT_POST, 1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+			$server_output = curl_exec($ch);
+			curl_close($ch);
+
+			$resp = json_decode($server_output, true);
 
 			if (!$_ENV['IS_TEST']) {
-				if (!$resp->is_valid) {
+				if (!$resp['success']) {
 				    // set the error code so that we can display it
 				    $error = $resp->error;
 				    echo "Entre com a informação solicitada no campo Autenticidade.";

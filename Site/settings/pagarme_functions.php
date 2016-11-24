@@ -96,7 +96,7 @@ function pagarPedidoPagarme($id_pedido, $dados_extra) {
 			)
 		),
 
-		"postback_url" => $postback_url;
+		"postback_url" => $postback_url
 	);
 
 	// credit card

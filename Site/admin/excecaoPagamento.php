@@ -183,7 +183,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 480, true)) {
             <table class="ui-widget ui-widget-content">
                 <thead>
                     <tr class="ui-widget-header">
-                        <th class="nm_evento">Eventos Disponíveis / Fora do Anti-fraude</th>
+                        <th class="nm_evento">Eventos Braspag</th>
                         <th class="nm_local">Local</th>
                         <th class="data">Data Início</th>
                         <th class="data">Data Término</th>
@@ -202,7 +202,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 480, true)) {
             <table class="ui-widget ui-widget-content">
                 <thead>
                     <tr class="ui-widget-header">
-                        <th class="nm_evento">Eventos Selecionados</th>
+                        <th class="nm_evento">Eventos Pagar.me</th>
                         <th class="nm_local">Local</th>
                         <th class="data">Data Início</th>
                         <th class="data">Data Término</th>

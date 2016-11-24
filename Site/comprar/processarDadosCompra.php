@@ -83,7 +83,8 @@ if (!hasRows($resultReserva)) {
     die();
 }
 
-require('antiFraude.php');
+// erro 539
+// require('antiFraude.php');
 
 // obtem o valor de parcelas para a apresentacao no reserva
 $query = "select e.id_base, e.codpeca from mw_evento e inner join mw_apresentacao a on a.id_evento = e.id_evento inner join mw_reserva r on r.id_apresentacao = a.id_apresentacao where r.id_session = ?";

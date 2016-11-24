@@ -128,6 +128,14 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 460, true)) {
                             $.dialog({text: erro});
                         } else {
                             $.dialog({text: 'Dados alterados com sucesso.'});
+
+                            var eventos_atuais = [];
+
+                            $('#selecionados :checkbox').each(function() {
+                                eventos_atuais.push($(this).val());
+                            });
+
+                            $(':input[name=eventos_atuais]').val(eventos_atuais.join());
                         }
                     });
                 });
@@ -166,7 +174,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 460, true)) {
                 <tr>
                     <td>
                         <b>Local:</b><br/>
-                        <?php echo comboTeatroPorUsuario('cboLocal', $_SESSION['admin'], $rs['ID_BASE']); ?>
+                        <?php echo comboTeatroPorUsuario('cboLocal', $_SESSION['admin'], $_GET['local']); ?>
                     </td>
                 </tr>
             </table>

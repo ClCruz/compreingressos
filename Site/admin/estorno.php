@@ -39,15 +39,20 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                     PV.IN_RETIRA_ENTREGA,
                     C.DS_DDD_TELEFONE,
                     C.DS_TELEFONE,
-                    U.DS_NOME ";
+                    U.DS_NOME,
+                    MP.NM_CARTAO_EXIBICAO_SITE ";
 
-        $from = " FROM MW_PEDIDO_VENDA PV INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE
+        $from = " FROM
+                      MW_PEDIDO_VENDA PV
+                      INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE
+                      INNER JOIN MW_MEIO_PAGAMENTO MP ON MP.ID_MEIO_PAGAMENTO = PV.ID_MEIO_PAGAMENTO
                       LEFT JOIN MW_ITEM_PEDIDO_VENDA IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
                       LEFT JOIN MW_USUARIO U ON U.ID_USUARIO=PV.ID_USUARIO_CALLCENTER ";
 
         $from2 = "FROM
                       MW_PEDIDO_VENDA PV
                       INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = PV.ID_CLIENTE
+                      INNER JOIN MW_MEIO_PAGAMENTO MP ON MP.ID_MEIO_PAGAMENTO = PV.ID_MEIO_PAGAMENTO
                       INNER JOIN MW_ITEM_PEDIDO_VENDA_HIST IPV ON IPV.ID_PEDIDO_VENDA = PV.ID_PEDIDO_VENDA
                       LEFT JOIN MW_USUARIO U ON U.ID_USUARIO=PV.ID_USUARIO_CALLCENTER ";
 
@@ -62,7 +67,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                       C.DS_DDD_TELEFONE,
                       C.DS_TELEFONE,
                       U.DS_NOME,
-                      PV.VL_TOTAL_TAXA_CONVENIENCIA";
+                      MP.NM_CARTAO_EXIBICAO_SITE";
 
         if (!empty($_GET["num_pedido"])) {
             $where .= " AND PV.ID_PEDIDO_VENDA = ?";
@@ -271,6 +276,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
             var pagina = '<?php echo $pagina; ?>';
             var $estorno_dialog = $('#estorno_form').hide();
 
+            $('.numbersOnly').onlyNumbers();
+
             $('button, .button').button();
             //$(".datepicker").datepicker();
             $('input.datepicker').datepicker({
@@ -316,17 +323,31 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
             $estorno_dialog.dialog({
                 autoOpen: false,
                 height: 'auto',
-                width: 350,
+                width: 450,
                 modal: true,
                 closeOnEscape: false,
                 draggable: false,
                 buttons: {
                     'Confirmar': function() {
-                        var $this = $(this);
+                        var $this = $(this),
+                            valid = true;
 
                         if ($estorno_dialog.find('textarea').val() == '') {
                             $.dialog({title: 'Aviso...', text: 'A justificativa deve ser informada.'});
                             return;
+                        }
+
+                        if ($('.bank_data').is(':visible')) {
+                            $('.bank_data').find('[name=banco], [name=cpf], [name=nome], [name=nr_agencia], [name=nr_conta]').each(function(){
+                                if ($(this).val().trim().length < 1) {
+                                    valid = false;
+                                }
+                            });
+
+                            if (!valid) {
+                                $.dialog({title: 'Aviso...', text: 'Os dados bancários devem ser informados.'});
+                                return;
+                            }
                         }
 
                         $this.parent().hide();
@@ -387,6 +408,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
 
                 $estorno_dialog.find('input[name="pedido"]').val($this.attr('pedido'));
 
+                if (~$this.data('meio-pagamento').toLowerCase().indexOf('boleto')) {
+                    $estorno_dialog.find('.bank_data').show();
+                } else {
+                    $estorno_dialog.find('.bank_data').hide();
+                }
+
                 $estorno_dialog.dialog('open');
             });
 
@@ -412,6 +439,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                 $('#evento').html(data).combobox();
               }
             });
+
+            $(':input[name=banco]').combobox();
         });    
     </script>
     <style type="text/css">
@@ -419,6 +448,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
             width: 100%;
             text-align: center;
             margin-top: 10px;
+        }
+
+        .bank_data {
+            margin-top: 15px;
+        }
+
+        .bank_data td {
+            padding: 4px 0;
+            width: 50%;
         }
     </style>
     <h2>Estorno de Pedidos</h2>
@@ -452,10 +490,22 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
       </tr>
     </table><br/>
 
-<form id="estorno_form" title="Justificativa">
+<form id="estorno_form" title="Dados para Estorno">
     <input type="hidden" name="pedido" />
+    
+    <p>Justificativa:</p>
     <textarea name="justificativa" maxlength="250" style="width:100%; height:100px;"></textarea>
     <p>Caracteres restantes: <span></span><p>
+
+    <table class="bank_data">
+        <tr><td>Banco:</td><td><?php echo comboBanco('banco'); ?></td></tr>
+        <tr><td>Agência:</td><td><input type="text" name="nr_agencia" /></td></tr>
+        <tr><td>Agência DV:</td><td><input type="text" name="dv_agencia" /></td></tr>
+        <tr><td>Conta:</td><td><input type="text" name="nr_conta" /></td></tr>
+        <tr><td>Conta DV:</td><td><input type="text" name="dv_conta" /></td></tr>
+        <tr><td>CPF/CNPJ:</td><td><input type="text" class="numbersOnly" name="cpf" /></td></tr>
+        <tr><td>Nome Favorecido:</td><td><input type="text" name="nome" /></td></tr>
+    </table>
 </form>
 
 <!-- Tabela de pedidos -->
@@ -497,7 +547,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                    <td><?php echo $rs['QUANTIDADE']; ?></td>
                    <td><?php echo comboSituacao('situacao', $rs['IN_SITUACAO'], false); ?></td>
                    <td><?php echo comboFormaEntrega($rs['IN_RETIRA_ENTREGA']); ?></td>
-                   <td><button class="estorno" pedido="<?php echo $rs['ID_PEDIDO_VENDA']; ?>">Estornar</button></td>
+                   <td><button class="estorno" pedido="<?php echo $rs['ID_PEDIDO_VENDA']; ?>" data-meio-pagamento="<?php echo utf8_encode($rs['NM_CARTAO_EXIBICAO_SITE']); ?>">Estornar</button></td>
                </tr>
         <?php
                    }

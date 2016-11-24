@@ -83,6 +83,7 @@ $(function(){
 					$.dialog({text: data});
 		    		// continuar contagem regressiva
 		    		CountStepper = -1;
+		    		$(":input[name=numCartao]").trigger('pagarmeToken');
     			}
     		});
 

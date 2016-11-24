@@ -118,7 +118,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
             // VENDAS PELO PDV, PEDIDOS FILHOS (DE ASSINATURAS), PEDIDOS COM INGRESSOS PROMOCIONAIS, VALOR 0 E FEITOS PELO POS NÃO SÃO ESTORNADAS DO BRASPAG
             $is_estorno_brasbag = ($pedido["IN_TRANSACAO_PDV"] == 0 and !$pedido["FILHO"] and ($pedido['INGRESSOS_PROMOCIONAIS'] == 0 and $pedido['VALOR'] != 0)
                                     and !($pedido_principal["BRASPAG_ID"] == 'POS' and isset($_POST['pos_serial'])) and $pedido_principal["BRASPAG_ID"] != 'Fastcash'
-                                    and $pedido_principal["ID_PEDIDO_IPAGARE"] != 'PagSeguro');
+                                    and $pedido_principal["ID_PEDIDO_IPAGARE"] != 'PagSeguro' and $pedido_principal["ID_PEDIDO_IPAGARE"] != 'Pagar.me');
 
             $options = array(
                 'local_cert' => file_get_contents('../settings/cert.pem'),
@@ -240,6 +240,41 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                                                 por favor, efetue o procedimento de cancelamento junto a operadora manualmente.<br/><br/>
                                                 Os dados do sistema do Middleway foram atualizados com sucesso.";
                     $force_system_refund = true;
+                }
+            }
+
+            // tratamento para pagarme
+            elseif ($pedido_principal["ID_PEDIDO_IPAGARE"] == 'Pagar.me') {
+
+                require_once('../settings/pagarme_functions.php');
+
+                if (!empty($_POST['banco'])) {
+                    $bank_data = array(
+                        'bank_account' => array(
+                            'bank_code' => $_POST['banco'],
+                            'agencia' => $_POST['nr_agencia'],
+                            'agencia_dv' => $_POST['dv_agencia'],
+                            'conta' => $_POST['nr_conta'],
+                            'conta_dv' => $_POST['dv_conta'],
+                            'document_number' => $_POST['cpf'],
+                            'legal_name' => $_POST['nome']
+                        )
+                    );
+                }
+
+                $response = estonarPedidoPagarme($pedido['ID_PEDIDO_VENDA'], $bank_data);
+
+                if ($response['success']) {
+                    $resposta_geral = "Pedido cancelado/estornado.";
+                    $retorno = 'ok';
+                } elseif (empty($_POST['banco'])) {
+                    $resposta_geral = $response['error']."<br/><br/><b>Não foi possível efetuar o estorno junto à Operadora (Pagar.me)</b>, 
+                                                por favor, efetue o procedimento de cancelamento junto a operadora manualmente.<br/><br/>
+                                                Os dados do sistema do Middleway foram atualizados com sucesso.";
+                    $force_system_refund = true;
+                } else {
+                    echo $response['error'];
+                    die();
                 }
             }
 
@@ -371,6 +406,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                         executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
                                 array($_SESSION['user'], json_encode(array('descricao' => 'estorno/cancelamento do pedido ' . $pedido['ID_PEDIDO_VENDA'], 'retorno' => $conta)))
                         );
+
+                        if (!empty($bank_data)) {
+                            $query .= ' ' . json_encode($bank_data);
+                        }
 
                         $log = new Log($_SESSION['admin']);
                         $log->__set('funcionalidade', 'Estorno de Pedidos');

@@ -9,6 +9,7 @@ require_once('../settings/antiFraude.php');
 require('acessoPermitido.php');
 
 require('../settings/pagseguro_functions.php');
+require('../settings/pagarme_functions.php');
 
 // reCAPTCHA v2 ---------------
 $post_data = http_build_query(array('secret'    => $recaptcha['private_key'],
@@ -494,9 +495,11 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
 
     $pagamento_fastcash = in_array($_POST['codCartao'], array('892', '893'));
     $pagamento_pagseguro = in_array($_POST['codCartao'], array('900', '901', '902'));
+    $pagamento_pagarme = in_array($_POST['codCartao'], array('910', '911'));
+    $pagamento_braspag = (!$pagamento_fastcash and !$pagamento_pagseguro and !$pagamento_pagarme);
     
     // pular o bloco abaixo para vendas pelo fastcash e pagseguro
-    if ($_SESSION['usuario_pdv'] !== 1 and $PaymentDataCollection['Amount'] != 0 and !$pagamento_fastcash and !$pagamento_pagseguro) {
+    if ($_SESSION['usuario_pdv'] !== 1 and $PaymentDataCollection['Amount'] != 0 and $pagamento_braspag) {
     	try {
             executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
                 array($_SESSION['user'], json_encode(array('descricao' => '3. inicialização do pedido ' . $parametros['OrderData']['OrderId'], 'url' => $url_braspag)))
@@ -549,6 +552,9 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
                     // se o pedido ja foi negado e por algum motivo a consulta retornar como aprovado (exemplo do que ja aconteceu: SDM na primeira tentativa e APA na consulta)
                     executeSQL($mainConnection, "UPDATE MW_PEDIDO_VENDA SET IN_SITUACAO = 'P' WHERE ID_PEDIDO_VENDA = ? AND ID_CLIENTE = ? AND IN_SITUACAO = 'N'", array($newMaxId, $_SESSION['user']));
                 }
+            } else {
+                // se o pedido ja foi negado e o anti fraude foi desligado
+                executeSQL($mainConnection, "UPDATE MW_PEDIDO_VENDA SET IN_SITUACAO = 'P' WHERE ID_PEDIDO_VENDA = ? AND ID_CLIENTE = ? AND IN_SITUACAO = 'N'", array($newMaxId, $_SESSION['user']));
             }
 
             if (confirmarPedido($result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId)) {
@@ -572,7 +578,78 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
     if ($descricao_erro == '') {
         setcookie('id_braspag', $result->AuthorizeTransactionResult->OrderData->BraspagOrderId);
 
-        if ($pagamento_fastcash OR $pagamento_pagseguro){
+        // pagamentos via pagarme
+        if ($pagamento_pagarme){
+
+            $query = "UPDATE P SET ID_MEIO_PAGAMENTO = M.ID_MEIO_PAGAMENTO, IN_SITUACAO = 'P'
+                        FROM MW_PEDIDO_VENDA P, MW_MEIO_PAGAMENTO M
+                        WHERE P.ID_PEDIDO_VENDA = ? AND M.CD_MEIO_PAGAMENTO = ?";
+            $params = array($parametros['OrderData']['OrderId'], $_POST['codCartao']);
+            $result = executeSQL($mainConnection, $query, $params);
+
+            $response = pagarPedidoPagarme($parametros['OrderData']['OrderId'], $_POST);
+
+            // credit card
+            if ($response['success'] AND $response['transaction']['status'] == 'paid') {
+
+                $result = new stdClass();
+
+                $result->AuthorizeTransactionResult->OrderData->BraspagOrderId = 'Pagar.me';
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId = $response['transaction']->id;
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId = $response['transaction']->nsu;
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AuthorizationCode = $response['transaction']->authorization_code;
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->PaymentMethod = $_POST['codCartao'];
+
+                require('concretizarCompra.php');
+
+                // se necessario, replica os dados de assinatura e imprime url de redirecionamento
+                require('concretizarAssinatura.php');
+
+                die("redirect.php?redirect=".urlencode("pagamento_ok.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : '')));
+            }
+            // boleto
+            elseif ($response['success'] AND $response['transaction']['status'] == 'waiting_payment' AND !empty($response['transaction']['boleto_url'])) {
+                
+                extenderTempo($horas_antes_apresentacao_pagamento * 60);
+
+                $query = "SELECT DISTINCT E.ID_BASE FROM MW_RESERVA R
+                            INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+                            INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+                            WHERE R.ID_SESSION = ?";
+                $params = array(session_id());
+                $result = executeSQL($mainConnection, $query, $params);
+
+                $conn = array();
+                while ($rs = fetchResult($result)) {
+                    $conn[$rs['ID_BASE']] = (isset($conn[$rs['ID_BASE']]) ? $conn[$rs['ID_BASE']] : getConnection($rs['ID_BASE']));
+                }
+                
+                $query = "UPDATE MW_PROMOCAO SET ID_SESSION = ? WHERE ID_SESSION = ?";
+                $params = array($parametros['OrderData']['OrderId'], session_id());
+                executeSQL($mainConnection, $query, $params);
+                
+                $query = "UPDATE MW_RESERVA SET ID_SESSION = ? WHERE ID_SESSION = ?";
+                executeSQL($mainConnection, $query, $params);
+                
+                $query = "UPDATE TABLUGSALA SET ID_SESSION = ? WHERE ID_SESSION = ?";
+                foreach ($conn as $key => $value) {
+                    executeSQL($value, $query, $params);
+                }
+
+                limparCookies();
+
+                executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+                    array($_SESSION['user'], json_encode(array('descricao' => '5. redirecionamento do pedido=' . $parametros['OrderData']['OrderId'], 'pagarme' => $pagamento_pagarme)))
+                );
+
+                die("redirect.php?redirect=".urlencode("pagamento_pagarme.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : '')));
+            }
+            else {
+                $descricao_erro = $response['error'] ? $response['error'] : 'Transação não autorizada.';
+            }
+        }
+        // pagamentos via fastcash e pagseguro
+        elseif ($pagamento_fastcash OR $pagamento_pagseguro){
 
             $query = "UPDATE P SET ID_MEIO_PAGAMENTO = M.ID_MEIO_PAGAMENTO, IN_SITUACAO = 'P'
                         FROM MW_PEDIDO_VENDA P, MW_MEIO_PAGAMENTO M

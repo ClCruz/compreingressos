@@ -1695,6 +1695,21 @@ function comboGenerico(array $dados, $selectedDados)
     return $opt;
 }
 
+function comboBanco($name, $selected) {
+    $mainConnection = mainConnection();
+    $result = executeSQL($mainConnection, 'SELECT CD_BANCO, DS_BANCO FROM MW_BANCO ORDER BY DS_BANCO');
+
+    $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione...</option>';
+    while ($rs = fetchResult($result)) {
+    $combo .= '<option value="' . $rs['CD_BANCO'] . '"' .
+        (($selected == $rs['CD_BANCO']) ? ' selected' : '') .
+        '>' . $rs['CD_BANCO'] . ' - ' . utf8_encode($rs['DS_BANCO']) . '</option>';
+    }
+    $combo .= '</select>';
+
+    return $combo;
+}
+
 // INICIO DOS COMBOS PARA O SISTEMA DE ASSINATURA (PACOTE) ------------------------------------------
 
 // combo para os eventos que podem ser pacote

@@ -56,7 +56,7 @@ executeSQL($mainConnection, 'INSERT INTO tab_log_gabriel (data, passo, parametro
 
 $sqlErrors = sqlErrors();
 if ($noErrors and empty($sqlErrors)) {
-	$session_id = (in_array($meio_pagamento, array('892', '893', '900', '901', '902')) ? $pedido_id : session_id());
+	$session_id = (in_array($meio_pagamento, array('892', '893', '900', '901', '902', '910', '911')) ? $pedido_id : session_id());
 
 	executeSQL($mainConnection, 'UPDATE MW_PROMOCAO SET ID_SESSION = NULL, ID_PEDIDO_VENDA = ? WHERE ID_SESSION = ?', array($pedido_id, $session_id));
 	executeSQL($mainConnection, 'DELETE MW_RESERVA WHERE ID_SESSION = ?', array($session_id));

@@ -5,13 +5,14 @@ require '../settings/pagarme/Pagarme.php';
 
 if ($_ENV['IS_TEST']) {
 	Pagarme::setApiKey("ak_test_uBiZIq85sOR5PAuPo8j9D591MQTghb");
-	$postback_url = 'http://homolog.compreingressos.com:8081/comprar/pagarme_receiver.php';
+	$postback_url = 'http://homolog.compreingressos.com/comprar/pagarme_receiver.php';
 } else {
 	Pagarme::setApiKey("ak_live_txaaA9BRk9Z8ibf3v9CmXnRiYjpBJB");
 	$postback_url = 'https://compra.compreingressos.com/comprar/pagarme_receiver.php';
 }
 
 function pagarPedidoPagarme($id_pedido, $dados_extra) {
+	global $postback_url;
 
 	$mainConnection = mainConnection();
 

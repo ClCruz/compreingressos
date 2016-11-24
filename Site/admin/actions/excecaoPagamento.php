@@ -1,5 +1,5 @@
 <?php
-if (acessoPermitido($mainConnection, $_SESSION['admin'], 460, true)) {
+if (acessoPermitido($mainConnection, $_SESSION['admin'], 480, true)) {
     
     function inserir_eventos_para_verificacao($conn, $eventos) {
         $query = 'INSERT INTO MW_EXCECAO_PAGAMENTO (ID_EVENTO) VALUES (?)';

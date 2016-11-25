@@ -42,14 +42,28 @@ if ($_POST) {
         } else{
             $queryAux = " AND IN_TRANSACAO_PDV <> 1 ";
         }
+
+        // se alguem evento tiver pagar.me ativo -----
+        $query = "SELECT TOP 1 EP.ID_EVENTO
+                    FROM MW_EXCECAO_PAGAMENTO EP
+                    INNER JOIN MW_EVENTO E ON E.ID_EVENTO = EP.ID_EVENTO
+                    INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
+                    INNER JOIN MW_RESERVA R ON R.ID_APRESENTACAO = A.ID_APRESENTACAO
+                    WHERE R.ID_SESSION = ?";
+        $rs = executeSQL($mainConnection, $query, $params, true);
+
+        $queryAux .= (!empty($rs['ID_EVENTO']) ? " AND id_gateway != 5 " : " AND id_gateway != 6 ");
+        // -------------------------------------------
         
     	$query = "SELECT cd_meio_pagamento, ds_meio_pagamento, nm_cartao_exibicao_site 
                       from mw_meio_pagamento
                       where in_ativo = 1 ". $queryAux ."
                       and (qt_hr_anteced <= $horas_antes_apresentacao or qt_hr_anteced is null)
                       ".
+                      // se for ambiente de testes nao limitar a exibicao dos meios
                       ($_ENV['IS_TEST']
                         ? ''
+                        // se nao for ambiente de testes exibir pagseguro apenas para teatros especificos
                         :  "and ((
                                 nm_cartao_exibicao_site like '%pagseguro%'
                                 and exists (select top 1 1 from mw_reserva r inner join mw_apresentacao a on a.id_apresentacao = r.ID_APRESENTACAO inner join mw_evento e on e.id_evento = a.id_evento where r.id_session = ? and e.id_base in (186,44))
@@ -97,6 +111,12 @@ if ($_POST) {
                     // pagseguro
                     if (in_array($rs['cd_meio_pagamento'], array('900', '901', '902'))) {
                         $carregar_pagseguro_lib = true;
+                        $formatoCartao = '00000000000000000000';
+                        $formatoCodigo = '0000';
+                    }
+                    // pagarme
+                    elseif (in_array($rs['cd_meio_pagamento'], array('910'))) {
+                        $carregar_pagarme_lib = true;
                         $formatoCartao = '00000000000000000000';
                         $formatoCodigo = '0000';
                     }

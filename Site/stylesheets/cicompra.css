@@ -1171,7 +1171,7 @@ div.container_cartoes div.inputs{
 div.container_cartao{
 	float:left;
 	width:148px;
-	height:110px;
+	height:140px;
 }
 
 div.img_cod_cartao, div.explicacao_envio_presente{
@@ -2822,4 +2822,13 @@ div.pague_agora div.icone {
 		width: 69% !important;
 		float: right !important;
 	}
+}
+
+a.botao.avancar.passo6.disabled {
+    background-image: url('../images/bot_avancar_disabled.png');
+    cursor: default;
+}
+
+a.botao.avancar.passo6.disabled:hover {
+    background-position: 0 0;
 }

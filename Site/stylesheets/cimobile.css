@@ -812,6 +812,7 @@ div.input_area.endereco .sbHolder, div.input_area.identificacao .sbHolder{
   }
   div.container_cartoes div.inputs div.container_cartao{
     width:100px;
+    height:80px;
   }
   #content div.container_cartoes div.container_cartao label.radio{
     width:78px;

@@ -199,7 +199,7 @@ function pagarPedidoPagSeguro($id_pedido, $dados_extra) {
 		executeSQL($mainConnection, $query, $params);
 
 	} catch (PagSeguroServiceException $e) {
-		$response = array('success' => false, 'error' => tratarErro($e));
+		$response = array('success' => false, 'error' => tratarErroPagseguro($e));
 	}
 
 	return $response;
@@ -259,7 +259,7 @@ function getNotificationPagSeguro($notificationCode) {
 		$response = array('success' => true, 'transaction' => $response);
 
 	} catch (PagSeguroServiceException $e) {
-		$response = array('success' => false, 'error' => tratarErro($e));
+		$response = array('success' => false, 'error' => tratarErroPagseguro($e));
 	}
 
 	return $response;
@@ -278,14 +278,14 @@ function estonarPedidoPagseguro($transactionCode) {
 
     } catch (PagSeguroServiceException $e) {
 
-        $response = array('success' => false, 'error' => tratarErro($e));
+        $response = array('success' => false, 'error' => tratarErroPagseguro($e));
 
     }
 
     return $response;
 }
 
-function tratarErro($error_obj) {
+function tratarErroPagseguro($error_obj) {
 	$nova_msg = '';
 
 	foreach ($error_obj->getErrors() as $e) {

@@ -5,7 +5,7 @@ include('../settings/Log.class.php');
 $mainConnection = mainConnection();
 session_start();
 
-if (acessoPermitido($mainConnection, $_SESSION['admin'], 460, true)) {
+if (acessoPermitido($mainConnection, $_SESSION['admin'], 480, true)) {
 
     $pagina = basename(__FILE__);
 
@@ -20,7 +20,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 460, true)) {
                                     FROM MW_EVENTO E
                                     INNER JOIN MW_BASE B ON B.ID_BASE = E.ID_BASE
                                     INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
-                                    WHERE E.IN_ANTI_FRAUDE = 1
+                                    INNER JOIN MW_EXCECAO_PAGAMENTO EP ON EP.ID_EVENTO = E.ID_EVENTO
                                     GROUP BY E.ID_EVENTO, E.DS_EVENTO, B.DS_NOME_TEATRO
                                     ORDER BY DS_EVENTO, DS_NOME_TEATRO");
 ?>
@@ -167,7 +167,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 460, true)) {
             Aguarde, este processamento poderá levar alguns minutos. Não saia da tela até a
             finalização do processamento.
         </div>
-        <h2>Anti-fraude - Eventos</h2>
+        <h2>Meio de Pagamento Alternativo (Pagar.me) - Eventos</h2>
         <form id="dados" name="dados" method="post">
             <input type="hidden" name="id" value="<?php echo $_GET['id']; ?>" />
             <table>
@@ -183,7 +183,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 460, true)) {
             <table class="ui-widget ui-widget-content">
                 <thead>
                     <tr class="ui-widget-header">
-                        <th class="nm_evento">Eventos Disponíveis / Fora do Anti-fraude</th>
+                        <th class="nm_evento">Eventos Braspag</th>
                         <th class="nm_local">Local</th>
                         <th class="data">Data Início</th>
                         <th class="data">Data Término</th>
@@ -202,7 +202,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 460, true)) {
             <table class="ui-widget ui-widget-content">
                 <thead>
                     <tr class="ui-widget-header">
-                        <th class="nm_evento">Eventos Selecionados</th>
+                        <th class="nm_evento">Eventos Pagar.me</th>
                         <th class="nm_local">Local</th>
                         <th class="data">Data Início</th>
                         <th class="data">Data Término</th>

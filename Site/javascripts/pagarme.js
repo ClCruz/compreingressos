@@ -10,9 +10,11 @@ $(function() {
         if ($this.is(':radio[value=910]')) {
             $inputs.on('pagarmeToken', pagarmeToken);
             $cardNumber.on('keyup', changeBrandImage);
+            $('.botao_pagamento').addClass('disabled');
         } else {
             $inputs.off('pagarmeToken');
             $cardNumber.off('keyup');
+            $('.botao_pagamento').removeClass('disabled');
         }
     });
     // $(":input[name=numCartao]").on('change', function(){$(this).trigger('pagseguroBrand')});
@@ -50,6 +52,7 @@ $(function() {
                         : $('<input type="hidden" name="card_hash" class="pagseguro" />').appendTo('#dadosPagamento');
 
                 $card_hash.val(cardHash);
+                $('.botao_pagamento').removeClass('disabled');
             });
 
             return true;

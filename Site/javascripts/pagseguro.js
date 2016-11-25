@@ -43,10 +43,12 @@ $(function(){
 						if ($this.is(':radio[value=902]')) {
 							$(":input[name=numCartao]").on('pagseguroBrand', pagseguroBrand);
 							$inputs.on('pagseguroToken', pagseguroToken);
+							$('.botao_pagamento').addClass('disabled');
 						} else {
 							$(":input[name=numCartao]").off('pagseguroBrand');
 							$inputs.off('pagseguroToken');
 							$(":input[name=parcelas] option").prop('disabled', false);
+							$('.botao_pagamento').removeClass('disabled');
 						}
 					});
 					$(":input[name=numCartao]").on('change', function(){$(this).trigger('pagseguroBrand')});
@@ -102,6 +104,7 @@ $(function(){
 						: $('<input type="hidden" name="cardToken" class="pagseguro" />').appendTo('#dadosPagamento');
 
 				$cardToken.val(data.card.token);
+				$('.botao_pagamento').removeClass('disabled');
 			},
 			error: function() {
 				$.dialog({text:'Dados do cartão inválidos. Favor conferir as informações fornecidas.'});

@@ -168,6 +168,9 @@ $(function(){
 
 	$('.botao_pagamento').on('click', function(e){
 		e.preventDefault();
+
+		if ($(this).is('.disabled')) return false;
+		
 		$('#dadosPagamento').submit();
 	});
 });

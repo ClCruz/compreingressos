@@ -2823,3 +2823,12 @@ div.pague_agora div.icone {
 		float: right !important;
 	}
 }
+
+a.botao.avancar.passo6.disabled {
+    background-image: url('../images/bot_avancar_disabled.png');
+    cursor: default;
+}
+
+a.botao.avancar.passo6.disabled:hover {
+    background-position: 0 0;
+}

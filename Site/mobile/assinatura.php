@@ -15,7 +15,7 @@ if($_POST['action'] == "consulta"){
     }        
     echo json_encode($combo);
     die();
-} else if ($_POST['action'] == "venda"){
+} else if ($_REQUEST['action'] == "venda"){
 
     if(!isset($_REQUEST["id_usuario"])){
         echo "<h1>Usuário Inválido!</h1>";

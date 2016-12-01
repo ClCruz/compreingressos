@@ -1,5 +1,5 @@
 $(function() {
-    PagarMe.encryption_key = $(':input[name=codCartao]:first').val() == '997' ? "ek_test_y3WSU81JUC3ZX7qREHtygudlGQ18fh" : "ek_live_9cN84e5UKDIketYC978oUtfWqcWC1w";
+    PagarMe.encryption_key = $(':input[name=codCartao]:first').val() == '997' ? "ek_test_1kUO9lWuHKVheioXt9aWhPu4GoBTn0" : "ek_live_77aQtiumwC1Gau3ac2z2FZlNHjaWkj";
 
     var $form = $("#dadosPagamento"),
         $inputs = $(":input[name=numCartao], :input[name=cardBrand], :input[name=codSeguranca], :input[name=validadeMes], :input[name=validadeAno]"),

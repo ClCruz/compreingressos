@@ -42,6 +42,9 @@ function getConnectionDw() {
 }
 
 function getConnectionHome() {
+
+	if ($_ENV['IS_TEST']) return false;
+	
 	/** Conexao Mysql Locaweb 
     $host = '186.202.34.139';
 	$port = '3306';

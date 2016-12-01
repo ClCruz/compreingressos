@@ -60,7 +60,7 @@ function getConnectionHome() {
 		$conn = false;
 	} **/
 
-	$host = 'ec2-54-233-143-51.sa-east-1.compute.amazonaws.com';
+	$host = '10.0.37.5';
 	$port = '3306';
 	$dbname = 'compreingressos_production';
 	$user = 'compreingressos';

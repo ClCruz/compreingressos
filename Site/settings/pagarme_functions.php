@@ -203,7 +203,10 @@ function estonarPedidoPagarme($id_pedido, $bank_data = array()) {
 
 	try {
 
-        $transaction->refund($bank_data);
+		if (empty($bank_data))
+        	$transaction->refund();
+        else
+        	$transaction->refund($bank_data);
 
 		$response = array('success' => true, 'transaction' => $transaction);
 

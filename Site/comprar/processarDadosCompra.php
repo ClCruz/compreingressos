@@ -10,6 +10,7 @@ require('acessoPermitido.php');
 
 require('../settings/pagseguro_functions.php');
 require('../settings/pagarme_functions.php');
+require('../settings/tipagos_functions.php');
 
 // reCAPTCHA v2 ---------------
 $post_data = http_build_query(array('secret'    => $recaptcha['private_key'],
@@ -272,52 +273,52 @@ if (hasRows($resultIdPedidoVenda)) {
 
     executeSQL($mainConnection, 'DELETE FROM MW_ITEM_PEDIDO_VENDA WHERE ID_PEDIDO_VENDA = ?', array($newMaxId));
 } else {
-	$prosseguir = false;
-	//enquanto ele não achar um id disponível (não duplicado) ele não para de tentar
-	while (!$prosseguir) {
-		$newMaxId = executeSQL($mainConnection, 'SELECT ISNULL(MAX(ID_PEDIDO_VENDA), 0) + 1 FROM MW_PEDIDO_VENDA', array(), true);
-		$newMaxId = $newMaxId[0];
+    $prosseguir = false;
+    //enquanto ele não achar um id disponível (não duplicado) ele não para de tentar
+    while (!$prosseguir) {
+        $newMaxId = executeSQL($mainConnection, 'SELECT ISNULL(MAX(ID_PEDIDO_VENDA), 0) + 1 FROM MW_PEDIDO_VENDA', array(), true);
+        $newMaxId = $newMaxId[0];
 
-		$query = 'INSERT INTO MW_PEDIDO_VENDA
-								(ID_PEDIDO_VENDA
-								,ID_CLIENTE
-								,ID_USUARIO_CALLCENTER
-								,DT_PEDIDO_VENDA
-								,VL_TOTAL_PEDIDO_VENDA
-								,IN_SITUACAO
-								,IN_RETIRA_ENTREGA
-								,VL_TOTAL_INGRESSOS
-								,VL_FRETE
-								,VL_TOTAL_TAXA_CONVENIENCIA';
-		$query .= ($entrega) ?
-								',DS_ENDERECO_ENTREGA
-								,NR_ENDERECO_ENTREGA
-								,DS_COMPL_ENDERECO_ENTREGA
-								,DS_BAIRRO_ENTREGA
-								,DS_CIDADE_ENTREGA
-								,ID_ESTADO
-								,CD_CEP_ENTREGA
-								,DS_CUIDADOS_DE' : '';
-		$query .= ',IN_SITUACAO_DESPACHO
-								,CD_BIN_CARTAO)
-								VALUES
-								(?, ?, ?, GETDATE(), ?, ?, ?, ?, ?, ?' .($entrega ? ', ?, ?, ?, ?, ?, ?, ?' : ''). ', ?, ?)';
+        $query = 'INSERT INTO MW_PEDIDO_VENDA
+                                (ID_PEDIDO_VENDA
+                                ,ID_CLIENTE
+                                ,ID_USUARIO_CALLCENTER
+                                ,DT_PEDIDO_VENDA
+                                ,VL_TOTAL_PEDIDO_VENDA
+                                ,IN_SITUACAO
+                                ,IN_RETIRA_ENTREGA
+                                ,VL_TOTAL_INGRESSOS
+                                ,VL_FRETE
+                                ,VL_TOTAL_TAXA_CONVENIENCIA';
+        $query .= ($entrega) ?
+                                ',DS_ENDERECO_ENTREGA
+                                ,NR_ENDERECO_ENTREGA
+                                ,DS_COMPL_ENDERECO_ENTREGA
+                                ,DS_BAIRRO_ENTREGA
+                                ,DS_CIDADE_ENTREGA
+                                ,ID_ESTADO
+                                ,CD_CEP_ENTREGA
+                                ,DS_CUIDADOS_DE' : '';
+        $query .= ',IN_SITUACAO_DESPACHO
+                                ,CD_BIN_CARTAO)
+                                VALUES
+                                (?, ?, ?, GETDATE(), ?, ?, ?, ?, ?, ?' .($entrega ? ', ?, ?, ?, ?, ?, ?, ?' : ''). ', ?, ?)';
 
-		if ($entrega) {
-			$params = array($newMaxId, $_SESSION['user'], $_SESSION['operador'], 0, 'P', ($entrega ? 'E' : 'R'), 0, $frete,
-							0, $parametros['CustomerData']['DeliveryAddressData']['Street'], $parametros['CustomerData']['DeliveryAddressData']['Complement'],
+        if ($entrega) {
+            $params = array($newMaxId, $_SESSION['user'], $_SESSION['operador'], 0, 'P', ($entrega ? 'E' : 'R'), 0, $frete,
+                            0, $parametros['CustomerData']['DeliveryAddressData']['Street'], $parametros['CustomerData']['DeliveryAddressData']['Complement'],
                             $parametros['CustomerData']['DeliveryAddressData']['Complement'],
-							$parametros['CustomerData']['CustomerAddressData']['District'], $parametros['CustomerData']['DeliveryAddressData']['City'], $idEstado,
+                            $parametros['CustomerData']['CustomerAddressData']['District'], $parametros['CustomerData']['DeliveryAddressData']['City'], $idEstado,
                             $parametros['CustomerData']['DeliveryAddressData']['ZipCode'],
-							($entrega ? $parametros['CustomerData']['CustomerName'] : ''), ($entrega ? 'D' : 'N'), $PaymentDataCollection['CardNumber']);
-		} else {
-			$params = array($newMaxId, $_SESSION['user'], $_SESSION['operador'], 0, 'P', ($entrega ? 'E' : 'R'), 0, $frete,
-							$totalConveniencia, ($entrega ? 'D' : 'N'), $PaymentDataCollection['CardNumber']);
-		}
-		
-		$prosseguir = executeSQL($mainConnection, $query, $params);
-	}
-	
+                            ($entrega ? $parametros['CustomerData']['CustomerName'] : ''), ($entrega ? 'D' : 'N'), $PaymentDataCollection['CardNumber']);
+        } else {
+            $params = array($newMaxId, $_SESSION['user'], $_SESSION['operador'], 0, 'P', ($entrega ? 'E' : 'R'), 0, $frete,
+                            $totalConveniencia, ($entrega ? 'D' : 'N'), $PaymentDataCollection['CardNumber']);
+        }
+        
+        $prosseguir = executeSQL($mainConnection, $query, $params);
+    }
+    
     $queryIdPedidoVenda = "update mw_reserva set id_pedido_venda = ? where id_session = ?";
     $resultIdPedidoVenda = executeSQL($mainConnection, $queryIdPedidoVenda, array($newMaxId, session_id()));
 
@@ -406,7 +407,7 @@ $params = array
 if ($itensPedido > 0) {
     $gravacao = executeSQL($mainConnection, $query, $params);
 } else {
-	executeSQL($mainConnection, 'DELETE FROM MW_PEDIDO_VENDA
+    executeSQL($mainConnection, 'DELETE FROM MW_PEDIDO_VENDA
                                     WHERE ID_PEDIDO_VENDA = ? AND ID_CLIENTE = ?', array($newMaxId, $_SESSION['user']));
 }
 
@@ -496,11 +497,12 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
     $pagamento_fastcash = in_array($_POST['codCartao'], array('892', '893'));
     $pagamento_pagseguro = in_array($_POST['codCartao'], array('900', '901', '902'));
     $pagamento_pagarme = in_array($_POST['codCartao'], array('910', '911'));
+    $pagamento_tipagos = in_array($_POST['codCartao'], array('998'));
     $pagamento_braspag = (!$pagamento_fastcash and !$pagamento_pagseguro and !$pagamento_pagarme);
     
     // pular o bloco abaixo para vendas pelo fastcash e pagseguro
     if ($_SESSION['usuario_pdv'] !== 1 and $PaymentDataCollection['Amount'] != 0 and $pagamento_braspag) {
-    	try {
+        try {
             executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
                 array($_SESSION['user'], json_encode(array('descricao' => '3. inicialização do pedido ' . $parametros['OrderData']['OrderId'], 'url' => $url_braspag)))
             );
@@ -707,6 +709,39 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
                 die("redirect.php?redirect=".urlencode("pagamento_pagseguro.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : '')));
             }
         }
+        //pagamentos via tipagos
+        elseif($pagamento_tipagos){
+            $query = "UPDATE P SET ID_MEIO_PAGAMENTO = M.ID_MEIO_PAGAMENTO, IN_SITUACAO = 'P'
+                        FROM MW_PEDIDO_VENDA P, MW_MEIO_PAGAMENTO M
+                        WHERE P.ID_PEDIDO_VENDA = ? AND M.CD_MEIO_PAGAMENTO = ?";
+            $params = array($parametros['OrderData']['OrderId'], $_POST['codCartao']);
+            $result = executeSQL($mainConnection, $query, $params);
+
+            $_POST['parcelas'] = $PaymentDataCollection['NumberOfPayments'];
+
+            $response = pagarPedidoTiPagos($parametros['OrderData']['OrderId'], $_POST);
+
+            if ($response['success'] AND $response['transaction']['retorno']['rc'] == '0') {
+
+
+                $result = new stdClass();
+
+                $result->AuthorizeTransactionResult->OrderData->BraspagOrderId = 'TiPagos';
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId = $response['transaction']->id;
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId = $response['transaction']['retorno']['nsuTipagos'];
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AuthorizationCode = $response['transaction']['retorno']['codAutorizacao'];
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->PaymentMethod = $_POST['codCartao'];
+
+                require('concretizarCompra.php');
+
+                // se necessario, replica os dados de assinatura e imprime url de redirecionamento
+                require('concretizarAssinatura.php');
+
+                die("redirect.php?redirect=".urlencode("pagamento_ok.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : '')));
+            } else{
+                die($response['error']['description']);
+            }
+        }
         // se for um usuario do pdv
         elseif(isset($_SESSION['usuario_pdv']) and $_SESSION['usuario_pdv'] == 1){
             require('concretizarCompra.php');
@@ -773,15 +808,15 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
 
     echo $descricao_erro;
     die();
-	
+    
 } else {
-	
-	$log = new Log($_SESSION['user']);
-	$log->__set('funcionalidade', 'compra middleway');
-	$log->__set('log', json_encode($parametros));
-	$log->save($mainConnection);
-	
-	echo "Ocorreu um erro inesperado.<br>Ajude a melhorar nosso serviço, entre em contato e reporte o erro.";
-	die();
-	
+    
+    $log = new Log($_SESSION['user']);
+    $log->__set('funcionalidade', 'compra middleway');
+    $log->__set('log', json_encode($parametros));
+    $log->save($mainConnection);
+    
+    echo "Ocorreu um erro inesperado.<br>Ajude a melhorar nosso serviço, entre em contato e reporte o erro.";
+    die();
+    
 }

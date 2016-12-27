@@ -118,7 +118,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
             // VENDAS PELO PDV, PEDIDOS FILHOS (DE ASSINATURAS), PEDIDOS COM INGRESSOS PROMOCIONAIS, VALOR 0 E FEITOS PELO POS NÃO SÃO ESTORNADAS DO BRASPAG
             $is_estorno_brasbag = ($pedido["IN_TRANSACAO_PDV"] == 0 and !$pedido["FILHO"] and ($pedido['INGRESSOS_PROMOCIONAIS'] == 0 and $pedido['VALOR'] != 0)
                                     and !($pedido_principal["BRASPAG_ID"] == 'POS' and isset($_POST['pos_serial'])) and $pedido_principal["BRASPAG_ID"] != 'Fastcash'
-                                    and $pedido_principal["ID_PEDIDO_IPAGARE"] != 'PagSeguro' and $pedido_principal["ID_PEDIDO_IPAGARE"] != 'Pagar.me');
+                                    and $pedido_principal["ID_PEDIDO_IPAGARE"] != 'PagSeguro' and $pedido_principal["ID_PEDIDO_IPAGARE"] != 'Pagar.me' and $pedido_principal["ID_PEDIDO_IPAGARE"] != 'TiPagos');
 
             $options = array(
                 'local_cert' => file_get_contents('../settings/cert.pem'),
@@ -278,6 +278,23 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                 }
             }
 
+            // tratamento para Tipagos
+            elseif ($pedido_principal["ID_PEDIDO_IPAGARE"] == 'TiPagos') {
+                require_once('../settings/tipagos_functions.php');
+
+                $response = estonarPedidoTiPagos($pedido['ID_PEDIDO_VENDA']);
+
+                if ($response['success']) {
+                    $resposta_geral = "Pedido cancelado/estornado.";
+                    $retorno = 'ok';
+                }  else {
+                    $resposta_geral = $response['error']."<br/><br/><b>Não foi possível efetuar o estorno junto à Operadora (TiPagos)</b>, 
+                                                por favor, efetue o procedimento de cancelamento junto a operadora manualmente.<br/><br/>
+                                                Os dados do sistema do Middleway foram atualizados com sucesso.";
+                    $force_system_refund = true;
+                }
+            }
+
             // tratamento para outros meios de pagamento
             else {
                 if ($pedido_principal["BRASPAG_ID"] == 'Fastcash') {
@@ -330,11 +347,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                                         INNER JOIN " . strtoupper($rs['DS_NOME_BASE_SQL']) . "..tabForPagamento G
                                                 ON G.CodForPagto = L1.CodForPagto
                                                 AND S.CodApresentacao = L1.CodApresentacao
-                                WHERE	(L1.CodTipLancamento = 1)
-                                AND		(S.CodVenda = ?)
-                                AND		(A.CodApresentacao = ?)
-                                AND		(S.codvenda is not null)
-                                AND		NOT EXISTS (SELECT 1 FROM " . strtoupper($rs['DS_NOME_BASE_SQL']) . "..TABLANCAMENTO L2 WHERE L2.NUMLANCAMENTO = L1.NUMLANCAMENTO AND L2.CODTIPLANCAMENTO = 2)
+                                WHERE   (L1.CodTipLancamento = 1)
+                                AND     (S.CodVenda = ?)
+                                AND     (A.CodApresentacao = ?)
+                                AND     (S.codvenda is not null)
+                                AND     NOT EXISTS (SELECT 1 FROM " . strtoupper($rs['DS_NOME_BASE_SQL']) . "..TABLANCAMENTO L2 WHERE L2.NUMLANCAMENTO = L1.NUMLANCAMENTO AND L2.CODTIPLANCAMENTO = 2)
                                 ORDER BY D.NomObjeto";
                         $params2 = array($rs['CODVENDA'], $rs['CODAPRESENTACAO']);
                         $indices = executeSQL($mainConnection, $query2, $params2);

@@ -16,26 +16,26 @@ function getSiteName() {
 function tempoRestante($stamp = false) {
     $mainConnection = mainConnection();
     $query = 'SELECT TOP 1
-				 CONVERT(VARCHAR(10), DT_VALIDADE, 103) DATA,  CONVERT(VARCHAR(8), DT_VALIDADE, 108) HORA
-				 FROM MW_RESERVA
-				 WHERE ID_SESSION = ?
-				 ORDER BY DT_VALIDADE';
+                 CONVERT(VARCHAR(10), DT_VALIDADE, 103) DATA,  CONVERT(VARCHAR(8), DT_VALIDADE, 108) HORA
+                 FROM MW_RESERVA
+                 WHERE ID_SESSION = ?
+                 ORDER BY DT_VALIDADE';
     $params = array(session_id());
     $rs = executeSQL($mainConnection, $query, $params, true);
 
     if ($stamp) {
-	return $rs['DATA'] . ' - ' . $rs['HORA'];
+    return $rs['DATA'] . ' - ' . $rs['HORA'];
     } else {
-	$data = explode('/', $rs['DATA']);
-	$hora = explode(':', $rs['HORA']);
+    $data = explode('/', $rs['DATA']);
+    $hora = explode(':', $rs['HORA']);
 
-	if (($data[1] - 1) < 0) {
-	    $retorno = '(new Date().getTime() + 3000)';
-	} else {
-	    $retorno = $data[2] . ',' . ($data[1] - 1) . ',' . $data[0] . ',' . $hora[0] . ',' . $hora[1] . ',' . $hora[2];
-	}
+    if (($data[1] - 1) < 0) {
+        $retorno = '(new Date().getTime() + 3000)';
+    } else {
+        $retorno = $data[2] . ',' . ($data[1] - 1) . ',' . $data[0] . ',' . $hora[0] . ',' . $hora[1] . ',' . $hora[2];
+    }
 
-	return $retorno;
+    return $retorno;
     }
 }
 
@@ -43,13 +43,13 @@ function extenderTempo($min = NULL) {
     require_once('../settings/settings.php');
 
     if ($min != NULL) {
-	$compraExpireTime = $min;
+    $compraExpireTime = $min;
     }
 
     $mainConnection = mainConnection();
     $query = 'UPDATE MW_RESERVA SET
-				 DT_VALIDADE = DATEADD(MI, ?, GETDATE())
-				 WHERE ID_SESSION = ?';
+                 DT_VALIDADE = DATEADD(MI, ?, GETDATE())
+                 WHERE ID_SESSION = ?';
     $params = array($compraExpireTime, session_id());
 
     $result = executeSQL($mainConnection, $query, $params) ? 'true' : 'false';
@@ -61,39 +61,39 @@ function verificarLimitePorCPF($conn, $codApresentacao, $user) {
     $mainConnection = mainConnection();
 
     if (isset($user)) {
-	$rs = executeSQL($mainConnection, 'SELECT CD_CPF FROM MW_CLIENTE WHERE ID_CLIENTE = ?', array($user), true);
-	$cpf = $rs[0];
+    $rs = executeSQL($mainConnection, 'SELECT CD_CPF FROM MW_CLIENTE WHERE ID_CLIENTE = ?', array($user), true);
+    $cpf = $rs[0];
 
-	$query = 'SELECT (
-						 SELECT ISNULL(QT_INGRESSOS_POR_CPF, 0)
-						 FROM TABAPRESENTACAO A
-						 INNER JOIN TABPECA P ON P.CODPECA = A.CODPECA
-						 WHERE A.CODAPRESENTACAO = ?
-					 ) AS QT_INGRESSOS_POR_CPF, (
-						 SELECT SUM(CASE H.CODTIPLANCAMENTO WHEN 1 THEN 1 ELSE -1 END)
-						 FROM TABCLIENTE C
-						 INNER JOIN TABHISCLIENTE H ON H.CODIGO = C.CODIGO AND H.CODAPRESENTACAO = 1878
-						 WHERE C.CPF = ?
-					 ) AS QTDVENDIDO';
-	$result = executeSQL($conn, $query, array($codApresentacao, $cpf));
+    $query = 'SELECT (
+                         SELECT ISNULL(QT_INGRESSOS_POR_CPF, 0)
+                         FROM TABAPRESENTACAO A
+                         INNER JOIN TABPECA P ON P.CODPECA = A.CODPECA
+                         WHERE A.CODAPRESENTACAO = ?
+                     ) AS QT_INGRESSOS_POR_CPF, (
+                         SELECT SUM(CASE H.CODTIPLANCAMENTO WHEN 1 THEN 1 ELSE -1 END)
+                         FROM TABCLIENTE C
+                         INNER JOIN TABHISCLIENTE H ON H.CODIGO = C.CODIGO AND H.CODAPRESENTACAO = 1878
+                         WHERE C.CPF = ?
+                     ) AS QTDVENDIDO';
+    $result = executeSQL($conn, $query, array($codApresentacao, $cpf));
 
-	if (hasRows($result)) {
-	    $rs = fetchResult($result);
-	    if ($rs['QT_INGRESSOS_POR_CPF'] != 0 and $rs['QT_INGRESSOS_POR_CPF'] <= $rs['QTDVENDIDO']) {
-		return 'Caro Sr(a)., este evento permite apenas ' . $rs['QT_INGRESSOS_POR_CPF'] . '
-						ingresso(s) por CPF. Seu saldo para compras é de ' . ($rs['QT_INGRESSOS_POR_CPF'] - $rs['QTDVENDIDO']) . '
-						ingresso(s).';
-	    }
-	}
+    if (hasRows($result)) {
+        $rs = fetchResult($result);
+        if ($rs['QT_INGRESSOS_POR_CPF'] != 0 and $rs['QT_INGRESSOS_POR_CPF'] <= $rs['QTDVENDIDO']) {
+        return 'Caro Sr(a)., este evento permite apenas ' . $rs['QT_INGRESSOS_POR_CPF'] . '
+                        ingresso(s) por CPF. Seu saldo para compras é de ' . ($rs['QT_INGRESSOS_POR_CPF'] - $rs['QTDVENDIDO']) . '
+                        ingresso(s).';
+        }
+    }
     }
     return NULL;
 }
 
 function obterValorServico($id_bilhete, $valor_pedido = false, $id_pedido = null, $is_pos = false) {
 
-	$mainConnection = mainConnection();
+    $mainConnection = mainConnection();
         session_start();
-	if ($id_pedido != null) {
+    if ($id_pedido != null) {
             $query = 'SELECT TOP 1
                         TC.IN_TAXA_POR_PEDIDO,
                         PV.VL_TOTAL_TAXA_CONVENIENCIA,
@@ -123,7 +123,7 @@ function obterValorServico($id_bilhete, $valor_pedido = false, $id_pedido = null
             $rs = executeSQL($mainConnection, $query, $params, true);
 
             $valor = ($_SESSION['usuario_pdv'] == 1) ? ($rs['IN_COBRAR_PDV'] == 'S') ? $rs['VL_TAXA_CONVENIENCIA'] : 0 : $rs['VL_TAXA_CONVENIENCIA'];
-	} else {                        
+    } else {                        
             $query = 'SELECT
                         E.ID_BASE,
                         E.ID_EVENTO
@@ -177,7 +177,7 @@ function obterValorServico($id_bilhete, $valor_pedido = false, $id_pedido = null
                         CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB
                       INNER JOIN TABTIPBILHETE TTB ON TTB.CODTIPBILHETE = AB.CODTIPBILHETE
                       LEFT JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = TTB.ID_PROMOCAO_CONTROLE
-                      	AND PC.IN_ATIVO = 1
+                        AND PC.IN_ATIVO = 1
                       WHERE
                         AB.IN_ATIVO = 1
                         AND AB.ID_APRESENTACAO_BILHETE = ?';
@@ -242,56 +242,56 @@ function obterValorServico($id_bilhete, $valor_pedido = false, $id_pedido = null
                 }
             }
 
-	}
-	return number_format($valor, 2);
+    }
+    return number_format($valor, 2);
 }
 
 function obterValorPercentualServicoPorPedido() {
 
-	$mainConnection = mainConnection();
-	session_start();
-	$soma = 0;
+    $mainConnection = mainConnection();
+    session_start();
+    $soma = 0;
 
-	$query = 'SELECT R.ID_APRESENTACAO_BILHETE, E.ID_BASE, TC.VL_TAXA_CONVENIENCIA, TC.VL_TAXA_PROMOCIONAL
-				FROM MW_RESERVA R
-				INNER JOIN MW_APRESENTACAO A ON R.ID_APRESENTACAO = A.ID_APRESENTACAO
-				INNER JOIN MW_EVENTO E ON A.ID_EVENTO = E.ID_EVENTO
-				INNER JOIN MW_TAXA_CONVENIENCIA TC ON TC.ID_EVENTO = E.ID_EVENTO
-					AND TC.DT_INICIO_VIGENCIA = (SELECT MAX(DT_INICIO_VIGENCIA) FROM MW_TAXA_CONVENIENCIA TC2 WHERE TC2.ID_EVENTO = TC.ID_EVENTO AND TC2.DT_INICIO_VIGENCIA <= GETDATE())
-				WHERE R.ID_SESSION = ? AND R.DT_VALIDADE >= GETDATE()';
-	$params = array(session_id());
-	$result = executeSQL($mainConnection, $query, $params);
+    $query = 'SELECT R.ID_APRESENTACAO_BILHETE, E.ID_BASE, TC.VL_TAXA_CONVENIENCIA, TC.VL_TAXA_PROMOCIONAL
+                FROM MW_RESERVA R
+                INNER JOIN MW_APRESENTACAO A ON R.ID_APRESENTACAO = A.ID_APRESENTACAO
+                INNER JOIN MW_EVENTO E ON A.ID_EVENTO = E.ID_EVENTO
+                INNER JOIN MW_TAXA_CONVENIENCIA TC ON TC.ID_EVENTO = E.ID_EVENTO
+                    AND TC.DT_INICIO_VIGENCIA = (SELECT MAX(DT_INICIO_VIGENCIA) FROM MW_TAXA_CONVENIENCIA TC2 WHERE TC2.ID_EVENTO = TC.ID_EVENTO AND TC2.DT_INICIO_VIGENCIA <= GETDATE())
+                WHERE R.ID_SESSION = ? AND R.DT_VALIDADE >= GETDATE()';
+    $params = array(session_id());
+    $result = executeSQL($mainConnection, $query, $params);
 
-	while ($rs = fetchResult($result)) {
-		$id_bilhete = $rs['ID_APRESENTACAO_BILHETE'];
-		$normal = $rs['VL_TAXA_CONVENIENCIA'];
-		$promo = $rs['VL_TAXA_PROMOCIONAL'];
-		$conn = getConnection($rs['ID_BASE']);
+    while ($rs = fetchResult($result)) {
+        $id_bilhete = $rs['ID_APRESENTACAO_BILHETE'];
+        $normal = $rs['VL_TAXA_CONVENIENCIA'];
+        $promo = $rs['VL_TAXA_PROMOCIONAL'];
+        $conn = getConnection($rs['ID_BASE']);
 
-		$query = 'SELECT AB.VL_LIQUIDO_INGRESSO, PC.ID_PROMOCAO_CONTROLE
-					FROM CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB
+        $query = 'SELECT AB.VL_LIQUIDO_INGRESSO, PC.ID_PROMOCAO_CONTROLE
+                    FROM CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB
                       LEFT JOIN TABTIPBILHETE TTB ON TTB.CODTIPBILHETE = AB.CODTIPBILHETE
                       LEFT JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE PC ON PC.ID_PROMOCAO_CONTROLE = TTB.ID_PROMOCAO_CONTROLE
-                      	AND PC.IN_ATIVO = 1 AND PC.CODTIPPROMOCAO = 4
-					WHERE AB.IN_ATIVO = 1
-					AND AB.ID_APRESENTACAO_BILHETE = ?';
-		$params = array($id_bilhete);
-		$rs = executeSQL($conn, $query, $params, true);
+                        AND PC.IN_ATIVO = 1 AND PC.CODTIPPROMOCAO = 4
+                    WHERE AB.IN_ATIVO = 1
+                    AND AB.ID_APRESENTACAO_BILHETE = ?';
+        $params = array($id_bilhete);
+        $rs = executeSQL($conn, $query, $params, true);
 
-		$soma += (is_null($rs['ID_PROMOCAO_CONTROLE']) ? ($normal / 100) * $rs['VL_LIQUIDO_INGRESSO'] : ($promo / 100) * $rs['VL_LIQUIDO_INGRESSO']);
-	}
+        $soma += (is_null($rs['ID_PROMOCAO_CONTROLE']) ? ($normal / 100) * $rs['VL_LIQUIDO_INGRESSO'] : ($promo / 100) * $rs['VL_LIQUIDO_INGRESSO']);
+    }
 
-	return $soma;
+    return $soma;
 }
 
 function enviarEmailNovaConta ($login, $nome, $email) {
 
-	$subject = 'Aviso de Acesso';
-	$from = '';
-	$namefrom = 'COMPREINGRESSOS.COM - AGENCIA DE VENDA DE INGRESSOS';
+    $subject = 'Aviso de Acesso';
+    $from = '';
+    $namefrom = 'COMPREINGRESSOS.COM - AGENCIA DE VENDA DE INGRESSOS';
 
-	//define the body of the message.
-	ob_start(); //Turn on output buffering
+    //define the body of the message.
+    ob_start(); //Turn on output buffering
 ?>
 <p>&nbsp;</p>
 <div style="background-color: rgb(255, 255, 255); padding-top: 5px; padding-right: 5px; padding-bottom: 5px; padding-left: 5px; margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; ">
@@ -304,9 +304,9 @@ function enviarEmailNovaConta ($login, $nome, $email) {
 <p style="text-align: left; margin-left: 40px; font-family: Arial, Verdana, sans-serif; font-size: 12px; "><span style="color: rgb(98, 97, 97); "><span style="font-family: Verdana; "><span style="font-size: 10pt; ">Para efetuar o login voc&ecirc; deve utilizar as seguintes informa&ccedil;&otilde;es:</span></span></span></p>
 <p style="text-align: left; margin-left: 40px; font-family: Arial, Verdana, sans-serif; font-size: 12px; "><em><span style="font-size: small; "><span style="color: rgb(97, 97, 98); "><span style="font-family: Verdana, sans-serif; ">
 <ul>
-	<li>URL: <a href="https://compra.compreingressos.com/admin/">https://compra.compreingressos.com/admin/</a></li>
-	<li>Usu&aacute;rio: <?php echo $login; ?></li>
-	<li>Senha: 123456</li>
+    <li>URL: <a href="https://compra.compreingressos.com/admin/">https://compra.compreingressos.com/admin/</a></li>
+    <li>Usu&aacute;rio: <?php echo $login; ?></li>
+    <li>Senha: 123456</li>
 </ul>
 </span></span></span></em></p>
 <div style="line-height: normal; margin-left: 40px; "><strong><em><?php echo $novaSenha; ?></em></strong></div>
@@ -322,192 +322,192 @@ function enviarEmailNovaConta ($login, $nome, $email) {
 </div>
 <p>&nbsp;</p>
 <?php
-	//copy current buffer contents into $message variable and delete current output buffer
-	$message = ob_get_clean();
-	return authSendEmail($from, $namefrom, $email, $nome, $subject, $message);
+    //copy current buffer contents into $message variable and delete current output buffer
+    $message = ob_get_clean();
+    return authSendEmail($from, $namefrom, $email, $nome, $subject, $message);
 }
 
 function getTotalMeiaEntrada ($apresentacao) {
-	$mainConnection = mainConnection();
-	$total = 0;
+    $mainConnection = mainConnection();
+    $total = 0;
 
-	$query = 'SELECT e.id_base
-				from mw_evento e
-				inner join mw_apresentacao a on e.id_evento = a.id_evento
-				where a.id_apresentacao = ?';
-	$rs = executeSQL($mainConnection, $query, array($apresentacao), true);
+    $query = 'SELECT e.id_base
+                from mw_evento e
+                inner join mw_apresentacao a on e.id_evento = a.id_evento
+                where a.id_apresentacao = ?';
+    $rs = executeSQL($mainConnection, $query, array($apresentacao), true);
 
-	$conn = getConnection($rs['id_base']);
+    $conn = getConnection($rs['id_base']);
 
-	$query = "SELECT StaCalculoMeiaEstudante, CotaMeiaEstudante, StaCalculoPorSala
-				from tabTipBilhete
-				where StaTipBilhMeiaEstudante = 'S' and StaTipBilhete = 'A'
-				and CodTipBilhete in (select CodTipBilhete from ci_middleway..mw_apresentacao_bilhete where id_apresentacao = ? AND IN_ATIVO = 1)";
-	$rs = executeSQL($conn, $query, array($apresentacao), true);
+    $query = "SELECT StaCalculoMeiaEstudante, CotaMeiaEstudante, StaCalculoPorSala
+                from tabTipBilhete
+                where StaTipBilhMeiaEstudante = 'S' and StaTipBilhete = 'A'
+                and CodTipBilhete in (select CodTipBilhete from ci_middleway..mw_apresentacao_bilhete where id_apresentacao = ? AND IN_ATIVO = 1)";
+    $rs = executeSQL($conn, $query, array($apresentacao), true);
 
-	if ($rs['StaCalculoMeiaEstudante'] == 'P') {
-		if ($rs['StaCalculoPorSala'] == 'S') {
-			$query = "SELECT COALESCE(COUNT(tsd.Indice), 0) as TOTAL FROM tabSalDetalhe tsd
-						INNER JOIN tabApresentacao ta ON ta.CodSala = tsd.CodSala
-						INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.CodApresentacao = ta.CodApresentacao
-						WHERE A.ID_APRESENTACAO = ? AND A.IN_ATIVO = 1 AND tsd.TipObjeto <> 'I'";
-			$params = array($apresentacao);
-		} else {
-			$query = "SELECT COALESCE(COUNT(tsd.Indice), 0) as TOTAL FROM tabSalDetalhe tsd
-						INNER JOIN tabApresentacao ta ON ta.CodSala = tsd.CodSala
-						INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.CodApresentacao = ta.CodApresentacao
-						WHERE A.ID_EVENTO = (SELECT ID_EVENTO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = 1)
-						AND A.DT_APRESENTACAO = (SELECT DT_APRESENTACAO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = 1)
-						AND A.HR_APRESENTACAO = (SELECT HR_APRESENTACAO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = 1)
-						AND A.IN_ATIVO = 1
-						AND tsd.TipObjeto <> 'I'";
-			$params = array($apresentacao, $apresentacao, $apresentacao);
-		}
-		
-		$rs2 = executeSQL($conn, $query, $params, true);
+    if ($rs['StaCalculoMeiaEstudante'] == 'P') {
+        if ($rs['StaCalculoPorSala'] == 'S') {
+            $query = "SELECT COALESCE(COUNT(tsd.Indice), 0) as TOTAL FROM tabSalDetalhe tsd
+                        INNER JOIN tabApresentacao ta ON ta.CodSala = tsd.CodSala
+                        INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.CodApresentacao = ta.CodApresentacao
+                        WHERE A.ID_APRESENTACAO = ? AND A.IN_ATIVO = 1 AND tsd.TipObjeto <> 'I'";
+            $params = array($apresentacao);
+        } else {
+            $query = "SELECT COALESCE(COUNT(tsd.Indice), 0) as TOTAL FROM tabSalDetalhe tsd
+                        INNER JOIN tabApresentacao ta ON ta.CodSala = tsd.CodSala
+                        INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.CodApresentacao = ta.CodApresentacao
+                        WHERE A.ID_EVENTO = (SELECT ID_EVENTO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = 1)
+                        AND A.DT_APRESENTACAO = (SELECT DT_APRESENTACAO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = 1)
+                        AND A.HR_APRESENTACAO = (SELECT HR_APRESENTACAO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = 1)
+                        AND A.IN_ATIVO = 1
+                        AND tsd.TipObjeto <> 'I'";
+            $params = array($apresentacao, $apresentacao, $apresentacao);
+        }
+        
+        $rs2 = executeSQL($conn, $query, $params, true);
 
-		$total = ceil($rs2['TOTAL'] * ($rs['CotaMeiaEstudante'] / 100));
-	} else if ($rs['StaCalculoMeiaEstudante'] == 'Q') {
-		$total = $rs['CotaMeiaEstudante'];
-	}
+        $total = ceil($rs2['TOTAL'] * ($rs['CotaMeiaEstudante'] / 100));
+    } else if ($rs['StaCalculoMeiaEstudante'] == 'Q') {
+        $total = $rs['CotaMeiaEstudante'];
+    }
 
-	return $total;
+    return $total;
 }
 
 function getTotalMeiaEntradaDisponivel ($apresentacao) {
-	$mainConnection = mainConnection();
-	$total = 0;
+    $mainConnection = mainConnection();
+    $total = 0;
 
-	$query = 'SELECT e.id_base
-				from mw_evento e
-				inner join mw_apresentacao a on e.id_evento = a.id_evento
-				where a.id_apresentacao = ?';
-	$rs = executeSQL($mainConnection, $query, array($apresentacao), true);
+    $query = 'SELECT e.id_base
+                from mw_evento e
+                inner join mw_apresentacao a on e.id_evento = a.id_evento
+                where a.id_apresentacao = ?';
+    $rs = executeSQL($mainConnection, $query, array($apresentacao), true);
 
-	$conn = getConnection($rs['id_base']);
+    $conn = getConnection($rs['id_base']);
 
-	$query = "SELECT StaCalculoPorSala
-				from tabTipBilhete
-				where StaTipBilhMeiaEstudante = 'S' and StaTipBilhete = 'A'
-				and CodTipBilhete in (select CodTipBilhete from ci_middleway..mw_apresentacao_bilhete where id_apresentacao = ?)";
-	$rs = executeSQL($conn, $query, array($apresentacao), true);
+    $query = "SELECT StaCalculoPorSala
+                from tabTipBilhete
+                where StaTipBilhMeiaEstudante = 'S' and StaTipBilhete = 'A'
+                and CodTipBilhete in (select CodTipBilhete from ci_middleway..mw_apresentacao_bilhete where id_apresentacao = ?)";
+    $rs = executeSQL($conn, $query, array($apresentacao), true);
 
-	if ($rs['StaCalculoPorSala'] == 'S') {
-		$query = "SELECT COALESCE(COUNT(TLS.INDICE),0) AS TOTAL FROM TABLUGSALA TLS
-					INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.CODAPRESENTACAO = TLS.CODAPRESENTACAO
-					INNER JOIN TABTIPBILHETE TTB ON TTB.CODTIPBILHETE = TLS.CODTIPBILHETE
-					WHERE TLS.CODAPRESENTACAO IN (SELECT CODAPRESENTACAO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = A.ID_APRESENTACAO AND IN_ATIVO = 1)
-					AND TLS.CODTIPBILHETE IN (SELECT CODTIPBILHETE FROM CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE WHERE ID_APRESENTACAO = A.ID_APRESENTACAO)
-					AND TTB.STATIPBILHMEIAESTUDANTE = 'S' AND TTB.STATIPBILHETE = 'A' AND A.ID_APRESENTACAO = ? AND TLS.CODVENDACOMPLMEIA IS NULL";
-		$params = array($apresentacao);
-	} else {
-		$query = "SELECT COALESCE(COUNT(TLS.INDICE),0) AS TOTAL FROM TABLUGSALA TLS
-					INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.CODAPRESENTACAO = TLS.CODAPRESENTACAO
-					INNER JOIN TABTIPBILHETE TTB ON TTB.CODTIPBILHETE = TLS.CODTIPBILHETE
-					WHERE A.ID_EVENTO = (SELECT ID_EVENTO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = 1)
-					AND A.DT_APRESENTACAO = (SELECT DT_APRESENTACAO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = 1)
-					AND A.HR_APRESENTACAO = (SELECT HR_APRESENTACAO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = 1)
-					AND A.IN_ATIVO = 1
-					AND TLS.CODAPRESENTACAO IN (SELECT CODAPRESENTACAO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = A.ID_APRESENTACAO AND IN_ATIVO = 1)
-					AND TLS.CODTIPBILHETE IN (SELECT CODTIPBILHETE FROM CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE WHERE ID_APRESENTACAO = A.ID_APRESENTACAO)
-					AND TTB.STATIPBILHMEIAESTUDANTE = 'S' AND TTB.STATIPBILHETE = 'A' AND TLS.CODVENDACOMPLMEIA IS NULL";
-		$params = array($apresentacao, $apresentacao, $apresentacao);
-	}
-	
-	$rs = executeSQL($conn, $query, $params, true);
+    if ($rs['StaCalculoPorSala'] == 'S') {
+        $query = "SELECT COALESCE(COUNT(TLS.INDICE),0) AS TOTAL FROM TABLUGSALA TLS
+                    INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.CODAPRESENTACAO = TLS.CODAPRESENTACAO
+                    INNER JOIN TABTIPBILHETE TTB ON TTB.CODTIPBILHETE = TLS.CODTIPBILHETE
+                    WHERE TLS.CODAPRESENTACAO IN (SELECT CODAPRESENTACAO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = A.ID_APRESENTACAO AND IN_ATIVO = 1)
+                    AND TLS.CODTIPBILHETE IN (SELECT CODTIPBILHETE FROM CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE WHERE ID_APRESENTACAO = A.ID_APRESENTACAO)
+                    AND TTB.STATIPBILHMEIAESTUDANTE = 'S' AND TTB.STATIPBILHETE = 'A' AND A.ID_APRESENTACAO = ? AND TLS.CODVENDACOMPLMEIA IS NULL";
+        $params = array($apresentacao);
+    } else {
+        $query = "SELECT COALESCE(COUNT(TLS.INDICE),0) AS TOTAL FROM TABLUGSALA TLS
+                    INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.CODAPRESENTACAO = TLS.CODAPRESENTACAO
+                    INNER JOIN TABTIPBILHETE TTB ON TTB.CODTIPBILHETE = TLS.CODTIPBILHETE
+                    WHERE A.ID_EVENTO = (SELECT ID_EVENTO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = 1)
+                    AND A.DT_APRESENTACAO = (SELECT DT_APRESENTACAO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = 1)
+                    AND A.HR_APRESENTACAO = (SELECT HR_APRESENTACAO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = 1)
+                    AND A.IN_ATIVO = 1
+                    AND TLS.CODAPRESENTACAO IN (SELECT CODAPRESENTACAO FROM CI_MIDDLEWAY..MW_APRESENTACAO WHERE ID_APRESENTACAO = A.ID_APRESENTACAO AND IN_ATIVO = 1)
+                    AND TLS.CODTIPBILHETE IN (SELECT CODTIPBILHETE FROM CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE WHERE ID_APRESENTACAO = A.ID_APRESENTACAO)
+                    AND TTB.STATIPBILHMEIAESTUDANTE = 'S' AND TTB.STATIPBILHETE = 'A' AND TLS.CODVENDACOMPLMEIA IS NULL";
+        $params = array($apresentacao, $apresentacao, $apresentacao);
+    }
+    
+    $rs = executeSQL($conn, $query, $params, true);
 
-	return getTotalMeiaEntrada($apresentacao) - $rs['TOTAL'];
+    return getTotalMeiaEntrada($apresentacao) - $rs['TOTAL'];
 }
 
 function getCaixaTotalMeiaEntrada($apresentacao) {
-	$mainConnection = mainConnection();
+    $mainConnection = mainConnection();
 
-	$query = 'SELECT e.id_base
-				from mw_evento e
-				inner join mw_apresentacao a on e.id_evento = a.id_evento
-				where a.id_apresentacao = ?';
-	$rs = executeSQL($mainConnection, $query, array($apresentacao), true);
+    $query = 'SELECT e.id_base
+                from mw_evento e
+                inner join mw_apresentacao a on e.id_evento = a.id_evento
+                where a.id_apresentacao = ?';
+    $rs = executeSQL($mainConnection, $query, array($apresentacao), true);
 
-	$conn = getConnection($rs['id_base']);
+    $conn = getConnection($rs['id_base']);
 
-	$query = "SELECT StaCalculoPorSala
-				from tabTipBilhete
-				where StaTipBilhMeiaEstudante = 'S' and StaTipBilhete = 'A'
-				and CodTipBilhete in (select CodTipBilhete from ci_middleway..mw_apresentacao_bilhete where id_apresentacao = ? and in_ativo = 1)";
-	$rs = executeSQL($conn, $query, array($apresentacao), true);
+    $query = "SELECT StaCalculoPorSala
+                from tabTipBilhete
+                where StaTipBilhMeiaEstudante = 'S' and StaTipBilhete = 'A'
+                and CodTipBilhete in (select CodTipBilhete from ci_middleway..mw_apresentacao_bilhete where id_apresentacao = ? and in_ativo = 1)";
+    $rs = executeSQL($conn, $query, array($apresentacao), true);
 
-	if ($rs['StaCalculoPorSala'] == 'S') {
-		$t = getTotalMeiaEntradaDisponivel($apresentacao);
-		$t = ($t < 0 ? 0 : $t);
+    if ($rs['StaCalculoPorSala'] == 'S') {
+        $t = getTotalMeiaEntradaDisponivel($apresentacao);
+        $t = ($t < 0 ? 0 : $t);
 
-		$html = "<p>Existem <b><span class='contagem-meia'>" . $t . "</span></b> de <b><span>" . getTotalMeiaEntrada($apresentacao) . "</span></b> ingressos disponíveis para <a href='http://www.compreingressos.com/meia_entrada.html' target='_blank'>meia-entrada</a>.</p>";
-	} else {
-		$html = '';
-	}
+        $html = "<p>Existem <b><span class='contagem-meia'>" . $t . "</span></b> de <b><span>" . getTotalMeiaEntrada($apresentacao) . "</span></b> ingressos disponíveis para <a href='http://www.compreingressos.com/meia_entrada.html' target='_blank'>meia-entrada</a>.</p>";
+    } else {
+        $html = '';
+    }
 
-	return $html;
+    return $html;
 }
 
 function getTotalLote ($bilhete) {
-	$mainConnection = mainConnection();
-	$total = 0;
+    $mainConnection = mainConnection();
+    $total = 0;
 
-	$query = 'SELECT e.id_base
-				from mw_evento e
-				inner join mw_apresentacao a on e.id_evento = a.id_evento
-				inner join mw_apresentacao_bilhete ab on ab.id_apresentacao = a.id_apresentacao
-				where ab.id_apresentacao_bilhete = ?';
-	$rs = executeSQL($mainConnection, $query, array($bilhete), true);
+    $query = 'SELECT e.id_base
+                from mw_evento e
+                inner join mw_apresentacao a on e.id_evento = a.id_evento
+                inner join mw_apresentacao_bilhete ab on ab.id_apresentacao = a.id_apresentacao
+                where ab.id_apresentacao_bilhete = ?';
+    $rs = executeSQL($mainConnection, $query, array($bilhete), true);
 
-	$conn = getConnection($rs['id_base']);
+    $conn = getConnection($rs['id_base']);
 
-	$query = "SELECT ttb.QtdVendaPorLote
-				from tabTipBilhete ttb
-				inner join ci_middleway..mw_apresentacao_bilhete ab on ab.CodTipBilhete = ttb.CodTipBilhete
-				where ttb.QTDVENDAPORLOTE > 0 and ttb.StaTipBilhMeiaEstudante = 'N' and ttb.StaTipBilhete = 'A'
-				and ab.id_apresentacao_bilhete = ? and ab.IN_ATIVO = 1";
-	$rs = executeSQL($conn, $query, array($bilhete), true);
+    $query = "SELECT ttb.QtdVendaPorLote
+                from tabTipBilhete ttb
+                inner join ci_middleway..mw_apresentacao_bilhete ab on ab.CodTipBilhete = ttb.CodTipBilhete
+                where ttb.QTDVENDAPORLOTE > 0 and ttb.StaTipBilhMeiaEstudante = 'N' and ttb.StaTipBilhete = 'A'
+                and ab.id_apresentacao_bilhete = ? and ab.IN_ATIVO = 1";
+    $rs = executeSQL($conn, $query, array($bilhete), true);
 
-	return $rs['QtdVendaPorLote'];
+    return $rs['QtdVendaPorLote'];
 }
 
 function getTotalLoteDisponivel ($bilhete) {
-	$mainConnection = mainConnection();
-	$total = 0;
+    $mainConnection = mainConnection();
+    $total = 0;
 
     $query = 'SELECT e.id_base, A.ID_EVENTO, CONVERT(VARCHAR, A.DT_APRESENTACAO, 112) DT_APRESENTACAO, A.HR_APRESENTACAO, AB.CODTIPBILHETE
-				from mw_evento e
-				inner join mw_apresentacao a on e.id_evento = a.id_evento
-				inner join mw_apresentacao_bilhete ab on ab.id_apresentacao = a.id_apresentacao
-				where ab.id_apresentacao_bilhete = ?';
-	$rs = executeSQL($mainConnection, $query, array($bilhete), true);
+                from mw_evento e
+                inner join mw_apresentacao a on e.id_evento = a.id_evento
+                inner join mw_apresentacao_bilhete ab on ab.id_apresentacao = a.id_apresentacao
+                where ab.id_apresentacao_bilhete = ?';
+    $rs = executeSQL($mainConnection, $query, array($bilhete), true);
 
-	$conn = getConnection($rs['id_base']);
-	
-	$query = "SELECT COALESCE(COUNT(TLS.INDICE),0) AS TOTAL FROM TABLUGSALA TLS
-				INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.CODAPRESENTACAO = TLS.CODAPRESENTACAO
-				INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO = A.ID_APRESENTACAO AND TLS.CODTIPBILHETE = AB.CODTIPBILHETE
-				INNER JOIN TABTIPBILHETE TTB ON TTB.CODTIPBILHETE = AB.CODTIPBILHETE
-				WHERE A.ID_EVENTO = ? AND A.DT_APRESENTACAO = ? AND A.HR_APRESENTACAO = ?
-				AND A.IN_ATIVO = 1 AND AB.IN_ATIVO = 1 AND TTB.CODTIPBILHETE = ?
-				AND TTB.QTDVENDAPORLOTE > 0 AND TTB.STATIPBILHMEIAESTUDANTE = 'N' AND TTB.STATIPBILHETE = 'A'";
-	$params = array($bilhete);
-	$rs = executeSQL($conn, $query, array($rs['ID_EVENTO'], $rs['DT_APRESENTACAO'], $rs['HR_APRESENTACAO'], $rs['CODTIPBILHETE']), true);
+    $conn = getConnection($rs['id_base']);
+    
+    $query = "SELECT COALESCE(COUNT(TLS.INDICE),0) AS TOTAL FROM TABLUGSALA TLS
+                INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO A ON A.CODAPRESENTACAO = TLS.CODAPRESENTACAO
+                INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB ON AB.ID_APRESENTACAO = A.ID_APRESENTACAO AND TLS.CODTIPBILHETE = AB.CODTIPBILHETE
+                INNER JOIN TABTIPBILHETE TTB ON TTB.CODTIPBILHETE = AB.CODTIPBILHETE
+                WHERE A.ID_EVENTO = ? AND A.DT_APRESENTACAO = ? AND A.HR_APRESENTACAO = ?
+                AND A.IN_ATIVO = 1 AND AB.IN_ATIVO = 1 AND TTB.CODTIPBILHETE = ?
+                AND TTB.QTDVENDAPORLOTE > 0 AND TTB.STATIPBILHMEIAESTUDANTE = 'N' AND TTB.STATIPBILHETE = 'A'";
+    $params = array($bilhete);
+    $rs = executeSQL($conn, $query, array($rs['ID_EVENTO'], $rs['DT_APRESENTACAO'], $rs['HR_APRESENTACAO'], $rs['CODTIPBILHETE']), true);
 
-	return getTotalLote($bilhete) - $rs['TOTAL'];
+    return getTotalLote($bilhete) - $rs['TOTAL'];
 }
 
 function getURLApresentacaoAtual() {
-	$mainConnection = mainConnection();
+    $mainConnection = mainConnection();
 
-	$query = 'SELECT A.ID_APRESENTACAO, E.DS_EVENTO
-				from mw_evento e
-				inner join mw_apresentacao a on e.id_evento = a.id_evento
-				inner join mw_reserva r on r.id_apresentacao = a.id_apresentacao
-				where r.id_session = ?';
-	$rs = executeSQL($mainConnection, $query, array(session_id()), true);
+    $query = 'SELECT A.ID_APRESENTACAO, E.DS_EVENTO
+                from mw_evento e
+                inner join mw_apresentacao a on e.id_evento = a.id_evento
+                inner join mw_reserva r on r.id_apresentacao = a.id_apresentacao
+                where r.id_session = ?';
+    $rs = executeSQL($mainConnection, $query, array(session_id()), true);
 
-	return 'etapa1.php?apresentacao='.$rs['ID_APRESENTACAO'].'&eventoDS='.utf8_encode($rs['DS_EVENTO']);
+    return 'etapa1.php?apresentacao='.$rs['ID_APRESENTACAO'].'&eventoDS='.utf8_encode($rs['DS_EVENTO']);
 }
 
 function getPrimeiroValorAssinatura($id_usuario, $id_assinatura) {
@@ -588,15 +588,15 @@ function rollbackTransaction($conn) {
 
 function executeSQL($conn, $strSql, $params = array(), $returnRs = false) {
     if (empty($params)) {
-	$result = sqlsrv_query($conn, $strSql);
+    $result = sqlsrv_query($conn, $strSql);
     } else {
-	$result = sqlsrv_query($conn, $strSql, $params);
+    $result = sqlsrv_query($conn, $strSql, $params);
     }
 
     if ($returnRs) {
-	return fetchResult($result);
+    return fetchResult($result);
     } else {
-	return $result;
+    return $result;
     }
 }
 
@@ -622,18 +622,18 @@ function fetchResult($result, $fetchType = SQLSRV_FETCH_BOTH) {
 
 function numRows($conn, $strSql, $params = array()) {
     if (empty($params)) {
-	$result = sqlsrv_query($conn, $strSql, $params, array("Scrollable" => SQLSRV_CURSOR_KEYSET));
+    $result = sqlsrv_query($conn, $strSql, $params, array("Scrollable" => SQLSRV_CURSOR_KEYSET));
     } else {
-	$result = sqlsrv_query($conn, $strSql, $params, array("Scrollable" => SQLSRV_CURSOR_KEYSET));
+    $result = sqlsrv_query($conn, $strSql, $params, array("Scrollable" => SQLSRV_CURSOR_KEYSET));
     }
     return sqlsrv_num_rows($result);
 }
 
 function hasRows($result, $returnNum = false) {
     if ($returnNum) {
-	return sqlsrv_num_rows($result);
+    return sqlsrv_num_rows($result);
     } else {
-	return sqlsrv_has_rows($result);
+    return sqlsrv_has_rows($result);
     }
 }
 
@@ -645,7 +645,7 @@ function comboRegiaoGeografica($name) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione uma regi&atilde;o...</option>';
     while ($rs = fetchResult($result)) {
-	$combo .= '<option value="' . $rs['ID_REGIAO_GEOGRAFICA'] . '">' . utf8_encode($rs['DS_REGIAO_GEOGRAFICA']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_REGIAO_GEOGRAFICA'] . '">' . utf8_encode($rs['DS_REGIAO_GEOGRAFICA']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -657,9 +657,9 @@ function comboEvento($name, $teatro, $selected, $paramns = array())
     if ( isset($paramns['emcartaz']) )
     {
         $queryCartaz = "SELECT 
-	                    DISTINCT(A.ID_EVENTO) 
-	                    --, MAX(A.dt_apresentacao) AS DT_APRESENTACAO
-	                    , B.DS_EVENTO
+                        DISTINCT(A.ID_EVENTO) 
+                        --, MAX(A.dt_apresentacao) AS DT_APRESENTACAO
+                        , B.DS_EVENTO
                         FROM mw_apresentacao AS A 
                         INNER JOIN mw_evento AS B ON A.id_evento = B.id_evento
                         WHERE B.id_base = ? AND A.in_ativo = '1'
@@ -677,9 +677,9 @@ function comboEvento($name, $teatro, $selected, $paramns = array())
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um evento...</option>';
     while ($rs = fetchResult($result)) {
-	$combo .= '<option value="' . $rs['ID_EVENTO'] . '"' .
-		(($selected == $rs['ID_EVENTO']) ? ' selected' : '') .
-		'>' . str_replace("'", "\'", utf8_encode($rs['DS_EVENTO'])) . '</option>';
+    $combo .= '<option value="' . $rs['ID_EVENTO'] . '"' .
+        (($selected == $rs['ID_EVENTO']) ? ' selected' : '') .
+        '>' . str_replace("'", "\'", utf8_encode($rs['DS_EVENTO'])) . '</option>';
     }
     $combo .= '</select>';
 
@@ -695,9 +695,9 @@ function comboEventoPermissao($name, $params, $selected) {
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um evento...</option>';
 
     while ($rs = fetchResult($result)) {
-	$combo .= '<option value="' . $rs['ID_EVENTO'] . '"' .
-		(($selected == $rs['ID_EVENTO']) ? ' selected' : '') .
-		'>' . utf8_encode($rs['DS_EVENTO']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_EVENTO'] . '"' .
+        (($selected == $rs['ID_EVENTO']) ? ' selected' : '') .
+        '>' . utf8_encode($rs['DS_EVENTO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -711,13 +711,13 @@ function comboEstado($name, $selected, $extenso = false, $isCombo = true, $extra
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '" ' . $extraProp . '><option value="">'.($shortText ? 'UF' : 'Selecione um estado...').'</option>';
     while ($rs = fetchResult($result)) {
-	if (($selected == $rs['ID_ESTADO'])) {
-	    $isSelected = 'selected';
-	    $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode($rs[(($extenso) ? 'DS_ESTADO' : 'SG_ESTADO')]) . '</span>';
-	} else {
-	    $isSelected = '';
-	}
-	$combo .= '<option value="' . $rs['ID_ESTADO'] . '"' . $isSelected . '>' . utf8_encode($rs[(($extenso) ? 'DS_ESTADO' : 'SG_ESTADO')]) . '</option>';
+    if (($selected == $rs['ID_ESTADO'])) {
+        $isSelected = 'selected';
+        $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode($rs[(($extenso) ? 'DS_ESTADO' : 'SG_ESTADO')]) . '</span>';
+    } else {
+        $isSelected = '';
+    }
+    $combo .= '<option value="' . $rs['ID_ESTADO'] . '"' . $isSelected . '>' . utf8_encode($rs[(($extenso) ? 'DS_ESTADO' : 'SG_ESTADO')]) . '</option>';
     }
     $combo .= '</select>';
 
@@ -731,18 +731,18 @@ function comboEstadoOptions($name, $selected, $extenso = false, $isCombo = true)
 
     $combo = '<option value="">Selecione um estado...</option>';
     while ($rs = fetchResult($result)) {
-	if (($selected == $rs['ID_ESTADO'])) {
-	    $isSelected = 'selected';
-	    $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode($rs[(($extenso) ? 'DS_ESTADO' : 'SG_ESTADO')]) . '</span>';
-	} else {
-	    $isSelected = '';
-	}
-	$combo .= '<option value="' . $rs['ID_ESTADO'] . '"' . $isSelected . '>' . utf8_encode($rs[(($extenso) ? 'DS_ESTADO' : 'SG_ESTADO')]) . '</option>';
+    if (($selected == $rs['ID_ESTADO'])) {
+        $isSelected = 'selected';
+        $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode($rs[(($extenso) ? 'DS_ESTADO' : 'SG_ESTADO')]) . '</span>';
+    } else {
+        $isSelected = '';
+    }
+    $combo .= '<option value="' . $rs['ID_ESTADO'] . '"' . $isSelected . '>' . utf8_encode($rs[(($extenso) ? 'DS_ESTADO' : 'SG_ESTADO')]) . '</option>';
     }
     if (sqlErrors ())
-	return print_r(sqlErrors());
+    return print_r(sqlErrors());
     else
-	return $isCombo ? $combo : $text;
+    return $isCombo ? $combo : $text;
 }
 
 function comboMunicipio($name, $selected, $idEstado, $isCombo = true) {
@@ -753,18 +753,18 @@ function comboMunicipio($name, $selected, $idEstado, $isCombo = true) {
 
     $combo = '<option value="">Selecione um município...</option>';
     while ($rs = fetchResult($result)) {
-	if (($selected == $rs['ID_MUNICIPIO'])) {
-	    $isSelected = 'selected';
-	    $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode($rs["DS_MUNICIPIO"]) . '</span>';
-	} else {
-	    $isSelected = '';
-	}
-	$combo .= '<option value="' . $rs['ID_MUNICIPIO'] . '"' . $isSelected . '>' . utf8_encode($rs["DS_MUNICIPIO"]) . '</option>';
+    if (($selected == $rs['ID_MUNICIPIO'])) {
+        $isSelected = 'selected';
+        $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode($rs["DS_MUNICIPIO"]) . '</span>';
+    } else {
+        $isSelected = '';
+    }
+    $combo .= '<option value="' . $rs['ID_MUNICIPIO'] . '"' . $isSelected . '>' . utf8_encode($rs["DS_MUNICIPIO"]) . '</option>';
     }
     if (sqlErrors ())
-	return print_r(sqlErrors()) . print_r($params);
+    return print_r(sqlErrors()) . print_r($params);
     else
-	return $isCombo ? $combo : $text;
+    return $isCombo ? $combo : $text;
 }
 
 function comboTipoLocal($name, $selected, $isCombo = true) {
@@ -774,13 +774,13 @@ function comboTipoLocal($name, $selected, $isCombo = true) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um tipo...</option>';
     while ($rs = fetchResult($result)) {
-	if (($selected == $rs['ID_TIPO_LOCAL'])) {
-	    $isSelected = 'selected';
-	    $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode($rs["DS_TIPO_LOCAL"]) . '</span>';
-	} else {
-	    $isSelected = '';
-	}
-	$combo .= '<option value="' . $rs['ID_TIPO_LOCAL'] . '"' . $isSelected . '>' . utf8_encode($rs["DS_TIPO_LOCAL"]) . '</option>';
+    if (($selected == $rs['ID_TIPO_LOCAL'])) {
+        $isSelected = 'selected';
+        $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode($rs["DS_TIPO_LOCAL"]) . '</span>';
+    } else {
+        $isSelected = '';
+    }
+    $combo .= '<option value="' . $rs['ID_TIPO_LOCAL'] . '"' . $isSelected . '>' . utf8_encode($rs["DS_TIPO_LOCAL"]) . '</option>';
     }
     $combo .= '</select>';
 
@@ -794,13 +794,13 @@ function comboTipoLocalOptions($name, $selected, $isCombo = true) {
 
     $combo = '<option value="">Selecione um tipo...</option>';
     while ($rs = fetchResult($result)) {
-	if (($selected == $rs['ID_TIPO_LOCAL'])) {
-	    $isSelected = 'selected';
-	    $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode($rs["DS_TIPO_LOCAL"]) . '</span>';
-	} else {
-	    $isSelected = '';
-	}
-	$combo .= '<option value="' . $rs['ID_TIPO_LOCAL'] . '"' . $isSelected . '>' . utf8_encode($rs["DS_TIPO_LOCAL"]) . '</option>';
+    if (($selected == $rs['ID_TIPO_LOCAL'])) {
+        $isSelected = 'selected';
+        $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode($rs["DS_TIPO_LOCAL"]) . '</span>';
+    } else {
+        $isSelected = '';
+    }
+    $combo .= '<option value="' . $rs['ID_TIPO_LOCAL'] . '"' . $isSelected . '>' . utf8_encode($rs["DS_TIPO_LOCAL"]) . '</option>';
     }
 
     return $isCombo ? $combo : $text;
@@ -811,11 +811,11 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
     $mainConnection = mainConnection();
 
     $query = 'SELECT B.ID_BASE, E.ID_EVENTO
-				 FROM
-				 MW_BASE B
-				 INNER JOIN MW_EVENTO E ON E.ID_BASE = B.ID_BASE
-				 INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
-				 WHERE A.ID_APRESENTACAO = ?';
+                 FROM
+                 MW_BASE B
+                 INNER JOIN MW_EVENTO E ON E.ID_BASE = B.ID_BASE
+                 INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
+                 WHERE A.ID_APRESENTACAO = ?';
     $params = array($apresentacaoID);
     $rs = executeSQL($mainConnection, $query, $params, true);
 
@@ -824,99 +824,99 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
     $id_evento = $rs['ID_EVENTO'];
 
     $query = "SELECT COUNT(1) AS MEIA_ESTUDANTE
-				FROM TABTIPBILHETE B
-				INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB ON AB.CODTIPBILHETE = B.CODTIPBILHETE
-				INNER JOIN CI_MIDDLEWAY..MW_RESERVA R ON AB.ID_APRESENTACAO = R.ID_APRESENTACAO
-				AND AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
-				WHERE B.STATIPBILHMEIAESTUDANTE = 'S' AND B.STATIPBILHETE = 'A'
-				AND R.ID_SESSION = ?";
+                FROM TABTIPBILHETE B
+                INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB ON AB.CODTIPBILHETE = B.CODTIPBILHETE
+                INNER JOIN CI_MIDDLEWAY..MW_RESERVA R ON AB.ID_APRESENTACAO = R.ID_APRESENTACAO
+                AND AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
+                WHERE B.STATIPBILHMEIAESTUDANTE = 'S' AND B.STATIPBILHETE = 'A'
+                AND R.ID_SESSION = ?";
     $rs2 = executeSQL($conn, $query, array(session_id()), true);
 
     $ocultarMeiaEstudante = (getTotalMeiaEntradaDisponivel($apresentacaoID) <= 0 and $rs2['MEIA_ESTUDANTE'] == 0) ? "AND (B.STATIPBILHMEIAESTUDANTE <> 'S' OR B.STATIPBILHMEIAESTUDANTE IS NULL) " : '';
 
     $query = "SELECT B.CODTIPBILHETE
-				FROM TABTIPBILHETE B
-				INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB ON AB.CODTIPBILHETE = B.CODTIPBILHETE
-				INNER JOIN CI_MIDDLEWAY..MW_RESERVA R ON AB.ID_APRESENTACAO = R.ID_APRESENTACAO
-				AND AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
-				WHERE B.STATIPBILHMEIAESTUDANTE = 'N' AND B.STATIPBILHETE = 'A' AND B.QTDVENDAPORLOTE > 0
-				AND R.ID_SESSION = ?";
+                FROM TABTIPBILHETE B
+                INNER JOIN CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB ON AB.CODTIPBILHETE = B.CODTIPBILHETE
+                INNER JOIN CI_MIDDLEWAY..MW_RESERVA R ON AB.ID_APRESENTACAO = R.ID_APRESENTACAO
+                AND AB.ID_APRESENTACAO_BILHETE = R.ID_APRESENTACAO_BILHETE
+                WHERE B.STATIPBILHMEIAESTUDANTE = 'N' AND B.STATIPBILHETE = 'A' AND B.QTDVENDAPORLOTE > 0
+                AND R.ID_SESSION = ?";
     $result = executeSQL($conn, $query, array(session_id()));
 
     $bilhetes_lote_no_carrinho = array();
     while ($rs = fetchResult($result)) {
-    	$bilhetes_lote_no_carrinho[] = $rs['CODTIPBILHETE'];
+        $bilhetes_lote_no_carrinho[] = $rs['CODTIPBILHETE'];
     }
 
     $ocultarLote = (getTotalLoteDisponivel($apresentacaoID) <= 0 and $rs2['LOTE'] == 0) ? true : false;
 
-    $query = "SELECT	ID_APRESENTACAO_BILHETE,
-					    AB.CODTIPBILHETE,
-					    AB.DS_TIPO_BILHETE,
-					    VL_LIQUIDO_INGRESSO,
-					    PC.CODTIPPROMOCAO,
-					    ISNULL(CE.QT_PROMO_POR_CPF, ISNULL(PC.QT_PROMO_POR_CPF, 0)) AS QT_PROMO_POR_CPF,
-					    B.STATIPBILHMEIAESTUDANTE,
-					    B.QTDVENDAPORLOTE,
-					    B.IMG1PROMOCAO,
-					    B.IMG2PROMOCAO,
-					    A.ID_EVENTO,
-						B.ID_PROMOCAO_CONTROLE,
-					    B.IN_HOT_SITE,
+    $query = "SELECT    ID_APRESENTACAO_BILHETE,
+                        AB.CODTIPBILHETE,
+                        AB.DS_TIPO_BILHETE,
+                        VL_LIQUIDO_INGRESSO,
+                        PC.CODTIPPROMOCAO,
+                        ISNULL(CE.QT_PROMO_POR_CPF, ISNULL(PC.QT_PROMO_POR_CPF, 0)) AS QT_PROMO_POR_CPF,
+                        B.STATIPBILHMEIAESTUDANTE,
+                        B.QTDVENDAPORLOTE,
+                        B.IMG1PROMOCAO,
+                        B.IMG2PROMOCAO,
+                        A.ID_EVENTO,
+                        B.ID_PROMOCAO_CONTROLE,
+                        B.IN_HOT_SITE,
                         PC.IN_EXIBICAO
-				FROM
-				 CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB 
-				 INNER JOIN 
-				 CI_MIDDLEWAY..MW_APRESENTACAO   A
-				 ON A.ID_APRESENTACAO = AB.ID_APRESENTACAO
-				 INNER JOIN 
-				 CI_MIDDLEWAY..MW_EVENTO   E
-				 ON E.ID_EVENTO = A.ID_EVENTO
-				 INNER JOIN
-				 TABTIPBILHETE B
-				 ON	 B.CODTIPBILHETE = AB.CODTIPBILHETE
-				 AND B.IN_VENDA_SITE = 1
-				 AND 0 = CASE DATEPART(W, A.DT_APRESENTACAO)
-							WHEN 1 THEN IN_DOM 
-							WHEN 2 THEN IN_SEG 
-							WHEN 3 THEN IN_TER 
-							WHEN 4 THEN IN_QUA 
-							WHEN 5 THEN IN_QUI 
-							WHEN 6 THEN IN_SEX 
-							ELSE IN_SAB
-							END
-				LEFT JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE PC
-				 ON PC.ID_PROMOCAO_CONTROLE = B.ID_PROMOCAO_CONTROLE
+                FROM
+                 CI_MIDDLEWAY..MW_APRESENTACAO_BILHETE AB 
+                 INNER JOIN 
+                 CI_MIDDLEWAY..MW_APRESENTACAO   A
+                 ON A.ID_APRESENTACAO = AB.ID_APRESENTACAO
+                 INNER JOIN 
+                 CI_MIDDLEWAY..MW_EVENTO   E
+                 ON E.ID_EVENTO = A.ID_EVENTO
+                 INNER JOIN
+                 TABTIPBILHETE B
+                 ON  B.CODTIPBILHETE = AB.CODTIPBILHETE
+                 AND B.IN_VENDA_SITE = 1
+                 AND 0 = CASE DATEPART(W, A.DT_APRESENTACAO)
+                            WHEN 1 THEN IN_DOM 
+                            WHEN 2 THEN IN_SEG 
+                            WHEN 3 THEN IN_TER 
+                            WHEN 4 THEN IN_QUA 
+                            WHEN 5 THEN IN_QUI 
+                            WHEN 6 THEN IN_SEX 
+                            ELSE IN_SAB
+                            END
+                LEFT JOIN CI_MIDDLEWAY..MW_PROMOCAO_CONTROLE PC
+                 ON PC.ID_PROMOCAO_CONTROLE = B.ID_PROMOCAO_CONTROLE
                 LEFT JOIN CI_MIDDLEWAY..MW_CONTROLE_EVENTO CE
                  ON CE.ID_PROMOCAO_CONTROLE = PC.ID_PROMOCAO_CONTROLE
                  AND CE.ID_EVENTO = E.ID_EVENTO
-				WHERE AB.ID_APRESENTACAO = ? 
-				AND AB.IN_ATIVO = '1'
-				AND NOT EXISTS (SELECT 1 FROM 
-						TABAPRESENTACAO AP
-						INNER JOIN
-						TABRESTRICAOBILHETE R
-						ON AP.CODPECA = R.CODPECA
-						AND AP.CODSALA = R.CODSALA
-						AND R.CODSETOR IS NULL
-					 WHERE AB.CODTIPBILHETE = R.CODTIPBILHETE
-					   AND AP.CODAPRESENTACAO = A.CODAPRESENTACAO)
-				AND NOT EXISTS (SELECT 1 FROM 
-						TABAPRESENTACAO AP
-						INNER JOIN
-						TABRESTRICAOBILHETE R
-						ON AP.CODPECA = R.CODPECA
-						AND AP.CODSALA = R.CODSALA
-						INNER JOIN
-						TABSALDETALHE D
-						ON D.CODSALA = AP.CODSALA
-						AND D.INDICE  = ?
-						AND D.CODSETOR = R.CODSETOR
-				WHERE AB.CODTIPBILHETE = R.CODTIPBILHETE
-				   AND AP.CODAPRESENTACAO = A.CODAPRESENTACAO)
-					$ocultarMeiaEstudante
-				ORDER BY AB.DS_TIPO_BILHETE";
-				
+                WHERE AB.ID_APRESENTACAO = ? 
+                AND AB.IN_ATIVO = '1'
+                AND NOT EXISTS (SELECT 1 FROM 
+                        TABAPRESENTACAO AP
+                        INNER JOIN
+                        TABRESTRICAOBILHETE R
+                        ON AP.CODPECA = R.CODPECA
+                        AND AP.CODSALA = R.CODSALA
+                        AND R.CODSETOR IS NULL
+                     WHERE AB.CODTIPBILHETE = R.CODTIPBILHETE
+                       AND AP.CODAPRESENTACAO = A.CODAPRESENTACAO)
+                AND NOT EXISTS (SELECT 1 FROM 
+                        TABAPRESENTACAO AP
+                        INNER JOIN
+                        TABRESTRICAOBILHETE R
+                        ON AP.CODPECA = R.CODPECA
+                        AND AP.CODSALA = R.CODSALA
+                        INNER JOIN
+                        TABSALDETALHE D
+                        ON D.CODSALA = AP.CODSALA
+                        AND D.INDICE  = ?
+                        AND D.CODSETOR = R.CODSETOR
+                WHERE AB.CODTIPBILHETE = R.CODTIPBILHETE
+                   AND AP.CODAPRESENTACAO = A.CODAPRESENTACAO)
+                    $ocultarMeiaEstudante
+                ORDER BY AB.DS_TIPO_BILHETE";
+                
     $result = executeSQL($conn, $query, array($apresentacaoID, $idCadeira));
 
     $combo = '<select name="' . $name . '" class="' . $name . ' inputStyle">';
@@ -926,43 +926,43 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 
     while ($rs = fetchResult($result)) {
 
-    	if (
-    		(in_array($id_evento, explode(',', $_COOKIE['hotsite'])) and $rs['IN_HOT_SITE'] == '1')
-    		or
-    		(!in_array($id_evento, explode(',', $_COOKIE['hotsite'])) and $rs['IN_HOT_SITE'] != '1')
-    		) {
-    		// bilhetes que passarem na validacao serao exibidos
-    	} else {
-    		// ignorar bilhetes que sejam de hotsite durante o acesso normal
-    		// ignorar bilhetes normais em eventos acessados via hotsite
-    		continue;
-    	}
+        if (
+            (in_array($id_evento, explode(',', $_COOKIE['hotsite'])) and $rs['IN_HOT_SITE'] == '1')
+            or
+            (!in_array($id_evento, explode(',', $_COOKIE['hotsite'])) and $rs['IN_HOT_SITE'] != '1')
+            ) {
+            // bilhetes que passarem na validacao serao exibidos
+        } else {
+            // ignorar bilhetes que sejam de hotsite durante o acesso normal
+            // ignorar bilhetes normais em eventos acessados via hotsite
+            continue;
+        }
 
-    	$is_lote = $rs['QTDVENDAPORLOTE'] > 0 and $rs['STATIPBILHMEIAESTUDANTE'] == 'N';
-    	$is_lote_disponivel = getTotalLoteDisponivel($rs['ID_APRESENTACAO_BILHETE']) > 0;
-    	$is_lote_no_carrinho = in_array($rs['CODTIPBILHETE'], $bilhetes_lote_no_carrinho);
+        $is_lote = $rs['QTDVENDAPORLOTE'] > 0 and $rs['STATIPBILHMEIAESTUDANTE'] == 'N';
+        $is_lote_disponivel = getTotalLoteDisponivel($rs['ID_APRESENTACAO_BILHETE']) > 0;
+        $is_lote_no_carrinho = in_array($rs['CODTIPBILHETE'], $bilhetes_lote_no_carrinho);
 
-		// ignorar lote se nao estiver disponivel, desde que o cliente nao tenha o bilhete no carrinho
-    	if (!$is_lote
-    		or ($is_lote and $is_lote_disponivel)
-    		or ($is_lote and $is_lote_no_carrinho)) {
-			
-			// se for bin itau
-			if (in_array($rs['CODTIPPROMOCAO'], array(4, 7))) {
-				$rs['IMG1PROMOCAO'] = '../images/promocional/' . basename($rs['IMG1PROMOCAO']);
-				$rs['IMG2PROMOCAO'] = '../images/promocional/' . basename($rs['IMG2PROMOCAO']);
+        // ignorar lote se nao estiver disponivel, desde que o cliente nao tenha o bilhete no carrinho
+        if (!$is_lote
+            or ($is_lote and $is_lote_disponivel)
+            or ($is_lote and $is_lote_no_carrinho)) {
+            
+            // se for bin itau
+            if (in_array($rs['CODTIPPROMOCAO'], array(4, 7))) {
+                $rs['IMG1PROMOCAO'] = '../images/promocional/' . basename($rs['IMG1PROMOCAO']);
+                $rs['IMG2PROMOCAO'] = '../images/promocional/' . basename($rs['IMG2PROMOCAO']);
 
-				$BIN = 'qtBin="' . $rs['QT_PROMO_POR_CPF'] . '" codeBin="' . $rs['ID_PROMOCAO_CONTROLE'] .
-						'" img1="' . $rs['IMG1PROMOCAO'] . '" img2="' . $rs['IMG2PROMOCAO'] . '" sizeBin="6"';
-				$promocao = '';
+                $BIN = 'qtBin="' . $rs['QT_PROMO_POR_CPF'] . '" codeBin="' . $rs['ID_PROMOCAO_CONTROLE'] .
+                        '" img1="' . $rs['IMG1PROMOCAO'] . '" img2="' . $rs['IMG2PROMOCAO'] . '" sizeBin="6"';
+                $promocao = '';
 
                 $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['qtBin'] = $rs['QT_PROMO_POR_CPF'];
                 $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['codeBin'] = $rs['ID_PROMOCAO_CONTROLE'];
                 $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['img1'] = $rs['IMG1PROMOCAO'];
                 $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['img2'] = $rs['IMG2PROMOCAO'];
 
-			// outras promocoes
-			} elseif ($rs['CODTIPPROMOCAO'] != NULL) {
+            // outras promocoes
+            } elseif ($rs['CODTIPPROMOCAO'] != NULL) {
 
                 if ($rs['IMG1PROMOCAO'] === '') {
                     $imgs = 'img1="" img2="" ';
@@ -1031,52 +1031,52 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
                     $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['codPreValidado'] = $rs_assinatura['CD_CPF'];
                 }
 
-				$BIN = '';
-				$promocao = 'qtPromocao="' . $rs['QT_PROMO_POR_CPF'] . '" codPromocao="'.$rs['ID_PROMOCAO_CONTROLE'] . '" sizeBin="32" ' . $imgs;
+                $BIN = '';
+                $promocao = 'qtPromocao="' . $rs['QT_PROMO_POR_CPF'] . '" codPromocao="'.$rs['ID_PROMOCAO_CONTROLE'] . '" sizeBin="32" ' . $imgs;
 
                 $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['qtPromocao'] = $rs['QT_PROMO_POR_CPF'];
                 $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['codPromocao'] = $rs['ID_PROMOCAO_CONTROLE'];
                 $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['img1'] = '../images/promocional/' . basename($rs['IMG1PROMOCAO']);
                 $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['img2'] = '../images/promocional/' . basename($rs['IMG2PROMOCAO']);
 
-			// nem bin itau e nem codigo promocional
-			} else {
-				$BIN = $promocao = '';
-			}
+            // nem bin itau e nem codigo promocional
+            } else {
+                $BIN = $promocao = '';
+            }
 
-			$meia_estudante = $rs['STATIPBILHMEIAESTUDANTE'] == 'S' ? ' meia_estudante="1"' : '';
+            $meia_estudante = $rs['STATIPBILHMEIAESTUDANTE'] == 'S' ? ' meia_estudante="1"' : '';
             $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['meia_estudante'] = ($rs['STATIPBILHMEIAESTUDANTE'] == 'S');
 
-			$lote = ($rs['QTDVENDAPORLOTE'] > 0 and $rs['STATIPBILHMEIAESTUDANTE'] == 'N') ? ' lote="1"' : '';
+            $lote = ($rs['QTDVENDAPORLOTE'] > 0 and $rs['STATIPBILHMEIAESTUDANTE'] == 'N') ? ' lote="1"' : '';
             $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['lote'] = ($rs['QTDVENDAPORLOTE'] > 0 and $rs['STATIPBILHMEIAESTUDANTE'] == 'N');
 
             $tipoPromo = ' tipoPromo="'.$rs['CODTIPPROMOCAO'].'"';
 
-			if (($selected == $rs['ID_APRESENTACAO_BILHETE'])) {
-			    $isSelected = 'selected';
-			    $text = '<input type="hidden" name="' . $name . '" value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $BIN . $promocao . $tipoPromo .
-		    			' valor="'.number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', '').'"><span class="' . $name . ' inputStyle">' . utf8_encode($rs['DS_TIPO_BILHETE']) . '</span>';
-			} else {
-			    $isSelected = '';
-			}
+            if (($selected == $rs['ID_APRESENTACAO_BILHETE'])) {
+                $isSelected = 'selected';
+                $text = '<input type="hidden" name="' . $name . '" value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $BIN . $promocao . $tipoPromo .
+                        ' valor="'.number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', '').'"><span class="' . $name . ' inputStyle">' . utf8_encode($rs['DS_TIPO_BILHETE']) . '</span>';
+            } else {
+                $isSelected = '';
+            }
 
-			// seleciona o primeira ingresso nao promocional desde que o usuario nao tenha selecionado nada ainda
-			if (empty($selected) and $BIN == $promocao and !$first_selected) {
-				$isSelected = 'selected';
-				$first_selected = true;
-			}
+            // seleciona o primeira ingresso nao promocional desde que o usuario nao tenha selecionado nada ainda
+            if (empty($selected) and $BIN == $promocao and !$first_selected) {
+                $isSelected = 'selected';
+                $first_selected = true;
+            }
 
             // checar exibicao da promocao
             if ($rs['IN_EXIBICAO'] == null or $rs['IN_EXIBICAO'] == 'T' or $rs['IN_EXIBICAO'] == 'W') {
-    			$combo .= '<option value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $isSelected . ' ' . $BIN . $promocao . $meia_estudante . $lote . $tipoPromo .
-    					  ' valor="'.number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', '').'">' . utf8_encode($rs['DS_TIPO_BILHETE']) . '</option>';
+                $combo .= '<option value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $isSelected . ' ' . $BIN . $promocao . $meia_estudante . $lote . $tipoPromo .
+                          ' valor="'.number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', '').'">' . utf8_encode($rs['DS_TIPO_BILHETE']) . '</option>';
             }
 
             $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['descricao'] = utf8_encode($rs['DS_TIPO_BILHETE']);
             $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['valor'] = $rs['VL_LIQUIDO_INGRESSO'];
             $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['exibicao'] = $rs['IN_EXIBICAO'];
             $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['codTipPromocao'] = $rs['CODTIPPROMOCAO'];
-		}
+        }
     }
     $combo .= '</select>';
 
@@ -1089,7 +1089,7 @@ function comboTeatro($name, $selected, $funcJavascript = "") {
 
     $combo = '<select name="' . $name . '" ' . $funcJavascript . ' class="inputStyle" id="' . $name . '"><option value="">Selecione um local...</option>';
     while ($rs = fetchResult($result)) {
-	$combo .= '<option value="' . $rs['ID_BASE'] . '"' . (($selected == $rs['ID_BASE']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_NOME_TEATRO']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_BASE'] . '"' . (($selected == $rs['ID_BASE']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_NOME_TEATRO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1102,7 +1102,7 @@ function comboSala($name, $teatroID) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione uma sala...</option>';
     while ($rs = fetchResult($result)) {
-	$combo .= '<option value="' . $rs['CODSALA'] . '" numerado="'.$rs['INGRESSONUMERADO'].'">' . utf8_encode($rs['NOMSALA']) . '</option>';
+    $combo .= '<option value="' . $rs['CODSALA'] . '" numerado="'.$rs['INGRESSONUMERADO'].'">' . utf8_encode($rs['NOMSALA']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1116,13 +1116,13 @@ function comboMeioPagamento($name, $selected = '-1', $isCombo = true) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um meio...</option>';
     while ($rs = fetchResult($result)) {
-	if ($selected == $rs['ID_MEIO_PAGAMENTO']) {
-	    $isSelected = 'selected';
-	    $text = utf8_encode($rs['DS_MEIO_PAGAMENTO']);
-	} else {
-	    $isSelected = '';
-	}
-	$combo .= '<option value="' . $rs['ID_MEIO_PAGAMENTO'] . '"' . $isSelected . '>' . utf8_encode($rs['DS_MEIO_PAGAMENTO']) . '</option>';
+    if ($selected == $rs['ID_MEIO_PAGAMENTO']) {
+        $isSelected = 'selected';
+        $text = utf8_encode($rs['DS_MEIO_PAGAMENTO']);
+    } else {
+        $isSelected = '';
+    }
+    $combo .= '<option value="' . $rs['ID_MEIO_PAGAMENTO'] . '"' . $isSelected . '>' . utf8_encode($rs['DS_MEIO_PAGAMENTO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1136,13 +1136,13 @@ function comboFormaPagamento($name, $teatroID, $selected = '-1', $isCombo = true
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione uma forma...</option>';
     while ($rs = fetchResult($result)) {
-	if ($selected == $rs['CODFORPAGTO']) {
-	    $isSelected = 'selected';
-	    $text = utf8_encode($rs['FORPAGTO']);
-	} else {
-	    $isSelected = '';
-	}
-	$combo .= '<option value="' . $rs['CODFORPAGTO'] . '"' . $isSelected . '>' . utf8_encode($rs['FORPAGTO']) . '</option>';
+    if ($selected == $rs['CODFORPAGTO']) {
+        $isSelected = 'selected';
+        $text = utf8_encode($rs['FORPAGTO']);
+    } else {
+        $isSelected = '';
+    }
+    $combo .= '<option value="' . $rs['CODFORPAGTO'] . '"' . $isSelected . '>' . utf8_encode($rs['FORPAGTO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1156,13 +1156,13 @@ function comboBilhetes2($name, $teatroID, $selected = '-1', $isCombo = true) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um bilhete...</option>';
     while ($rs = fetchResult($result)) {
-	if ($selected == $rs['CODTIPBILHETE']) {
-	    $isSelected = 'selected';
-	    $text = utf8_encode($rs['DS_NOME_SITE']);
-	} else {
-	    $isSelected = '';
-	}
-	$combo .= '<option value="' . $rs['CODTIPBILHETE'] . '"' . $isSelected . '>' . utf8_encode($rs['DS_NOME_SITE']) . '</option>';
+    if ($selected == $rs['CODTIPBILHETE']) {
+        $isSelected = 'selected';
+        $text = utf8_encode($rs['DS_NOME_SITE']);
+    } else {
+        $isSelected = '';
+    }
+    $combo .= '<option value="' . $rs['CODTIPBILHETE'] . '"' . $isSelected . '>' . utf8_encode($rs['DS_NOME_SITE']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1172,24 +1172,24 @@ function comboBilhetes2($name, $teatroID, $selected = '-1', $isCombo = true) {
 // Cria combo de situações
 function comboSituacao($name, $situacao = null, $isCombo = true) {
     $dados = array("V" => "Escolha a opção...",
-					"F" => "Finalizado",
-					"P" => "Em Processamento",
-					"C" => "Cancelado pelo Usuário",
-					"E" => "Expirado",
+                    "F" => "Finalizado",
+                    "P" => "Em Processamento",
+                    "C" => "Cancelado pelo Usuário",
+                    "E" => "Expirado",
                     "S" => "Estornado",
                     "N" => "Negado");
     
-	$combo = "<select name=\"" . $name . "\" id=\"" . $name . "\">";
-	foreach ($dados as $key => $valor) {
-	    if ($situacao == $key) {
-			$selected = "selected=\"selecteded\"";
-			$text = $valor;
-	    } else {
-			$selected = "";
-		}
-	    $combo .= "<option value=\"" . $key . "\"" . $selected . ">" . $valor . "</option>";
-	}
-	$combo .= "</select>";
+    $combo = "<select name=\"" . $name . "\" id=\"" . $name . "\">";
+    foreach ($dados as $key => $valor) {
+        if ($situacao == $key) {
+            $selected = "selected=\"selecteded\"";
+            $text = $valor;
+        } else {
+            $selected = "";
+        }
+        $combo .= "<option value=\"" . $key . "\"" . $selected . ">" . $valor . "</option>";
+    }
+    $combo .= "</select>";
 
     return $isCombo ? $combo : $text;
 }
@@ -1201,9 +1201,9 @@ function comboFormaEntrega($forma = null) {
     );
 
     foreach ($dados as $key => $valor) {
-    	if ($key == $forma) {
-    	    $return = $valor;
-    	}
+        if ($key == $forma) {
+            $return = $valor;
+        }
     }
 
     return $return;
@@ -1216,13 +1216,13 @@ function comboLocal($name, $selected = '-1', $isCombo = true) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um tipo...</option>';
     while ($rs = fetchResult($result)) {
-	if (($selected == $rs['ID_BASE'])) {
-	    $isSelected = 'selected';
-	    $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode($rs["DS_NOME_TEATRO"]) . '</span>';
-	} else {
-	    $isSelected = '';
-	}
-	$combo .= '<option value="' . $rs['ID_BASE'] . '"' . $isSelected . '>' . utf8_encode($rs["DS_NOME_TEATRO"]) . '</option>';
+    if (($selected == $rs['ID_BASE'])) {
+        $isSelected = 'selected';
+        $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode($rs["DS_NOME_TEATRO"]) . '</span>';
+    } else {
+        $isSelected = '';
+    }
+    $combo .= '<option value="' . $rs['ID_BASE'] . '"' . $isSelected . '>' . utf8_encode($rs["DS_NOME_TEATRO"]) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1232,18 +1232,18 @@ function comboLocal($name, $selected = '-1', $isCombo = true) {
 function comboEventos($idBase, $nomeBase, $idUsuario) {
     $mainConnection = mainConnection();
     $tsql = "SELECT P.CODPECA, P.NOMPECA
-			  FROM 
-				  " . $nomeBase . "..TABPECA P
-				  INNER JOIN 
-				  CI_MIDDLEWAY..MW_ACESSO_CONCEDIDO A
-				  ON	A.CODPECA = P.CODPECA
-				  AND A.ID_BASE = ?
-				  AND A.ID_USUARIO = ?
-			  WHERE STAPECA = 'A' ORDER BY 2";
+              FROM 
+                  " . $nomeBase . "..TABPECA P
+                  INNER JOIN 
+                  CI_MIDDLEWAY..MW_ACESSO_CONCEDIDO A
+                  ON    A.CODPECA = P.CODPECA
+                  AND A.ID_BASE = ?
+                  AND A.ID_USUARIO = ?
+              WHERE STAPECA = 'A' ORDER BY 2";
     $stmt = executeSQL($mainConnection, $tsql, array($idBase, $idUsuario));
     print("<option value=\"null\">Todos</option>");
     while ($eventos = fetchResult($stmt)) {
-	print("<option value=\"" . $eventos["CODPECA"] . "\">" . utf8_encode($eventos["NOMPECA"]) . "</option>\n");
+    print("<option value=\"" . $eventos["CODPECA"] . "\">" . utf8_encode($eventos["NOMPECA"]) . "</option>\n");
     }
 }
 
@@ -1254,13 +1254,13 @@ function comboPatrocinador($name, $selected = '-1', $isCombo = true) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um patrocinador...</option>';
     while ($rs = fetchResult($result)) {
-	if ($selected == $rs['ID_PATROCINADOR']) {
-	    $isSelected = 'selected';
-	    $text = utf8_encode($rs['DS_NOMPATROCINADOR']);
-	} else {
-	    $isSelected = '';
-	}
-	$combo .= '<option value="' . $rs['ID_PATROCINADOR'] . '"' . $isSelected . '>' . utf8_encode($rs['DS_NOMPATROCINADOR']) . '</option>';
+    if ($selected == $rs['ID_PATROCINADOR']) {
+        $isSelected = 'selected';
+        $text = utf8_encode($rs['DS_NOMPATROCINADOR']);
+    } else {
+        $isSelected = '';
+    }
+    $combo .= '<option value="' . $rs['ID_PATROCINADOR'] . '"' . $isSelected . '>' . utf8_encode($rs['DS_NOMPATROCINADOR']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1274,13 +1274,13 @@ function comboCartaoPatrocinado($name, $idPatrocinador, $selected = '-1', $isCom
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um cart&atilde;o patrocinado...</option><option value="TODOS">&lt; TODOS &gt;</option>';
     while ($rs = fetchResult($result)) {
-	if ($selected == $rs['ID_CARTAO_PATROCINADO']) {
-	    $isSelected = 'selected';
-	    $text = utf8_encode($rs['DS_CARTAO_PATROCINADO']);
-	} else {
-	    $isSelected = '';
-	}
-	$combo .= '<option value="' . $rs['ID_CARTAO_PATROCINADO'] . '"' . $isSelected . '>' . utf8_encode($rs['DS_CARTAO_PATROCINADO']) . '</option>';
+    if ($selected == $rs['ID_CARTAO_PATROCINADO']) {
+        $isSelected = 'selected';
+        $text = utf8_encode($rs['DS_CARTAO_PATROCINADO']);
+    } else {
+        $isSelected = '';
+    }
+    $combo .= '<option value="' . $rs['ID_CARTAO_PATROCINADO'] . '"' . $isSelected . '>' . utf8_encode($rs['DS_CARTAO_PATROCINADO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1293,13 +1293,13 @@ function comboTabPeca($name, $conn, $selected = '-1', $isCombo = true) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione uma pe&ccedil;a...</option>';
     while ($rs = fetchResult($result)) {
-	if ($selected == $rs['CODPECA']) {
-	    $isSelected = 'selected';
-	    $text = utf8_encode($rs['NOMPECA']);
-	} else {
-	    $isSelected = '';
-	}
-	$combo .= '<option value="' . $rs['CODPECA'] . '"' . $isSelected . '>' . utf8_encode($rs['NOMPECA']) . '</option>';
+    if ($selected == $rs['CODPECA']) {
+        $isSelected = 'selected';
+        $text = utf8_encode($rs['NOMPECA']);
+    } else {
+        $isSelected = '';
+    }
+    $combo .= '<option value="' . $rs['CODPECA'] . '"' . $isSelected . '>' . utf8_encode($rs['NOMPECA']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1309,20 +1309,20 @@ function comboTabPeca($name, $conn, $selected = '-1', $isCombo = true) {
 function comboEventosItau($name, $user, $selected = '-1') {
     $mainConnection = mainConnection();
     $query = 'SELECT E.ID_EVENTO, E.DS_EVENTO
-				FROM MW_EVENTO E
-				INNER JOIN MW_USUARIO_ITAU_EVENTO U ON E.ID_EVENTO = U.ID_EVENTO
-				WHERE U.ID_USUARIO = ? AND E.IN_VENDE_ITAU = 1
-				ORDER BY DS_EVENTO';
+                FROM MW_EVENTO E
+                INNER JOIN MW_USUARIO_ITAU_EVENTO U ON E.ID_EVENTO = U.ID_EVENTO
+                WHERE U.ID_USUARIO = ? AND E.IN_VENDE_ITAU = 1
+                ORDER BY DS_EVENTO';
     $result = executeSQL($mainConnection, $query, array($user));
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um evento...</option>';
     while ($rs = fetchResult($result)) {
-	if ($selected == $rs['ID_EVENTO']) {
-	    $isSelected = ' selected';
-	} else {
-	    $isSelected = '';
-	}
-	$combo .= '<option value="' . $rs['ID_EVENTO'] . '"' . $isSelected . '>' . utf8_encode($rs['DS_EVENTO']) . '</option>';
+    if ($selected == $rs['ID_EVENTO']) {
+        $isSelected = ' selected';
+    } else {
+        $isSelected = '';
+    }
+    $combo .= '<option value="' . $rs['ID_EVENTO'] . '"' . $isSelected . '>' . utf8_encode($rs['DS_EVENTO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1332,24 +1332,24 @@ function comboEventosItau($name, $user, $selected = '-1') {
 function comboApresentacoesItau($name, $user, $evento, $selected = '-1') {
     $mainConnection = mainConnection();
     $query = "SELECT A.ID_APRESENTACAO, CONVERT(VARCHAR(10),
-				DT_APRESENTACAO, 103) + ' - ' + A.HR_APRESENTACAO + ' || ' + DS_PISO DS_APRESENTACAO,
-				A.DT_APRESENTACAO, A.HR_APRESENTACAO
-				FROM MW_EVENTO E
-				INNER JOIN MW_USUARIO_ITAU_EVENTO U ON E.ID_EVENTO = U.ID_EVENTO
-				INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
-				WHERE E.ID_EVENTO = ? AND E.IN_VENDE_ITAU = 1 AND U.ID_USUARIO = ? AND A.IN_ATIVO = 1
-				AND CONVERT(VARCHAR(8), A.DT_APRESENTACAO,112) >= CONVERT(VARCHAR(8), GETDATE()-2, 112)
-				ORDER BY DT_APRESENTACAO, HR_APRESENTACAO";
+                DT_APRESENTACAO, 103) + ' - ' + A.HR_APRESENTACAO + ' || ' + DS_PISO DS_APRESENTACAO,
+                A.DT_APRESENTACAO, A.HR_APRESENTACAO
+                FROM MW_EVENTO E
+                INNER JOIN MW_USUARIO_ITAU_EVENTO U ON E.ID_EVENTO = U.ID_EVENTO
+                INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
+                WHERE E.ID_EVENTO = ? AND E.IN_VENDE_ITAU = 1 AND U.ID_USUARIO = ? AND A.IN_ATIVO = 1
+                AND CONVERT(VARCHAR(8), A.DT_APRESENTACAO,112) >= CONVERT(VARCHAR(8), GETDATE()-2, 112)
+                ORDER BY DT_APRESENTACAO, HR_APRESENTACAO";
     $result = executeSQL($mainConnection, $query, array($evento, $user));
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione uma apresenta&ccedil;&atilde;o...</option>';
     while ($rs = fetchResult($result)) {
-	if ($selected == $rs['ID_APRESENTACAO']) {
-	    $isSelected = ' selected';
-	} else {
-	    $isSelected = '';
-	}
-	$combo .= '<option value="' . $rs['ID_APRESENTACAO'] . '"' . $isSelected . '>' . utf8_encode($rs['DS_APRESENTACAO']) . '</option>';
+    if ($selected == $rs['ID_APRESENTACAO']) {
+        $isSelected = ' selected';
+    } else {
+        $isSelected = '';
+    }
+    $combo .= '<option value="' . $rs['ID_APRESENTACAO'] . '"' . $isSelected . '>' . utf8_encode($rs['DS_APRESENTACAO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1359,19 +1359,19 @@ function comboApresentacoesItau($name, $user, $evento, $selected = '-1') {
 function comboEventoPorUsuario($name, $teatro, $usuario, $selected) {
     $mainConnection = mainConnection();
     $result = executeSQL($mainConnection, "SELECT AC.CODPECA, E.DS_EVENTO
-											FROM MW_EVENTO E
-											INNER JOIN MW_ACESSO_CONCEDIDO AC ON E.ID_BASE = AC.ID_BASE
-											AND AC.ID_USUARIO = ? AND AC.CODPECA = E.CODPECA
-											WHERE E.ID_BASE = ?
-											AND E.IN_ATIVO = '1'
-											ORDER BY DS_EVENTO",
-		    array($usuario, $teatro));
+                                            FROM MW_EVENTO E
+                                            INNER JOIN MW_ACESSO_CONCEDIDO AC ON E.ID_BASE = AC.ID_BASE
+                                            AND AC.ID_USUARIO = ? AND AC.CODPECA = E.CODPECA
+                                            WHERE E.ID_BASE = ?
+                                            AND E.IN_ATIVO = '1'
+                                            ORDER BY DS_EVENTO",
+            array($usuario, $teatro));
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um evento...</option>';
     while ($rs = fetchResult($result)) {
-	$combo .= '<option value="' . $rs['CODPECA'] . '"' .
-		(($selected == $rs['CODPECA']) ? ' selected' : '') .
-		'>' . str_replace("'", "\'", utf8_encode($rs['DS_EVENTO'])) . '</option>';
+    $combo .= '<option value="' . $rs['CODPECA'] . '"' .
+        (($selected == $rs['CODPECA']) ? ' selected' : '') .
+        '>' . str_replace("'", "\'", utf8_encode($rs['DS_EVENTO'])) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1381,16 +1381,16 @@ function comboEventoPorUsuario($name, $teatro, $usuario, $selected) {
 function comboTeatroPorUsuario($name, $usuario, $selected) {
     $mainConnection = mainConnection();
     $result = executeSQL($mainConnection, "SELECT DISTINCT B.ID_BASE, B.DS_NOME_TEATRO
-											FROM MW_BASE B
-											INNER JOIN MW_ACESSO_CONCEDIDO AC ON B.ID_BASE = AC.ID_BASE
-											AND AC.ID_USUARIO = ?
-											WHERE IN_ATIVO = '1'
-											ORDER BY DS_NOME_TEATRO",
-		    array($usuario));
+                                            FROM MW_BASE B
+                                            INNER JOIN MW_ACESSO_CONCEDIDO AC ON B.ID_BASE = AC.ID_BASE
+                                            AND AC.ID_USUARIO = ?
+                                            WHERE IN_ATIVO = '1'
+                                            ORDER BY DS_NOME_TEATRO",
+            array($usuario));
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um local...</option>';
     while ($rs = fetchResult($result)) {
-	$combo .= '<option value="' . $rs['ID_BASE'] . '"' . (($selected == $rs['ID_BASE']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_NOME_TEATRO']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_BASE'] . '"' . (($selected == $rs['ID_BASE']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_NOME_TEATRO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1400,7 +1400,7 @@ function comboTeatroPorUsuario($name, $usuario, $selected) {
 function comboDia($name, $selected, $shortText = false) {
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">'.($shortText ? 'dia' : 'Selecione um dia...').'</option>';
     for ($i = 1; $i <= 31; $i++) {
-	$combo .= '<option value="' . substr('0'.$i, -2) . '"' . (($selected == $i) ? ' selected' : '') . '>' . substr('0'.$i, -2) . '</option>';
+    $combo .= '<option value="' . substr('0'.$i, -2) . '"' . (($selected == $i) ? ' selected' : '') . '>' . substr('0'.$i, -2) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1409,23 +1409,23 @@ function comboDia($name, $selected, $shortText = false) {
 
 function comboMeses($name, $selected, $number = false, $shortText = false) {
     $meses = array(
-	'01' => 'Janeiro',
-	'02' => 'Fevereiro',
-	'03' => 'Março',
-	'04' => 'Abril',
-	'05' => 'Maio',
-	'06' => 'Junho',
-	'07' => 'Julho',
-	'08' => 'Agosto',
-	'09' => 'Setembro',
-	'10' => 'Outubro',
-	'11' => 'Novembro',
-	'12' => 'Dezembro'
+    '01' => 'Janeiro',
+    '02' => 'Fevereiro',
+    '03' => 'Março',
+    '04' => 'Abril',
+    '05' => 'Maio',
+    '06' => 'Junho',
+    '07' => 'Julho',
+    '08' => 'Agosto',
+    '09' => 'Setembro',
+    '10' => 'Outubro',
+    '11' => 'Novembro',
+    '12' => 'Dezembro'
     );
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">'.($shortText ? 'm&ecirc;s' : 'Selecione um m&ecirc;s...').'</option>';
     foreach ($meses as $key => $val) {
-	$combo .= '<option value="' . $key . '"' . (($selected == $key) ? ' selected' : '') . '>' . ($number ? $key : ($shortText ? strtolower(substr($val, 0, 3)) : $val)) . '</option>';
+    $combo .= '<option value="' . $key . '"' . (($selected == $key) ? ' selected' : '') . '>' . ($number ? $key : ($shortText ? strtolower(substr($val, 0, 3)) : $val)) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1435,7 +1435,7 @@ function comboMeses($name, $selected, $number = false, $shortText = false) {
 function comboAnos($name, $selected, $inicial = 0, $final = 0, $shortText = false) {
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">'.($shortText ? 'ano' : 'Selecione um ano...').'</option>';
     for ($i = $inicial; $i <= $final; $i++) {
-	$combo .= '<option value="' . $i . '"' . (($selected == $i) ? ' selected' : '') . '>' . $i . '</option>';
+    $combo .= '<option value="' . $i . '"' . (($selected == $i) ? ' selected' : '') . '>' . $i . '</option>';
     }
     $combo .= '</select>';
 
@@ -1448,7 +1448,7 @@ function comboPaginas($name, $selected) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione uma p&aacute;gina...</option>';
     while ($rs = fetchResult($result)) {
-	$combo .= '<option value="' . $rs['ID_PAGINA'] . '"' . (($selected == $rs['ID_PAGINA']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_PAGINA']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_PAGINA'] . '"' . (($selected == $rs['ID_PAGINA']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_PAGINA']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1461,7 +1461,7 @@ function comboOrigemChamado($name, $selected) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione uma origem...</option>';
     while ($rs = fetchResult($result)) {
-	$combo .= '<option value="' . $rs['ID_ORIGEM_CHAMADO'] . '"' . (($selected == $rs['ID_ORIGEM_CHAMADO']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_ORIGEM_CHAMADO']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_ORIGEM_CHAMADO'] . '"' . (($selected == $rs['ID_ORIGEM_CHAMADO']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_ORIGEM_CHAMADO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1474,7 +1474,7 @@ function comboTipoChamado($name, $selected) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um tipo...</option>';
     while ($rs = fetchResult($result)) {
-	$combo .= '<option value="' . $rs['ID_TIPO_CHAMADO'] . '"' . (($selected == $rs['ID_TIPO_CHAMADO']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_TIPO_CHAMADO']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_TIPO_CHAMADO'] . '"' . (($selected == $rs['ID_TIPO_CHAMADO']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_TIPO_CHAMADO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1487,7 +1487,7 @@ function comboTipoResolucao($name, $selected) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione uma resolução...</option>';
     while ($rs = fetchResult($result)) {
-	$combo .= '<option value="' . $rs['ID_TIPO_RESOLUCAO'] . '"' . (($selected == $rs['ID_TIPO_RESOLUCAO']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_TIPO_RESOLUCAO']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_TIPO_RESOLUCAO'] . '"' . (($selected == $rs['ID_TIPO_RESOLUCAO']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_TIPO_RESOLUCAO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1496,17 +1496,17 @@ function comboTipoResolucao($name, $selected) {
 
 function comboAdmins($name, $selected = '-1', $isCombo = true) {
     $mainConnection = mainConnection();
-	$result = executeSQL($mainConnection, 'SELECT ID_USUARIO, DS_NOME FROM  MW_USUARIO WHERE IN_ATIVO = 1 AND IN_ADMIN = 1 ORDER BY DS_NOME ASC');
+    $result = executeSQL($mainConnection, 'SELECT ID_USUARIO, DS_NOME FROM  MW_USUARIO WHERE IN_ATIVO = 1 AND IN_ADMIN = 1 ORDER BY DS_NOME ASC');
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um administrador...</option>';
     while ($rs = fetchResult($result)) {
-	if ($selected == $rs['ID_USUARIO']) {
-	    $isSelected = 'selected';
-	    $text = $rs['DS_NOME'];
-	} else {
-	    $isSelected = '';
-	}
-	$combo .= '<option value="' . $rs['ID_USUARIO'] . '"' . $isSelected . '>' . addslashes($rs['DS_NOME']) . '</option>';
+    if ($selected == $rs['ID_USUARIO']) {
+        $isSelected = 'selected';
+        $text = $rs['DS_NOME'];
+    } else {
+        $isSelected = '';
+    }
+    $combo .= '<option value="' . $rs['ID_USUARIO'] . '"' . $isSelected . '>' . addslashes($rs['DS_NOME']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1519,9 +1519,9 @@ function comboTipoLancamento($name, $teatro, $selected) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um tipo...</option>';
     while ($rs = fetchResult($result)) {
-	$combo .= '<option value="' . $rs['CODTIPLANCAMENTO'] . '"' .
-		(($selected == $rs['CODTIPLANCAMENTO']) ? ' selected' : '') .
-		'>' . $rs['TIPLANCAMENTO'] . '</option>';
+    $combo .= '<option value="' . $rs['CODTIPLANCAMENTO'] . '"' .
+        (($selected == $rs['CODTIPLANCAMENTO']) ? ' selected' : '') .
+        '>' . $rs['TIPLANCAMENTO'] . '</option>';
     }
     $combo .= '</select>';
 
@@ -1534,9 +1534,9 @@ function comboUsuariosPorBase($name, $teatro, $selected) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um usuário...</option>';
     while ($rs = fetchResult($result)) {
-	$combo .= '<option value="' . $rs['CODUSUARIO'] . '"' .
-		(($selected == $rs['CODUSUARIO']) ? ' selected' : '') .
-		'>' . utf8_encode($rs['NOMUSUARIO']) . '</option>';
+    $combo .= '<option value="' . $rs['CODUSUARIO'] . '"' .
+        (($selected == $rs['CODUSUARIO']) ? ' selected' : '') .
+        '>' . utf8_encode($rs['NOMUSUARIO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1549,9 +1549,9 @@ function comboTipoDocumento($name, $selected) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Document type / Tipo de documento</option>';
     while ($rs = fetchResult($result)) {
-	$combo .= '<option value="' . $rs['ID_DOC_ESTRANGEIRO'] . '"' .
-		(($selected == $rs['ID_DOC_ESTRANGEIRO']) ? ' selected' : '') .
-		'>' . utf8_encode($rs['DS_DOC_ESTRANGEIRO']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_DOC_ESTRANGEIRO'] . '"' .
+        (($selected == $rs['ID_DOC_ESTRANGEIRO']) ? ' selected' : '') .
+        '>' . utf8_encode($rs['DS_DOC_ESTRANGEIRO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1560,20 +1560,20 @@ function comboTipoDocumento($name, $selected) {
 
 // combo de setor para o cliente na etapa1
 function comboSetor($name, $apresentacao_id) {
-	$mainConnection = mainConnection();
+    $mainConnection = mainConnection();
     $result = executeSQL($mainConnection, "SELECT ID_APRESENTACAO, DS_PISO FROM MW_APRESENTACAO
-				                          WHERE ID_EVENTO = (SELECT ID_EVENTO FROM MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = '1')
-				                          AND DT_APRESENTACAO = (SELECT DT_APRESENTACAO FROM MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = '1')
-				                          AND HR_APRESENTACAO = (SELECT HR_APRESENTACAO FROM MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = '1')
-				                          AND IN_ATIVO = '1'
-				                          ORDER BY DS_PISO", array($apresentacao_id, $apresentacao_id, $apresentacao_id));
+                                          WHERE ID_EVENTO = (SELECT ID_EVENTO FROM MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = '1')
+                                          AND DT_APRESENTACAO = (SELECT DT_APRESENTACAO FROM MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = '1')
+                                          AND HR_APRESENTACAO = (SELECT HR_APRESENTACAO FROM MW_APRESENTACAO WHERE ID_APRESENTACAO = ? AND IN_ATIVO = '1')
+                                          AND IN_ATIVO = '1'
+                                          ORDER BY DS_PISO", array($apresentacao_id, $apresentacao_id, $apresentacao_id));
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">selecione outro setor</option>';
     while ($rs = fetchResult($result)) {
-    	// esconde setor atual
-    	if ($apresentacao_id != $rs['ID_APRESENTACAO']) {
-			$combo .= '<option value="' . $rs['ID_APRESENTACAO'] . '">' . utf8_encode($rs['DS_PISO']) . '</option>';
-		}
+        // esconde setor atual
+        if ($apresentacao_id != $rs['ID_APRESENTACAO']) {
+            $combo .= '<option value="' . $rs['ID_APRESENTACAO'] . '">' . utf8_encode($rs['DS_PISO']) . '</option>';
+        }
     }
     $combo .= '</select>';
 
@@ -1586,9 +1586,9 @@ function comboCanalVenda($name, $selected) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um canal...</option>';
     while ($rs = fetchResult($result)) {
-	$combo .= '<option value="' . $rs['ID_CANAL_VENDA'] . '"' .
-		(($selected == $rs['ID_CANAL_VENDA']) ? ' selected' : '') .
-		'>' . utf8_encode($rs['DS_CANAL_VENDA']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_CANAL_VENDA'] . '"' .
+        (($selected == $rs['ID_CANAL_VENDA']) ? ' selected' : '') .
+        '>' . utf8_encode($rs['DS_CANAL_VENDA']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1601,16 +1601,16 @@ function comboPromocoes($name, $selected, $isCombo = true) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione uma promoção...</option>';
     while ($rs = fetchResult($result)) {
-    	if ($selected == $rs['ID_PROMOCAO_CONTROLE']) {
-		    $isSelected = 'selected';
-		    $text = $rs['DS_PROMOCAO'];
-		} else {
-		    $isSelected = '';
-		}
+        if ($selected == $rs['ID_PROMOCAO_CONTROLE']) {
+            $isSelected = 'selected';
+            $text = $rs['DS_PROMOCAO'];
+        } else {
+            $isSelected = '';
+        }
 
-		$combo .= '<option value="' . $rs['ID_PROMOCAO_CONTROLE'] . '"' . $isSelected . ' ' .
-			(($selected == $rs['ID_PROMOCAO_CONTROLE']) ? ' selected' : '') .
-			'>' . utf8_encode($rs['DS_PROMOCAO']) . '</option>';
+        $combo .= '<option value="' . $rs['ID_PROMOCAO_CONTROLE'] . '"' . $isSelected . ' ' .
+            (($selected == $rs['ID_PROMOCAO_CONTROLE']) ? ' selected' : '') .
+            '>' . utf8_encode($rs['DS_PROMOCAO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1716,24 +1716,24 @@ function comboBanco($name, $selected) {
 function comboEventoPacotePorUsuario($name, $local, $usuario, $selected) {
     $mainConnection = mainConnection();
     $result = executeSQL($mainConnection, "WITH RESULTADO AS (
-												SELECT MIN(ID_APRESENTACAO) AS ID_APRESENTACAO, DT_APRESENTACAO, HR_APRESENTACAO, DS_EVENTO
-												FROM MW_APRESENTACAO A
-												INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
-												INNER JOIN MW_ACESSO_CONCEDIDO AC ON AC.ID_BASE = E.ID_BASE AND AC.CODPECA = E.CODPECA AND AC.ID_USUARIO = ?
-												WHERE A.IN_ATIVO = 1 AND E.IN_ATIVO = 1 AND E.ID_BASE = ?
-												AND A.ID_APRESENTACAO NOT IN (SELECT ID_APRESENTACAO FROM MW_ITEM_PEDIDO_VENDA)
-												GROUP BY DS_EVENTO, DT_APRESENTACAO, HR_APRESENTACAO
-											)
-											SELECT MIN(ID_APRESENTACAO) AS ID_APRESENTACAO, DS_EVENTO
-											FROM RESULTADO
-											GROUP BY DS_EVENTO
-											HAVING COUNT(ID_APRESENTACAO) = 1
-											ORDER BY DS_EVENTO",
-		    array($usuario, $local));
+                                                SELECT MIN(ID_APRESENTACAO) AS ID_APRESENTACAO, DT_APRESENTACAO, HR_APRESENTACAO, DS_EVENTO
+                                                FROM MW_APRESENTACAO A
+                                                INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+                                                INNER JOIN MW_ACESSO_CONCEDIDO AC ON AC.ID_BASE = E.ID_BASE AND AC.CODPECA = E.CODPECA AND AC.ID_USUARIO = ?
+                                                WHERE A.IN_ATIVO = 1 AND E.IN_ATIVO = 1 AND E.ID_BASE = ?
+                                                AND A.ID_APRESENTACAO NOT IN (SELECT ID_APRESENTACAO FROM MW_ITEM_PEDIDO_VENDA)
+                                                GROUP BY DS_EVENTO, DT_APRESENTACAO, HR_APRESENTACAO
+                                            )
+                                            SELECT MIN(ID_APRESENTACAO) AS ID_APRESENTACAO, DS_EVENTO
+                                            FROM RESULTADO
+                                            GROUP BY DS_EVENTO
+                                            HAVING COUNT(ID_APRESENTACAO) = 1
+                                            ORDER BY DS_EVENTO",
+            array($usuario, $local));
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um evento/pacote...</option>';
     while ($rs = fetchResult($result)) {
-	$combo .= '<option value="' . $rs['ID_APRESENTACAO'] . '"' . (($selected == $rs['ID_APRESENTACAO']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_EVENTO']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_APRESENTACAO'] . '"' . (($selected == $rs['ID_APRESENTACAO']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_EVENTO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1746,17 +1746,17 @@ function comboPacote($name, $usuario, $selected, $id_base = null, $fase = null) 
     $filtro_fase = $fase ? "AND DT_FIM_FASE".$fase." >= getdate()" : "";
 
     $result = executeSQL($mainConnection, "SELECT ID_PACOTE, DS_EVENTO
-											FROM MW_PACOTE P
-											INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = P.ID_APRESENTACAO
-											INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
-											INNER JOIN MW_ACESSO_CONCEDIDO AC ON AC.ID_BASE = E.ID_BASE AND AC.CODPECA = E.CODPECA AND AC.ID_USUARIO = ?
-											WHERE (E.ID_BASE = ? or ? is null) $filtro_fase
-											ORDER BY DS_EVENTO",
-		    array($usuario, $id_base, $id_base));
+                                            FROM MW_PACOTE P
+                                            INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = P.ID_APRESENTACAO
+                                            INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+                                            INNER JOIN MW_ACESSO_CONCEDIDO AC ON AC.ID_BASE = E.ID_BASE AND AC.CODPECA = E.CODPECA AND AC.ID_USUARIO = ?
+                                            WHERE (E.ID_BASE = ? or ? is null) $filtro_fase
+                                            ORDER BY DS_EVENTO",
+            array($usuario, $id_base, $id_base));
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um pacote...</option>';
     while ($rs = fetchResult($result)) {
-	$combo .= '<option value="' . $rs['ID_PACOTE'] . '"' . (($selected == $rs['ID_PACOTE']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_EVENTO']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_PACOTE'] . '"' . (($selected == $rs['ID_PACOTE']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_EVENTO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1769,12 +1769,12 @@ function is_pacote($id_apresentacao) {
     $mainConnection = mainConnection();
 
     $result = executeSQL($mainConnection,
-    					"SELECT TOP 1 1
-						FROM MW_PACOTE P
-						INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = P.ID_APRESENTACAO
-						INNER JOIN MW_APRESENTACAO A2 ON A2.ID_EVENTO = A.ID_EVENTO AND A2.DT_APRESENTACAO = A.DT_APRESENTACAO AND A2.HR_APRESENTACAO = A.HR_APRESENTACAO
-						WHERE A2.ID_APRESENTACAO = ?",
-		    			array($id_apresentacao));
+                        "SELECT TOP 1 1
+                        FROM MW_PACOTE P
+                        INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = P.ID_APRESENTACAO
+                        INNER JOIN MW_APRESENTACAO A2 ON A2.ID_EVENTO = A.ID_EVENTO AND A2.DT_APRESENTACAO = A.DT_APRESENTACAO AND A2.HR_APRESENTACAO = A.HR_APRESENTACAO
+                        WHERE A2.ID_APRESENTACAO = ?",
+                        array($id_apresentacao));
 
     return hasRows($result);
 }
@@ -1788,20 +1788,20 @@ function is_pacote($id_apresentacao) {
 require_once('../settings/mail.php');
 
 function getCurrentUrl() {
-	include('../settings/settings.php');
+    include('../settings/settings.php');
 
     $pageURL = 'http';
 
     if ($_SERVER["HTTPS"] == "on") {
-		$pageURL .= "s";
+        $pageURL .= "s";
     }
 
     $pageURL .= "://";
 
     if ($_SERVER["SERVER_PORT"] != "80") {
-		$pageURL .= ($_ENV['IS_TEST'] ? $_SERVER["HTTP_HOST"] : $_SERVER["SERVER_NAME"] . ":" . $_SERVER["SERVER_PORT"]) . $_SERVER["REQUEST_URI"];
+        $pageURL .= ($_ENV['IS_TEST'] ? $_SERVER["HTTP_HOST"] : $_SERVER["SERVER_NAME"] . ":" . $_SERVER["SERVER_PORT"]) . $_SERVER["REQUEST_URI"];
     } else {
-		$pageURL .= ($_ENV['IS_TEST'] ? $_SERVER["HTTP_HOST"] : $_SERVER["SERVER_NAME"]) . $_SERVER["REQUEST_URI"];
+        $pageURL .= ($_ENV['IS_TEST'] ? $_SERVER["HTTP_HOST"] : $_SERVER["SERVER_NAME"]) . $_SERVER["REQUEST_URI"];
     }
 
     return $pageURL;
@@ -1816,80 +1816,80 @@ function printr($array, $titulo = '')
 
 function verificaCPF($cpf) {
     if (!is_numeric($cpf)) {
-	return false;
+    return false;
     } else {
-	if (($cpf == '11111111111') || ($cpf == '22222222222') ||
-		($cpf == '33333333333') || ($cpf == '44444444444') ||
-		($cpf == '55555555555') || ($cpf == '66666666666') ||
-		($cpf == '77777777777') || ($cpf == '88888888888') ||
-		($cpf == '99999999999') || ($cpf == '00000000000')) {
-	    return false;
-	} else {
-	    //PEGA O DIGITO VERIFIACADOR
-	    $dv_informado = substr($cpf, 9, 2);
+    if (($cpf == '11111111111') || ($cpf == '22222222222') ||
+        ($cpf == '33333333333') || ($cpf == '44444444444') ||
+        ($cpf == '55555555555') || ($cpf == '66666666666') ||
+        ($cpf == '77777777777') || ($cpf == '88888888888') ||
+        ($cpf == '99999999999') || ($cpf == '00000000000')) {
+        return false;
+    } else {
+        //PEGA O DIGITO VERIFIACADOR
+        $dv_informado = substr($cpf, 9, 2);
 
-	    for ($i = 0; $i <= 8; $i++) {
-		$digito[$i] = substr($cpf, $i, 1);
-	    }
+        for ($i = 0; $i <= 8; $i++) {
+        $digito[$i] = substr($cpf, $i, 1);
+        }
 
-	    //CALCULA O VALOR DO 10º DIGITO DE VERIFICAÇÂO
-	    $posicao = 10;
-	    $soma = 0;
+        //CALCULA O VALOR DO 10º DIGITO DE VERIFICAÇÂO
+        $posicao = 10;
+        $soma = 0;
 
-	    for ($i = 0; $i <= 8; $i++) {
-		$soma += $digito[$i] * $posicao;
-		$posicao--;
-	    }
+        for ($i = 0; $i <= 8; $i++) {
+        $soma += $digito[$i] * $posicao;
+        $posicao--;
+        }
 
-	    $digito[9] = $soma % 11;
+        $digito[9] = $soma % 11;
 
-	    if ($digito[9] < 2) {
-		$digito[9] = 0;
-	    } else {
-		$digito[9] = 11 - $digito[9];
-	    }
+        if ($digito[9] < 2) {
+        $digito[9] = 0;
+        } else {
+        $digito[9] = 11 - $digito[9];
+        }
 
-	    //CALCULA O VALOR DO 11º DIGITO DE VERIFICAÇÃO
-	    $posicao = 11;
-	    $soma = 0;
+        //CALCULA O VALOR DO 11º DIGITO DE VERIFICAÇÃO
+        $posicao = 11;
+        $soma = 0;
 
-	    for ($i = 0; $i <= 9; $i++) {
-		$soma += $digito[$i] * $posicao;
-		$posicao--;
-	    }
+        for ($i = 0; $i <= 9; $i++) {
+        $soma += $digito[$i] * $posicao;
+        $posicao--;
+        }
 
-	    $digito[10] = $soma % 11;
+        $digito[10] = $soma % 11;
 
-	    if ($digito[10] < 2) {
-		$digito[10] = 0;
-	    } else {
-		$digito[10] = 11 - $digito[10];
-	    }
+        if ($digito[10] < 2) {
+        $digito[10] = 0;
+        } else {
+        $digito[10] = 11 - $digito[10];
+        }
 
-	    //VERIFICA SE O DV CALCULADO É IGUAL AO INFORMADO
-	    $dv = $digito[9] * 10 + $digito[10];
-	    if ($dv != $dv_informado) {
-		return false;
-	    } else {
-		return true;
-	    }
-	}
+        //VERIFICA SE O DV CALCULADO É IGUAL AO INFORMADO
+        $dv = $digito[9] * 10 + $digito[10];
+        if ($dv != $dv_informado) {
+        return false;
+        } else {
+        return true;
+        }
+    }
     }
 }
 
 function acessoPermitido($conn, $idUser, $idPrograma, $echo = false) {
     $query = 'SELECT 1
-				 FROM MW_PROGRAMA P
-				 INNER JOIN MW_USUARIO_PROGRAMA UP ON UP.ID_PROGRAMA = P.ID_PROGRAMA
-				 INNER JOIN MW_USUARIO U ON U.ID_USUARIO = UP.ID_USUARIO
-				 WHERE U.ID_USUARIO = ? AND P.ID_PROGRAMA = ?';
+                 FROM MW_PROGRAMA P
+                 INNER JOIN MW_USUARIO_PROGRAMA UP ON UP.ID_PROGRAMA = P.ID_PROGRAMA
+                 INNER JOIN MW_USUARIO U ON U.ID_USUARIO = UP.ID_USUARIO
+                 WHERE U.ID_USUARIO = ? AND P.ID_PROGRAMA = ?';
     $params = array($idUser, $idPrograma);
     $result = executeSQL($conn, $query, $params);
 
     $hasRows = hasRows($result);
 
     if ($echo and !$hasRows)
-	echo '<h2>Acesso Negado!</h2>';
+    echo '<h2>Acesso Negado!</h2>';
 
     return $hasRows;
 }
@@ -1897,8 +1897,8 @@ function acessoPermitido($conn, $idUser, $idPrograma, $echo = false) {
 function acessoPermitidoEvento($idBase, $idUser, $codPeca, $die = false) {
     $mainConnection = mainConnection();
     $query = 'SELECT 1
-				FROM MW_ACESSO_CONCEDIDO
-				WHERE ID_BASE = ? AND ID_USUARIO = ? AND CODPECA = ?';
+                FROM MW_ACESSO_CONCEDIDO
+                WHERE ID_BASE = ? AND ID_USUARIO = ? AND CODPECA = ?';
     $params = array($idBase, $idUser, $codPeca);
     $result = executeSQL($mainConnection, $query, $params);
 
@@ -1907,96 +1907,96 @@ function acessoPermitidoEvento($idBase, $idUser, $codPeca, $die = false) {
     //if (!$hasRows) echo '<h2>Acesso Negado!</h2>';
 
     if ($die and !$hasRows)
-	die();
+    die();
 
     return $hasRows;
 }
 
 function get_campanha_etapa($etapa) {
     switch ($etapa) {
-	/**
+    /**
         case 'etapa1':
-	    $tag_avancar = "1._Escolha_de_assentos_-_Avançar-TAG";
-	    $tag_voltar = "";
-	    break;
+        $tag_avancar = "1._Escolha_de_assentos_-_Avançar-TAG";
+        $tag_voltar = "";
+        break;
         */
-	case 'etapa1':
-	    $tag_avancar = "2._Conferir_Itens_-_Avançar";
-	    $tag_voltar = "2._Conferir_Itens_-_Voltar";
-	    break;
+    case 'etapa1':
+        $tag_avancar = "2._Conferir_Itens_-_Avançar";
+        $tag_voltar = "2._Conferir_Itens_-_Voltar";
+        break;
         case 'etapa2':
             $tag_avancar = "3._Identificaçao_-_Autentique-se";
-	    $tag_voltar = "2._Conferir_Itens_-_Voltar-TAG";
-	    break;
-	case 'etapa3_2':
-	    $tag_avancar = "3._Identificaçao_-_Autentique-se";
-	    $tag_voltar = "3._Identificaçao_-_Cadastre-se";
-	    break;
-	case 'etapa4':
-	    $tag_avancar = "4._Confirmaçao_-_Avançar";
-	    $tag_voltar = "4._Confirmaçao_-_Alterar_pedido";
-	    break;
-	case 'etapa5':
-	    $tag_avancar = "";
-	    $tag_voltar = "5._Pagamento_-_Voltar";
-	    break;
-	case 'cadatro???':
-	    $tag_avancar = "Cadastro_com_sucesso";
-	    $tag_voltar = "Cadastro_-_Voltar";
-	    break;
-	case 'pagamento_ok':
-	    $tag_avancar = "Pagamento_efetuado_com_sucesso";
-	    $tag_voltar = "";
-	    break;
+        $tag_voltar = "2._Conferir_Itens_-_Voltar-TAG";
+        break;
+    case 'etapa3_2':
+        $tag_avancar = "3._Identificaçao_-_Autentique-se";
+        $tag_voltar = "3._Identificaçao_-_Cadastre-se";
+        break;
+    case 'etapa4':
+        $tag_avancar = "4._Confirmaçao_-_Avançar";
+        $tag_voltar = "4._Confirmaçao_-_Alterar_pedido";
+        break;
+    case 'etapa5':
+        $tag_avancar = "";
+        $tag_voltar = "5._Pagamento_-_Voltar";
+        break;
+    case 'cadatro???':
+        $tag_avancar = "Cadastro_com_sucesso";
+        $tag_voltar = "Cadastro_-_Voltar";
+        break;
+    case 'pagamento_ok':
+        $tag_avancar = "Pagamento_efetuado_com_sucesso";
+        $tag_voltar = "";
+        break;
     }
 
     switch ($_GET['tag']) {
-	case "1._Escolha_de_assentos_-_Avançar":
-	    $id = '8741';
-	    break;
-	case "2._Conferir_Itens_-_Avançar":
-	    $id = '8741';
-	    break;
-	case "2._Conferir_Itens_-_Voltar":
-	    $id = '8742';
-	    break;
-	case "3._Identificaçao_-_Autentique-se":
-	    $id = '8744';
-	    break;
-	case "3._Identificaçao_-_Cadastre-se-TAG":
-	    $id = '8743';
-	    break;
-	case "4._Confirmaçao_-_Avançar-TAG":
-	    $id = '8747';
-	    break;
-	case "4._Confirmaçao_-_Alterar_pedido-TAG":
-	    $id = '8748';
-	    break;
-	case "5._Pagamento_-_Voltar-TAG":
-	    $id = '8749';
-	    break;
-	case "Cadastro_com_sucesso-TAG":
-	    $id = '8745';
-	    break;
-	case "Cadastro_-_Voltar-TAG":
-	    $id = '8746';
-	    break;
-	case "Pagamento_efetuado_com_sucesso-TAG":
-	    $id = '8750';
-	    break;
+    case "1._Escolha_de_assentos_-_Avançar":
+        $id = '8741';
+        break;
+    case "2._Conferir_Itens_-_Avançar":
+        $id = '8741';
+        break;
+    case "2._Conferir_Itens_-_Voltar":
+        $id = '8742';
+        break;
+    case "3._Identificaçao_-_Autentique-se":
+        $id = '8744';
+        break;
+    case "3._Identificaçao_-_Cadastre-se-TAG":
+        $id = '8743';
+        break;
+    case "4._Confirmaçao_-_Avançar-TAG":
+        $id = '8747';
+        break;
+    case "4._Confirmaçao_-_Alterar_pedido-TAG":
+        $id = '8748';
+        break;
+    case "5._Pagamento_-_Voltar-TAG":
+        $id = '8749';
+        break;
+    case "Cadastro_com_sucesso-TAG":
+        $id = '8745';
+        break;
+    case "Cadastro_-_Voltar-TAG":
+        $id = '8746';
+        break;
+    case "Pagamento_efetuado_com_sucesso-TAG":
+        $id = '8750';
+        break;
     }
 
     $script = ($id) ? '<!-- SCRIPT TAG -->
-			<script language="JavaScript" type="text/JavaScript">
-			var ADM_rnd_' . $id . ' = Math.round(Math.random() * 9999);
-			var ADM_post_' . $id . ' = new Image();
-			ADM_post_' . $id . '.src = \'https://ia.nspmotion.com/ptag/?pt=' . $id . '&r=\'+ADM_rnd_' . $id . ';
-			</script>
-			<!-- END SCRIPT TAG -->' : '';
+            <script language="JavaScript" type="text/JavaScript">
+            var ADM_rnd_' . $id . ' = Math.round(Math.random() * 9999);
+            var ADM_post_' . $id . ' = new Image();
+            ADM_post_' . $id . '.src = \'https://ia.nspmotion.com/ptag/?pt=' . $id . '&r=\'+ADM_rnd_' . $id . ';
+            </script>
+            <!-- END SCRIPT TAG -->' : '';
     return (isset($_GET['tag']) ? array(
-	'tag_avancar' => ($tag_avancar ? "&tag=" . $tag_avancar : ''),
-	'tag_voltar' => ($tag_voltar ? "&tag=" . $tag_voltar : ''),
-	'script' => $script
+    'tag_avancar' => ($tag_avancar ? "&tag=" . $tag_avancar : ''),
+    'tag_voltar' => ($tag_voltar ? "&tag=" . $tag_voltar : ''),
+    'script' => $script
     ) : array());
 }
 
@@ -2069,65 +2069,65 @@ function cropImageResource($img, $hex=null){
 }
 
 function requestImage($url) {
-	$ch = curl_init();
+    $ch = curl_init();
 
-	curl_setopt ($ch, CURLOPT_URL, $url);
-	curl_setopt ($ch, CURLOPT_BINARYTRANSFER, true);
-	curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt ($ch, CURLOPT_HEADER, false);
-	curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, 0);
-	curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-	curl_setopt ($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt ($ch, CURLOPT_URL, $url);
+    curl_setopt ($ch, CURLOPT_BINARYTRANSFER, true);
+    curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt ($ch, CURLOPT_HEADER, false);
+    curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, 0);
+    curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+    curl_setopt ($ch, CURLOPT_SSL_VERIFYHOST, 0);
 
-	$rawdata = curl_exec($ch);
-	$image = imagecreatefromstring($rawdata);
+    $rawdata = curl_exec($ch);
+    $image = imagecreatefromstring($rawdata);
 
-	curl_close($ch);
+    curl_close($ch);
 
-	/*/===== REMOVER MARCA DAGUA =====
-	$offset_x = 0;
-	$offset_y = 0;
+    /*/===== REMOVER MARCA DAGUA =====
+    $offset_x = 0;
+    $offset_y = 0;
 
-	$new_width = imagesx($image);
-	$new_height = imagesy($image) - 20;
+    $new_width = imagesx($image);
+    $new_height = imagesy($image) - 20;
 
-	$new_image = imagecreate($new_width, $new_height);
-	imagecopy($new_image, $image, 0, 0, $offset_x, $offset_y, $new_width, $new_height);
+    $new_image = imagecreate($new_width, $new_height);
+    imagecopy($new_image, $image, 0, 0, $offset_x, $offset_y, $new_width, $new_height);
 
-	$image = $new_image;
-	//===== REMOVER MARCA DAGUA =====*/
+    $image = $new_image;
+    //===== REMOVER MARCA DAGUA =====*/
 
-	return $image;
+    return $image;
 }
 
 function encodeToBarcode($text, $type = 'Aztec', $properties = array()) {
-	if (empty($text)) return false;
-	
+    if (empty($text)) return false;
+    
     if ($type == 'Aztec') {
-		$code = Encoder::encode($text);
+        $code = Encoder::encode($text);
         $renderer = new PngRenderer();
 
         $image = imagecreatefromstring($renderer->render($code));
-	}
+    }
 
-	return $image;
+    return $image;
 }
 
 function saveAndGetPath($image, $name) {
-	$path = '../images/temp/' . $name . '.png';
+    $path = '../images/temp/' . $name . '.png';
 
-	$png = imagepng($image, $path);
+    $png = imagepng($image, $path);
 
-	return $path;
+    return $path;
 }
 
 function getBase64ImgString($path) {
-	if (!file_exists($path)) return false;
+    if (!file_exists($path)) return false;
 
-	$type = pathinfo($path, PATHINFO_EXTENSION);
-	$data = file_get_contents($path);
+    $type = pathinfo($path, PATHINFO_EXTENSION);
+    $data = file_get_contents($path);
 
-	return 'data:image/' . $type . ';base64,' . base64_encode($data);
+    return 'data:image/' . $type . ';base64,' . base64_encode($data);
 }
 
 function normalize_string($string) {
@@ -2139,53 +2139,71 @@ function normalize_string($string) {
 }
 
 function verificaDisponibilidadeDoSite() {
-	if ($is_manutencao === true) {
-		header("Location: manutencao.php");
-		die();
-	}
+    if ($is_manutencao === true) {
+        header("Location: manutencao.php");
+        die();
+    }
+}
+
+
+function comboGateway($name, $gateway = ""){
+    $mainConnection = mainConnection();
+    $result = executeSQL($mainConnection, "SELECT ID_GATEWAY, DS_GATEWAY, IN_EXIBE_USUARIO FROM MW_GATEWAY WHERE IN_EXIBE_USUARIO = '1'");
+
+    $combo = '<select name="' . $name . '[]" class="inputStyle '. $name .'" id="' . $name . '">';
+    while ($rs = fetchResult($result)) {
+        $selecionavel = "";
+        if($gateway == $rs['ID_GATEWAY']){
+            $selecionavel = "selected";
+        }
+        $combo .= '<option value="' . $rs['ID_GATEWAY'] . '" '. $selecionavel .'>' . utf8_encode($rs["DS_GATEWAY"]) . '</option>';
+    }
+    $combo .= '</select>';
+
+    return $combo;
 }
 
 function getEvento($id_evento) {
-	$query_mysql = "SELECT
-						e.duracao,
-						g.nome as genero,
-						cl.nome as classificacao,
-						t.nome as nome_teatro,
-						t.endereco,
-						t.bairro,
-						ci.nome as cidade,
-						ci.estado as sigla_estado
-					FROM espetaculos e
-					INNER JOIN classificacaos cl on cl.id = e.classificacao_id
-					INNER JOIN generos g on g.id = e.genero_id
-					INNER JOIN teatros t on t.id = e.teatro_id
-					INNER JOIN cidades ci on ci.id = t.cidade_id
-					WHERE cc_id = :id";
+    $query_mysql = "SELECT
+                        e.duracao,
+                        g.nome as genero,
+                        cl.nome as classificacao,
+                        t.nome as nome_teatro,
+                        t.endereco,
+                        t.bairro,
+                        ci.nome as cidade,
+                        ci.estado as sigla_estado
+                    FROM espetaculos e
+                    INNER JOIN classificacaos cl on cl.id = e.classificacao_id
+                    INNER JOIN generos g on g.id = e.genero_id
+                    INNER JOIN teatros t on t.id = e.teatro_id
+                    INNER JOIN cidades ci on ci.id = t.cidade_id
+                    WHERE cc_id = :id";
 
-	$pdo = getConnectionHome();
+    $pdo = getConnectionHome();
 
-	if ($pdo !== false) {
+    if ($pdo !== false) {
 
-		$stmt = $pdo->prepare($query_mysql);
-		$stmt->bindParam(':id', $id_evento);
-		$stmt->execute();
+        $stmt = $pdo->prepare($query_mysql);
+        $stmt->bindParam(':id', $id_evento);
+        $stmt->execute();
 
-		return $stmt->fetch();
+        return $stmt->fetch();
 
-	}
+    }
 
-	return false;
+    return false;
 }
 
 function getEnderecoCliente($id_cliente, $id_endereco) {
-	$mainConnection = mainConnection();
+    $mainConnection = mainConnection();
 
-	if ($id_endereco == -1) {
-		$query = 'SELECT DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO, NR_ENDERECO
-					FROM MW_CLIENTE
-					WHERE ID_CLIENTE = ?';
-		$params = array($_SESSION['user']);
-		$rs = executeSQL($mainConnection, $query, $params, true);
+    if ($id_endereco == -1) {
+        $query = 'SELECT DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO, NR_ENDERECO
+                    FROM MW_CLIENTE
+                    WHERE ID_CLIENTE = ?';
+        $params = array($_SESSION['user']);
+        $rs = executeSQL($mainConnection, $query, $params, true);
 
         //Se algum dados do endereço realmente foi preenchido, exibir. Se nada foi, não irá exibir
         $valida = false;
@@ -2200,13 +2218,13 @@ function getEnderecoCliente($id_cliente, $id_endereco) {
             $rs = array();
         }
 
-	} else {
-		$query = 'SELECT ID_ENDERECO_CLIENTE, DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO, NM_ENDERECO, NR_ENDERECO
-				FROM MW_ENDERECO_CLIENTE
-				WHERE ID_CLIENTE = ? AND ID_ENDERECO_CLIENTE = ?';
-		$params = array($id_cliente, $id_endereco);
-		$rs = executeSQL($mainConnection, $query, $params, true);
-	}
+    } else {
+        $query = 'SELECT ID_ENDERECO_CLIENTE, DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO, NM_ENDERECO, NR_ENDERECO
+                FROM MW_ENDERECO_CLIENTE
+                WHERE ID_CLIENTE = ? AND ID_ENDERECO_CLIENTE = ?';
+        $params = array($id_cliente, $id_endereco);
+        $rs = executeSQL($mainConnection, $query, $params, true);
+    }
 
     if ( !empty($rs) )
     {
@@ -2230,7 +2248,7 @@ function getEnderecoCliente($id_cliente, $id_endereco) {
         $retorno = $rs;
     }
 
-	return $retorno;
+    return $retorno;
 }
 
 function getCartaoImgURL($nm_cartao_exibicao_site) {
@@ -2245,55 +2263,55 @@ function getCartaoImgURL($nm_cartao_exibicao_site) {
 }
 
 function limparImagesTemp() {
-	$dir_name = '../images/temp/';
+    $dir_name = '../images/temp/';
 
-	$files = array_diff(scandir($dir_name), array('..', '.'));
+    $files = array_diff(scandir($dir_name), array('..', '.'));
 
-	foreach ($files as $key => $value) {
-		// todos os gif
-		if (pathinfo($dir_name.$value, PATHINFO_EXTENSION) == 'gif') {
-			// hora anterior ou mais velhos
-			if (filemtime($dir_name.$value) < strtotime('-3 hour')) {
-				unlink($dir_name.$value);
-			}
-		}
-	}
+    foreach ($files as $key => $value) {
+        // todos os gif
+        if (pathinfo($dir_name.$value, PATHINFO_EXTENSION) == 'gif') {
+            // hora anterior ou mais velhos
+            if (filemtime($dir_name.$value) < strtotime('-3 hour')) {
+                unlink($dir_name.$value);
+            }
+        }
+    }
 }
 
 function limparTempAdmin() {
-	$dir_name = '../admin/temp/';
+    $dir_name = '../admin/temp/';
 
-	$files = array_diff(scandir($dir_name), array('..', '.'));
+    $files = array_diff(scandir($dir_name), array('..', '.'));
 
-	foreach ($files as $key => $value) {
-		// se for um diretorio
-		if (is_dir($dir_name.$value)) {
-			// hora anterior ou mais velhos
-			if (filemtime($dir_name.$value.'/.') < strtotime('-3 hour')) {
-				delTree($dir_name.$value);
-			}
-		}
-	}
+    foreach ($files as $key => $value) {
+        // se for um diretorio
+        if (is_dir($dir_name.$value)) {
+            // hora anterior ou mais velhos
+            if (filemtime($dir_name.$value.'/.') < strtotime('-3 hour')) {
+                delTree($dir_name.$value);
+            }
+        }
+    }
 }
 
 function delTree($dir) { 
-	$files = array_diff(scandir($dir), array('.','..')); 
-	foreach ($files as $file) { 
-		(is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file"); 
-	} 
-	return rmdir($dir); 
+    $files = array_diff(scandir($dir), array('.','..')); 
+    foreach ($files as $file) { 
+        (is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file"); 
+    } 
+    return rmdir($dir); 
 } 
 
 function limparCookies() {
-	setcookie('pedido', '', -1);
-	setcookie('id_braspag', '', -1);
-	setcookie('entrega', '', -1);
-	setcookie('binItau', '', -1);
+    setcookie('pedido', '', -1);
+    setcookie('id_braspag', '', -1);
+    setcookie('entrega', '', -1);
+    setcookie('binItau', '', -1);
 
-	setcookie('mc_eid', '', -1);
-	setcookie('mc_cid', '', -1);
+    setcookie('mc_eid', '', -1);
+    setcookie('mc_cid', '', -1);
 
-	setcookie('hotsite', '', -1);
+    setcookie('hotsite', '', -1);
 }
 
 function getIdClienteBaseSelecionada($idBase){
@@ -2320,12 +2338,12 @@ function getIdClienteBaseSelecionada($idBase){
 }
 
 function sendErrorMail($subject, $message) {
-	$namefrom = 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS';
-	$from = '';
+    $namefrom = 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS';
+    $from = '';
 
-	$cc = array('Jefferson => jefferson.ferreira@intuiti.com.br', 'Edicarlos => edicarlos.barbosa@intuiti.com.br');
+    $cc = array('Jefferson => gabriel.queiroz@intuiti.com.br');
 
-	authSendEmail($from, $namefrom, 'gabriel.monteiro@intuiti.com.br', 'Gabriel', $subject, $message, $cc);
+    authSendEmail($from, $namefrom, 'gabriel.queiroz@intuiti.com.br', 'Gabriel', $subject, $message, $cc);
 }
 
 function sendConfirmationMail($id_cliente, $assinatura = false) {

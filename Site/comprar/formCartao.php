@@ -10,7 +10,7 @@ if ($_POST) {
     require('verificarAssinatura.php');
     require('processarDadosCompra.php');
 } else {
-	$mainConnection = mainConnection();
+    $mainConnection = mainConnection();
 
     // se o pedido tiver valor zero ele pode continuar se tiver um ingresso promocional
     // essa variavel nao representao o valor final, este sera recalculado no servidor
@@ -44,22 +44,25 @@ if ($_POST) {
         }
 
         // se alguem evento tiver pagar.me ativo -----
-        $query = "SELECT TOP 1 EP.ID_EVENTO
+        $query = "SELECT EP.ID_GATEWAY
                     FROM MW_EXCECAO_PAGAMENTO EP
                     INNER JOIN MW_EVENTO E ON E.ID_EVENTO = EP.ID_EVENTO
                     INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
                     INNER JOIN MW_RESERVA R ON R.ID_APRESENTACAO = A.ID_APRESENTACAO
-                    WHERE R.ID_SESSION = ?";
+                    WHERE R.ID_SESSION = ? GROUP BY EP.ID_GATEWAY";
         $rs = executeSQL($mainConnection, $query, $params, true);
-
-        $queryAux .= (!empty($rs['ID_EVENTO']) ? " AND id_gateway != 5 " : " AND id_gateway != 6 ");
-        // -------------------------------------------
         
-    	$query = "SELECT cd_meio_pagamento, ds_meio_pagamento, nm_cartao_exibicao_site 
-                      from mw_meio_pagamento
-                      where in_ativo = 1 ". $queryAux ."
-                      and (qt_hr_anteced <= $horas_antes_apresentacao or qt_hr_anteced is null)
-                      ".
+        $quantidadeGateway = numRows($mainConnection, $query, $params);
+        if($quantidadeGateway == 0 || $quantidadeGateway > 1){
+            $rs['ID_GATEWAY'] = 5;
+        }
+
+
+        $query = "SELECT cd_meio_pagamento, ds_meio_pagamento, nm_cartao_exibicao_site 
+                  FROM mw_meio_pagamento 
+                  WHERE in_ativo = 1 ". $queryAux ." AND id_gateway NOT IN
+                    (SELECT id_gateway FROM mw_gateway WHERE in_exibe_usuario = 1 AND id_gateway != ?) AND
+                    (qt_hr_anteced <= $horas_antes_apresentacao or qt_hr_anteced is null)".
                       // se for ambiente de testes nao limitar a exibicao dos meios
                       ($_ENV['IS_TEST']
                         ? ''
@@ -71,40 +74,40 @@ if ($_POST) {
                       ).
                       "
                       order by ds_meio_pagamento";
-    	$result = executeSQL($mainConnection, $query, array(session_id()));
+        $result = executeSQL($mainConnection, $query, array($rs['ID_GATEWAY'], session_id()));
 
         $query = "SELECT top 1 cd_binitau from mw_reserva r
                     inner join mw_apresentacao a on a.id_apresentacao = r.id_apresentacao
                     inner join mw_evento e on e.id_evento = a.id_evento
                     where cd_binitau is not null and id_session = ?";
-    	$bin = executeSQL($mainConnection, $query, array(session_id()), true);
+        $bin = executeSQL($mainConnection, $query, array(session_id()), true);
 
-    	$query = "select e.id_base, e.codpeca from mw_evento e inner join mw_apresentacao a on a.id_evento = e.id_evento inner join mw_reserva r on r.id_apresentacao = a.id_apresentacao where r.id_session = ?";
-    	$rsParcelas = executeSQL($mainConnection, $query, array(session_id()), true);
-    	$conn = getConnection($rsParcelas['id_base']);
-    	$query = 'select qt_parcelas from tabpeca where codpeca = ?';
-    	$rsParcelas = executeSQL($conn, $query, array($rsParcelas['codpeca']), true);
-    	$parcelas = $rsParcelas['qt_parcelas'];
+        $query = "select e.id_base, e.codpeca from mw_evento e inner join mw_apresentacao a on a.id_evento = e.id_evento inner join mw_reserva r on r.id_apresentacao = a.id_apresentacao where r.id_session = ?";
+        $rsParcelas = executeSQL($mainConnection, $query, array(session_id()), true);
+        $conn = getConnection($rsParcelas['id_base']);
+        $query = 'select qt_parcelas from tabpeca where codpeca = ?';
+        $rsParcelas = executeSQL($conn, $query, array($rsParcelas['codpeca']), true);
+        $parcelas = $rsParcelas['qt_parcelas'];
     ?>
         <input type="hidden" name="usuario_pdv" value="<?php echo (isset($_SESSION["usuario_pdv"])) ? $_SESSION["usuario_pdv"] : 0; ?>" />
 
-    	<div class="container_cartoes">
-    		<p class="frase">5.1 Escolha o meio de pagamento</p>
-    		<div class="inputs">
-    			<?php
-    			if ($_ENV['IS_TEST']) {
-    			?>
-    			<div class="container_cartao">
-    				<input id="997" type="radio" name="codCartao" class="radio" value="997"
-    					imgHelp="../images/cartoes/help_default.png" formatoCartao="0000-0000-0000-0000" formatoCodigo="000">
-    				<label class="radio" for="997">
-    					<img src="../images/cartoes/ico_default.png"><br>
-    				</label>
-    				<p class="nome">teste</p>
-    			</div>
-    			<?php
-    			}
-    			while ($rs = fetchResult($result)) {
+        <div class="container_cartoes">
+            <p class="frase">5.1 Escolha o meio de pagamento</p>
+            <div class="inputs">
+                <?php
+                if ($_ENV['IS_TEST']) {
+                ?>
+                <div class="container_cartao">
+                    <input id="997" type="radio" name="codCartao" class="radio" value="997"
+                        imgHelp="../images/cartoes/help_default.png" formatoCartao="0000-0000-0000-0000" formatoCodigo="000">
+                    <label class="radio" for="997">
+                        <img src="../images/cartoes/ico_default.png"><br>
+                    </label>
+                    <p class="nome">teste</p>
+                </div>
+                <?php
+                }
+                while ($rs = fetchResult($result)) {
                     // nao exibir fastcash e pagseguro se tiver promo bin na reserva
                     if ($bin != '' and in_array($rs['cd_meio_pagamento'], array('892', '893', '900', '901', '902'))) continue;
 
@@ -126,24 +129,24 @@ if ($_POST) {
                         $formatoCodigo = ($rs['nm_cartao_exibicao_site'] == 'Amex' ? '0000' : '000');
                     }
 
-    			?>
-    			<div class="container_cartao">
-    				<input id="<?php echo $rs['cd_meio_pagamento']; ?>" type="radio" name="codCartao" class="radio" value="<?php echo $rs['cd_meio_pagamento']; ?>"
-    					imgHelp="../images/cartoes/help_<?php echo file_exists('../images/cartoes/help_'.$rs['nm_cartao_exibicao_site'].'.png') ? utf8_encode($rs['nm_cartao_exibicao_site']) : 'default'; ?>.png"
-    					formatoCartao="<?php echo $formatoCartao ?>"
-    					formatoCodigo="<?php echo $formatoCodigo ?>">
-    				<label class="radio" for="<?php echo $rs['cd_meio_pagamento']; ?>">
-    					<img src="<?php echo getCartaoImgURL($rs['nm_cartao_exibicao_site']); ?>"><br>
-    				</label>
-    				<p class="nome"><?php echo $rs['nm_cartao_exibicao_site'] ? utf8_encode($rs['nm_cartao_exibicao_site']) : utf8_encode($rs['ds_meio_pagamento']); ?></p>
-    			</div>
-    			<?php
-    			}
-    			?>
+                ?>
+                <div class="container_cartao">
+                    <input id="<?php echo $rs['cd_meio_pagamento']; ?>" type="radio" name="codCartao" class="radio" value="<?php echo $rs['cd_meio_pagamento']; ?>"
+                        imgHelp="../images/cartoes/help_<?php echo file_exists('../images/cartoes/help_'.$rs['nm_cartao_exibicao_site'].'.png') ? utf8_encode($rs['nm_cartao_exibicao_site']) : 'default'; ?>.png"
+                        formatoCartao="<?php echo $formatoCartao ?>"
+                        formatoCodigo="<?php echo $formatoCodigo ?>">
+                    <label class="radio" for="<?php echo $rs['cd_meio_pagamento']; ?>">
+                        <img src="<?php echo getCartaoImgURL($rs['nm_cartao_exibicao_site']); ?>"><br>
+                    </label>
+                    <p class="nome"><?php echo $rs['nm_cartao_exibicao_site'] ? utf8_encode($rs['nm_cartao_exibicao_site']) : utf8_encode($rs['ds_meio_pagamento']); ?></p>
+                </div>
+                <?php
+                }
+                ?>
 
-    		</div>
-    	</div>
-    	<div class="container_dados" style="display:block;">
+            </div>
+        </div>
+        <div class="container_dados" style="display:block;">
                 <?php
                 if($_SESSION['usuario_pdv'] == 0){
                 ?>
@@ -234,7 +237,7 @@ if ($_POST) {
                     <p class="frase" style="margin-bottom: -10px;">5.3 Autenticidade</p>
                 </div>
                 <?php } ?>
-    	</div>
+        </div>
 <?php
     }
 }

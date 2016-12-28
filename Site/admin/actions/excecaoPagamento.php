@@ -1,153 +1,123 @@
 <?php
-require_once('../settings/functions.php');
-require_once('../settings/settings.php');
-include('../settings/Log.class.php');
-$mainConnection = mainConnection();
-session_start();
-
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 480, true)) {
+    function inserir_eventos_para_verificacao($conn, $eventos, $pagamento) {
+        $query = 'INSERT INTO MW_EXCECAO_PAGAMENTO (ID_EVENTO, ID_GATEWAY) VALUES (?, ?)';
 
-    $pagina = basename(__FILE__);
+        foreach ($eventos as $key => $value) {
+            $params = array($value, $pagamento[$key]);
+            executeSQL($conn, $query, $params);
 
-    if (isset($_GET['action'])) {
+            $log = new Log($_SESSION['admin']);
+            $log->__set('funcionalidade', 'Anti-fraude - Eventos');
+            $log->__set('parametros', $params);
+            $log->__set('log', $query);
+            $log->save($conn);
+        }
+    }
 
-        require('actions/' . $pagina);
+    function pega_gateway($conn, $id_evento){
+        $query = "SELECT ID_GATEWAY FROM MW_EXCECAO_PAGAMENTO WHERE ID_EVENTO = ?";
+        $result = executeSQL($conn, $query, array($id_evento));
+        while($rr = fetchResult($result)){
+            $resp = $rr['ID_GATEWAY'];
+        }
+        return $resp;
+    }
 
+    function remover_eventos_da_verificacao($conn, $eventos) {
+        $query = 'DELETE FROM MW_EXCECAO_PAGAMENTO WHERE ID_EVENTO = ?';
+
+        foreach ($eventos as $key => $value) {
+            $params = array($value);
+            executeSQL($conn, $query, $params);
+        
+            $log = new Log($_SESSION['admin']);
+            $log->__set('funcionalidade', 'Anti-fraude - Eventos');
+            $log->__set('parametros', $params);
+            $log->__set('log', $query);
+            $log->save($conn);
+        }
+    }
+
+    if ($_GET['action'] == 'getEventos' and isset($_GET['cboLocal'])) {
+
+        $_GET['cboLocal'] = $_GET['cboLocal'] == 'TODOS' ? -1 : $_GET['cboLocal'];
+
+        $query = "SELECT
+                        E.ID_EVENTO,
+                        E.DS_EVENTO,
+                        B.DS_NOME_TEATRO, MIN(A.DT_APRESENTACAO) DT_INICIO, MAX(A.DT_APRESENTACAO) DT_FIM
+                    FROM MW_EVENTO E
+                    INNER JOIN MW_ACESSO_CONCEDIDO AC ON AC.ID_BASE = E.ID_BASE AND AC.CODPECA = E.CODPECA
+                    INNER JOIN MW_BASE B ON B.ID_BASE = E.ID_BASE
+                    INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO AND A.IN_ATIVO = 1
+                    WHERE (E.ID_BASE = ? OR ? = -1) AND AC.ID_USUARIO = ? AND E.IN_ATIVO = 1
+                    GROUP BY E.ID_EVENTO, E.DS_EVENTO, B.DS_NOME_TEATRO HAVING CONVERT(VARCHAR, MAX(A.DT_APRESENTACAO), 112) >= CONVERT(VARCHAR, GETDATE(), 112)
+                    ORDER BY DS_EVENTO, DS_NOME_TEATRO";
+
+        $result = executeSQL($mainConnection, $query, array($_GET['cboLocal'], $_GET['cboLocal'], $_SESSION['admin']));
+
+        ob_start();
+        $contador = 0;
+        while ($rs = fetchResult($result)) {
+            $id = $rs['ID_PROMOCAO'];
+            $contador++;
+        ?>  
+
+            <input type="hidden" name="codEvento[]" value="<?php echo $rs['ID_EVENTO'] ?>" >
+            <tr class="rs">
+                <td><?php echo utf8_encode($rs['DS_EVENTO']); ?></td>
+                <td><?php echo utf8_encode($rs['DS_NOME_TEATRO']); ?></td>
+                <td><?php echo $rs['DT_INICIO']->format('d/m/Y'); ?></td>
+                <td><?php echo $rs['DT_FIM']->format('d/m/Y'); ?></td>
+                <td class="combo_pagamento"><?php echo comboGateway('cbPagamento', pega_gateway($mainConnection, $rs['ID_EVENTO'])); ?></td>
+            </tr>
+        <?php
+        }
+
+        $retorno = ob_get_clean();
+
+    } elseif ($_GET['action'] == 'save') { /* ------------ SALVAR EDICAO ------------ */
+
+        $tamanhoArray = count($_POST['codEvento']);
+        if($tamanhoArray > 0){
+            remover_eventos_da_verificacao($mainConnection, $_POST['codEvento']);
+            inserir_eventos_para_verificacao($mainConnection, $_POST['codEvento'], $_POST['cbPagamento']);
+        }
+
+        $retorno = true;
+        
+
+        // $_POST['evento'] = isset($_POST['evento']) ? $_POST['evento'] : array();
+        // $eventos_atuais = explode(' ', $_POST['eventos_atuais']);
+        // $eventos_atuais = $eventos_atuais[0] == '' ? array() : $eventos_atuais;
+        
+        // // ------------------------------------------------------------------------------
+
+        // $eventos_para_remover = array_diff($eventos_atuais, $_POST['evento']);
+
+        // if (!empty($eventos_para_remover)) {
+        //     remover_eventos_da_verificacao($mainConnection, $eventos_para_remover);
+        // }
+
+        // // ------------------------------------------------------------------------------
+
+        // $eventos_para_inserir = array_diff($_POST['evento'], $eventos_atuais);
+
+        // if (!empty($eventos_para_inserir)) {
+        //     inserir_eventos_para_verificacao($mainConnection, $eventos_para_inserir);
+        // }
+
+        // // ------------------------------------------------------------------------------
+
+        // $retorno = true;
+
+    }
+
+    if (is_array($retorno)) {
+        echo $retorno[0]['message'];
     } else {
-
-        $result_selecionados = executeSQL($mainConnection,
-                                "SELECT E.ID_EVENTO, E.DS_EVENTO, B.DS_NOME_TEATRO, MIN(A.DT_APRESENTACAO) DT_INICIO, MAX(A.DT_APRESENTACAO) DT_FIM
-                                    FROM MW_EVENTO E
-                                    INNER JOIN MW_BASE B ON B.ID_BASE = E.ID_BASE
-                                    INNER JOIN MW_APRESENTACAO A ON A.ID_EVENTO = E.ID_EVENTO
-                                    INNER JOIN MW_EXCECAO_PAGAMENTO EP ON EP.ID_EVENTO = E.ID_EVENTO
-                                    GROUP BY E.ID_EVENTO, E.DS_EVENTO, B.DS_NOME_TEATRO
-                                    ORDER BY DS_EVENTO, DS_NOME_TEATRO");
-?>
-    <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
-    <script type="text/javascript">
-         $(function() {
-                var pagina = '<?php echo $pagina; ?>',
-                    $cboLocal = $('#cboLocal');
-
-            $('.button').button();
-
-            $("#loading").dialog({
-                    autoOpen: false,
-                    modal: true,
-                    buttons: {},
-                    closeOnEscape: false,
-                    open: function(event) { $(".ui-dialog-titlebar-close", $(event.target).parent()).hide(); }
-                    //open: function(event) { $(event.target).parent().hide(); }
-                });
-
-                $cboLocal.on('change', listar_eventos);
-
-                function listar_eventos() {
-                    if ($cboLocal.val()) {
-                        $('#loading').dialog('open');
-
-                        $.ajax({
-                            url: pagina + '?action=getEventos&cboLocal=' + $cboLocal.val()
-                        }).done(function(html){
-                            var ids_selecionados = [];
-
-                            $('#registros').html(html);
-                            $('#loading').dialog('close');
-                        });
-                    }
-                }
-
-            $("#dados").on('submit', function(ev){
-                ev.preventDefault();
-                $('#loading').dialog('open');
-                $.ajax({
-                    url: pagina+'?action=save',
-                    type: 'post',
-                    data: $(this).serialize()
-                }).done(function(data){
-                    var erro = $.getUrlVar('erro', data),
-                        id = $.getUrlVar('id', data),
-                        msg = $.getUrlVar('msg', data);
-
-                    $('#loading').dialog('close');
-
-                    if (erro) {
-                        $.dialog({text: erro});
-                    } else {
-                        $.dialog({text: 'Dados alterados com sucesso.'});
-                    }
-                });
-            });
-        });
-    </script>
-    <style type="text/css">
-        .disponiveis, .selecionados {
-            max-height: 300px;
-            overflow-y: scroll;
-        }
-        .nm_evento {
-            width: 34%;
-        }
-        .nm_local {
-            width: 33%;
-        }
-        .data {
-            width: 10%;
-        }
-        .chk_evento {
-            width: 13%;
-            text-align: right;
-        }
-        .nm_evento, .nm_local {
-            text-align: left;
-        }
-        </style>
-    <h2>Meio de Pagamento Alternativo - Eventos</h2>
-    <form id="dados" name="dados" method="post">
-        <input type="hidden" name="id" value="<?php echo $_GET['id']; ?>" />
-            <table>
-                <tr>
-                    <td>
-                        <b>Local:</b><br/>
-                        <?php echo comboTeatroPorUsuario('cboLocal', $_SESSION['admin'], $_GET['local']); ?>
-                    </td>
-                </tr>
-            </table>
-            <br/><br/>
-            <table class="ui-widget ui-widget-content">
-                <thead>
-                    <tr class="ui-widget-header">
-                        <th class="nm_evento">Eventos</th>
-                        <th class="nm_local">Local</th>
-                        <th class="data">Data Início</th>
-                        <th class="data">Data Término</th>
-                        <th class="combo_pagamento">Meio de Pagamento</th>
-                    </tr>
-                </thead>
-            </table>
-            <div class="disponiveis">
-                <table class="ui-widget ui-widget-content">
-                    <thead>
-                        <tr>
-                            <th class="nm_evento"></th>
-                            <th class="nm_local">
-                                <th class="data"></th>
-                                <th class="data"></th>
-                            </th>
-                            <th class="combo_pagamento"></th>
-                        </tr>
-                    </thead>
-                    <tbody id="registros"></tbody>
-                </table>
-            </div><br/>
-            <input type="hidden" name="eventos_atuais" value="<?php echo implode(' ', $eventos_atuais); ?>" />
-
-            <input type="submit" class="button" value="Salvar" />
-    </form>
-
-    <div id="resposta"></div>
-<?php
+        echo $retorno;
     }
 }
 ?>

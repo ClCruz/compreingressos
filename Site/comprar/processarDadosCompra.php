@@ -723,13 +723,12 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
 
             if ($response['success'] AND $response['transaction']['retorno']['rc'] == '0') {
 
-
                 $result = new stdClass();
 
                 $result->AuthorizeTransactionResult->OrderData->BraspagOrderId = 'TiPagos';
-                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId = $response['transaction']->id;
-                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId = $response['transaction']['retorno']['nsuTipagos'];
-                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AuthorizationCode = $response['transaction']['retorno']['codAutorizacao'];
+                // $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId = $response['transaction']->id;
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId = $response['transaction']['nsuTipagos'];
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AuthorizationCode = $response['transaction']['codAutorizacao'];
                 $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->PaymentMethod = $_POST['codCartao'];
 
                 require('concretizarCompra.php');

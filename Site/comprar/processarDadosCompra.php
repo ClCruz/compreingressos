@@ -399,7 +399,7 @@ $params = array
                 ,$email_presente
                 ,$PaymentDataCollection['CardNumber']
                 ,$_SESSION['origem']
-                ,$PaymentDataCollection['CardHolder']
+                ,utf8_decode($PaymentDataCollection['CardHolder'])
                 ,$newMaxId
                 ,$_SESSION['user']
         );

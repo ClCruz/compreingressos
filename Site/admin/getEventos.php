@@ -21,7 +21,7 @@ $result = executeSQL($conn, $query);
 // Cria sessao com nome da base utilizada
 $_SESSION["IdBase"] = $_POST["NomeBase"];
 $_SESSION["NomeBase"] = $stmt["DS_NOME_BASE_SQL"];
-$retorno = "";
+$retorno = "<option value=''>Selecione...</option>";
 if (hasRows($result)) {
   while ($rs = fetchResult($result)) {
     $retorno .= "<option value=\"" . $rs["CodPeca"] . "\">" . utf8_encode($rs["nomPeca"]) . "</option>\n";

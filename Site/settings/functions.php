@@ -2341,9 +2341,9 @@ function sendErrorMail($subject, $message) {
     $namefrom = 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS';
     $from = '';
 
-    $cc = array('Jefferson => gabriel.queiroz@intuiti.com.br');
+    $cc = array('Jefferson => jefferson.ferreira@intuiti.com.br', 'Edicarlos => edicarlos.barbosa@intuiti.com.br');
 
-    authSendEmail($from, $namefrom, 'gabriel.queiroz@intuiti.com.br', 'Gabriel', $subject, $message, $cc);
+    authSendEmail($from, $namefrom, 'gabriel.monteiro@intuiti.com.br', 'Gabriel', $subject, $message, $cc);
 }
 
 function sendConfirmationMail($id_cliente, $assinatura = false) {

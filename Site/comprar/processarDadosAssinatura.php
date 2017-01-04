@@ -59,7 +59,7 @@ foreach($rs as $key => $val) {
 $valor_pagar = getPrimeiroValorAssinatura($_SESSION['user'], $_POST['id']);
 
 if ($valor_pagar == 0) {
-	$valor_pagar = 0.01;
+	$valor_pagar = 1.00;
 	$cancelar_em_sucesso = true;
 } else {
 	$cancelar_em_sucesso = false;

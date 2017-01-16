@@ -30,6 +30,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 7, true)) {
             $(function() {
                 var pagina = '<?php echo $pagina; ?>'
 
+
+
                 $('#app table').delegate('a', 'click', function(event) {
                     event.preventDefault();
 
@@ -38,11 +40,33 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 7, true)) {
                     id = 'idMeioPagamento=' + $.getUrlVar('idMeioPagamento', href) + '&idBase=' + $.getUrlVar('idBase', href),
                     tr = $this.closest('tr');
 
-                    if (href.indexOf('?action=update') != -1) {
+                    if (href.indexOf('?action=add') != -1 || href.indexOf('?action=update') != -1) {
                         if (!validateFields()) return false;
 
-                        //var formDados       = document.forms.dados;
-                        //var meioPgto        = formDados.idMeioPagamento;
+                            var formDados       = document.forms.dados;
+
+
+                        $.ajax({
+                            url: href,
+                            type: 'post',
+                            data: $('#dados').serialize() + '&ds_forpagto=' + $('#idFormaPagamento option:selected').text(),
+                            success: function(data) {
+                                if (data.substr(0, 4) == 'true') {
+                                    var id = $.serializeUrlVars(data);
+
+                                    tr.find('td:not(.button):eq(1)').html($('#dt_Inicio').text());
+                                    tr.find('td:not(.button):eq(2)').html($('#dt_Fim').text());
+
+                                    $this.text('Editar').attr('href', pagina + '?action=edit&' + id);
+                                    tr.find('td.button a:last').attr('href', pagina + '?action=delete&' + id);
+                                    tr.removeAttr('id');
+                                    location.reload(true);
+                                } else {
+                                    $.dialog({text: 'Restrição cadastrada com sucesso !', icon: 'ok' });
+                                    location.reload(true);
+                                }
+                            }
+                        });
 
 
                     } else if (href.indexOf('?action=edit') != -1 || href.indexOf('?action=add') != -1) {
@@ -56,29 +80,34 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 7, true)) {
                             values.push($(this).text());
                         });
 
-                        //tr.find('td:not(.button):eq(0)').html('<?php echo comboMeioPagamento('idMeioPagamento'); ?>');
                         tr.find('td:not(.button):eq(2)').html('<?php echo '<input type="text" name="dt_inicio" id="dt_inicio" class="datePicker" size="7">'; ?>');
                         tr.find('td:not(.button):eq(3)').html('<?php echo '<input type="text" name="dt_fim" id="dt_fim" class="datePicker" size="7">'; ?>');
-                        //$('#idMeioPagamento option').filter(function(){return $(this).text() == values[0]}).attr('selected', 'selected');
-                        //tr.find('td:not(.button):eq(1)').html('<?php echo comboFormaPagamento('idFormaPagamento', $_GET['teatro']); ?>');
-                        //$('#idFormaPagamento option').filter(function(){return $(this).text() == values[1]}).attr('selected', 'selected');
-                        //tr.find('td:not(.button):eq(2)').html('<input name="in_transacao_pdv" type="checkbox" class="inputStyle" id="in_transacao_pdv" ' + (values[2] == 'Sim' ? 'checked' : ''  )+ ' />');
+                        $('input.datePicker').prop('readonly', true).datepicker({
+                            changeMonth: true,
+                            changeYear: true
+                        }).datepicker('option', $.datepicker.regional['pt-BR']);
 
-                        $this.text('Salvar').attr('href', pagina + '?action=update&' + id);
+                        $('#dt_inicio').on('change', function() {
+                            $("#dt_fim").datepicker("option", "minDate", $(this).val()).trigger('change');
+                        });
+
+                        $this.text('Salvar').attr('href', pagina + '?action=add&' + id);
 
                         setDatePickers();
+
                     } else if (href == '#delete') {
                         tr.remove();
                     } else if (href.indexOf('?action=delete') != -1) {
                         $.confirmDialog({
-                            text: 'Tem certeza que deseja apagar este registro?',
+                            text: 'Tem certeza que deseja retirar a restrição de meio de pagamento ?',
                             uiOptions: {
                                 buttons: {
                                     'Sim': function() {
                                         $(this).dialog('close');
                                         $.get(href, function(data) {
                                             if (data.replace(/^\s*/, "").replace(/\s*$/, "") == 'true') {
-                                                tr.remove();
+                                                //tr.remove();
+                                                location.reload(true);
                                             } else {
                                                 $.dialog({text: data});
                                             }
@@ -90,41 +119,31 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 7, true)) {
                     }
                 });
 
-                $('#new').button().click(function(event) {
-                    event.preventDefault();
 
-                    if(!hasNewLine()) return false;
-
-                    var newLine = '<tr id="newLine">' +
-                        '<td>' +
-                        '<?php echo comboMeioPagamento('idMeioPagamento'); ?>' +
-                        '</td>' +
-                        '<td>'+
-                        '<?php echo comboFormaPagamento('idFormaPagamento', $_GET['teatro']); ?>' +
-                        '</td>' +
-                        '<td class="center"><input name="in_transacao_pdv" type="checkbox" class="inputStyle" id="in_transacao_pdv" /></td>' +
-                        '<td class="button"><a href="' + pagina + '?action=add">Salvar</a></td>' +
-                        '<td class="button"><a href="#delete">Apagar</a></td>' +
-                        '</tr>';
-                    $(newLine).appendTo('#app table tbody');
-                    setDatePickers();
-                });
 
                 $('#teatro').change(function() {
                     document.location = '?p=' + pagina.replace('.php', '') + '&teatro=' + $(this).val();
                 });
 
                 function validateFields() {
-                    //var idMeioPagamento = $('#idMeioPagamento'),
-                    //idFormaPagamento = $('#idFormaPagamento'),
+                    var dtInicio = $('#dt_inicio');
+                    var dtFim    = $('#dt_fim');
+
                     valido = true;
 
-                    /* if (idMeioPagamento.val() == '') {
-                        idMeioPagamento.parent().addClass('ui-state-error');
+                    if (dtInicio.val() == '') {
+                        dtInicio.parent().addClass('ui-state-error');
                         valido = false;
                     } else {
-                        idMeioPagamento.parent().removeClass('ui-state-error');
-                    }*/
+                         dtInicio.parent().removeClass('ui-state-error');
+                    }
+
+                    if (dtFim.val() == '') {
+                        dtFim.parent().addClass('ui-state-error');
+                        valido = false;
+                    } else {
+                        dtFim.parent().removeClass('ui-state-error');
+                    }
 
                     return valido;
                 }
@@ -160,22 +179,21 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 7, true)) {
                 $idMeioPagamento = $rs['ID_MEIO_PAGAMENTO'];
                 $idBase = $rs['ID_BASE'];
 
-                //print_r($rs);
             ?>
                 <tr>
                     <td><?php echo comboMeioPagamento('idMeioPagamento', $idMeioPagamento, false); ?></td>
                     <td class="center"><?php echo ($rs['IND_RESTRICAO'] == 1 ? '<b>Sim</b>' : 'N&atilde;o'); ?></td>
                     <td class="center"><?php echo $rs['INI_RESTRICAO']; ?></td>
                     <td class="center"><?php echo $rs['FIM_RESTRICAO']; ?></td>
-                    <td class="button"><a href="<?php echo $pagina; ?>?action=<?php echo ($rs['IND_RESTRICAO'] == 1 ? 'update' : 'add'); ?>&idMeioPagamento=<?php echo $idMeioPagamento; ?>&idBase=<?php echo $_GET['teatro']; ?>"><?php echo $rs['IND_RESTRICAO'] == 1 ? 'Editar' : 'Criar'; ?></a></td>
-                    <td class="button"><a href="<?php echo $pagina; ?>?action=delete&idMeioPagamento=<?php echo $idMeioPagamento; ?>&idBase=<?php echo $_GET['teatro']; ?>">Apagar</a></td>
+                    <td class="button"><a href="<?php echo $pagina; ?>?action=<?php echo ($rs['IND_RESTRICAO'] == 1 ? '  ' : 'edit'); ?>&idMeioPagamento=<?php echo $idMeioPagamento; ?>&idBase=<?php echo $_GET['teatro']; ?>"><?php echo $rs['IND_RESTRICAO'] == 1 ? '   ' : 'Criar'; ?></a></td>
+                    <td class="button"><a href="<?php echo $pagina; ?>?action=delete&idMeioPagamento=<?php echo $idMeioPagamento; ?>&idBase=<?php echo $_GET['teatro']; ?>"><?php echo $rs['IND_RESTRICAO'] == 1 ? 'Apagar' : ''; ?></a></td>
                 </tr>
             <?php
             }
             ?>
         </tbody>
     </table>
-    <a id="new" href="#new">Novo</a>
+
 </form>
 <?php
         }

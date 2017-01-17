@@ -80,9 +80,9 @@ function pagarPedidoTiPagos($id_pedido, $dados_extra) {
 			}
 
 
-			$dados = array("header" => array("idLoja"=>"7309", 
-									 "keyLoja"=>"49994822278418282883",
-									 "codProduto"=>"47"),
+			$dados = array("header" => array("idLoja"=>"7922", 
+									 "keyLoja"=>"88281288497982783035",
+									 "codProduto"=>"55"),
 				   "tipoCapturaCliente"=>"3",
 				   "dadosCliente"=>$dadosCartao,
 				   "codSeguranca"=>$dados_extra['codSeguranca'],
@@ -231,9 +231,9 @@ function estonarPedidoTiPagos($id_pedido, $bank_data = array()) {
     $transaction = unserialize(base64_decode($rs['OBJ_PAGSEGURO']));
 
 
-    $dados = array("header" => array("idLoja"=>"7309", 
-									 "keyLoja"=>"49994822278418282883",
-									 "codProduto"=>"47"),
+    $dados = array("header" => array("idLoja"=>"7922", 
+									 "keyLoja"=>"88281288497982783035",
+									 "codProduto"=>"55"),
 				   "nsuTipagos"=>$transaction['nsuTipagos'],
 				   "valor"=>100);
 

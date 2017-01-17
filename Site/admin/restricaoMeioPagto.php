@@ -19,7 +19,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 7, true)) {
                 LEFT JOIN MW_BASE_MEIO_PAGAMENTO BSM WITH (NOLOCK)
                 ON MPF.ID_BASE = BSM.ID_BASE
                 AND MPF.ID_MEIO_PAGAMENTO = BSM.ID_MEIO_PAGAMENTO
-                WHERE MPF.ID_BASE = ?
+                WHERE MPF.ID_BASE = ? AND MP.IN_ATIVO = 1
                 ORDER BY MP.DS_MEIO_PAGAMENTO ASC";
 
         $result = executeSQL($mainConnection, $qry , array($_GET['teatro']));

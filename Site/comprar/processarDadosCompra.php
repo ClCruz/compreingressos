@@ -498,7 +498,7 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
     $pagamento_pagseguro = in_array($_POST['codCartao'], array('900', '901', '902'));
     $pagamento_pagarme = in_array($_POST['codCartao'], array('910', '911'));
     $pagamento_tipagos = in_array($_POST['codCartao'], array('998'));
-    $pagamento_braspag = (!$pagamento_fastcash and !$pagamento_pagseguro and !$pagamento_pagarme);
+    $pagamento_braspag = (!$pagamento_fastcash and !$pagamento_pagseguro and !$pagamento_pagarme and !$pagamento_tipagos);
     
     // pular o bloco abaixo para vendas pelo fastcash e pagseguro
     if ($_SESSION['usuario_pdv'] !== 1 and $PaymentDataCollection['Amount'] != 0 and $pagamento_braspag) {
@@ -721,12 +721,16 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
 
             $response = pagarPedidoTiPagos($parametros['OrderData']['OrderId'], $_POST);
 
+            executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+                array($_SESSION['user'], json_encode(array('descricao' => '4. retorno do pedido=' . $parametros['OrderData']['OrderId'], 'tipagos_obj' => json_encode($response['transaction']))))
+            );
+
             if ($response['success'] AND $response['transaction']['retorno']['rc'] == '0') {
 
                 $result = new stdClass();
 
                 $result->AuthorizeTransactionResult->OrderData->BraspagOrderId = 'TiPagos';
-                // $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId = $response['transaction']->id;
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId = $response['transaction']['nsuTipagos'];
                 $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId = $response['transaction']['nsuTipagos'];
                 $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AuthorizationCode = $response['transaction']['codAutorizacao'];
                 $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->PaymentMethod = $_POST['codCartao'];
@@ -738,7 +742,7 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
 
                 die("redirect.php?redirect=".urlencode("pagamento_ok.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : '')));
             } else{
-                die($response['error']['description']);
+                $descricao_erro = "Transação não autorizada.";
             }
         }
         // se for um usuario do pdv

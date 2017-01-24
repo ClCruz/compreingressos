@@ -3,12 +3,23 @@ require_once('../settings/functions.php');
 
 if ($_ENV['IS_TEST']) {
 	$url_ws  = "https://www.ti-pagos.com/bridgeservices/";
+	$idLoja = "7309"; 
+	$keyLoja = "49994822278418282883";
+	$codProduto = "47";
+
 } else {
 	$url_ws  = "https://www.ti-pagos.com/bridgeservices/";
+	$idLoja = "7922"; 
+	$keyLoja = "88281288497982783035";
+	$codProduto = "55";
 }
 
 function pagarPedidoTiPagos($id_pedido, $dados_extra) {
 	global $url_ws;
+	global $idLoja;
+	global $keyLoja;
+	global $codProduto;
+
 
 	$mainConnection = mainConnection();
 
@@ -80,9 +91,9 @@ function pagarPedidoTiPagos($id_pedido, $dados_extra) {
 			}
 
 
-			$dados = array("header" => array("idLoja"=>"7309", 
-									 "keyLoja"=>"49994822278418282883",
-									 "codProduto"=>"47"),
+			$dados = array("header" => array("idLoja"=>$idLoja, 
+									 "keyLoja"=>$keyLoja,
+									 "codProduto"=>$codProduto),
 				   "tipoCapturaCliente"=>"3",
 				   "dadosCliente"=>$dadosCartao,
 				   "codSeguranca"=>$dados_extra['codSeguranca'],
@@ -90,7 +101,7 @@ function pagarPedidoTiPagos($id_pedido, $dados_extra) {
 				   "formaPagamento"=>$formaPagamento,
 				   "qtdeParcelas"=>$dados_extra['parcelas'],
 				   "transacaoCapturada"=>true,
-				   "descricaoPedido"=>"Teste", "nsuTransacao"=>"GABD5648642");
+				   "descricaoPedido"=>$id_pedido, "nsuTransacao"=>preg_replace('/\{|\}|\-/', "", com_create_guid()));
 
 			$post_data = json_encode($dados);
 
@@ -113,114 +124,56 @@ function pagarPedidoTiPagos($id_pedido, $dados_extra) {
 				$params = array($id_pedido, $response['transaction']['retorno']['rc'], base64_encode(serialize($response['transaction'])));
 				executeSQL($mainConnection, $query, $params);
 			} else {
-				$response = array('success' => false, 'error' => getStatusTiPagos($resp['retorno']['rc']));
+				$response = array('success' => false, 'error' => tratarErroTiPagos($resp['retorno']['rc']));
 			}
 
 		return $response;
 }
 
-function getStatusTiPagos($id) {
-	$status = array(
-		'1' =>  array(
-			'description' => 'Erro na Aplicação.'
-		),
-		'2' => array(
-			'description' => 'Id de conexão inválido.'
-		),
-		'7' => array(
-			'description' => 'Tipo de captura do cliente não suportado.'
-		),
-		'8' => array(
-			'description' => 'Transação não autorizada.'
-		),
-		'9' => array(
-			'description' => 'Erro na validação da Loja / Terminal.'
-		),
-		'10' => array(
-			'description' => 'Loja / Canal não encontrado.'
-		),
-		'11' => array(
-			'description' => 'A Loja não está ativa.'
-		),
-		'12' => array(
-			'description' => 'Key da loja inválida.'
-		),
-		'13' => array(
-			'description' => 'Terminal não encontrado'
-		),
-		'14' => array(
-			'description' => 'Terminal não está ativo.'
-		),
-		'16' => array(
-			'description' => 'A loja não está habilitada para a bandeira / tipo de compra recebidos.'
-		),
-		'17' => array(
-			'description' => 'Não foram encontrados adquirentes cadastrados para a loja.'
-		),
-		'18' => array(
-			'description' => 'O adquirente cadastrado para a transação não é suportado por esta versão.'
-		),
-		'19' => array(
-			'description' => 'Transação não localizada para o NSU informado.'
-		),
-		'20' => array(
-			'description' => 'Erro ao enviar transação para o adquirente.'
-		),
-		'23' => array(
-			'description' => 'Tipo de parcelamento inválido.'
-		),
-		'30' => array(
-			'description' => 'Valor de parcelamento inferior ao mínimo permitido.'
-		),
-		'34' => array(
-			'description' => 'Dados do cliente informados inválidos.'
-		),
-		'42' => array(
-			'description' => 'Transação negada.'
-		),
-		'55' => array(
-			'description' => 'Bandeira ou cartão recebido não suportado.'
-		),
-		'56' => array(
-			'description' => 'Não foi possível buscar o plano para o tipo de compra enviado.'
-		),
-		'57' => array(
-			'description' => 'Tipo de compra enviado não parametrizado para a loja.'
-		),
-		'58' => array(
-			'description' => 'Repasse já efetuado para a transação enviada. Não será possível concluir a operação.'
-		),
-		'59' => array(
-			'description' => 'Dados do cliente insuficientes para o tipo de adquirente associado a loja.'
-		),
-		'62' => array(
-			'description' => 'Bandeira não disponível para o plano / produto.'
-		),
-		'65' => array(
-			'description' => 'Tipo de captura do cliente não suportado.'
-		),
-		'66' => array(
-			'description' => 'Data de expiração do cartão não informada.'
-		),
-		'67' => array(
-			'description' => 'Data de expiração do cartão com formato inválido.'
-		),
-		'68' => array(
-			'description' => 'CVV2/CVC2 não informado.'
-		),
-		'69' => array(
-			'description' => 'CVV2/CVC2 com formato inválido.'
-		),
-		'73' => array(
-			'description' => 'Canal sem plano definido.'
-		)
-	);
+function tratarErroTiPagos($id) {
+	switch ($id) {
+		case '1': $msg_nova = 'Erro na Aplicação.'; break;
+		case '2': $msg_nova = 'Id de conexão inválido.'; break;
+		case '7': $msg_nova = 'Tipo de captura do cliente não suportado.'; break;
+		case '8': $msg_nova = 'Transação não autorizada.'; break;
+		case '9': $msg_nova = 'Erro na validação da Loja / Terminal.'; break;
+		case '10': $msg_nova = 'Loja / Canal não encontrado.'; break;
+		case '11': $msg_nova = 'A Loja não está ativa.'; break;
+		case '12': $msg_nova = 'Key da loja inválida.'; break;
+		case '13': $msg_nova = 'Terminal não encontrado'; break;
+		case '14': $msg_nova = 'Terminal não está ativo.'; break;
+		case '16': $msg_nova = 'A loja não está habilitada para a bandeira / tipo de compra recebidos.'; break;
+		case '17': $msg_nova = 'Não foram encontrados adquirentes cadastrados para a loja.'; break;
+		case '18': $msg_nova = 'O adquirente cadastrado para a transação não é suportado por esta versão.'; break;
+		case '19': $msg_nova = 'Transação não localizada para o NSU informado.'; break;
+		case '20': $msg_nova = 'Erro ao enviar transação para o adquirente.'; break;
+		case '23': $msg_nova = 'Tipo de parcelamento inválido.'; break;
+		case '30': $msg_nova = 'Valor de parcelamento inferior ao mínimo permitido.'; break;
+		case '34': $msg_nova = 'Dados do cliente informados inválidos.'; break;
+		case '42': $msg_nova = 'Transação negada.'; break;
+		case '55': $msg_nova = 'Bandeira ou cartão recebido não suportado.'; break;
+		case '56': $msg_nova = 'Não foi possível buscar o plano para o tipo de compra enviado.'; break;
+		case '57': $msg_nova = 'Tipo de compra enviado não parametrizado para a loja.'; break;
+		case '58': $msg_nova = 'Repasse já efetuado para a transação enviada. Não será possível concluir a operação.'; break;
+		case '59': $msg_nova = 'Dados do cliente insuficientes para o tipo de adquirente associado a loja.'; break;
+		case '62': $msg_nova = 'Bandeira não disponível para o plano / produto.'; break;
+		case '65': $msg_nova = 'Tipo de captura do cliente não suportado.'; break;
+		case '66': $msg_nova = 'Data de expiração do cartão não informada.'; break;
+		case '67': $msg_nova = 'Data de expiração do cartão com formato inválido.'; break;
+		case '68': $msg_nova = 'CVV2/CVC2 não informado.'; break;
+		case '69': $msg_nova = 'CVV2/CVC2 com formato inválido.'; break;
+		case '73': $msg_nova = 'Canal sem plano definido.'; break;
+		default: $msg_nova = "Erro de processamento. ($id)"; break;
+	}
 
-	return $status[$id];
+	return $msg_nova;
 }
 
 function estonarPedidoTiPagos($id_pedido, $bank_data = array()) {
 	global $url_ws;
+	global $idLoja;
+	global $keyLoja;
+	global $codProduto;
 
 	$mainConnection = mainConnection();
 
@@ -231,11 +184,10 @@ function estonarPedidoTiPagos($id_pedido, $bank_data = array()) {
     $transaction = unserialize(base64_decode($rs['OBJ_PAGSEGURO']));
 
 
-    $dados = array("header" => array("idLoja"=>"7309", 
-									 "keyLoja"=>"49994822278418282883",
-									 "codProduto"=>"47"),
-				   "nsuTipagos"=>$transaction['nsuTipagos'],
-				   "valor"=>100);
+    $dados = array("header" => array("idLoja"=>$idLoja, 
+									 "keyLoja"=>$keyLoja,
+									 "codProduto"=>$codProduto),
+				   "nsuTipagos"=>$transaction['nsuTipagos']);
 
     $post_data = json_encode($dados);
 
@@ -251,6 +203,8 @@ function estonarPedidoTiPagos($id_pedido, $bank_data = array()) {
 
 	$resp = json_decode($server_output, true);
 
+	// print_r($resp);
+
 	if($resp['retorno']['rc'] == '0') {
 		$response = array('success' => true, 'transaction' => $transaction);
 
@@ -259,15 +213,9 @@ function estonarPedidoTiPagos($id_pedido, $bank_data = array()) {
 		executeSQL($mainConnection, $query, $params);
 
     } else {
-
-        $response = array('success' => false, 'error' => getStatusTiPagos($resp['retorno']['rc']));
+        $response = array('success' => false, 'error' => tratarErroTiPagos($resp['retorno']['rc']));
 
     }
 
     return $response;
-}
-function tratarErroTiPagos($error_obj) {
-	$nova_msg = $error_obj->getMessage();
-
-	return $nova_msg;
 }

@@ -125,7 +125,7 @@ if ($_POST) {
                     }
                     // TIPagos
                     elseif (in_array($rs['cd_meio_pagamento'], array('998'))) {
-                        $formatoCartao = '0000-0000-0000-0000';
+                        $formatoCartao = '00000000000000000000';
                         $formatoCodigo = '0000';
                     }
                     // outros meios

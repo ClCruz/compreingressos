@@ -58,33 +58,23 @@ if ($_POST) {
         }
 
 
-        $query  = " select distinct m.cd_meio_pagamento, m.ds_meio_pagamento, m.nm_cartao_exibicao_site
-                    from mw_reserva r
-                    inner join mw_apresentacao a on a.id_apresentacao = r.ID_APRESENTACAO
-                    inner join mw_evento e on e.id_evento = a.id_evento
-                    inner join mw_meio_pagamento_forma_pagamento f on e.id_base = f.id_base
-                    inner join mw_meio_pagamento m on f.id_meio_pagamento = m.id_meio_pagamento
-                    inner join mw_gateway g on m.id_gateway = g.id_gateway
-                    left join mw_base_meio_pagamento b on m.id_meio_pagamento = b.id_meio_pagamento and getdate() between b.dt_inicio and b.dt_fim
-                    where r.id_session = ?
-                     and m.in_ativo = 1
-                     ". $queryAux ." AND m.id_gateway NOT IN
-                        (SELECT id_gateway FROM mw_gateway WHERE in_exibe_usuario = 1 AND id_gateway != ?) AND
-                        (qt_hr_anteced <= $horas_antes_apresentacao or qt_hr_anteced is null)".
-                        // se for ambiente de testes nao limitar a exibicao dos meios
-                        ($_ENV['IS_TEST']
-                            ? ''
-                            // se nao for ambiente de testes exibir pagseguro apenas para teatros especificos
-                            :  "and ((
-                                            nm_cartao_exibicao_site like '%pagseguro%'
-                                            and exists (select top 1 1 from mw_reserva r inner join mw_apresentacao a on a.id_apresentacao = r.ID_APRESENTACAO inner join mw_evento e on e.id_evento = a.id_evento where r.id_session = ? and e.id_base in (186,44))
-                                        ) or nm_cartao_exibicao_site not like '%pagseguro%')"
-                        )." and b.id_base IS NULL
-                        order by ds_meio_pagamento";
-
-
-
-        $result = executeSQL($mainConnection, $query, array(session_id(), $rs['ID_GATEWAY']));
+        $query = "SELECT cd_meio_pagamento, ds_meio_pagamento, nm_cartao_exibicao_site 
+                  FROM mw_meio_pagamento 
+                  WHERE in_ativo = 1 ". $queryAux ." AND id_gateway NOT IN
+                    (SELECT id_gateway FROM mw_gateway WHERE in_exibe_usuario = 1 AND id_gateway != ?) AND
+                    (qt_hr_anteced <= $horas_antes_apresentacao or qt_hr_anteced is null)".
+                      // se for ambiente de testes nao limitar a exibicao dos meios
+                      ($_ENV['IS_TEST']
+                        ? ''
+                        // se nao for ambiente de testes exibir pagseguro apenas para teatros especificos
+                        :  "and ((
+                                nm_cartao_exibicao_site like '%pagseguro%'
+                                and exists (select top 1 1 from mw_reserva r inner join mw_apresentacao a on a.id_apresentacao = r.ID_APRESENTACAO inner join mw_evento e on e.id_evento = a.id_evento where r.id_session = ? and e.id_base in (186,44))
+                            ) or nm_cartao_exibicao_site not like '%pagseguro%')"
+                      ).
+                      "
+                      order by ds_meio_pagamento";
+        $result = executeSQL($mainConnection, $query, array($rs['ID_GATEWAY'], session_id()));
 
         $query = "SELECT top 1 cd_binitau from mw_reserva r
                     inner join mw_apresentacao a on a.id_apresentacao = r.id_apresentacao
@@ -131,6 +121,11 @@ if ($_POST) {
                     elseif (in_array($rs['cd_meio_pagamento'], array('910'))) {
                         $carregar_pagarme_lib = true;
                         $formatoCartao = '00000000000000000000';
+                        $formatoCodigo = '0000';
+                    }
+                    // TIPagos
+                    elseif (in_array($rs['cd_meio_pagamento'], array('998'))) {
+                        $formatoCartao = '0000-0000-0000-0000';
                         $formatoCodigo = '0000';
                     }
                     // outros meios

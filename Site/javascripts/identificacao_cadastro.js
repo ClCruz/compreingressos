@@ -60,6 +60,8 @@ $(function() {
 							ciPopup.hide(function () {
 								$.dialog({text:'Login efetuado com sucesso!', icon: 'ok'});
 							}, 1000);
+							if ($('#mapa_de_plateia_geral, #numIngressos').length == 0)
+								document.location.reload();
 						}else{
 							ciPopup.msgDialog('Combinação de usuário e senha incorreta')
 						}

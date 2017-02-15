@@ -96,11 +96,47 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
     $params = array($_GET['apresentacao']);
     $assinatura = executeSQL($mainConnection, $query, $params);
 
+
+    // checagem de pacote para teatro municipal
+    if ($is_pacote AND $rs['ID_BASE'] == 139) {
+
+      $query = 'SELECT
+                  CASE WHEN CONVERT(VARCHAR, GETDATE(), 112) BETWEEN DATEADD(DAY, -5, DT_INICIO_FASE3) AND DATEADD(DAY, -1, DT_INICIO_FASE3) THEN 1 ELSE 0 END AS EXIBIR_LOGIN,
+                  CASE WHEN CONVERT(VARCHAR, GETDATE(), 112) BETWEEN DATEADD(DAY, -5, DT_INICIO_FASE3) AND DT_FIM_FASE3 THEN 1 ELSE 0 END AS PODE_COMPRAR
+                FROM MW_PACOTE P
+                INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = P.ID_APRESENTACAO
+                INNER JOIN MW_APRESENTACAO A2 ON A2.ID_EVENTO = A.ID_EVENTO AND A2.DT_APRESENTACAO = A.DT_APRESENTACAO AND A2.HR_APRESENTACAO = A.HR_APRESENTACAO AND A2.IN_ATIVO = 1
+                WHERE A2.ID_APRESENTACAO = ?';
+      $assinatura_antecipada = executeSQL($mainConnection, $query, array($_GET['apresentacao']), true);
+
+      $query = "SELECT TOP 1 1
+                FROM MW_PACOTE_RESERVA R
+                INNER JOIN MW_PACOTE P ON P.ID_PACOTE = R.ID_PACOTE
+                INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = P.ID_APRESENTACAO
+                INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+                WHERE R.IN_ANO_TEMPORADA = YEAR(GETDATE())-1
+                AND R.IN_STATUS_RESERVA = 'R'
+                AND E.ID_BASE = 139
+                AND R.ID_CLIENTE = ?";
+      $assinante_municipal = executeSQL($mainConnection, $query, array($_SESSION['user']), true);
+
+      if ($assinante_municipal[0] AND $assinatura_antecipada['PODE_COMPRAR']) {
+        $venda_antecipada_para_assinantes_municipal = true;
+      }
+
+      if ($assinatura_antecipada['EXIBIR_LOGIN'] AND !isset($_SESSION['user'])) {
+        $exibePopUpAssinante = true;
+        $texto_theatro_municipal_login = "Se você foi assinante do Theatro Municipal em 2016 faça o login e compre os novos pacotes antecipadamente.";
+      }
+    }
+    // ----------------------------------------
+
+
     if (hasRows($apresentacao_filha_pacote)) {
       $pacoteNaoLiberado = true;
       $vendaNaoLiberada = true;
     } else if (hasRows($assinatura)) {
-      if ($_SESSION['assinatura']['tipo'] != 'troca') {
+      if ($_SESSION['assinatura']['tipo'] != 'troca' AND !$venda_antecipada_para_assinantes_municipal) {
         $pacoteNaoLiberado = true;
         $vendaNaoLiberada = true;
       }
@@ -246,6 +282,12 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
       <script type="text/javascript">
         $(document).ready(function (){
           ciPopup.init('login_assinante');
+          <?php
+          if ($texto_theatro_municipal_login) {
+            echo "$('div.identificacao.cliente div:first').text('$texto_theatro_municipal_login');";
+            echo "$('div.identificacao.cliente p.site:first').html('<br>');";
+          }
+          ?>
         });
       </script>
     <?php } ?>

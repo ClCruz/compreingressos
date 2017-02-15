@@ -79,7 +79,7 @@ function pagarPedidoPagarme($id_pedido, $dados_extra) {
 		"customer" => array(
 			"name" => $rs['DS_NOME'].' '.$rs['DS_SOBRENOME'],
 			"document_number" => $rs['CD_CPF'],
-			"email" => $rs['CD_EMAIL_LOGIN'],
+			"email" => trim($rs['CD_EMAIL_LOGIN']),
 			"sex" => $rs['IN_SEXO'],
 			"born_at" => $rs['DT_NASCIMENTO'],
 			"address" => array(

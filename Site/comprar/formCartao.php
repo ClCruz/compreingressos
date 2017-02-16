@@ -65,7 +65,7 @@ if ($_POST) {
                     inner join mw_meio_pagamento_forma_pagamento f on e.id_base = f.id_base
                     inner join mw_meio_pagamento m on f.id_meio_pagamento = m.id_meio_pagamento
                     inner join mw_gateway g on m.id_gateway = g.id_gateway
-                    left join mw_base_meio_pagamento b on m.id_meio_pagamento = b.id_meio_pagamento and getdate() between b.dt_inicio and b.dt_fim
+                    left join mw_base_meio_pagamento b on m.id_meio_pagamento = b.id_meio_pagamento and convert(date, getdate()) between b.dt_inicio and b.dt_fim
                     where r.id_session = ?
                      and m.in_ativo = 1
                      ". $queryAux ." AND m.id_gateway NOT IN

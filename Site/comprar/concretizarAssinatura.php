@@ -8,8 +8,8 @@ $mainConnection = mainConnection();
 $parametros['OrderData']['OrderId'] = 357350;
 //*/
 
-$id_pedido = $parametros['OrderData']['OrderId'];
-$session_id = $id_pedido;
+$id_pedido = ''.$parametros['OrderData']['OrderId'];
+$session_id = ''.$id_pedido;
 
 $query = "SELECT TOP 1
 			E.ID_BASE, B.DS_NOME_BASE_SQL, PV.ID_CLIENTE, PV.ID_USUARIO_CALLCENTER, PV.DT_PEDIDO_VENDA, PV.VL_TOTAL_PEDIDO_VENDA,

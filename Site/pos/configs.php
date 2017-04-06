@@ -10,7 +10,7 @@ if ($_ENV['IS_TEST']) {
 } else {
 	$ip_tef = '192.168.102.1';
 	$porta_tef = '10101';
-	$codloja_tef = '72850161';
+	$codloja_tef = '11660113';
 }
 
 if ($_GET['config']) {

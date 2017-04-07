@@ -1,5 +1,0 @@
-PAYREPORT
-https://payreport.ntk.com.br/#/usuario/login
-login: clcruz@compreingressos.com
-senha: 743081clc
- 

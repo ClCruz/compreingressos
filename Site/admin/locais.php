@@ -31,18 +31,17 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                 var pagina = '<?php echo $pagina; ?>';
 
                 $("#telefone").mask("99 9999-9999");
-                $('#celular').mask("99 9999-9999?9").ready(function(event) {
-                    var target, phone, element;
-                    target = (event.currentTarget) ? event.currentTarget : event.srcElement;
-                    phone = target.value.replace(/\D/g, '');
-                    element = $(target);
-                    element.unmask();
-                    if(phone.length > 10) {
-                        element.mask("99 99999-999?9");
-                    } else {
-                        element.mask("99 9999-9999?9");
-                    }
-                });
+                $('#celular').mask("99 9999-9999?9");
+
+                var phone, element;
+                phone = $('#celular').val().replace(/\D/g, '');
+                element = $('#celular');
+                element.unmask();
+                if(phone.length > 10) {
+                    element.mask("99 99999-999?9");
+                } else {
+                    element.mask("99 9999-9999?9");
+                }
 
                 $("#cpf_cnpj").keypress(verificaNumero);
                 $("#prazo").keypress(verificaNumero);
@@ -52,6 +51,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                 $("#taxa_cd").keypress(verificaNumeroEVirgula);
                 $("#taxa_rp").keypress(verificaNumeroEVirgula);
                 $("#valor").keypress(verificaNumeroEVirgula);
+
+                $("#msg_pos_venda").on('keypress blur', function(){
+                    if ($(this).val() == '')
+                        $( "#url_msg" ).prop('disabled', true).val('');
+                    else
+                        $( "#url_msg" ).prop('disabled', false);
+                });
 
                 var dialog, form,
                 emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
@@ -123,8 +129,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                             $( "#taxa_cd" ).val(data.taxa_cd);
                             $( "#taxa_rp" ).val(data.taxa_rp);
                             $( "#valor" ).val(data.valor);
+
+                            $( "#msg_pos_venda" ).val(data.msg_pos_venda);
+                            $( "#url_msg" ).val(data.url_msg).prop('disabled', !data.msg_pos_venda);
+
+                            dialog.dialog( "open" );
                         });
-                        dialog.dialog( "open" );
                     } else if (href == '#delete') {
                         tr.remove();
                     } else if (href.indexOf('?action=delete') != -1) {
@@ -219,6 +229,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                             $this.removeClass('ui-state-error');
                         }
                     });
+
+                    if ($('#msg_pos_venda').val()) {
+                        if (!$('#url_msg').val()) {
+                            $('#url_msg').addClass('ui-state-error');
+                            valid = false;
+                        } else {
+                            $('#url_msg').removeClass('ui-state-error');
+                        }
+                    }
 
                     valid = valid && checkLength( nome, "Nome", 3, 150 );
                     valid = valid && checkLength( nomeSql, "Nome da Base", 3, 50 );
@@ -342,6 +361,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                     <input type="text" name="taxa_cd" id="taxa_cd" value="" class="text ui-widget-content ui-corner-all">                    
                     <label for="valor">Custos dos Ingressos (R$)</label>
                     <input type="text" name="valor" id="valor" value="" class="text ui-widget-content ui-corner-all">
+                    
+                    <label for="msg_pos_venda">Mensagem Após Venda</label>
+                    <textarea name="msg_pos_venda" id="msg_pos_venda" class="text ui-widget-content ui-corner-all" style="width: 96%; height: 80px"></textarea>
+                    <br/>
+                    <label for="url_msg">URL para a Mensagem</label>
+                    <input type="text" name="url_msg" id="url_msg" value="" class="text ui-widget-content ui-corner-all" disabled>
 
                     <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
                 </fieldset>

@@ -82,7 +82,7 @@ $dados_pedido = array(
 
 $query = "SELECT COUNT(1) QUANTIDADE, R.ID_APRESENTACAO_BILHETE,
 				E.ID_EVENTO, E.DS_EVENTO, ISNULL(LE.DS_LOCAL_EVENTO, B.DS_NOME_TEATRO) DS_NOME_TEATRO, B.ds_nome_base_sql,
-				AB.VL_LIQUIDO_INGRESSO, AB.DS_TIPO_BILHETE
+				AB.VL_LIQUIDO_INGRESSO, AB.DS_TIPO_BILHETE, B.DS_MSG_DEPOIS_VENDA, B.DS_URL_DEPOIS_VENDA
 			FROM MW_ITEM_PEDIDO_VENDA R
 			INNER JOIN MW_PEDIDO_VENDA PV ON PV.ID_PEDIDO_VENDA = R.ID_PEDIDO_VENDA
 			INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO AND A.IN_ATIVO = '1'
@@ -93,7 +93,8 @@ $query = "SELECT COUNT(1) QUANTIDADE, R.ID_APRESENTACAO_BILHETE,
 			WHERE R.ID_PEDIDO_VENDA = ? AND PV.ID_CLIENTE = ?
 			GROUP BY R.ID_APRESENTACAO_BILHETE, B.ds_nome_base_sql,
 				E.ID_EVENTO, E.DS_EVENTO, ISNULL(LE.DS_LOCAL_EVENTO, B.DS_NOME_TEATRO),
-				AB.VL_LIQUIDO_INGRESSO, AB.DS_TIPO_BILHETE";
+				AB.VL_LIQUIDO_INGRESSO, AB.DS_TIPO_BILHETE,
+				B.DS_MSG_DEPOIS_VENDA, B.DS_URL_DEPOIS_VENDA";
 $params = array($_GET['pedido'], $_SESSION['user']);
 $result = executeSQL($mainConnection, $query, $params);
 
@@ -137,6 +138,11 @@ while ($rs = fetchResult($result)) {
 		if ($participa == 0) {
 			$has_riachuelo = true;
 		}
+	}
+
+	if ($rs['DS_MSG_DEPOIS_VENDA']) {
+		$msg_pos_venda = $rs['DS_MSG_DEPOIS_VENDA'];
+		$link_pos_venda = $rs['DS_URL_DEPOIS_VENDA'];
 	}
 
 }
@@ -274,6 +280,39 @@ unset($_SESSION['origem']);
 	window._fbq.push(['track', '6025588813845', {'value':'<?php echo $valorPagamento; ?>','currency':'BRL'}]);
 	</script>
 	<noscript><img height="1" width="1" alt="" style="display:none" src="https://www.facebook.com/tr?ev=6025588813845&amp;cd[value]=<?php echo $valorPagamento; ?>&amp;cd[currency]=BRL&amp;noscript=1" /></noscript>
+
+	<?php
+	if ($msg_pos_venda) {
+		echo "<script>$(function(){";
+		if (!$link_pos_venda){
+			?>
+			$.confirmDialog({
+				text: '',
+				detail: '<?php echo str_replace("'", '"', $msg_pos_venda); ?>',
+				uiOptions: {
+					buttons: {
+						'Ok, entendi': ['', fecharOverlay]
+					}
+				}
+			});
+			<?php
+		} else {
+			?>
+			$.confirmDialog({
+				text: '',
+				detail: '<?php echo str_replace("'", '"', $msg_pos_venda); ?>',
+				uiOptions: {
+					buttons: {
+						'Não, obrigado': ['', fecharOverlay],
+						'Sim, por favor': ['', function(){window.open('<?php echo str_replace("'", '"', $link_pos_venda); ?>');fecharOverlay();}]
+					}
+				}
+			});
+			<?php
+		}
+		echo "})</script>";
+	}
+	?>
 
 	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
 </head>

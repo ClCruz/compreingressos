@@ -79,8 +79,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                     VL_TAXA_CARTAO_DEB,
                     VL_TAXA_REPASSE,
                     VL_INGRESSO,
-                    ID_CLIENTE)
-                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    ID_CLIENTE,
+                    DS_MSG_DEPOIS_VENDA,
+                    DS_URL_DEPOIS_VENDA
+                    )
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $params = array(utf8_decode($_POST['nomeSql']),
                         utf8_decode($_POST['nome']),
                         $_POST['ativo'],
@@ -102,7 +105,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                         $_POST['taxa_cd'],
                         $_POST['taxa_rp'],
                         $_POST['valor'],
-                        $idCliente);
+                        $idCliente,
+                        $_POST['msg_pos_venda'],
+                        $_POST['url_msg']
+                    );
         
         $log = new Log($_SESSION['admin']);
         $log->__set('funcionalidade', 'Locais');
@@ -174,7 +180,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                     VL_TAXA_CARTAO_DEB = ?,
                     VL_TAXA_REPASSE = ?,
                     VL_INGRESSO = ?,
-                    ID_CLIENTE = ?
+                    ID_CLIENTE = ?,
+                    DS_MSG_DEPOIS_VENDA = ?,
+                    DS_URL_DEPOIS_VENDA = ?
                  WHERE
                     ID_BASE = ?";
         $params = array(utf8_decode($_POST['nomeSql']),
@@ -199,6 +207,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                         $_POST['taxa_rp'],
                         $_POST['valor'],
                         $idCliente,
+                        $_POST['msg_pos_venda'],
+                        $_POST['url_msg'],
                         $_GET['id']);
 
         $log = new Log($_SESSION['admin']);
@@ -252,6 +262,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                   ,[VL_TAXA_CARTAO_DEB]
                   ,[VL_TAXA_REPASSE]
                   ,[VL_INGRESSO]
+                  ,[DS_MSG_DEPOIS_VENDA]
+                  ,[DS_URL_DEPOIS_VENDA]
                   FROM MW_BASE WHERE ID_BASE = ?';
         $params = array($_GET['id']);
         $result = executeSQL($mainConnection, $query, $params);
@@ -277,7 +289,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                 "taxa_cc" => number_format($rs["VL_TAXA_CARTAO_CRED"], 2, ",", "."),
                 "taxa_cd" => number_format($rs["VL_TAXA_CARTAO_DEB"], 2, ",", "."),
                 "taxa_rp" => number_format($rs["VL_TAXA_REPASSE"], 2, ",", "."),
-                "valor" => number_format($rs["VL_INGRESSO"], 2, ",", ".") );
+                "valor" => number_format($rs["VL_INGRESSO"], 2, ",", "."),
+                "msg_pos_venda" => $rs["DS_MSG_DEPOIS_VENDA"],
+                "url_msg" => $rs["DS_URL_DEPOIS_VENDA"]
+            );
         }
         $retorno = json_encode($ret);
     }

@@ -230,15 +230,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                         }
                     });
 
-                    if ($('#msg_pos_venda').val()) {
-                        if (!$('#url_msg').val()) {
-                            $('#url_msg').addClass('ui-state-error');
-                            valid = false;
-                        } else {
-                            $('#url_msg').removeClass('ui-state-error');
-                        }
-                    }
-
                     valid = valid && checkLength( nome, "Nome", 3, 150 );
                     valid = valid && checkLength( nomeSql, "Nome da Base", 3, 50 );
                     valid = valid && checkLength( email, "E-Mail", 6, 80 );

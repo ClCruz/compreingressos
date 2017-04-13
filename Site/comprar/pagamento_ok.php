@@ -283,12 +283,19 @@ unset($_SESSION['origem']);
 
 	<?php
 	if ($msg_pos_venda) {
+		
+		$_search = array("'", "\r", "\n");
+		$_replace = array('"', "<br/>", "<br/>");
+
+		$msg_pos_venda = str_replace($_search, $_replace, $msg_pos_venda);
+
 		echo "<script>$(function(){";
+
 		if (!$link_pos_venda){
 			?>
 			$.confirmDialog({
 				text: '',
-				detail: '<?php echo str_replace("'", '"', $msg_pos_venda); ?>',
+				detail: '<?php echo $msg_pos_venda; ?>',
 				uiOptions: {
 					buttons: {
 						'Ok, entendi': ['', fecharOverlay]

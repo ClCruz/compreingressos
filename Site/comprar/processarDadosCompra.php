@@ -591,6 +591,10 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
 
             $response = pagarPedidoPagarme($parametros['OrderData']['OrderId'], $_POST);
 
+            executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+                array($_SESSION['user'], json_encode(array('descricao' => '4. retorno do pedido pagarme=' . $parametros['OrderData']['OrderId'], 'pagseguro_obj' => base64_encode(serialize($response['transaction'])))))
+            );
+
             // credit card
             if ($response['success'] AND $response['transaction']['status'] == 'paid') {
 

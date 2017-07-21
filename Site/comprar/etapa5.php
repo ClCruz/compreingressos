@@ -181,6 +181,10 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 		echo '<script src="https://assets.pagar.me/js/pagarme.min.js"></script>';
 		echo '<script type="text/javascript" src="../javascripts/pagarme.js"></script>';
 	}
+	if ($carregar_cielo_lib) {
+		echo '<script src="https://assets.pagar.me/js/pagarme.min.js"></script>';
+		echo '<script type="text/javascript" src="../javascripts/cielo.js"></script>';
+	}
 	?>
 </body>
 </html>

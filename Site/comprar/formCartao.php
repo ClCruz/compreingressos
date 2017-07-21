@@ -54,7 +54,8 @@ if ($_POST) {
         
         $quantidadeGateway = numRows($mainConnection, $query, $params);
         if($quantidadeGateway == 0 || $quantidadeGateway > 1){
-            $rs['ID_GATEWAY'] = 5;
+            // gateway de pagamento padrao
+            $rs['ID_GATEWAY'] = 8;// 8 = cielo
         }
 
 
@@ -137,6 +138,12 @@ if ($_POST) {
                     // pagarme
                     elseif (in_array($rs['cd_meio_pagamento'], array('910'))) {
                         $carregar_pagarme_lib = true;
+                        $formatoCartao = '00000000000000000000';
+                        $formatoCodigo = '0000';
+                    }
+                    // cielo
+                    elseif (in_array($rs['cd_meio_pagamento'], array('920', '921'))) {
+                        $carregar_cielo_lib = true;
                         $formatoCartao = '00000000000000000000';
                         $formatoCodigo = '0000';
                     }

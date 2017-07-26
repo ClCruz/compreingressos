@@ -16,12 +16,14 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 480, true)) {
     }
 
     function pega_gateway($conn, $id_evento){
+        $gateway_default = 8;// 8 = cielo
+
         $query = "SELECT ID_GATEWAY FROM MW_EXCECAO_PAGAMENTO WHERE ID_EVENTO = ?";
         $result = executeSQL($conn, $query, array($id_evento));
         while($rr = fetchResult($result)){
             $resp = $rr['ID_GATEWAY'];
         }
-        return $resp;
+        return $resp ? $resp : $gateway_default;
     }
 
     function remover_eventos_da_verificacao($conn, $eventos) {

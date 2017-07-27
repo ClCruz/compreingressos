@@ -23,7 +23,7 @@ $(function(){
 
         if ($('[name=codCartao]:checked').next('label').next('p.nome').text().toLowerCase().indexOf('fastcash') == -1
 			&& $('[name=codCartao]:checked').next('label').next('p.nome').text().toLowerCase().indexOf('boleto') == -1
-			&& $('[name=codCartao]:checked').next('label').next('p.nome').text().toLowerCase().indexOf('débito') == -1) {
+			&& ($('[name=codCartao]:checked').next('label').next('p.nome').text().toLowerCase().indexOf('débito') == -1 && $('[name=codCartao]:checked').val() != '921')) {
 		    $this.find(':input:not(.compra_captcha :input, [name=nomePresente], [name=emailPresente], .pagseguro :input)').each(function(i,e) {
 		    	var e = $(e);
 	    		if (e.val().length < e.attr('maxlength')/2 || e.val() == '') {
@@ -118,7 +118,7 @@ $(function(){
 												.eq(1).slideUp().end().end()
 								.find('#bancos').slideUp().end()
 								.find('.frase .alt').eq(0).text('Presente');
-		} else if ($cartao.next('label').next('p.nome').text().toLowerCase().indexOf('débito') > -1) {
+		} else if ($cartao.next('label').next('p.nome').text().toLowerCase().indexOf('débito') > -1 && $('[name=codCartao]:checked').val() != '921') {
 			$('.container_dados').find('.linha:not(#bancos)').eq(0).slideUp().end()
 												.eq(1).slideUp().end().end()
 								.find('#bancos').slideDown().end()

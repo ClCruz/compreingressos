@@ -699,6 +699,13 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
                 $response = capturarPedidoCielo($parametros['OrderData']['OrderId']);
 
                 if ($response['success']) {
+                    $link = array_filter($response['transaction']['Links'], function($array){
+                        return $array['Rel'] == 'self';
+                    });
+
+                    $id = end(explode('/', rtrim($link[0]['Href'], '/')));
+
+                    $response = consultarPedidoCielo($id);
 
                     $result = new stdClass();
 

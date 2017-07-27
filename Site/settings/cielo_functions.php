@@ -111,14 +111,14 @@ function autorizarPedidoCielo($id_pedido, $dados_extra) {
 			)
 		),
 		"Payment" => array(
-			"Amount" => number_format($rs['VL_TOTAL_PEDIDO_VENDA'] * 100, 0, '', ''),
-			"Capture" => false
+			"Amount" => number_format($rs['VL_TOTAL_PEDIDO_VENDA'] * 100, 0, '', '')
 		)
 	);
 
 	// credit card
 	if ($rs['CD_MEIO_PAGAMENTO'] == 920) {
 		$transaction_data['Payment'] = array_merge($transaction_data['Payment'], array(
+			"Capture" => false,
 			"Type" => "CreditCard",
 			"Installments" => $rs['NR_PARCELAS_PGTO'],
 			"CreditCard" => array(
@@ -133,6 +133,7 @@ function autorizarPedidoCielo($id_pedido, $dados_extra) {
 	// debit card
 	elseif ($rs['CD_MEIO_PAGAMENTO'] == 921) {
 		$transaction_data['Payment'] = array_merge($transaction_data['Payment'], array(
+			"Capture" => true,
 			"Type" => "DebitCard",
 			"ReturnUrl" => $returnUrl,
 			"DebitCard" => array(
@@ -240,15 +241,15 @@ function capturarPedidoCielo($id_pedido) {
 
 	$transaction = json_decode($response, true);
 
-	if (empty($curl_error) AND $transaction['Payment']['Status'] == 2) {
+	if (empty($curl_error) AND $transaction['Status'] == 2) {
 
 		$response = array('success' => true, 'transaction' => $transaction);
 
 		$query = 'INSERT INTO MW_PEDIDO_PAGSEGURO (ID_PEDIDO_VENDA, DT_STATUS, CD_STATUS, OBJ_PAGSEGURO) VALUES (?, GETDATE(), ?, ?)';
-		$params = array($id_pedido, $transaction['Payment']['Status'], base64_encode(serialize($transaction)));
+		$params = array($id_pedido, $transaction['Status'], base64_encode(serialize($transaction)));
 		executeSQL($mainConnection, $query, $params);
 
-	} elseif ($transaction['Payment']['Status'] == 3) {
+	} elseif ($transaction['Status'] == 3) {
 		// negado
 		$response = array('success' => false);
 

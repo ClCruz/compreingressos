@@ -89,7 +89,7 @@ if (isset($_COOKIE['ipagareError'])) {
 	unset($_SESSION['assinatura']);
 	unset($_SESSION['origem']);
 	
-	if (isset($_SESSION['operador'])) {
+	if (isset($_SESSION['operador']) AND !isset($_GET['cielo'])) {
 		unset($_SESSION['user']);
 		setcookie('pedido', '', -1);
 		setcookie('id_braspag', '', -1);
@@ -98,4 +98,45 @@ if (isset($_COOKIE['ipagareError'])) {
 }
 
 $campanha = get_campanha_etapa('etapa5');
+
+if ($_GET['cielo']) {
+?>
+<link rel='stylesheet' type='text/css' href='../stylesheets/reset.css' />
+
+<link rel="stylesheet" type="text/css" href="../stylesheets/customred/jquery-ui-1.10.3.custom.css"/>
+
+<link rel='stylesheet' type='text/css' href='../stylesheets/admin.css' />
+<link rel='stylesheet' type='text/css' href='../stylesheets/ajustes.css' /> 
+
+<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
+<?php require("desktopMobileVersion.php"); ?>
+<link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
+
+<script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
+<script src="../javascripts/jquery.placeholder.js" type="text/javascript"></script>
+<script src="../javascripts/jquery.selectbox-0.2.min.js" type="text/javascript"></script>
+<script src="../javascripts/jquery.mask.min.js" type="text/javascript"></script>
+<script src="../javascripts/cicompra.js" type="text/javascript"></script>
+
+<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
+<script src="../javascripts/common.js" type="text/javascript"></script>
+<script type="text/javascript">
+	$(function(){
+		$.confirmDialog({
+			text: '',
+			detail: 'Pagamento recusado ou n&atilde;o autorizado<br>'+
+					'Para continuar comprando escolha<br>'+
+					'novamente seus ingressos.',
+			uiOptions: {
+				buttons: {
+					'Ok, entendi': ['Leve-me de volta para a<br>p&aacute;gina inicial do site', null]
+				}
+			}
+		});
+		$('#resposta .opcao.unica').attr('href', '<?php echo $homeSite; ?>');
+	});
+</script>
+<body id="pai"></body>
+<?php
+}
 ?>

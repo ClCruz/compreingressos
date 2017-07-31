@@ -35,7 +35,7 @@ $rs = executeSQL($mainConnection, $query, $params, true);
 // se nao encontrar nenhum registro pode ser usuario tentando acessar
 // um pedido de outro usuario ou meio de pagamento que nao bate com o selecionado
 if (empty($rs)) {
-    header("Location: https://santosfc.redegol.com");
+    header("Location: ".$homeSite);
     die();
 } else {
 

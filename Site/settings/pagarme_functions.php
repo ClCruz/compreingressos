@@ -132,7 +132,7 @@ function pagarPedidoPagarme($id_pedido, $dados_extra) {
 		executeSQL($mainConnection, $query, $params);
 
 	} catch (Exception $e) {
-		$response = array('success' => false, 'error' => tratarErroPagarme($e));
+		$response = array('success' => false, 'error' => tratarErroPagarme($e, $id_pedido));
 	}
 
 	return $response;
@@ -216,15 +216,24 @@ function estonarPedidoPagarme($id_pedido, $bank_data = array()) {
 
     } catch (Exception $e) {
 
-        $response = array('success' => false, 'error' => tratarErroPagarme($e));
+        $response = array('success' => false, 'error' => tratarErroPagarme($e, $id_pedido));
 
     }
 
     return $response;
 }
 
-function tratarErroPagarme($error_obj) {
+function tratarErroPagarme($error_obj, $id_pedido) {
+
 	$nova_msg = $error_obj->getMessage();
+
+	if ($id_pedido) {
+		$mainConnection = mainConnection();
+
+		executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+	        array(NULL, json_encode(array('descricao' => 'erro pagarme pedido ' . $id_pedido, 'error' => $nova_msg)))
+	    );
+	}
 
 	return $nova_msg;
 }

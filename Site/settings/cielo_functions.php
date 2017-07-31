@@ -1,30 +1,42 @@
 <?php
 require_once('../settings/functions.php');
 
-if ($_ENV['IS_TEST']) {
-	$transaction_url = "https://apisandbox.cieloecommerce.cielo.com.br";
-	$query_url = "https://apiquerysandbox.cieloecommerce.cielo.com.br";
+function getConfigCielo($id) {
+	$mainConnection = mainConnection();
 
-	$merchantId = '57413024-ebd2-4ffb-a7d0-a6517020d955';
-	$merchantKey = 'WNREJBXSTDBJEMODPHULHSGJHITMSMDBKZMIILNN';
+	$rs_cielo = executeSQL($mainConnection, "SELECT
+												ID_GATEWAY_PAGAMENTO,
+												DS_URL,
+												CD_GATEWAY_PAGAMENTO,
+												DS_URL_CONSULTA,
+												CD_KEY_GATEWAY_PAGAMENTO,
+												DS_URL_RETORNO
+											FROM MW_GATEWAY_PAGAMENTO
+											WHERE (ID_GATEWAY = 8 AND IN_ATIVO = 1 AND ? IS NULL)
+											OR ID_GATEWAY_PAGAMENTO = ?", array($id, $id), true);
 
-	$returnUrl = 'https://homolog.redegol.com:4543/comprar/pagamento_cielo';
-} else {
-	$transaction_url = "https://api.cieloecommerce.cielo.com.br";
-	$query_url = "https://apiquery.cieloecommerce.cielo.com.br/";
+	return array(
+		'id' => $rs_cielo['ID_GATEWAY_PAGAMENTO'],
 
-	$merchantId = '8d8e4055-aad9-4522-90e5-6942328d0e4f';
-	$merchantKey = '0NjqdKKIDSUSmwlElRpFMYvmJ2IcIvEx2AaI63bR';
+		'transaction_url' => $rs_cielo['DS_URL'],
+		'query_url' => $rs_cielo['DS_URL_CONSULTA'],
 
-	$returnUrl = 'https://santosfc.redegol.com/comprar/pagamento_cielo';
+		'merchantId' => $rs_cielo['CD_GATEWAY_PAGAMENTO'],
+		'merchantKey' => $rs_cielo['CD_KEY_GATEWAY_PAGAMENTO'],
+
+		'returnUrl' => $rs_cielo['DS_URL_RETORNO']
+	);
 }
 
 function autorizarPedidoCielo($id_pedido, $dados_extra) {
-	global $transaction_url;
-	global $merchantId;
-	global $merchantKey;
-	global $returnUrl;
+	$config = getConfigCielo();
 
+	$id_gateway_pagamento = $config['id'];
+	$transaction_url = $config['transaction_url'];
+	$merchantId = $config['merchantId'];
+	$merchantKey = $config['merchantKey'];
+	$returnUrl = $config['returnUrl'];
+	
 	$mainConnection = mainConnection();
 
 	// checar se ja foi pago
@@ -177,6 +189,10 @@ function autorizarPedidoCielo($id_pedido, $dados_extra) {
 
 	$transaction = json_decode($response, true);
 
+	$query = "UPDATE MW_PEDIDO_VENDA SET ID_GATEWAY_PAGAMENTO = ? WHERE ID_PEDIDO_VENDA = ?";
+	$params = array($id_gateway_pagamento, $id_pedido);
+	executeSQL($mainConnection, $query, $params);
+
 	if (empty($curl_error) AND $transaction['Payment']['Status'] == 1) {
 
 		$response = array('success' => true, 'transaction' => $transaction);
@@ -206,18 +222,25 @@ function autorizarPedidoCielo($id_pedido, $dados_extra) {
 }
 
 function capturarPedidoCielo($id_pedido) {
-	global $transaction_url;
-	global $merchantId;
-	global $merchantKey;
-	global $returnUrl;
 
 	$mainConnection = mainConnection();
 
-	$query = "SELECT CD_STATUS, OBJ_PAGSEGURO FROM MW_PEDIDO_PAGSEGURO WHERE ID_PEDIDO_VENDA = ? ORDER BY DT_STATUS DESC";
+	$query = "SELECT PP.CD_STATUS, PP.OBJ_PAGSEGURO, PV.ID_GATEWAY_PAGAMENTO
+				FROM MW_PEDIDO_PAGSEGURO PP
+				INNER JOIN MW_PEDIDO_VENDA PV ON PV.ID_PEDIDO_VENDA = PP.ID_PEDIDO_VENDA
+				WHERE PP.ID_PEDIDO_VENDA = ?
+				ORDER BY PP.DT_STATUS DESC";
 
 	$rs = executeSQL($mainConnection, $query, array($id_pedido), true);
 
 	$obj = unserialize(base64_decode($rs['OBJ_PAGSEGURO']));
+	
+	$config = getConfigCielo($rs['ID_GATEWAY_PAGAMENTO']);
+
+	$transaction_url = $config['transaction_url'];
+	$merchantId = $config['merchantId'];
+	$merchantKey = $config['merchantKey'];
+	$returnUrl = $config['returnUrl'];
 
 	$transaction_data = array(
 		"PaymentId" => $obj['Payment']['PaymentId']
@@ -270,18 +293,25 @@ function capturarPedidoCielo($id_pedido) {
 }
 
 function cancelarPedidoCielo($id_pedido) {
-	global $transaction_url;
-	global $merchantId;
-	global $merchantKey;
-	global $returnUrl;
 
 	$mainConnection = mainConnection();
 
-	$query = "SELECT CD_STATUS, OBJ_PAGSEGURO FROM MW_PEDIDO_PAGSEGURO WHERE ID_PEDIDO_VENDA = ? ORDER BY DT_STATUS DESC";
+	$query = "SELECT PP.CD_STATUS, PP.OBJ_PAGSEGURO, PV.ID_GATEWAY_PAGAMENTO
+				FROM MW_PEDIDO_PAGSEGURO PP
+				INNER JOIN MW_PEDIDO_VENDA PV ON PV.ID_PEDIDO_VENDA = PP.ID_PEDIDO_VENDA
+				WHERE PP.ID_PEDIDO_VENDA = ?
+				ORDER BY PP.DT_STATUS DESC";
 
 	$rs = executeSQL($mainConnection, $query, array($id_pedido), true);
 
 	$obj = unserialize(base64_decode($rs['OBJ_PAGSEGURO']));
+	
+	$config = getConfigCielo($rs['ID_GATEWAY_PAGAMENTO']);
+
+	$transaction_url = $config['transaction_url'];
+	$merchantId = $config['merchantId'];
+	$merchantKey = $config['merchantKey'];
+	$returnUrl = $config['returnUrl'];
 
 	$transaction_data = array(
 		"PaymentId" => $obj['Payment']['PaymentId']
@@ -322,9 +352,11 @@ function cancelarPedidoCielo($id_pedido) {
 }
 
 function consultarPedidoCielo($id) {
-	global $query_url;
-	global $merchantId;
-	global $merchantKey;
+	$config = getConfigCielo();
+
+	$query_url = $config['query_url'];
+	$merchantId = $config['merchantId'];
+	$merchantKey = $config['merchantKey'];
 
 	$header = array(
 		"Content-Type: application/json",
@@ -343,14 +375,47 @@ function consultarPedidoCielo($id) {
 
 	$transaction = json_decode($response, true);
 
-	if (empty($curl_error)) {
-		$response = array('success' => true, 'transaction' => $transaction);
+	if ($transaction AND empty($curl_error)) {
+		return array('success' => true, 'transaction' => $transaction);
 	} else {
-		$e = (empty($curl_error) ? $transaction : $curl_error);
-		$response = array('success' => false, 'error' => tratarErroCielo($e, $id));
+		
+		$result = executeSQL($mainConnection, "SELECT
+													DS_URL,
+													CD_GATEWAY_PAGAMENTO,
+													CD_KEY_GATEWAY_PAGAMENTO
+												FROM MW_GATEWAY_PAGAMENTO
+												WHERE ID_GATEWAY = 8 AND IN_ATIVO = 0");
+
+		while ($rs = fetchResult($result)) {
+			$query_url = $rs['DS_URL'];
+			$merchantId = $rs['CD_GATEWAY_PAGAMENTO'];
+			$merchantKey = $rs['CD_KEY_GATEWAY_PAGAMENTO'];
+
+			$header = array(
+				"Content-Type: application/json",
+				"MerchantId: $merchantId",
+				"MerchantKey: $merchantKey"
+			);
+
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $header); 
+			curl_setopt($ch, CURLOPT_URL, $query_url."/1/sales/$id");
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+			$response = curl_exec($ch);
+			$curl_error = curl_error($ch);
+			curl_close($ch);
+
+			$transaction = json_decode($response, true);
+
+			if ($transaction AND empty($curl_error)) {
+				return array('success' => true, 'transaction' => $transaction);
+			}
+		}
 	}
 
-	return $response;
+	$e = (empty($curl_error) ? $transaction : $curl_error);
+	return array('success' => false, 'error' => tratarErroCielo($e, $id));
 }
 
 function getStatusCielo($id) {
@@ -397,11 +462,20 @@ function getStatusCielo($id) {
 }
 
 function estonarPedidoCielo($payment_id, $id_pedido) {
-	global $transaction_url;
-	global $merchantId;
-	global $merchantKey;
 
 	$mainConnection = mainConnection();
+
+	$query = "SELECT PV.ID_GATEWAY_PAGAMENTO
+				FROM MW_PEDIDO_VENDA PV
+				WHERE PV.ID_PEDIDO_VENDA = ?";
+
+	$rs = executeSQL($mainConnection, $query, array($id_pedido), true);
+
+	$config = getConfigCielo($rs['ID_GATEWAY_PAGAMENTO']);
+
+	$transaction_url = $config['transaction_url'];
+	$merchantId = $config['merchantId'];
+	$merchantKey = $config['merchantKey'];
 
 	$header = array(
 		"Content-Type: application/json",

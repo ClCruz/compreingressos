@@ -369,6 +369,7 @@ $query = 'UPDATE MW_PEDIDO_VENDA SET
                         VL_TOTAL_PEDIDO_VENDA = ?
                         ,VL_TOTAL_INGRESSOS = ?
                         ,VL_TOTAL_TAXA_CONVENIENCIA = ?
+                        ,VL_FRETE = ?
                         ,ID_IP = ?
                         ,NR_PARCELAS_PGTO = ?
                         ,NR_BENEFICIO = ?
@@ -392,6 +393,7 @@ $params = array
                 ($totalIngressos + $frete + $totalConveniencia)
                 ,$totalIngressos
                 ,$totalConveniencia
+                ,$frete
                 ,$_SERVER["REMOTE_ADDR"]
                 ,$PaymentDataCollection['NumberOfPayments']
                 ,$nr_beneficio
@@ -452,6 +454,12 @@ $contador_reserva = executeSQL($mainConnection, $query, $params, true);
 
 if ($contador_reserva[0] != count($params2)) {
     echo 'Ocorreu uma falha durante o processamento, por favor selecione novamente os lugares desejados.';
+    die();
+}
+
+$valorTotal = $totalIngressos + $frete + $totalConveniencia;
+if ($valorTotal != floatval(preg_replace(',', '.', $_COOKIE['total_exibicao']))) {
+    echo 'valorDiferente';
     die();
 }
 

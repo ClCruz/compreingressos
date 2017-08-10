@@ -458,7 +458,7 @@ if ($contador_reserva[0] != count($params2)) {
 }
 
 $valorTotal = $totalIngressos + $frete + $totalConveniencia;
-if ($valorTotal != floatval(preg_replace(',', '.', $_COOKIE['total_exibicao']))) {
+if ($valorTotal != floatval(str_replace(',', '.', $_COOKIE['total_exibicao']))) {
     echo 'valorDiferente';
     die();
 }

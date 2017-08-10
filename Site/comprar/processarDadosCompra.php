@@ -11,6 +11,7 @@ require('acessoPermitido.php');
 require('../settings/pagseguro_functions.php');
 require('../settings/pagarme_functions.php');
 require('../settings/tipagos_functions.php');
+require('../settings/cielo_functions.php');
 
 // reCAPTCHA v2 ---------------
 $post_data = http_build_query(array('secret'    => $recaptcha['private_key'],
@@ -506,8 +507,9 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
     $pagamento_pagseguro = in_array($_POST['codCartao'], array('900', '901', '902'));
     $pagamento_pagarme = in_array($_POST['codCartao'], array('910', '911'));
     $pagamento_tipagos = in_array($_POST['codCartao'], array('998'));
-    $pagamento_braspag = (!$pagamento_fastcash and !$pagamento_pagseguro and !$pagamento_pagarme and !$pagamento_tipagos);
-    
+    $pagamento_cielo = in_array($_POST['codCartao'], array('920', '921'));
+    $pagamento_braspag = (!$pagamento_fastcash and !$pagamento_pagseguro and !$pagamento_pagarme and !$pagamento_tipagos and !$pagamento_cielo);
+
     // pular o bloco abaixo para vendas pelo fastcash e pagseguro
     if ($_SESSION['usuario_pdv'] !== 1 and $PaymentDataCollection['Amount'] != 0 and $pagamento_braspag) {
         try {
@@ -661,6 +663,120 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
             else {
                 $descricao_erro = $response['error'] ? $response['error'] : 'Transação não autorizada.';
             }
+        }
+        // pagamentos via cielo
+        elseif ($pagamento_cielo) {
+
+            $query = "UPDATE P SET ID_MEIO_PAGAMENTO = M.ID_MEIO_PAGAMENTO
+                        FROM MW_PEDIDO_VENDA P, MW_MEIO_PAGAMENTO M
+                        WHERE P.ID_PEDIDO_VENDA = ? AND M.CD_MEIO_PAGAMENTO = ?";
+            $params = array($parametros['OrderData']['OrderId'], $_POST['codCartao']);
+            $result = executeSQL($mainConnection, $query, $params);
+
+            $response = autorizarPedidoCielo($parametros['OrderData']['OrderId'], $_POST);
+
+            // credit card
+            if ($response['success'] AND !isset($response['redirect'])) {
+
+                // CHECAGEM PELO CLEARSALE
+                $query = "SELECT COUNT(1) AS IN_ANTI_FRAUDE FROM MW_RESERVA R
+                            INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+                            INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+                            WHERE R.ID_SESSION = ? AND E.IN_ANTI_FRAUDE = 1";
+                $rs = executeSQL($mainConnection, $query, array(session_id()), true);
+
+                if ($rs['IN_ANTI_FRAUDE']) {
+                    $array_dados_extra = array();
+
+                    $array_dados_extra['Orders']['Order']['Payments']['Payment']['CardExpirationDate'] = $PaymentDataCollection['CardExpirationDate'];
+                    $array_dados_extra['Orders']['Order']['Payments']['Payment']['Name'] = $PaymentDataCollection['CardHolder'];
+                    $array_dados_extra['Orders']['Order']['Payments']['Payment']['Nsu'] = $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId;
+                    
+                    // se verificarAntiFraude = false negar a compra
+                    if (!verificarAntiFraude($parametros['OrderData']['OrderId'], $array_dados_extra)) {
+
+                        cancelarPedidoCielo($parametros['OrderData']['OrderId']);
+
+                        executeSQL($mainConnection, "UPDATE MW_PEDIDO_VENDA SET IN_SITUACAO = 'N' WHERE ID_PEDIDO_VENDA = ? AND ID_CLIENTE = ?", array($newMaxId, $_SESSION['user']));
+
+                        echo "Transação não autorizada.";
+                        die();
+                    }
+                }
+
+                $query = "UPDATE MW_PEDIDO_VENDA SET IN_SITUACAO = 'P' WHERE ID_PEDIDO_VENDA = ?";
+                $params = array($parametros['OrderData']['OrderId']);
+                $result = executeSQL($mainConnection, $query, $params);
+
+                $response = capturarPedidoCielo($parametros['OrderData']['OrderId']);
+
+                if ($response['success']) {
+                    $link = array_filter($response['transaction']['Links'], function($array){
+                        return $array['Rel'] == 'self';
+                    });
+
+                    $id = end(explode('/', rtrim($link[0]['Href'], '/')));
+
+                    $response = consultarPedidoCielo($id);
+
+                    $result = new stdClass();
+
+                    $result->AuthorizeTransactionResult->OrderData->BraspagOrderId = 'Cielo';
+                    $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId = $response['transaction']['Payment']['PaymentId'];
+                    $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId = $response['transaction']['Payment']['Tid'];//$response['transaction']['Payment']['ProofOfSale']
+                    $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AuthorizationCode = $response['transaction']['Payment']['AuthorizationCode'];
+                    $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->PaymentMethod = $_POST['codCartao'];
+
+                    require('concretizarCompra.php');
+
+                    // se necessario, replica os dados de assinatura e imprime url de redirecionamento
+                    require('concretizarAssinatura.php');
+
+                    die("redirect.php?redirect=".urlencode("pagamento_ok.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : '')));
+                } else {
+                    $descricao_erro = $response['error'] ? $response['error'] : 'Transação não autorizada.';
+                }
+            }
+            // debit card
+            elseif ($response['success'] AND $response['redirect']) {
+                extenderTempo($horas_antes_apresentacao_pagamento * 60);
+
+                $query = "SELECT DISTINCT E.ID_BASE FROM MW_RESERVA R
+                            INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+                            INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+                            WHERE R.ID_SESSION = ?";
+                $params = array(session_id());
+                $result = executeSQL($mainConnection, $query, $params);
+
+                $conn = array();
+                while ($rs = fetchResult($result)) {
+                    $conn[$rs['ID_BASE']] = (isset($conn[$rs['ID_BASE']]) ? $conn[$rs['ID_BASE']] : getConnection($rs['ID_BASE']));
+                }
+                
+                $query = "UPDATE MW_PROMOCAO SET ID_SESSION = ? WHERE ID_SESSION = ?";
+                $params = array($parametros['OrderData']['OrderId'], session_id());
+                executeSQL($mainConnection, $query, $params);
+                
+                $query = "UPDATE MW_RESERVA SET ID_SESSION = ? WHERE ID_SESSION = ?";
+                executeSQL($mainConnection, $query, $params);
+                
+                $query = "UPDATE TABLUGSALA SET ID_SESSION = ? WHERE ID_SESSION = ?";
+                foreach ($conn as $key => $value) {
+                    executeSQL($value, $query, $params);
+                }
+
+                limparCookies();
+
+                executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+                    array($id_cliente_session, json_encode(array('descricao' => '5. redirecionamento do pedido=' . $parametros['OrderData']['OrderId'], 'cielo' => $pagamento_cielo)))
+                );
+
+                die("redirect.php?redirect=".urlencode($response['redirect']));
+            }
+            else {
+                $descricao_erro = $response['error'] ? $response['error'] : 'Transação não autorizada.';
+            }
+
         }
         // pagamentos via fastcash e pagseguro
         elseif ($pagamento_fastcash OR $pagamento_pagseguro){

@@ -88,7 +88,7 @@ $(function(){
 							}
 						}
 					});
-					$('#resposta .opcao.unica').attr('href', './etapa4.php');
+					$('#resposta .opcao.unica').attr('href', './etapa2.php');
 				} else {
 					fecharOverlay();
 					$.dialog({text: data});

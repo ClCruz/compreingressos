@@ -79,6 +79,10 @@ $(function(){
 				if (data.substr(0, 8) == 'redirect') {
 					document.location = data;
 				} else {
+					$('select').selectbox('detach')
+					$('[name=nomeCartao], [name=numCartao], [name=codSeguranca], #validadeMes, #validadeAno').val('');
+					$('select').selectbox('attach')
+
 					fecharOverlay();
 					$.dialog({text: data});
 		    		// continuar contagem regressiva

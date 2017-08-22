@@ -306,7 +306,7 @@ div#content div.centraliza{
 
 div.descricao_pag{
 	float:left;
-	width:100%;
+	width:69%;
 	overflow:visible;
 	margin-bottom:25px;
 }
@@ -1482,7 +1482,7 @@ div.container_endereco p.endereco{
 }
 
 a.add_endereco{
-  width:100%;
+  width:81%;
   float:left;
   display:block;
   font-size:20px;
@@ -2814,14 +2814,18 @@ div.pague_agora div.icone {
 }
 
 @media only screen and (max-width: 640px) {
-	#ddd_fixo, #ddd_celular {
-		width: 19% !important;
-	}
-
-	#fixo, #celular {
-		width: 69% !important;
-		float: right !important;
-	}
+	#ddd_fixo, #ddd_celular { width: 19% !important; }
+	#fixo, #celular { width: 69% !important; float: right !important; }
+	/* combos de data de nascimento */
+	div.dia{ width: 64px!important; }
+	div.mes{ width: 88px!important; }
+	div.ano{ width: 93px!important; }
+	div.dia div.erro_help { width: 94px!important; }
+	div.mes div.erro_help { width: 94px!important; }
+	div.ano div.erro_help { width: 94px!important; }
+	div.dia div.erro_help p.help{ position: relative!important; left: -48px!important; }
+	div.mes div.erro_help p.help{ position: relative!important; left: -29px!important; }
+	div.ano div.erro_help p.help{ position: relative!important; left: -41px!important; }	
 }
 
 a.botao.avancar.passo6.disabled {

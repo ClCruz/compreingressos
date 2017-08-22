@@ -1158,5 +1158,7 @@ div.input_area.endereco .sbHolder, div.input_area.identificacao .sbHolder{
 }
 
 
-@media only screen and (min-width:480px) and (max-width:640px){
+@media only screen and (min-width:640px) and (max-width:958px){
+  div.descricao_pag div.descricao{ width: 620px; }
+  div.coluna{ clear: both; }
 }

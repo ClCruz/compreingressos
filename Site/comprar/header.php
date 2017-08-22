@@ -43,9 +43,102 @@ $rows = numRows($mainConnection, "SELECT 1 FROM MW_RESERVA WHERE ID_SESSION = ?"
 <link rel="stylesheet" type="text/css" href="../stylesheets/icons/socicon/styles.css">
 <link rel="stylesheet" type="text/css" href="../stylesheets/icons/flaticon1/flaticon.css">
 
+<script src="../javascripts/header.js" type="text/javascript"></script>
 <?php require("desktopMobileVersion.php"); ?>
 
+<style type="text/css">
+	#btn{
+		height: 38px;
+		color: #fff;
+	}
+	#btn::-webkit-input-placeholder {
+        color: #fff;
+        font-style: italic !important;
+   
+    } 
+    #btn::-moz-placeholder {
+       color: #fff;
+       font-style: italic !important;
+	}
+</style>
 <div id="novo_menu">
+	<div id="guia_espetaculos" onclick="validaNewsletter()">
+    <div class="centraliza">
+      <div class="container">
+        <div class="left">
+          <img src="/images/ico_guiaespetaculos.png" />
+          <p class="frase1">Newsletter Compreingressos</p>
+          <p class="frase2">Seja o primeiro a conhecer nossa programação de espetáculos, novidades, promoções e ofertas exclusivas</p>
+        </div>
+        <div class="right">
+          <form id="newsletter">
+            <div class="container">
+              <div class="numero um">
+                <div class="check"></div>
+              </div>
+              <input type="text" value="insira seu nome" name="nome" />
+            </div>
+            <div class="container">
+              <div class="numero dois">
+                <div class="check"></div>
+              </div>
+              <input type="text" value="insira seu e-mail" name="email" />
+            </div>
+            <div class="container tres">
+              <div class="numero tres">
+                <div class="check"></div>
+              </div>
+              <div class="container_estado">
+                <p class="estadoselecionado">seu estado <span></span></p>
+              </div>
+              <ul class="containerestados">
+                <li rel="Acre">AC</li>
+                <li rel="Alagoas">AL</li>
+                <li rel="Amapá">AP</li>
+                <li rel="Amazonas">AM</li>
+                <li rel="Bahia">BA</li>
+                <li rel="Ceará">CE</li>
+                <li rel="Distrito Federal">DF</li>
+                <li rel="Espírito Santo">ES</li>
+                <li rel="Goiás">GO</li>
+                <li rel="Maranhão">MA</li>
+                <li rel="Mato Grosso">MT</li>
+                <li rel="Mato Grosso do Sul">MS</li>
+                <li rel="Minas Gerais">MG</li>
+                <li rel="Pará">PA</li>
+                <li rel="Paraíba">PB</li>
+                <li rel="Paraná">PR</li>
+                <li rel="Pernambuco">PE</li>
+                <li rel="Piauí">PI</li>
+                <li rel="Rio de Janeiro">RJ</li>
+                <li rel="Rio Grande do Norte">RN</li>
+                <li rel="Rio Grande do Sul">RS</li>
+                <li rel="Rondônia">RO</li>
+                <li rel="Roraima">RR</li>
+                <li rel="Santa Catarina">SC</li>
+                <li rel="São Paulo">SP</li>
+                <li rel="Sergipe">SE</li>
+                <li rel="Tocantins">TO</li>
+              </ul>
+              <input type="hidden" name="estado" value="0"/>
+            </div>
+            <div class="container status">
+              <div class="segura">
+                <span class="botao" onclick="$('#newsletter').submit();">cadastrar</span><!-- -->
+                <div class="status" onclick="$('#newsletter').submit();"></div>
+                <div class="loading"></div>
+              </div>
+              <input type="checkbox" id="check_acordo" checked="checked" class="checkbox" />
+              <label class="label" for="check_acordo">
+                Li e concordo com a<br />
+                <a href="/privacidade" target="_blank">política de privacidade.</a>
+              </label>
+            </div>
+          </form>
+        </div>
+      </div>     
+    </div>
+  </div>
 	<div class="centraliza">
 
 		<?php //if( !empty($banner) ): ?>
@@ -72,13 +165,18 @@ $rows = numRows($mainConnection, "SELECT 1 FROM MW_RESERVA WHERE ID_SESSION = ?"
 						<?php if (isset($_SESSION['operador']) and $rows == 0) { ?>
 						<li><a href="pesquisa_usuario.php">Pesquisar Cliente</a></li>
 						<?php } ?>
-						<li><a href="minha_conta.php">Minha Conta</a></li>
-						<li><a href="http://compreingressos.com/espetaculos">Todos os Espetáculos</a></li>
-						<li><a href="http://compreingressos.com/teatros">Teatros e Casas de Show</a></li>
-						<li><a href="http://suporte.compreingressos.com/" >SAC & Suporte</a></li>
+						<li><a target="_blank" href="https://compra.compreingressos.com/comprar/minha_conta.php">Cadastro/Login</a></li>
+						<li><a target="_blank" href="/espetaculos">Todos os eventos</a></li>
+						<li><a target="_blank" href="/teatros">Espaços</a></li>
+						<li><a href="#" onclick="showNewsLetter()">Fique por dentro</a></li>
+						<li><a target="_blank" href="/ofertas" >OFERTAS</a></li>
 					</ul>
 				</div>
-
+				<script type="text/javascript">
+					function showNewsLetter(){
+					  $('#guia_espetaculos').slideToggle();
+					}
+				</script>
 				<div class="cleaner"></div>
 				<div class="bottom">
 					<div id="btnbuscaCidade" class="local container geral cidade">
@@ -98,7 +196,7 @@ $rows = numRows($mainConnection, "SELECT 1 FROM MW_RESERVA WHERE ID_SESSION = ?"
 			</div>
 			<div class="clearfix"></div>
 			<div class="fim">
-				<div class="div_header">
+				<div class="div_header esconder">
 					<ul class="midias_sociais">
 						<li class="midia">
 							<a href="http://www.facebook.com/compreingressos" target="_blank" class="facebook"></a>
@@ -157,7 +255,7 @@ $rows = numRows($mainConnection, "SELECT 1 FROM MW_RESERVA WHERE ID_SESSION = ?"
 						<form method="get" action="http://compreingressos.com/espetaculos">
 							<span class="flaticon-magnifier" onclick="buscaEspetaculos();"></span>
 							<input type="submit" id="busca-espetaculos" class="hidden" />
-							<span><input name="busca" type="text" placeholder="Espetáculo, diretor, teatro, elenco"></span>
+							<span><input id="btn" name="busca" type="text" placeholder="Espetáculo, diretor, teatro, elenco"></span>
 						</form>
 					</div>
 				</div>

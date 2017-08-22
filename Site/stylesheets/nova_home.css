@@ -15,23 +15,19 @@
 div#novo_menu ul li { list-style: none; }
 div#novo_menu ul  { padding: 0px; margin: 0px; }
 div#novo_menu input { float: none; }
-
-div#novo_menu{background: #cd1331;padding: 5px 0px 15px 0px; position: relative;}
+div#novo_menu{background: #cd1331; position: relative;padding-bottom: 7px;}
 
 div#novo_menu .publicidade{width: 100%;height: 75px;background: rgba(255, 255, 255, 0.2);margin-bottom: 15px;}
-
 div#novo_menu .bottom { padding-top: 10px !important; }
-div#novo_menu .meio .bottom { padding-top: 20px !important;    text-align: center; width: 60%; margin: 0 auto; }
-div#novo_menu .div_header { height: 45px; }
+div#novo_menu .meio .bottom { padding-top: 20px !important; text-align: center; width: 75%; margin-left: 60px }
+div#novo_menu .div_header { height: 45px; margin-top: 9px;}
 
 div#novo_menu .itens > div{float: left; box-sizing: border-box; }
-
 div#novo_menu .itens > div.primeira{ width: 105px; margin-right: 7px; }
 div#novo_menu .itens > div.meio{ width: 560px; }
-
 div#novo_menu .itens > div:last-child{border: none; padding-right: 0px !important; }
 
-div#novo_menu .logo{background: #fff;padding: 25px 5px;border-radius: 30px;float: left;     width: 85px; height: 50px;}
+div#novo_menu .logo{background: #fff;padding: 25px 5px;border-radius: 30px;float: left; width: 85px; height: 50px;margin-top: 9px;}
 div#novo_menu .logo img{width: 100%;}
 div#novo_menu .logo a.logo {display: block;float: left;width: 158px;height: 60px;background: transparent url(../images/menu_logo.png) 0 0 no-repeat;}
 
@@ -42,19 +38,15 @@ div#novo_menu .meio ul.opcoes li:last-child{border-right: none;}
 div#novo_menu .meio ul.opcoes li a{transition: all 0.3s;color: inherit;font-size: inherit;}
 div#novo_menu .meio ul.opcoes li a:hover{transition: all 0.3s;color: #930606;}
 
-div#novo_menu .meio .bottom > div {width: 50%;float: left; cursor: pointer; }
-
+div#novo_menu .meio .bottom > div {width: 40%;float: left; cursor: pointer; margin-left: 21px;}
 div#novo_menu .meio .bottom > div *:before{ transition: color 0.4s;  }
 div#novo_menu .meio .bottom > div:hover *:before { color: #930606; !important; }
-
 div#novo_menu .meio .bottom > div .icone {    margin-right: 10px;    line-height: 40px;    color: #fff;}
-
 div#novo_menu .meio .bottom > div .icone:before { font-size: 30px !important;  }
+div#novo_menu .meio .bottom > div .icone, div#novo_menu .meio .bottom > div .txt{float: left;font-size: 0.9em; line-height: 100%; margin-left: 11px;}
 
-div#novo_menu .meio .bottom > div .icone, div#novo_menu .meio .bottom > div .txt{float: left;font-size: 0.9em; line-height: 100%; }
 div#novo_menu .meio .bottom > div .txt span{display: block;color: #fff;}
 div#novo_menu .meio .bottom > div .txt span:first-child{font-weight: bold;font-size: 1.2em}
-
 div#novo_menu .fim { height: 110px; padding-left: 15px; width: 30%; }
 div#novo_menu .bottom input { color: #fff; padding: 11px 20px;box-sizing: border-box;background-color: #ab001c;border: 1px solid rgb(160, 9, 33);border-radius: 5px;box-shadow: 0px 0px 10px rgb(228, 14, 49); }
 
@@ -66,32 +58,29 @@ span.flaticon-magnifier:before {color: #FFF;font-size: 26px; }
 span.flaticon-magnifier {    transform: rotate(90deg);}
 #novo_menu .search input {    width: 100%;    padding-right: 35px !important;}
 #novo_menu .search {    position: relative;}
-#novo_menu .search span.flaticon-magnifier {    position: absolute;    right: 5px;    top: 50%;    margin-top: -14px;}
+#novo_menu .search span.flaticon-magnifier { position: absolute;right: 5px;top: 50%;    margin-top: -14px;}
 
 .fim .btn:hover {background-color: #980a0a;color: #fff; cursor: pointer; }
 .fim .btn {background: #fff;padding: 1px 5px;font-size: 12px;position: relative;top: -2px;color: #990b0a;font-weight: bold;transition: background-color 0.3s; }
 .fim span.flaticon-star {color: #fff; }
 
-div#novo_menu .itens > div.meio, div#novo_menu .itens > div.fim {
-    /*margin-top: 5px;*/
-}
+div#novo_menu .itens > div.meio, div#novo_menu .itens > div.fim { /*margin-top: 5px;*/ }
 
 /*FOOTER*/
 #footer{  float:left;  width:100%;  background-color:#cd1331; padding-bottom: 96px;}
 #footer ul{  float:left;  width:286px;  padding:0;  margin:20px 0;}
 #footer ul li{  list-style:none;  margin:0 0 4px;}
-
 #footer ul li a{  color: #fff;}
 #footer ul li a:hover{  color:#000;}
 #footer ul li a.minha_conta_mobile{  display:none;}
 
 ul.midias_sociais li.title{  width:100%;  display:block;}
 ul.midias_sociais li{  float: left;  position: relative;}
-ul.midias_sociais li a{  position: absolute;  width: 100%;  height: 100%;}
-li.midia .icone {  background-color: #fff;  width: 37px;  height: 37px;  margin: 5px;  border-radius: 30px;  transition:background-color 0.4s;  -webkit-transition:background-color 0.4s}
+ul.midias_sociais li a{  position: absolute;  width: 100%; height: 100%;}
+li.midia .icone {  background-color: #fff;  width: 37px; height: 37px; margin: 5px; border-radius: 30px; transition:background-color 0.4s;  -webkit-transition:background-color 0.4s}
 li.midia:hover .icone{  background-color: #6d000d;}
 li.midia:hover .icone span.icon{  color:#fff;  }
-li.midia span {  font-size: 20px;  text-align: center;  display: block;  height: 37px;  line-height: 37px;  color: #cf102d;}
+li.midia span {  font-size: 20px;  text-align: center; display: block; height: 37px; line-height: 37px; color: #cf102d;}
 li.midia span:before {  line-height: 37px;}
 
 #novo_menu li.midia .icone span:before {
@@ -119,26 +108,36 @@ div#selos2 {
 @media only screen and (min-width: 641px) and (max-width: 959px){
 	
 	#novo_menu .itens, #novo_menu .centraliza { width: 100% !important; }
-	#novo_menu { width: 767px; }
+	#novo_menu { width: 100%; }
 
 	div#novo_menu { height: 330px; }
 	div#novo_menu .itens .primeira { height: 110px; width: 100% !important; margin-bottom: 10px;}
 	div#novo_menu .itens .primeira .logo { display: block !important; margin: 0 auto !important; width: 95px; float: none;}
-
 	div#novo_menu .itens > div.meio { width: 56%; }
 	div#novo_menu .itens > div.fim { width: 42%; }
 }
 
-@media only screen and (min-width: 768px) and (max-width: 979px) {
+@media only screen and (min-width: 640px) and (max-width: 979px) {
   #footer ul.midias_sociais { width: 195px; }
+  div#novo_menu { height: 180px; }
+  div#novo_menu .itens .primeira .logo { float: left;width: 85px!important; }
+  div#novo_menu .itens .primeira { width: 16%!important; }
+  div#novo_menu .meio .bottom { width: 100%; }
+  .container { clear: none!important; }
+  div#novo_menu .bottom { padding-right: 10px; }
+
 }
 
 @media screen and (min-width: 480px) and (max-width: 640px){
 	div#novo_menu > div .primeira { width: 106px !important; }
-	div#novo_menu .itens > div.meio .txt span:first-child { width: 45px; }
-	
+	div#novo_menu .itens > div.meio .txt span:first-child { width: 45px; }	
 	div#novo_menu .itens > div.meio { width: 75%; }
 	div#novo_menu .fim { float: left; width: 70%; margin: 0px; padding: 0px; height: auto; }
+  div#novo_menu { height: 108px!important; }
+  div#novo_menu .bottom { padding-top: 31px!important; }
+  div#novo_menu .meio .bottom { margin-left: 20px!important; }
+  div#novo_menu > div .primeira { padding-left: 5px!important; }
+  div#novo_menu .logo { margin-top: 5px!important;  }
 }
 
 @media screen and (max-width: 640px){
@@ -151,38 +150,418 @@ div#selos2 {
 	.fim .div_header, .fim .bottom .icones, .fim .bottom [class*="flaticon"] { display: none; }
 	.primeira { padding: 0px !important; vertical-align: top !important; }
 	#novo_menu .fim .search{ float: none; }
-	div#novo_menu .bottom input{ width: 100%; }
+	div#novo_menu .bottom input{ width: 100%;}
 	.fim { display: block !important; margin-left: 10px; width: 350px; }
-	div#novo_menu { height: 100px;  }
+	div#novo_menu { height: 100px; }
 }
 
 @media screen and (max-width: 479px){
 
-	div#novo_menu .meio .bottom > div .txt span:first-child {
-	    padding-top: 15px;	
-	}
+	div#novo_menu .meio .bottom > div .txt span:first-child { padding-top: 15px; }
 	div#novo_menu .itens > div.meio { width: 200px;  }
-	.fim {
-	    clear: both;
-	    width: 100% !important;
-	    float: none !important;
-	    display: block !important;
-	    margin: 0px;
-	    padding: 25px 5px 0 5px;
-	}
+	.fim { clear: both; width: 100% !important; float: none !important; display: block !important; margin: 0px; }
 
-	div#novo_menu .itens > div.primeira {
-	    width: 105px;
-	}
+	div#novo_menu .itens > div.primeira { width: 105px; }
 	div#novo_menu .itens > div { float: none;  }
 	div#novo_menu .itens{ display: block; }
 	div#novo_menu .bottom { padding-top: 0px !important;  }
-	.primeira { display: block !important;		width: 100%; }
+	.primeira { display: block !important;	width: 100%; }
 
 	div#novo_menu { height: 160px; }
-	div#novo_menu .logo { margin: 0 auto !important; float: none !important; }
+	div#novo_menu .logo { margin: 0 auto !important; float: none !important;margin-top: 5px!important; }
 	div#novo_menu .itens > div{ float: left; }
 	div#novo_menu .meio .bottom > div .icone, div#novo_menu .meio .bottom > div .txt { margin: 0 auto; }
-	div#novo_menu .meio .bottom > div .icone, div#novo_menu .meio .bottom > div .txt { float: none;		text-align: center; }
+	div#novo_menu .meio .bottom > div .icone, div#novo_menu .meio .bottom > div .txt { float: none;	text-align: center; }
 	div#novo_menu .bottom input { width: 97%; }
+  div#novo_menu .fim{ padding-left: 5px; }
+  div#novo_menu .meio .bottom { width: 115%!important;margin-left: 0px!important; }
+  div#novo_menu .logo { margin-bottom: 10px!important; }
 }
+/* NEWSLETTER */
+div#guia_espetaculos{
+  width:100%;
+  height:190px; 
+  padding:5px 0;
+  display: none;
+  background:#930606 url('../images/bg_fundo_guia.jpg') center bottom repeat;
+}
+div#guia_espetaculos div.centraliza{
+  height:170px;
+}
+
+div#guia_espetaculos div.container{
+  float:left;
+  height:170px;
+  width:100%;
+}
+div#guia_espetaculos div.aba{
+  float:right;
+  height:40px;
+  width:215px;
+  font-weight:600;
+  cursor:pointer;
+  margin:5px 0 -55px;
+  text-transform:lowercase;
+  background:#930606 url('../images/bg_aba_guia.png') 0 0 repeat;
+  position:relative;
+  -moz-border-bottom-left-radius:3px;
+  -webkit-border-bottom-left-radius:3px;
+  border-bottom-left-radius:3px;
+  -moz-border-bottom-right-radius:3px;
+  -webkit-border-bottom-right-radius:3px;
+  border-bottom-right-radius:3px;
+  color:#FFF;
+  font-size:14px;
+  text-align:center;
+  line-height:40px;
+};
+
+div#guia_espetaculos div.aba span{
+  width:22px;
+  display:block;
+  float:right;
+  height:21px;
+  margin:10px 6px 0 -2px;
+}
+
+div#guia_espetaculos div.aba.fechado span{
+  background:transparent url('../images/ico_setas.png') 0 0 no-repeat;
+}
+
+div#guia_espetaculos div.aba.aberto span{
+  background:transparent url('../images/ico_setas.png') 0 -26px no-repeat;
+}
+
+div#guia_espetaculos div.container div.left{
+  float:left;
+  width:168px;
+  text-align:center;
+  color:#FFF;
+}
+
+div#guia_espetaculos div.container div.left img{
+  margin:16px 0 10px;
+}
+
+div#guia_espetaculos div.container div.left p.frase1{
+  font-size:18px;
+  line-height:1em;
+  margin:0 0 4px;
+  font-family:'Source Sans Pro';
+  text-transform:lowercase;
+  font-variant:small-caps;
+  font-weight:600;
+}
+
+div#guia_espetaculos div.container div.left p.frase2{
+  font-size:14px;
+  margin:0;
+  font-weight:600;
+}
+
+div#guia_espetaculos div.container div.right{ 
+  float:right;
+  width:792px;
+}
+
+div#guia_espetaculos div.right div.container{
+  float:left;
+  width:176px;
+  height:auto;
+  margin:40px 10px 0;
+}
+
+div#guia_espetaculos div.right div.container.tres{
+  margin-right:40px;
+}
+
+div#guia_espetaculos div.right div.container input{
+  width:100%;
+  font-size:12px;
+  color:#FFF;
+  background:transparent;
+  border:1px solid #FFF;
+  text-align:center;
+  font-style:italic;
+  margin-top:16px;
+  float:left;
+  line-height:14px;
+  padding:6px 0;
+  outline:0;
+  -moz-border-radius:0;
+  -webkit-border-radius:0;
+  border-radius:0;
+}
+input, select {
+    border: 1px solid #000;
+    color: black;
+    font-size: 12px;
+    font-style: italic;
+}
+
+div#guia_espetaculos div.right div.container div.container_estado{
+  float:left;
+  width:168px;
+  padding:4px 4px;
+  margin:16px 0 4px;
+  border:1px solid #FFF;
+}
+
+div#guia_espetaculos div.right div.container p.estadoselecionado{
+  font-size:14px;
+  color:#FFF;
+  background:transparent;
+  text-align:center;
+  font-style:italic;
+  float:left;
+  cursor:pointer;
+  margin:0;
+  width:100%;
+}
+
+div#guia_espetaculos div.right div.container p.estadoselecionado span{
+  width:22px;
+  display:block;
+  float:right;
+  height:21px;
+  margin:-1px 0 0 -8px;
+  background:transparent url('../images/ico_setas.png') 0 0 no-repeat;
+}
+
+div#guia_espetaculos div.right div.container ul.containerestados{
+  background:transparent url('../images/bg_menu.png') 0 0 repeat;
+  padding:6px;
+  list-style:none;
+  width:288px;
+  height:84px;
+  border:1px solid #E6E6E6;
+  position:relative;
+  overflow:hidden;
+  margin:0 0 0 -60px;
+  z-index:1;
+  display:none;
+}
+
+div#guia_espetaculos div.right div.container ul.containerestados li{
+  display:inline;
+  float:left;
+  color:#930606;
+  padding:8px;
+  list-style:none;
+  font-size:12px;
+  width:16px;
+  height:12px;
+  line-height:12px;
+  text-align:center;
+  cursor:pointer;
+}
+
+div#guia_espetaculos div.right div.container ul.containerestados li:hover{
+  float:left;
+  background:#930606;
+  color:#FFF;
+}
+
+div#guia_espetaculos div.right div.container div.numero{
+  float:left;
+  width:100%;
+  height:56px;
+  background-color:transparent;
+  background-position:50% 0;
+  background-repeat:no-repeat;
+}
+
+div#guia_espetaculos div.right div.container div.check{
+  width:21px;
+  height:21px;
+  float:right;
+  display:none;
+  margin:20px 48px 0 0;
+  background:transparent url('../images/news_icons.png') 0px -1px no-repeat;
+}
+
+div#guia_espetaculos div.right div.container div.dois div.check{
+  margin-right:42px;
+}
+ 
+#guia_espetaculos div.right div.container div.tres div.check{
+  margin-right:24px;
+}
+
+div#guia_espetaculos div.right div.container div.um{
+  background-image:url('../images/news_1.png');
+}
+
+div#guia_espetaculos div.right div.container div.dois{
+  background-image:url('../images/news_2.png');
+}
+
+div#guia_espetaculos div.right div.container div.tres{
+  background-image:url('../images/news_3.png');
+}
+
+div#guia_espetaculos div.right div.container.status{
+  width:130px;
+  margin-top:20px;
+}
+
+div#guia_espetaculos div.right div.container.status div.segura{
+  width:100%;
+  height:88px;
+  margin-bottom:10px;
+  cursor:pointer;
+}
+
+div#guia_espetaculos div.right div.container.status div.segura span.botao{
+    display: block;
+    height: 85px;
+    text-align: center;
+    line-height: 86px;
+    color: #9c0e0d;
+    background-color: #fff;
+    border-radius: 87px;
+    width: 86px;
+    margin: 0 auto;
+    font-weight: bold;
+    font-size: 1.2em;
+    border: 6px double #9c0e0d;
+}
+
+div#guia_espetaculos div.right div.container div.status{
+  width:100%;
+  height:88px;
+}
+
+div#guia_espetaculos div.right div.container div.loading{
+  width:100%;
+  height:88px;
+  display:none;
+  background:transparent url('../images/ico_loading.gif') 50% 44px no-repeat;
+}
+
+div#guia_espetaculos div.right div.container label{
+  color:#FFF;
+  font-size:11px;
+  width:120px;
+}
+
+div#guia_espetaculos div.right div.container label a{
+  color:#FFF;
+  font-size:11px;
+  font-weight:bold;
+  text-decoration:underline;
+}
+
+div#guia_espetaculos div.right div.container label input{
+  background:#930606;
+  border:1px solid #FFF;
+  margin:0;
+  vertical-align:baseline;
+  width:auto;
+}
+
+div#guia_espetaculos div.right div.container.status input{
+  width:auto;
+}
+
+div#guia_espetaculos div.right div.container.status label input{
+  border:0;
+  padding:0;
+}
+/* FIM NEWSLETTER */
+
+/*input[type=checkbox].checkbox:checked+label.label{
+  background-position:0 -15px;
+}     
+
+.label{
+  background-image:url(../images/checkbox_chrome_style.png);
+}*/
+
+input[type=checkbox].checkbox+label.label{
+  padding-left:20px;
+  height:15px;
+  display:inline-block;
+  line-height:15px;
+  background-repeat:no-repeat;
+  background-position:0 0;
+  font-size:15px;
+  vertical-align:middle;
+  cursor:pointer
+}
+.label {
+    background-image: url(../images/checkbox_chrome_style.png);
+}
+
+@media only screen and (min-width: 641px) and (max-width: 930px){
+    div.identificacao{ clear: both; }
+    table#meus_pedidos{ width: 70%; }
+    a.botao.trocar_senha{ clear: both; margin-left:50px; }
+    a.botao{ margin-top: 10px; }
+    a.botao.meus_pedidos{ margin-left: 50px; }
+    #footer ul{ clear: both; }
+    a.add_endereco{ width: 26%; }
+    div.container_enderecos{ width: 550px; }
+    .container{ clear: both; }
+} 
+
+@media (min-width:768px) and (max-width:1024px){
+  div.right{ float:right!important; width:600px!important; padding-top:40px!important; }
+  div.numero{ width:65%!important; }
+  div.container{ margin:0!important; }
+  
+  div#guia_espetaculos div.right div.container input{ width:80%!important; }
+  div#guia_espetaculos div.right div.container{ width:150px!important; }
+  div#guia_espetaculos div.right div.container div.container_estado{ width:124px!important; }
+  
+  div#novo_menu .itens{ background:#cd1331; }
+  div#novo_menu .meio .bottom div{ margin-left:11px!important; }
+  div#novo_menu .div_header ul.opcoes{ width: 497px; }
+  div#novo_menu .fim{ height: 59px; }
+  div#novo_menu{ height: 144px!important; }
+
+  div.fim{ float: right!important; }
+  div#novo_menu .itens .primeira .logo{ margin-top: 4px!important; margin-left: 5px!important; }
+  div.div_header div.bottom{ display: none; }
+  
+  .esconder{ display: none; } 
+}
+
+@media (min-width:640px) and (max-width:772px){
+  div#novo_menu .div_header { display: none!important; }
+  div#novo_menu .bottom { padding-top: 24px!important; }
+  div#novo_menu { height: 106px!important; }
+  div#novo_menu .fim { height: 74px; margin-left: 261px;}
+  div#novo_menu .itens > div.primeira { padding-top: 5px;padding-left: 5px; }
+} 
+
+@media (min-width:979px) and (max-width:1027px){
+  div.fim{ padding-top: 50px; }
+  
+  div#novo_menu { height: 103px!important; }
+  div#novo_menu .meio .bottom > div { width: 30%!important; }
+  div#novo_menu .meio .bottom { margin-left: 122px!important; } 
+}
+
+@media (min-width:979px) and (max-width:979px){
+  div#novo_menu .fim{ width: 24%!important; }
+}
+  
+@media (min-width:1025px) and (max-width:1027px){
+  div.fim { padding-top: 0px!important; }
+  
+  div#novo_menu .meio .bottom { margin-left: 61px!important }
+}
+
+@media (min-width:640px) and (max-width:640px){
+  div#novo_menu .fim{ width: 41%!important; }
+}
+
+@media (min-width:931px) and (max-width:958px){
+  div.descricao_pag  div.menu_conta{ width: 110%; }
+}
+
+@media (min-width:1024px){
+  div.bottom div#btnbuscaCidade{ margin-left: 63px!important; }
+  div#novo_menu .meio .bottom > div{ width: 29.6%!important; }
+} 

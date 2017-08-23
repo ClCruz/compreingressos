@@ -39,13 +39,6 @@ $rows = numRows($mainConnection, "SELECT 1 FROM MW_RESERVA WHERE ID_SESSION = ?"
 
 ?>
 
-<link rel="stylesheet" type="text/css" href="../stylesheets/nova_home.css">
-<link rel="stylesheet" type="text/css" href="../stylesheets/icons/socicon/styles.css">
-<link rel="stylesheet" type="text/css" href="../stylesheets/icons/flaticon1/flaticon.css">
-
-<script src="../javascripts/header.js" type="text/javascript"></script>
-<?php require("desktopMobileVersion.php"); ?>
-
 <style type="text/css">
 	#btn{
 		height: 38px;
@@ -62,7 +55,7 @@ $rows = numRows($mainConnection, "SELECT 1 FROM MW_RESERVA WHERE ID_SESSION = ?"
 	}
 </style>
 <div id="novo_menu">
-	<div id="guia_espetaculos" onclick="validaNewsletter()">
+	<div id="guia_espetaculos">
     <div class="centraliza">
       <div class="container">
         <div class="left">
@@ -166,10 +159,10 @@ $rows = numRows($mainConnection, "SELECT 1 FROM MW_RESERVA WHERE ID_SESSION = ?"
 						<li><a href="pesquisa_usuario.php">Pesquisar Cliente</a></li>
 						<?php } ?>
 						<li><a target="_blank" href="https://compra.compreingressos.com/comprar/minha_conta.php">Cadastro/Login</a></li>
-						<li><a target="_blank" href="/espetaculos">Todos os eventos</a></li>
-						<li><a target="_blank" href="/teatros">Espaços</a></li>
+						<li><a target="_blank" href="http://compreingressos.com/espetaculos">Todos os eventos</a></li>
+						<li><a target="_blank" href="http://compreingressos.com/teatros">Espaços</a></li>
 						<li><a href="#" onclick="showNewsLetter()">Fique por dentro</a></li>
-						<li><a target="_blank" href="/ofertas" >OFERTAS</a></li>
+						<li><a target="_blank" href="http://compreingressos.com/ofertas" >OFERTAS</a></li>
 					</ul>
 				</div>
 				<script type="text/javascript">

@@ -162,6 +162,9 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
         <link rel="stylesheet" href="../stylesheets/cicompra.css"/>
         
         <link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
+        <link rel="stylesheet" type="text/css" href="../stylesheets/nova_home.css">
+        <link rel="stylesheet" type="text/css" href="../stylesheets/icons/flaticon1/flaticon.css">
+        <link rel="stylesheet" type="text/css" href="../stylesheets/icons/socicon/styles.css">
 
         <script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
         <script src="../javascripts/jquery.placeholder.js" type="text/javascript"></script>
@@ -177,7 +180,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
         <script src="../javascripts/minhaConta.js" type="text/javascript"></script>
         <script src="../javascripts/identificacao_cadastro.js" type="text/javascript"></script>
         <script src="../javascripts/dadosEntrega.js" type="text/javascript"></script>
-
+        <script src="../javascripts/faro.js" type="text/javascript"></script>
         <?php if (isset($_GET['atualizar_dados']) || isset($_GET['atualizar_endereco'])) { ?>
             <script type="text/javascript">
                 $(function(){

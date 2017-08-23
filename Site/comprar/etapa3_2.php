@@ -28,6 +28,10 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	<link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
 	<link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
+	<link rel="stylesheet" type="text/css" href="../stylesheets/nova_home.css">
+ 	<link rel="stylesheet" type="text/css" href="../stylesheets/icons/flaticon1/flaticon.css" />
+ 	<link rel="stylesheet" type="text/css" href="../stylesheets/icons/socicon/styles.css">
+
     <?php require("desktopMobileVersion.php"); ?>
 
 	<script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
@@ -42,6 +46,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 
 	<script type="text/javascript" src="../javascripts/identificacao_cadastro_operador.js"></script>
 	<script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
+	<script src="../javascripts/faro.js" type="text/javascript"></script>
 	<?php if (!isset($_GET['assinatura'])) { ?>
 	<script type="text/javascript" src="../javascripts/contagemRegressiva.js?until=<?php echo tempoRestante(); ?>"></script>
 	<?php } ?>

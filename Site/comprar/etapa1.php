@@ -221,6 +221,9 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
     <link rel="stylesheet" href="../stylesheets/ajustes.css"/>
     <link rel="stylesheet" href="../stylesheets/smoothness/jquery-ui-1.10.3.custom.css"/>
     <link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
+    <link rel="stylesheet" type="text/css" href="../stylesheets/nova_home.css">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/icons/flaticon1/flaticon.css"/>
+    <link rel="stylesheet" type="text/css" href="../stylesheets/icons/socicon/styles.css">
 
     <script src="../javascripts/ga.js" async="" type="text/javascript"></script>
 
@@ -236,7 +239,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
     <script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
     <script src="../javascripts/common.js" type="text/javascript"></script>
     <script src="../javascripts/jquery.annotate.js" type="text/javascript"></script>
-
+    <script src="../javascripts/faro.js" type="text/javascript"></script>
     <script type="text/javascript" src="../javascripts/plateia.js?<?php echo $vars; ?>"></script>
     <script type="text/javascript" src="../javascripts/overlay_datas.js?evento=<?php echo $rs['ID_EVENTO']; ?>"></script>
 

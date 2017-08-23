@@ -30,6 +30,9 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
     <?php require("desktopMobileVersion.php"); ?>
 	<link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
+	<link rel="stylesheet" type="text/css" href="../stylesheets/nova_home.css">
+ 	<link rel="stylesheet" type="text/css" href="../stylesheets/icons/flaticon1/flaticon.css" />
+ 	<link rel="stylesheet" type="text/css" href="../stylesheets/icons/socicon/styles.css">
 
 	<script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
 	<script src="../javascripts/jquery.placeholder.js" type="text/javascript"></script>
@@ -41,6 +44,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
 	<script src="../javascripts/common.js" type="text/javascript"></script>
 	<script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
+	<script src="../javascripts/faro.js" type="text/javascript"></script>
 
 	<script type="text/javascript" src="../javascripts/contagemRegressiva.js?until=<?php echo tempoRestante(); ?>"></script>
 	<script type="text/javascript" src="../javascripts/carrinho.js"></script>

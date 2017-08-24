@@ -62,6 +62,7 @@
 	<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
 	<script src="../javascripts/common.js" type="text/javascript"></script>
 	<script src="../javascripts/faro.js" type="text/javascript"></script>
+    <script src="../javascripts/faro.js" type="text/javascript"></script>
 	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
 </head>
 <body>

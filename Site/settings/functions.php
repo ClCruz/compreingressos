@@ -2150,7 +2150,7 @@ function comboGateway($name, $gateway = ""){
     $mainConnection = mainConnection();
     $result = executeSQL($mainConnection, "SELECT ID_GATEWAY, DS_GATEWAY, IN_EXIBE_USUARIO FROM MW_GATEWAY WHERE IN_EXIBE_USUARIO = '1'");
 
-    $combo = '<select name="' . $name . '[]" class="inputStyle '. $name .'" id="' . $name . '">';
+    $combo = '<select name="' . $name . '[]" class="inputStyle '. $name .'" id="' . $name . '"><option>Selecione...</option>';
     while ($rs = fetchResult($result)) {
         $selecionavel = "";
         if($gateway == $rs['ID_GATEWAY']){

@@ -113,17 +113,8 @@ if (isset($_SESSION['operador']) and in_array($etapa_atual, $etapas_para_exibir)
                         </tr>
                     </table>
                     <style type="text/css">
-                        #aw_malware { width: 80px !important;  }
                         #selos2 table { margin-top: -3px;  }
                     </style>
-                    <div id="armored_website" style="float:left;width:74px;">
-                        <param id="aw_preload" value="true" />
-                    </div>
-                    <script type="text/javascript" src="//selo.siteblindado.com/aw.js"></script>
-                    <div id="aw_malware" style="float:left;">
-                        <param id="aw_malware_preload" value="true" />
-                    </div>
-                    <script type="text/javascript" src="//selo.siteblindado.com/aw_malware.js"></script>
                 </div>
                 <!-- selos -->
             </div>

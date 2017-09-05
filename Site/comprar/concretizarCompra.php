@@ -187,3 +187,27 @@ if ($noErrors and empty($sqlErrors)) {
 
 	die("Ocorreu um erro inesperado.<br>Por favor, tente novamente.<br>Se o erro persistir favor entrar em contato com a nossa central de atendimento e reportar o erro 528.");
 }
+
+
+// checar se tem XXX na item - erro que nao conseguimos identificar como ocorre (talvez alguma falha com id session no banco)
+$rs = executeSQL($mainConnection, "SELECT COUNT(1) FROM MW_ITEM_PEDIDO_VENDA WHERE ID_PEDIDO_VENDA = ? AND CODVENDA = 'XXXXXXXXXX'", array($pedido_id), true);
+$enviar_email_erro_XXX = $rs[0] > 0;
+
+if ( $enviar_email_erro_XXX OR !($noErrors and empty($sqlErrors)) ) {
+
+	//define the body of the message.
+	ob_start(); //Turn on output buffering
+	?>
+	<p>&nbsp;</p>
+	<p>XXXXXXXXXX</p>
+	<p>&nbsp;</p>
+	<p>Dump de variaveis:</p>
+	<p><pre><?php print_r(get_defined_vars()); ?></pre></p>
+	<p>&nbsp;</p>
+	<?php
+	//copy current buffer contents into $message variable and delete current output buffer
+	$message = ob_get_clean();
+
+	sendErrorMail('Atenção: Possibilidade de venda em duplicidade - COMPREINGRESSOS.COM', $message);
+
+}

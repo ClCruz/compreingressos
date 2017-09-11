@@ -178,7 +178,7 @@ $(function() {
 						<td><?php echo $rs['HR_APRESENTACAO']; ?></td>
 						<td><?php echo $rs['DS_CADEIRA']; ?></td>
 						<td><?php echo $rs['DS_SETOR']; ?></td>
-						<td><?php echo $rs['DT_VALIDADE']->format('d/m/Y H:m'); ?></td>
+						<td><?php echo $rs['DT_VALIDADE']->format('d/m/Y H:i'); ?></td>
 						<td><?php echo $rs['ID_PEDIDO_VENDA']; ?></td>
 					</tr>
 					<?php

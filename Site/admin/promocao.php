@@ -78,12 +78,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
 
         <style type="text/css"> div#ui-datepicker-div { z-index: 9999 !important; } </style>
 
-        <script type="text/javascript" src="../javascripts/uploadify/jquery.uploadify.min.js"></script>
-        <script type="text/javascript" src="../javascripts/uploadify/jquery.uploadify.js"></script>
+        <script type="text/javascript" src="../javascripts/uploadify/swfobject.js"></script>
+        <script type="text/javascript" src="../javascripts/uploadify/jquery.uploadify.v2.1.0.min.js"></script>
 
         <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
         <script type="text/javascript" src="../javascripts/jquery.mask.min.js"></script>
-        <!-- <script type="text/javascript" src="../javascripts/uploadify/jquery-1.7.2.min.js"></script> -->
+
         <script type="text/javascript" src="../javascripts/chosen.jquery.min.js"></script>
 
         <script type="text/javascript">
@@ -275,17 +275,18 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                                     $('[name=diretorio_temp]').val((diretorio_temp.split('/'))[diretorio_temp.split('/').length-1]);
 
                                     $('#csv').uploadify({
-                                        swf: '../javascripts/uploadify/uploadify.swf',
-                                        checkExisting: '../javascripts/uploadify/check-exists.php',
-                                        uploader: '../javascripts/uploadify/uploadify.php',
+                                        uploader: '../javascripts/uploadify/uploadify.swf',
+                                        checkScript: '../javascripts/uploadify/check.php',
+                                        script: '../javascripts/uploadify/uploadify.php',
+                                        cancelImg: '../javascripts/uploadify/cancel.png',
                                         auto: true,
                                         multi: true,
                                         folder: diretorio_temp,
                                         fileDesc: 'Apenas CSV',
-                                        fileType: '*.csv;',
+                                        fileExt: '*.csv;',
                                         queueID:'uploadifyQueue',
                                         width: 300,
-                                        onUploadSuccess: function(event, queueID, fileObj, response, data) {
+                                        onComplete: function(event, queueID, fileObj, response, data) {
                                             if (response.substr(0, 4) == 'true') {
                                                 var byteSize = Math.round(fileObj.size / 1024 * 100) * .01;
                                                 var suffix = 'KB';

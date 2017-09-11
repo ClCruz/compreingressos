@@ -1,4 +1,11 @@
 <?php
+if(isset($_GET["exportar"]) && $_GET["exportar"] == "true"){
+  header("Content-type: application/vnd.ms-excel");
+  header("Content-type: application/force-download");
+  header("Content-Disposition: attachment; filename=relatorio.xls");
+  header("Pragma: no-cache");
+}
+
 require_once("../settings/functions.php");
 require_once("../settings/Utils.php");
 
@@ -17,6 +24,7 @@ $DataIni = (isset($_GET["DataIni"]) && !empty($_GET["DataIni"])) ? $_GET["DataIn
 $DataFim = (isset($_GET["DataFim"]) && !empty($_GET["DataFim"])) ? $_GET["DataFim"] : "null";
 $HorSessao = (isset($_GET["HorSessao"]) && !empty($_GET["HorSessao"])) ? $_GET["HorSessao"] : "null";
 $Resumido = $_GET["Resumido"];
+$var_url   = "relBorderoVendasCanalVenda.php?CodPeca=".$_GET["CodPeca"]."&logo=imagem&Resumido=".$_GET["Resumido"]."&Small=".$_GET['Small']."&DataIni=".$_GET["DataIni"]."&DataFim=".$_GET["DataFim"]."&HorSessao=".$_GET["HorSessao"]."&Sala=".$_GET["Sala"];
 
 $queryBase = "SELECT ds_local_evento DS_NOME_TEATRO FROM tabpeca tp INNER JOIN ci_middleway..mw_local_evento le ON le.id_local_evento = tp.id_local_evento WHERE tp.CodPeca = ?";
 $nomeBase = executeSQL($connBase, $queryBase, array($_GET["CodPeca"]), true);
@@ -86,16 +94,19 @@ if (isset($err) && $err != "") {
     </script>
     <table width=650 class="tabela" border="0">
       <tr>
-        <td width="80">
-          <img alt="Compreingressos.com" align="left" border="0" src="http://www.compreingressos.com/images/logo_compre_2015.jpg" />
-        </td>
-        <td>
-          <div class="logoTeatro">
-              <?php if( !empty($imagem) ): ?>
-              <img src="data:img/jpeg;base64,<?php echo base64_encode($imagem); ?>" alt="" />
-              <?php endif; ?>
-          </div>
-        </td>
+          <?php if(isset($_GET["exportar"]) && $_GET["exportar"] == "true") { ?>
+              <td width="80">
+                  <img alt="Compreingressos.com" align="left" border="0" src="http://www.compreingressos.com/images/logo_compre_2015.jpg" />
+              </td>
+          <?php }else{ ?>
+              <td>
+                  <div class="logoTeatro">
+                      <?php if( !empty($imagem) ): ?>
+                          <img src="data:img/jpeg;base64,<?php echo base64_encode($imagem); ?>" alt="" />
+                      <?php endif; ?>
+                  </div>
+              </td>
+          <?php } ?>
         <td width="300" class="tabela" align="center" bgcolor="LightGrey"><b><font size=2 face="tahoma,verdana,arial">Borderô - Canal de Vendas</font><br/>Contabilização dos Ingressos</b></td>
       </tr>
       <tr>
@@ -578,9 +589,7 @@ if (isset($err) && $err != "") {
                     <td bgcolor="LightGrey" align="right" class="label" valign="top"><b>R$&nbsp;&nbsp;&nbsp;<?php echo number_format(($nTotalVendas - $nTotalDesp), 2, ",", "."); ?></b></td>
                   </tr>
                   <tr>
-                    <td colspan="4" bgcolor="#FFFFFF" width="650"><font size=1 face="tahoma,verdana,arial">
-                                                              			    			O Borderô de vendas assinados pelas partes envolvidas, dará a plena  quitação dos valores pagos em dinheiro no momento do fechamento,  portanto, confira atentamente os valores recebidos em dinheiro, vales/recibos de saques e comprovantes de depósito.<br>
-                                                              			    			Os valores vendidos através dos cartões de crédito e débito serão  repassados aos favorecidos de acordo com os prazos firmados  através do contrato prestação de serviços assinado pelas partes.</font>
+                    <td colspan="4" bgcolor="#FFFFFF" width="650"><font size=1 face="tahoma,verdana,arial">O Borderô de vendas assinados pelas partes envolvidas, dará a plena  quitação dos valores pagos em dinheiro no momento do fechamento,  portanto, confira atentamente os valores recebidos em dinheiro, vales/recibos de saques e comprovantes de depósito.<br>		Os valores vendidos através dos cartões de crédito e débito serão  repassados aos favorecidos de acordo com os prazos firmados  através do contrato prestação de serviços assinado pelas partes.</font>
                     </td>
                   </tr>
                 </table>

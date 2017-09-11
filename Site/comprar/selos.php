@@ -6,14 +6,6 @@
                 <img src='../images/100x46_fundo_branco.gif' alt='Certisign'>
             </a>
         </div>
-        <!-- Site Blindado -->
-        <div class="selo" id="armored_website">
-            <param id="aw_preload" value="true" />
-        </div>
-        <!-- Site Anti-Malware -->
-        <div class="selo" id="aw_malware">
-            <param id="aw_malware_preload" value="true" />
-        </div>
     </div>
     <!-- <p class="creditos">COMPREINGRESSOS.COM 2010 © Todos os direitos reservados. Desenvolvido por <a href="http://www.cc.com.br">C&amp;C</a> e <a href="http://www.faroestudio.com.br">Faro</a>.</p> -->
     <a class="link_adptativo" href="">visualizar na versão desktop</a>
@@ -27,5 +19,3 @@
     }
 </script>
 <script src="https://seal.verisign.com/getseal?host_name=compra.compreingressos.com&size=S&use_flash=NO&use_transparent=getsealjs_b.js&lang=pt"></script>
-<script type="text/javascript" src="https://selo.siteblindado.com/aw.js"></script>
-<script type="text/javascript" src="https://selo.siteblindado.com/aw_malware.js"></script>

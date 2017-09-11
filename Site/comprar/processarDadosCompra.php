@@ -303,11 +303,11 @@ if (hasRows($resultIdPedidoVenda)) {
         $query .= ',IN_SITUACAO_DESPACHO
                                 ,CD_BIN_CARTAO)
                                 VALUES
-                                (?, ?, ?, GETDATE(), ?, ?, ?, ?, ?, ?' .($entrega ? ', ?, ?, ?, ?, ?, ?, ?' : ''). ', ?, ?)';
+                                (?, ?, ?, GETDATE(), ?, ?, ?, ?, ?, ?' .($entrega ? ', ?, ?, ?, ?, ?, ?, ?, ?' : ''). ', ?, ?)';
 
         if ($entrega) {
             $params = array($newMaxId, $_SESSION['user'], $_SESSION['operador'], 0, 'P', ($entrega ? 'E' : 'R'), 0, $frete,
-                            0, $parametros['CustomerData']['DeliveryAddressData']['Street'], $parametros['CustomerData']['DeliveryAddressData']['Complement'],
+                            0, $parametros['CustomerData']['DeliveryAddressData']['Street'], $parametros['CustomerData']['DeliveryAddressData']['Number'],
                             $parametros['CustomerData']['DeliveryAddressData']['Complement'],
                             $parametros['CustomerData']['CustomerAddressData']['District'], $parametros['CustomerData']['DeliveryAddressData']['City'], $idEstado,
                             $parametros['CustomerData']['DeliveryAddressData']['ZipCode'],

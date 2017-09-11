@@ -90,6 +90,10 @@ $(function(){
 					});
 					$('#resposta .opcao.unica').attr('href', './etapa2.php');
 				} else {
+					$('select').selectbox('detach')
+					$('[name=nomeCartao], [name=numCartao], [name=codSeguranca], #validadeMes, #validadeAno').val('');
+					$('select').selectbox('attach')
+
 					fecharOverlay();
 					$.dialog({text: data});
 		    		// continuar contagem regressiva

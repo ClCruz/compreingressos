@@ -17,12 +17,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
     <link rel="stylesheet" href="../stylesheets/ajustes.css"/>
     <link rel="stylesheet" href="../stylesheets/plateiaEdicao.css"/>
     <link rel="stylesheet" href="../javascripts/uploadify/uploadify.css"/>
-
+    <!-- <script type="text/javascript" src="../javascripts/uploadify/jquery-1.7.2.min.js"></script> -->
     <script type="text/javascript" src="../javascripts/jquery.utils.js"></script>
     <script type="text/javascript" src="../javascripts/jquery.annotate.js"></script>
     <script type="text/javascript" src="../javascripts/plateiaEdicao.js"></script>
-    <script type="text/javascript" src="../javascripts/uploadify/swfobject.js"></script>
-    <script type="text/javascript" src="../javascripts/uploadify/jquery.uploadify.v2.1.0.min.js"></script>
+    <script type="text/javascript" src="../javascripts/uploadify/jquery.uploadify.min.js"></script>
     <h2>Mapeamento de Plateia</h2>
     <div id="containerDados">
       <form id="dados" name="dados" method="post">
@@ -85,7 +84,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
             <td>
               <div id="areaUploadFotos" style="width:300px; height:16px;">
                 Enviar fotos panorâmicas dos lugares para o servidor<br/>
-                <div style="width:300px; height:16px; position:absolute; top:auto; z-index:1;"><input type="button" class="button" value="Enviar Fotos" /></div>
+                <div style="width:300px; height:16px; position:absolute; top:auto; z-index:1;"><input type="button" class="button" value="Obter/Enviar Fotos" /></div>
                 <div style="width:300px; height:16px; position:absolute; top:auto; z-index:100; opacity:0; filter:Alpha(Opacity=0);"><input style="width:300px;" type="file" name="fotos" id="fotos" /></div>
               </div>
               &nbsp;

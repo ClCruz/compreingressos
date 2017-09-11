@@ -373,10 +373,9 @@ $(function() {
   
   function uploaderInit() {
     $('#background').uploadify({
-      uploader: '../javascripts/uploadify/uploadify.swf',
-      checkScript: '../javascripts/uploadify/check.php',
-      script: '../javascripts/uploadify/uploadify.php',
-      cancelImg: '../javascripts/uploadify/cancel.png',
+      swf: '../javascripts/uploadify/uploadify.swf',
+      checkExisting: '../javascripts/uploadify/check-exists.php',
+      uploader: '../javascripts/uploadify/uploadify.php',
       auto: true,
       folder: uploadPath.substr(0, uploadPath.length - 1),
       fileDesc: 'Apenas Imagens',
@@ -390,7 +389,7 @@ $(function() {
           return false;
         }
       },
-      onComplete: function(event, queueID, fileObj, response, data) {
+      onUploadSuccess: function(event, queueID, fileObj, response, data) {
         if (response.substr(0, 4) == 'true') {
           changeImage(response.split('?')[1]);
         } else {
@@ -402,10 +401,9 @@ $(function() {
     });
 
     $('#fotos').uploadify({
-      uploader: '../javascripts/uploadify/uploadify.swf',
-      checkScript: '../javascripts/uploadify/check.php',
-      script: '../javascripts/uploadify/uploadify.php',
-      cancelImg: '../javascripts/uploadify/cancel.png',
+      swf: '../javascripts/uploadify/uploadify.swf',
+      checkExisting: '../javascripts/uploadify/check-exists.php',
+      uploader: '../javascripts/uploadify/uploadify.php',
       auto: true,
       multi: true,
       folder: uploadPath + 'fotos',
@@ -413,7 +411,7 @@ $(function() {
       fileExt: '*.gif;*.jpg;*.jpeg;*.png;',
       queueID:'uploadifyQueue3',
       width: 300,
-      onComplete: function(event, queueID, fileObj, response, data) {
+      onUploadSuccess: function(event, queueID, fileObj, response, data) {
         if (response.substr(0, 4) == 'true') {
           loadListaFotos();
         } else {

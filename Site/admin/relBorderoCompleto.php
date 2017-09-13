@@ -80,12 +80,12 @@ if (isset($err) && $err != "") {
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="Content-Language" content="pt-Br" />
     <meta name="Copyright" content="Copyright &copy; 2013" />
-
+  </head>
     <title>Borderô de Vendas</title>
     <link rel="stylesheet" type="text/css" href="../stylesheets/estilos_ra.css" />
     <link rel="stylesheet" type="text/css" href="../stylesheets/padraoRelat.CSS" />
     <link rel="stylesheet" type="text/css" href="../stylesheets/relatorio_bordero.css" />
-  </head>
+  
   <body leftmargin="0" topmargin="0">
     <script language="VBScript">
       function ZeroData(data) {

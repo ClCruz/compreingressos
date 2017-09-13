@@ -82,11 +82,11 @@ if (isset($err) && $err != "") {
   <title>Borderô - Fechamento em Dinheiro</title>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    
+  </head>
     <link rel="stylesheet" type="text/css" href="../stylesheets/estilos_ra.css">
     <link rel="stylesheet" type="text/css" href="../stylesheets/padraoRelat.CSS">
     <link rel="stylesheet" type="text/css" href="../stylesheets/relatorio_bordero.css" />
-  </head>
+  
   <body leftmargin="0" topmargin="0">
     <script language="VBScript">
       function ZeroData(data) {

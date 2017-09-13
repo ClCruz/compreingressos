@@ -81,11 +81,11 @@ if (isset($err) && $err != "") {
   <title>Borderô - Canal de Vendas</title>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    
+  </head>
     <link rel="stylesheet" type="text/css" href="../stylesheets/estilos_ra.css">
     <link rel="stylesheet" type="text/css" href="../stylesheets/padraoRelat.CSS">
     <link rel="stylesheet" type="text/css" href="../stylesheets/relatorio_bordero.css" />
-  </head>
+ 
   <body leftmargin="0" topmargin="0">
     <script language="VBScript">
       function ZeroData(data) {
@@ -691,6 +691,7 @@ if (isset($err) && $err != "") {
                         <br>
                         <input class="botao" type="button" value="Imprimir Relatório" name="cmdImprimi" onClick="javascript:window.print();">
                         <input class="botao" type="button" value="Fechar Janela" name="cmdFecha" onClick="javascript:window.close()">
+                        <input class="botao" type="button" value="Exportar Excel" name="cmdExportar" onClick="document.location.href = '<?php echo $var_url."&exportar=true"; ?>';"/>
                       </td>
                     </tr>
                   </table>

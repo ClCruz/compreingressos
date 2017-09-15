@@ -462,6 +462,9 @@ $rs = executeSQL($mainConnection, $query, array(session_id()), true);
 $is_promocional = ($rs[0] > 0);
 
 
+executeSQL($mainConnection, 'UPDATE MW_PEDIDO_VENDA SET DT_INICIO_COMPRA = (SELECT MIN(DT_SELECAO) FROM MW_RESERVA WHERE ID_SESSION = ?) WHERE ID_PEDIDO_VENDA = ?', array(session_id(), $newMaxId));
+
+
 if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] == 0 and $is_promocional)) and ($errors and empty($sqlErrors))) {
     $parametros['PaymentDataCollection'] = array(new SoapVar($PaymentDataCollection, SOAP_ENC_ARRAY, 'CreditCardDataRequest', 'https://www.pagador.com.br/webservice/pagador', 'PaymentDataRequest'));
 

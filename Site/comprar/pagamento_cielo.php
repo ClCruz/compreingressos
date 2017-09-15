@@ -16,11 +16,17 @@ $mainConnection = mainConnection();
 
 $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 
+$json = json_encode(array('descricao' => '6.1 pagamento cielo - dados recebidos', 'post' => $_POST, 'get' => $_GET));
+include('logiPagareChamada.php');
+
 $response = consultarPedidoCielo($_POST['PaymentId']);
+
+$json = json_encode(array('descricao' => '6.2 pagamento cielo - resultado da consulta', 'response' => $response));
+include('logiPagareChamada.php');
 
 $_GET['pedido'] = $response['transaction']['MerchantOrderId'];
 
-$json = json_encode(array('descricao' => '6. pagamento cielo - tela final do pedido '.$_GET['pedido']));
+$json = json_encode(array('descricao' => '6.3 pagamento cielo - tela final do pedido '.$_GET['pedido']));
 include('logiPagareChamada.php');
 
 $query = "SELECT PP.CD_STATUS

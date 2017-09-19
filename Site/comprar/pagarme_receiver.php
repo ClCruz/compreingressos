@@ -17,10 +17,16 @@ if ($_REQUEST['object'] == 'transaction') {
         executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
             array(-999, json_encode(array('descricao' => 'pagarme receiver not ok', 'request' => $_REQUEST)))
         );
+        
+        http_response_code(400);
         die('not ok');
     }
 
     $response = getNotificationPagarme($_REQUEST['id']);
+
+    executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+        array(-999, json_encode(array('descricao' => 'retorno consulta pagarme', 'post' => $_REQUEST, 'resultado' => $response)))
+    );
 
     if ($response['transaction']['payment_method'] == 'credit_card' AND !in_array($response['transaction']['status'], array('chargedback'))) {
         die('credit_card');
@@ -161,6 +167,11 @@ if ($_REQUEST['object'] == 'transaction') {
         array(-999, json_encode(array('descricao' => 'retorno pagarme', 'post' => $_REQUEST, 'resultado' => $return)))
     );
 
-    echo ($return === true ? 'ok' : $return);
+    if ($return === true) {
+        echo 'ok';
+    } else {
+        http_response_code(400);
+        echo $return;
+    }
 
 }

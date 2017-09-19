@@ -3,24 +3,24 @@ if (isset($_GET['email'])) {
 	$mail_sent = false;
 
 	require_once('../settings/functions.php');
-	
+
 	$mainConnection = mainConnection();
-	
+
 	$query = 'SELECT DS_NOME FROM MW_CLIENTE WHERE CD_EMAIL_LOGIN = ?';
 	$params = array($_GET['email']);
 	$rs = executeSQL($mainConnection, $query, $params, true);
-	
+
 	if (!empty($rs)) {
 		$novaSenha = substr(md5(date('r', time())), -8);
-		
+
 		$query = 'UPDATE MW_CLIENTE SET CD_PASSWORD = ? WHERE CD_EMAIL_LOGIN = ?';
 		$params = array(md5($novaSenha), $_GET['email']);
-		
+
 		if (executeSQL($mainConnection, $query, $params)) {
 			$nameto = $rs['DS_NOME'];
 			$to = $_GET['email'];
 			$subject = '=?UTF-8?b?' . base64_encode('Solicitação de Nova Senha') . '?=';
-			
+
 			$namefrom = '=?UTF-8?b?' . base64_encode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS').'?=';
 			// $from = 'lembrete@compreingressos.com';
 			$from = '';
@@ -53,8 +53,8 @@ if (isset($_GET['email'])) {
 		<?php
 			//copy current buffer contents into $message variable and delete current output buffer
 			$message = ob_get_clean();
-			
-			$mail_sent = authSendEmail($from, $namefrom, $to, $nameto, $subject, utf8_decode($message));
+
+			$mail_sent = authSendEmail($from, $namefrom, $to, $nameto, $subject, $message);
 		}
 
 		if ( httpReferer('etapa1') )

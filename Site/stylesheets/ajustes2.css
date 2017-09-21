@@ -191,9 +191,7 @@ body.mini #form_cadastro .input_area.telefones #ddd_fixo,
 body.mini #form_cadastro .input_area.telefones #fixo,
 body.mini #form_cadastro .input_area.telefones #fixo+div,
 body.mini #form_cadastro .input_area.endereco,
-body.mini #form_cadastro .erro_help,
-body.mini #form_cadastro .input_area.robo,
-body.mini #form_cadastro .input_area.recaptcha {
+body.mini #form_cadastro .erro_help{
 	display: none;
 }
 

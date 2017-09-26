@@ -78,6 +78,17 @@ $(function(){
 
 				if (data.substr(0, 8) == 'redirect') {
 					document.location = data;
+				} else if (data == 'valorDiferente') {
+					$.confirmDialog({
+						text: "Os dados referentes ao seu pedido foram alterados e o valor total pode ser diferente do valor exibido anteriormente.<br/>Por favor, revise o pedido antes de continuar.",
+						detail: '',
+						uiOptions: {
+							buttons: {
+								'Ok, entendi': ['Leve-me de volta para a<br>etapa anterior', null]
+							}
+						}
+					});
+					$('#resposta .opcao.unica').attr('href', './etapa2.php');
 				} else {
 					$('select').selectbox('detach')
 					$('[name=nomeCartao], [name=numCartao], [name=codSeguranca], #validadeMes, #validadeAno').val('');

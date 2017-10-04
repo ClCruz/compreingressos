@@ -1,5 +1,6 @@
-/Site/.idea
-/Site/web.config
+.idea/
+Site/.idea/
+Site/.gitignore
 BI
 Tickets
 TicketsCI
@@ -8,3 +9,4 @@ Procedimentos
 Procedures
 Jobs
 Usuários do Banco
+

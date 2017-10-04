@@ -303,11 +303,11 @@ if (hasRows($resultIdPedidoVenda)) {
         $query .= ',IN_SITUACAO_DESPACHO
                                 ,CD_BIN_CARTAO)
                                 VALUES
-                                (?, ?, ?, GETDATE(), ?, ?, ?, ?, ?, ?' .($entrega ? ', ?, ?, ?, ?, ?, ?, ?' : ''). ', ?, ?)';
+                                (?, ?, ?, GETDATE(), ?, ?, ?, ?, ?, ?' .($entrega ? ', ?, ?, ?, ?, ?, ?, ?, ?' : ''). ', ?, ?)';
 
         if ($entrega) {
             $params = array($newMaxId, $_SESSION['user'], $_SESSION['operador'], 0, 'P', ($entrega ? 'E' : 'R'), 0, $frete,
-                            0, $parametros['CustomerData']['DeliveryAddressData']['Street'], $parametros['CustomerData']['DeliveryAddressData']['Complement'],
+                            0, $parametros['CustomerData']['DeliveryAddressData']['Street'], $parametros['CustomerData']['DeliveryAddressData']['Number'],
                             $parametros['CustomerData']['DeliveryAddressData']['Complement'],
                             $parametros['CustomerData']['CustomerAddressData']['District'], $parametros['CustomerData']['DeliveryAddressData']['City'], $idEstado,
                             $parametros['CustomerData']['DeliveryAddressData']['ZipCode'],
@@ -370,6 +370,7 @@ $query = 'UPDATE MW_PEDIDO_VENDA SET
                         VL_TOTAL_PEDIDO_VENDA = ?
                         ,VL_TOTAL_INGRESSOS = ?
                         ,VL_TOTAL_TAXA_CONVENIENCIA = ?
+                        ,VL_FRETE = ?
                         ,ID_IP = ?
                         ,NR_PARCELAS_PGTO = ?
                         ,NR_BENEFICIO = ?
@@ -393,6 +394,7 @@ $params = array
                 ($totalIngressos + $frete + $totalConveniencia)
                 ,$totalIngressos
                 ,$totalConveniencia
+                ,$frete
                 ,$_SERVER["REMOTE_ADDR"]
                 ,$PaymentDataCollection['NumberOfPayments']
                 ,$nr_beneficio
@@ -456,10 +458,19 @@ if ($contador_reserva[0] != count($params2)) {
     die();
 }
 
+$valorTotal = $totalIngressos + $frete + $totalConveniencia;
+if ($valorTotal != floatval(str_replace(',', '.', $_COOKIE['total_exibicao']))) {
+    echo 'valorDiferente';
+    die();
+}
+
 
 $query = "SELECT COUNT(1) FROM MW_PROMOCAO WHERE ID_SESSION = ?";
 $rs = executeSQL($mainConnection, $query, array(session_id()), true);
 $is_promocional = ($rs[0] > 0);
+
+
+executeSQL($mainConnection, 'UPDATE MW_PEDIDO_VENDA SET DT_INICIO_COMPRA = (SELECT MIN(DT_SELECAO) FROM MW_RESERVA WHERE ID_SESSION = ?) WHERE ID_PEDIDO_VENDA = ?', array(session_id(), $newMaxId));
 
 
 if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] == 0 and $is_promocional)) and ($errors and empty($sqlErrors))) {

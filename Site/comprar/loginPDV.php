@@ -7,7 +7,7 @@ require_once('../settings/functions.php');
         <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
         <meta name="robots" content="noindex,nofollow"/>
         <link href="../images/favicon.ico" rel="shortcut icon"/>
-        <link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'/>
+        <link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,700' rel='stylesheet' type='text/css'/>
         <link rel="stylesheet" href="../stylesheets/cicompra.css"/>
         <?php require("desktopMobileVersion.php"); ?>
         <link rel="stylesheet" href="../stylesheets/ajustes2.css"/>

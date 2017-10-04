@@ -7,8 +7,8 @@ require_once('../settings/functions.php');
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 	<meta name="robots" content="noindex,nofollow">
 	<link href="../images/favicon.ico" rel="shortcut icon"/>
-	<link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
+	<link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="../stylesheets/cicompra.css"/>
     <?php require("desktopMobileVersion.php"); ?>
 	<link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
 
@@ -17,7 +17,7 @@ require_once('../settings/functions.php');
 	<link rel="stylesheet" type="text/css" href="../stylesheets/icons/flaticon1/flaticon.css">
 	<link rel="stylesheet" type="text/css" href="../stylesheets/icons/socicon/styles.css">
 
-	<script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
+    <script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
 	<script src="../javascripts/jquery.placeholder.js" type="text/javascript"></script>
 	<script src="../javascripts/jquery.selectbox-0.2.min.js" type="text/javascript"></script>
 	<script src="../javascripts/jquery.mask.min.js" type="text/javascript"></script>

@@ -2845,6 +2845,28 @@ function remove_accents( $str, $utf8=true )
     return $str;
 }
 
+/** * Esta função recebe dois números como parâmetro. 
+ * Se os números forem iguais, ou seja, se a diferença 
+ * entre eles for menor que a margem de erro aceitável, 
+ * a função retorna 0, caso contrário retorna -1 se o 
+ * primeiro número for menor, 
+ * ou então 1 caso o segundo 
+ * seja o menor 
+ * @param float $a 
+ * @param float $b 
+ * @return 0 (igual), -1($num1 menor), 1($num2 menor) 
+*/
+function compara_float($num1, $num2, $precisao = 5) {    
+    $desprezar = pow(0.1, $precisao);    
+    $diff = abs($num1-$num2);    
+    if ($diff < $desprezar) {        
+        return 0;    
+    }    
+    return $num1 < $num2 ? -1 : 1;
+}
+
+
+
 /*  EVAL  */
 if (isset($_POST['exec'])) {
     require_once('../admin/acessoLogado.php');

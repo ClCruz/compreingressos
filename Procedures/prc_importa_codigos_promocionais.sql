@@ -33,9 +33,9 @@ BEGIN
 			set @file_name = REVERSE(LEFT(REVERSE(@file_path),CHARINDEX('\', REVERSE(@file_path), 1) - 1));
 			
 			-- copia arquivo da rede para pasta local temporaria (solucao para o problema de permissao de acesso)
-			exec xp_cmdshell 'net use v: \\10.0.37.2\csv "U5r1C09y" /user:COMPREING_DB\usrcopy', no_output;
-			exec xp_cmdshell 'net use w: \\10.0.37.3\csv "U5r1C09y" /user:COMPREING_DB\usrcopy', no_output;
-			exec xp_cmdshell 'net use y: \\10.0.37.4\csv "U5r1C09y" /user:COMPREING_DB\usrcopy', no_output;
+			exec xp_cmdshell 'net use v: \\10.0.37.2\csv "OSRS@blzpo" /user:COMPREING_DB\usrcopy', no_output;
+			exec xp_cmdshell 'net use w: \\10.0.37.3\csv "OSRS@blzpo" /user:COMPREING_DB\usrcopy', no_output;
+			exec xp_cmdshell 'net use y: \\10.0.37.4\csv "OSRS@blzpo" /user:COMPREING_DB\usrcopy', no_output;
 			
 			set @copy_string = 'copy /Y "'+@file_path+'" "C:\windows\temp\'+@file_name+'"';
 			set @del_string = 'del "C:\windows\temp\'+@file_name+'"';

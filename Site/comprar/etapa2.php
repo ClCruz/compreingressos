@@ -18,6 +18,9 @@ require('verificarServicosPedido.php');
     <?php require("desktopMobileVersion.php"); ?>
 	<link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
 
+    <!-- Criteo GTM Integration -->
+    <script type="text/javascript" src="//static.criteo.net/js/ld/ld.js" async="true"></script>
+    <!-- Criteo GTM Integration -->
 	<script src="../javascripts/jquery.2.0.0.min.js" type="text/javascript"></script>
 	<script src="../javascripts/jquery.placeholder.js" type="text/javascript"></script>
 	<script src="../javascripts/jquery.selectbox-0.2.min.js" type="text/javascript"></script>
@@ -277,5 +280,16 @@ require('verificarServicosPedido.php');
             });
         </script>
 	</div>
+    <!-- Criteo tag -->
+    <script type="text/javascript">
+        window.criteo_q = window.criteo_q || [];
+        window.criteo_q.push(
+            { event: "setAccount", account: {{CriteoPartnerID}} },
+            { event: "setHashedEmail", email: {{HashedEmail}} },
+            { event: "setSiteType", type: {{CriteoSiteType}} },
+            { event: "viewBasket", item: {{CriteoProductIDBasket}} }
+        );
+    </script>
+    <!-- Criteo tag -->
 </body>
 </html>

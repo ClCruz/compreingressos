@@ -1,3 +1,4 @@
-/Site/.idea
+/Site/.idea/
 /Site/web.config
 /Site/.gitignore
+.idea/

@@ -62,10 +62,3 @@ var DataLayer = (function() {
     }
 
 } ());
-
-//        $('select[name="valorIngresso[]]"').change(function() {
-//            $resumoEspetaculo.each(function() {
-//                DataLayer.init($(this));
-//                DataLayer.build();
-//            });
-//        });

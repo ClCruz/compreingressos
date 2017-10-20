@@ -404,19 +404,6 @@ unset($_SESSION['origem']);
 
 		<?php //include "selos.php"; ?>
 	</div>
-
-    <!-- Criteo tag -->
-    <script type="text/javascript">
-        window.criteo_q = window.criteo_q || [];
-        window.criteo_q.push(
-            { event: "setAccount", account: {{CriteoPartnerID}} },
-            { event: "setHashedEmail", email: {{HashedEmail}} },
-            { event: "setSiteType", type: {{CriteoSiteType}} },
-            { event: "trackTransaction" , id: {{TransactionID}}, item: {{CriteoProductIDTrans}} }
-        );
-    </script>
-    <!-- Criteo tag -->
-
 	<!-- Google Code for Compra de Ingresso Conversion Page -->
 	<script type="text/javascript">
 	/* <![CDATA[ */
@@ -543,7 +530,6 @@ unset($_SESSION['origem']);
             'ProductTransactionProducts': DataLayer.getProductList(),
             'TransactionID': $('.numero').children('a').text()
         });
-
     </script>
 
 </body>

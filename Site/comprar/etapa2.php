@@ -200,15 +200,17 @@ require('verificarServicosPedido.php');
         var dataLayer = [];
         var $resumoEspetaculo = $('.resumo_espetaculo');
 
-        $resumoEspetaculo.each(function() {
-            DataLayer.init($(this));
-            DataLayer.build();
-        });
-        dataLayer.push({
-            'PageType': 'Basketpage',
-            'HashedEmail': '',
-            'ProductBasketProducts': DataLayer.getProductList()
-        });
+        $(document).ready(function() {
+            $resumoEspetaculo.each(function() {
+                DataLayer.init($(this));
+                DataLayer.build();
+            });
+            dataLayer.push({
+                'PageType': 'Basketpage',
+                'HashedEmail': '',
+                'ProductBasketProducts': DataLayer.getProductList()
+            });
+        })
     </script>
     <!-- Criteo Data Layer -->
 </body>

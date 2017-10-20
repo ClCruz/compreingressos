@@ -489,7 +489,7 @@ unset($_SESSION['origem']);
 	}
 	?>
     <!-- Criteo data layer -->
-    <script type="javascript">
+    <script type="text/javascript">
         var $resumoEspetaculo = $('.resumo_espetaculo');
         var product_list = [];
         var dataLayer = [];

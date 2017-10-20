@@ -118,7 +118,7 @@ while ($rs = fetchResult($result)) {
 		if ($eventoAtual != NULL) echo "</tbody></table></div>";
 ?>
 <div class="espetaculo_img"><?php if (file_exists('../images/evento/'.$rs['ID_EVENTO'].'.jpg')) { ?><img src="../images/evento/<?php echo $rs['ID_EVENTO']; ?>.jpg"><?php } ?></div>
-<div class="resumo_espetaculo">
+<div class="resumo_espetaculo" data-evento="<?php echo $rs['ID_EVENTO']; ?>">
 	<div class="data<?php echo $is_pacote ? ' hidden' : ''; ?>">
 		<p class="nome_dia"><?php echo utf8_encode(strftime("%a", strtotime($rs['DT_APRESENTACAO']->format('Ymd')))); ?></p>
 		<p class="numero_dia"><?php echo $rs['DT_APRESENTACAO']->format('d'); ?></p>
@@ -173,7 +173,7 @@ while ($rs = fetchResult($result)) {
 					</div>
 				</td>
 				<td class="tipo"><?php echo utf8_encode($rs['DS_TIPO_BILHETE']); ?></td>
-				<td>R$ <span><?php echo number_format($rs['VL_UNITARIO'], 2, ',', ''); ?></span></td>
+				<td>R$ <span class="valorIngresso"><?php echo number_format($rs['VL_UNITARIO'], 2, ',', ''); ?></span></td>
 				<td>R$ <?php echo number_format($rs['VL_TAXA_CONVENIENCIA'], 2, ',', ''); ?></td>
 				<td>R$ <span><?php echo number_format($rs['VL_UNITARIO'] + $rs['VL_TAXA_CONVENIENCIA'], 2, ',', ''); ?></span></td>
 				<td class="remover"></td>

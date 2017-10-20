@@ -210,7 +210,7 @@ require('verificarServicosPedido.php');
             'ProductBasketProducts': DataLayer.getProductList()
         });
 
-        $('select[name="valorIngresso[]]"').change(function() {
+        $('select').change(function() {
             $resumoEspetaculo.each(function() {
                 DataLayer.init($(this));
                 DataLayer.build();

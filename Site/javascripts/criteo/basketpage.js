@@ -1,6 +1,3 @@
-var dataLayer = [];
-var $resumoEspetaculo = $('.resumo_espetaculo');
-
 var DataLayer = (function() {
     var product_list = [];
 
@@ -72,8 +69,3 @@ var DataLayer = (function() {
 //                DataLayer.build();
 //            });
 //        });
-
-$resumoEspetaculo.each(function() {
-    DataLayer.init($(this));
-    DataLayer.build();
-});

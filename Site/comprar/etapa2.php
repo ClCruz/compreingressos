@@ -197,6 +197,13 @@ require('verificarServicosPedido.php');
     <!-- Criteo Data Layer -->
     <script type="javascript" src="../javascripts/criteo/basketpage.js"></script>
     <script type="javascript">
+        var dataLayer = [];
+        var $resumoEspetaculo = $('.resumo_espetaculo');
+
+        $resumoEspetaculo.each(function() {
+            DataLayer.init($(this));
+            DataLayer.build();
+        });
         dataLayer.push({
             'PageType': 'Basketpage',
             'HashedEmail': '',

@@ -209,19 +209,6 @@ require('verificarServicosPedido.php');
             'HashedEmail': '',
             'ProductBasketProducts': DataLayer.getProductList()
         });
-
-        $('select').change(function() {
-            $resumoEspetaculo.each(function() {
-                DataLayer.init($(this));
-                DataLayer.build();
-            });
-            dataLayer = [];
-            dataLayer.push({
-                'PageType': 'Basketpage',
-                'HashedEmail': '',
-                'ProductBasketProducts': DataLayer.getProductList()
-            });
-        });
     </script>
     <!-- Criteo Data Layer -->
 </body>

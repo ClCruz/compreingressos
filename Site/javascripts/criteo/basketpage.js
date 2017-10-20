@@ -31,7 +31,6 @@ var DataLayer = (function() {
         },
 
         getProductList: function() {
-            this.cleanUp();
             return product_list;
         }
 

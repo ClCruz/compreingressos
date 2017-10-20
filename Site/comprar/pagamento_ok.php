@@ -522,25 +522,8 @@ unset($_SESSION['origem']);
                     var totalIngressos = this.$spanTotalIngresso.length,
                         eventoId = this.eventoId;
 
-                    this.$tiposIngressoCel.each(function(index, elem) {
-                        var tipo = $(elem).text();
-
-                        // separar ingressos por tipo
-                        var $tipos = $("td:contains("+tipo+")");
-                        var qtde = $tipos.length;
-                        var valor = $tipos.eq(0).siblings().children('span.valorIngresso').text();
-                        var ticket = new Ticket(eventoId, valor, qtde);
-
-                        if(totalIngressos == 0) {
-                            return
-                        } else {
-                            // incluir na lista
-                            product_list.push(ticket);
-                            // reduzir a qtde de ingressos
-                            totalIngressos -= qtde;
-                        }
-
-                    });
+                    var ticket = new Ticket(eventoId, this.$spanTotalIngresso.eq(0).text(), totalIngressos);
+                    product_list.push(ticket);
                 },
 
                 getProductList: function() {

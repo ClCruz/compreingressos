@@ -209,6 +209,14 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html style="overflow: visible;">
   <head>
+      <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-WNN2XTF');</script>
+  <!-- End Google Tag Manager -->
+
     <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
     <meta name="robots" content="noindex,nofollow" />
 
@@ -294,6 +302,11 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
     
       </head>
   <body style="height: 0px; overflow: visible; position: static;">
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WNN2XTF" 
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+    
   <!-- conteudo para exibir em popup -->
   <div class="hidden">
     <div id="login_assinante">

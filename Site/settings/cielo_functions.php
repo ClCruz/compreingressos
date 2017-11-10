@@ -176,6 +176,9 @@ function autorizarPedidoCielo($id_pedido, $dados_extra) {
 		"MerchantKey: $merchantKey"
 	);
 
+	executeSQL($mainConnection, 'INSERT INTO tab_log_gabriel (data, passo, parametros) VALUES (GETDATE(), ?, ?)', array('Json Enviado Cielo (autorizarPedidoCielo)', json_encode($transaction_data)));
+
+
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_HTTPHEADER, $header); 
 	curl_setopt($ch, CURLOPT_URL, $transaction_url."/1/sales/");
@@ -186,6 +189,8 @@ function autorizarPedidoCielo($id_pedido, $dados_extra) {
 	$response = curl_exec($ch);
 	$curl_error = curl_error($ch);
 	curl_close($ch);
+
+	executeSQL($mainConnection, 'INSERT INTO tab_log_gabriel (data, passo, parametros) VALUES (GETDATE(), ?, ?)', array('Json Recebido Cielo (autorizarPedidoCielo)', json_encode($response)));
 
 	$transaction = json_decode($response, true);
 
@@ -251,6 +256,9 @@ function capturarPedidoCielo($id_pedido) {
 		"MerchantKey: $merchantKey"
 	);
 
+	executeSQL($mainConnection, 'INSERT INTO tab_log_gabriel (data, passo, parametros) VALUES (GETDATE(), ?, ?)', array('Json Enviado Cielo (capturarPedidoCielo)', json_encode($transaction_data)));
+
+
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_HTTPHEADER, $header); 
 	curl_setopt($ch, CURLOPT_URL, $transaction_url."/1/sales/".$obj['Payment']['PaymentId']."/capture");
@@ -261,6 +269,8 @@ function capturarPedidoCielo($id_pedido) {
 	$response = curl_exec($ch);
 	$curl_error = curl_error($ch);
 	curl_close($ch);
+
+	executeSQL($mainConnection, 'INSERT INTO tab_log_gabriel (data, passo, parametros) VALUES (GETDATE(), ?, ?)', array('Json Recebido Cielo (capturarPedidoCielo)', json_encode($response)));
 
 	$transaction = json_decode($response, true);
 
@@ -321,6 +331,7 @@ function cancelarPedidoCielo($id_pedido) {
 		"MerchantId: $merchantId",
 		"MerchantKey: $merchantKey"
 	);
+	executeSQL($mainConnection, 'INSERT INTO tab_log_gabriel (data, passo, parametros) VALUES (GETDATE(), ?, ?)', array('Json Enviado Cielo (cancelarPedidoCielo)', json_encode($transaction_data)));
 
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_HTTPHEADER, $header); 
@@ -332,6 +343,8 @@ function cancelarPedidoCielo($id_pedido) {
 	$response = curl_exec($ch);
 	$curl_error = curl_error($ch);
 	curl_close($ch);
+	
+	executeSQL($mainConnection, 'INSERT INTO tab_log_gabriel (data, passo, parametros) VALUES (GETDATE(), ?, ?)', array('Json Recebido Cielo (cancelarPedidoCielo)', json_encode($response)));
 
 	$transaction = json_decode($response, true);
 
@@ -482,6 +495,7 @@ function estonarPedidoCielo($payment_id, $id_pedido) {
 		"MerchantId: $merchantId",
 		"MerchantKey: $merchantKey"
 	);
+	executeSQL($mainConnection, 'INSERT INTO tab_log_gabriel (data, passo, parametros) VALUES (GETDATE(), ?, ?)', array('Json Enviado Cielo (estonarPedidoCielo)', json_encode([$payment_id, $id_pedido])));
 
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_HTTPHEADER, $header); 
@@ -492,6 +506,8 @@ function estonarPedidoCielo($payment_id, $id_pedido) {
 	$response = curl_exec($ch);
 	$curl_error = curl_error($ch);
 	curl_close($ch);
+
+	executeSQL($mainConnection, 'INSERT INTO tab_log_gabriel (data, passo, parametros) VALUES (GETDATE(), ?, ?)', array('Json Recebido Cielo (estonarPedidoCielo)', json_encode($response)));
 
 	$transaction = json_decode($response, true);
 

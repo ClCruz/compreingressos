@@ -210,7 +210,7 @@ require('verificarServicosPedido.php');
     <!-- Criteo Data Layer -->
     <script type="text/javascript" src="../javascripts/criteo/basketpage.js"></script>
     <script type="text/javascript">
-        var dataLayer = [];
+        var dataLayer = dataLayer || [];
         var $resumoEspetaculo = $('.resumo_espetaculo');
 
         $(document).ready(function() {

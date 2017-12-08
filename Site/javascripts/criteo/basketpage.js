@@ -18,7 +18,7 @@ var DataLayer = (function() {
         cacheDOM: function() {
             this.$pedidoResumo = this.$resumoEspetaculo.find('#pedido_resumo');
             this.$tiposIngressoCel = this.$pedidoResumo.find('td.tipo');
-            this.$spanTotalIngresso = this.$pedidoResumo.find('span.valorIngresso');
+            this.$spanTotalIngresso = this.$pedidoResumo.find('span.valorTotalLinha');
         },
 
         build: function() {

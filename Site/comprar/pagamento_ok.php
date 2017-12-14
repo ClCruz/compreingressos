@@ -492,7 +492,7 @@ unset($_SESSION['origem']);
     <script type="text/javascript">
         var $resumoEspetaculo = $('.resumo_espetaculo');
         var product_list = [];
-        var dataLayer = [];
+        var dataLayer = dataLayer || [];
 
         var DataLayer = (function() {
             var product_list = [];

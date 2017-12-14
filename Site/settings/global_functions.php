@@ -1,7 +1,11 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+
+session_start();
+require_once('../settings/functions.php');
+
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
 
 /**
 * @author Ítalo Patrício
@@ -30,7 +34,36 @@ Chave  de acesso: qwertyasdf0123456789
 
 
 
-		
+function getConfigGlobal($id) {
+	$mainConnection = mainConnection();
+	
+	$rs_global = executeSQL($mainConnection, "SELECT
+												ID_GATEWAY_PAGAMENTO,
+												DS_URL,
+												CD_GATEWAY_PAGAMENTO,
+												DS_URL_CONSULTA,
+												CD_KEY_GATEWAY_PAGAMENTO,
+												DS_URL_RETORNO
+											FROM MW_GATEWAY_PAGAMENTO
+											WHERE (ID_GATEWAY = 9 AND IN_ATIVO = 1 AND ? IS NULL)
+											OR ID_GATEWAY_PAGAMENTO = ?", array($id, $id), true);
+
+return array(
+	'id' => $rs_global['ID_GATEWAY_PAGAMENTO'],
+	
+	'transaction_url' => $rs_global['DS_URL'],
+	'merchantCode' => $rs_global['CD_GATEWAY_PAGAMENTO'],
+	'merchantKey' => $rs_global['CD_KEY_GATEWAY_PAGAMENTO'],
+	'returnUrl' => $rs_global['DS_URL_RETORNO']
+);
+}		
+
+
+$config = getConfigGlobal();
+
+$chaveAcesso = $config['merchantKey'];
+// $chaveAcesso = 'qwertyasdf0123456789';
+
 
 
 class OptionAction{
@@ -157,15 +190,16 @@ class PeticionResponse {
 
 }
 
+/*
 	function sendRequest($params, $function = 'trataPeticion'){
+		$url_ws="https://sis-t.redsys.es:25443/sis/services/SerClsWSEntrada";
 
-		 print_r($params);
+		//  print_r($params);
 	 	//die();
 
  
 		 
 		// $url_ws  ="https://sis-t.redsys.es:25443/apl02/services/SerClsWSConsulta?wsdl";
-		$url_ws="https://sis-t.redsys.es:25443/sis/services/SerClsWSEntrada";
 
 		try{
 			$client = new SoapClient($url_ws,array(
@@ -204,132 +238,226 @@ class PeticionResponse {
 		}
 
 	}
+*/
 
-	function sendRequestCurl($params,$opAction){
-		$soapUrl="https://sis-t.redsys.es:25443/sis/services/SerClsWSEntrada";
+	
+	
+	function getEnvelopeSoap($content){
+		
+		$soap_request = '
+			<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:web="http://webservice.sis.sermepa.es">
+			<soapenv:Header/>
+			<soapenv:Body>
+			<web:trataPeticion>
+				<web:datoEntrada>
+				<![CDATA['.trim(str_replace('<?xml version="1.0"?>','',$content)).']]>
+				</web:datoEntrada>
+			</web:trataPeticion>
+			</soapenv:Body>
+		</soapenv:Envelope>';
 
+		return $soap_request;
+	}
+	function getEnvelopeSoap3DES($content){
+		
+		$soap_request = '
+			<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:web="http://webservice.sis.sermepa.es">
+			<soapenv:Header/>
+			<soapenv:Body>
+			<web:trataPeticion3DES>
+				<web:datoEntrada>
+				<![CDATA['.trim(str_replace('<?xml version="1.0"?>','',$content)).']]>
+				</web:datoEntrada>
+			</web:trataPeticion3DES>
+			</soapenv:Body>
+		</soapenv:Envelope>';
+
+		return $soap_request;
+	}
+	
+	function sendCurl($soap_request,$header){
+		$soapUrl= $config['transaction_url']; 
+		// $soapUrl="https://sis-t.redsys.es:25443/sis/services/SerClsWSEntrada";
+
+		$soap_do = curl_init();
+		curl_setopt($soap_do, CURLOPT_URL, $soapUrl );
+		curl_setopt($soap_do, CURLOPT_CONNECTTIMEOUT, 10);
+		curl_setopt($soap_do, CURLOPT_TIMEOUT,        10);
+		curl_setopt($soap_do, CURLOPT_RETURNTRANSFER, true );
+		curl_setopt($soap_do, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($soap_do, CURLOPT_SSL_VERIFYHOST, false);
+		curl_setopt($soap_do, CURLOPT_POST,           true );
+		curl_setopt($soap_do, CURLOPT_POSTFIELDS,     $soap_request);
+		curl_setopt($soap_do, CURLOPT_HTTPHEADER,     $header);
+		curl_setopt($soap_do, CURLOPT_HEADER, false);
+		
+		
+		$result = curl_exec($soap_do);
+		if( $result === false) {
+			$err = 'Curl error: ' . curl_error($soap_do);
+			curl_close($soap_do);
+			
+			$json = json_encode(array('descricao' => 'pedido_'.$resultB['DS_MERCHANT_ORDER'].' - sendCurl ERROR ', $err));
+			include('../comprar/logiPagareChamada.php');
+			//print $err;
+
+		} else {
+			curl_close($soap_do);
+		}
+		return $result;  
+	}
+
+	/**
+	 * return xml
+	 */
+	function getReturnSOAP($resultContent){
+		$html = html_entity_decode($resultContent);  				
+		$xml = new SimpleXMLElement($html);
+		
+		return $xml;
+	}
+	
+	/**
+	 * return xml
+	 */
+	function obj2xml($object){  				
+		$xml = new SimpleXMLElement($object);
+		return $xml;
+	}
+	
+	function xmlToarray($param){
+		//Convert param to array
+		$paramXML = new SimpleXMLElement(str_replace('<?xml version="1.0"?>','',$param));
+		$paramArr = xml2array($paramXML->asXML());
+		
+		return $paramArr;
+	}
+	
+	function str2xml($params){
+        $paramsXML = new SimpleXMLElement(str_replace('<?xml version="1.0"?>','',$params));
+        return $paramsXML;
+    }
+
+	function sendRequestCurl($params,$opAction, $on3DES = false){
+		
+		//echo "sendRequestCurl:Begin<br>";
+		// $soapUrl="https://sis-t.redsys.es:25443/sis/services/SerClsWSEntrada";
+		
 		// $soapUrl="https://sis-t.redsys.es:25443/sis/services/SerClsWSEntrada/wsdl/SerClsWSEntrada.wsdl";
-
 		
 		try{
+			//echo "sendRequestCurl:Current<br>";
+			
+			$paramsXML = str2xml($params);
+			
 			//Convert param to array
-			$paramsXML = new SimpleXMLElement(str_replace('<?xml version="1.0"?>','',$params));
-			$paramsArr = xml2array($paramsXML->asXML());
+			$paramsArr = xmlToarray($params);
 			//Percorre array multidimensional e trasforma num unico array dimensional resultante
 			array_walk_recursive($paramsArr, function($v,$k)use(&$resultB){
 				$resultB[$k]=$v;
 			});
-		
-			$paramsXML->DS_MERCHANT_USERAGENT = $_SERVER['HTTP_USER_AGENT'];
+			
+			$json = json_encode(array('descricao' => 'Passo global_payments_sended_'.$resultB['DS_MERCHANT_ORDER'].' - sendRequestCurl', trim(str_replace('<?xml version="1.0" ?>','',$paramsXML->asXML()))));
+			include('../comprar/logiPagareChamada.php');
+			//DEBUG SENDED
+			// file_put_contents('global_payments_sended_'.$resultB['DS_MERCHANT_ORDER'].'.xml',trim(str_replace('<?xml version="1.0" ? >','',$paramsXML->asXML())));
 
-			file_put_contents('global_payments_sended',str_replace('<?xml version="1.0"?>','',$paramsXML->asXML()));
-
-
-
-			$soap_request = '
-			<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:web="http://webservice.sis.sermepa.es">
-			<soapenv:Header/>
-			<soapenv:Body>
-			   <web:trataPeticion>
-				  <web:datoEntrada>
-				  <![CDATA['.str_replace('<?xml version="1.0"?>','',$paramsXML->asXML()).']]>
-				  </web:datoEntrada>
-			   </web:trataPeticion>
-			</soapenv:Body>
-		 </soapenv:Envelope>';
+			// if($on3DES)
+			// 	$soap_request = getEnvelopeSoap3DES($paramsXML->asXML());
+			// else
+				$soap_request = getEnvelopeSoap($paramsXML->asXML());
 		 
-		 
-		 
-		 $header = array(
+
+		    $header = array(
 			  "Content-type: application/soap+xml",
 			  "SOAPAction: \" \"",
 			  "Content-length: ".strlen($soap_request)
 			 // "User-Agent: ".$_SERVER['HTTP_USER_AGENT']
-			);
+			);		   		   
 
-			// $_SERVER['HTTP_USER_AGENT']
-		   
-			$soap_do = curl_init();
-			curl_setopt($soap_do, CURLOPT_URL, $soapUrl );
-			curl_setopt($soap_do, CURLOPT_CONNECTTIMEOUT, 10);
-			curl_setopt($soap_do, CURLOPT_TIMEOUT,        10);
-			curl_setopt($soap_do, CURLOPT_RETURNTRANSFER, true );
-			curl_setopt($soap_do, CURLOPT_SSL_VERIFYPEER, false);
-			curl_setopt($soap_do, CURLOPT_SSL_VERIFYHOST, false);
-			curl_setopt($soap_do, CURLOPT_POST,           true );
-			curl_setopt($soap_do, CURLOPT_POSTFIELDS,     $soap_request);
-			curl_setopt($soap_do, CURLOPT_HTTPHEADER,     $header);
-			curl_setopt($soap_do, CURLOPT_HEADER, false);
-		   
+			$result = sendCurl($soap_request, $header);
 
-			$result = curl_exec($soap_do);
-			if( $result === false) {
-			  $err = 'Curl error: ' . curl_error($soap_do);
-			  curl_close($soap_do);
-			  print $err;
-			} else {
-			  curl_close($soap_do);
-			  
-			  
-			  
-			  //Convert result to xml
-			  $std = new stdClass();
-			  $html = html_entity_decode($result);  				
-			  $xml = new SimpleXMLElement($html);
-			  
-			  file_put_contents('global_payments_response', $html);
+			if(!$result){
+				$msg = "retorno sendCurl false";
+				$json = json_encode(array('descricao' => 'pedido_'.$resultB['DS_MERCHANT_ORDER'].' - sendRequestCurl', $msg ));
+				include('../comprar/logiPagareChamada.php');
 
+				return array('success'=>false);
+			}
+			//Convert result to xml	
+			$xml = getReturnSOAP($result);
+			
+			$json = json_encode(array('descricao' => 'Passo global_payments_response_'.$resultB['DS_MERCHANT_ORDER'].' - sendRequestCurl', trim(str_replace('<?xml version="1.0" ?>','',$xml->asXML()))));
+			include('../comprar/logiPagareChamada.php');
+			//DEBUG RESPONSE
+			// file_put_contents('global_payments_response_'.$resultB['DS_MERCHANT_ORDER'].'.xml', $xml->asXML());
+			
 			//   $xml = simplexml_load_string($html, "SimpleXMLElement", LIBXML_NOCDATA);
-			  $array = xml2array($xml->asXML());
+			$array = xml2array($xml->asXML());
 				  
 			//Percorre array multidimensional e trasforma num unico array dimensional resultante
 			array_walk_recursive($array, function($v,$k)use(&$resultA){
 					$resultA[$k]=$v;
 			});
 
-
-
-			if($opAction == OptionAction::AUTORIZAR){
-				if($resultA['CODIGO'] !== '0'){
-					echo "Falha no Pedido {$resultB['DS_MERCHANT_ORDER']} erro de código {$resultA['CODIGO']} ". tratarErro($resultA['CODIGO']);
-				}else{
-					echo "Pedido {$resultB['DS_MERCHANT_ORDER']} realizado com sucesso! ";
-				}
-
-			}
-			else if($opAction == OptionAction::CAPTURAR){
-				if($resultA['CODIGO'] !== '0'){
-					echo "Falha no Pedido {$resultB['DS_MERCHANT_ORDER']} erro de código {$resultA['CODIGO']} ". tratarErro($resultA['CODIGO']);
-				}else{
-					echo "Pedido {$resultB['DS_MERCHANT_ORDER']} capturado com sucesso! ";
-				}
-				return $resultA;
-			}
-			else if($opAction == OptionAction::CANCELAR	){
-				if($resultA['CODIGO'] !== '0'){
-					echo "Falha no Pedido {$resultB['DS_MERCHANT_ORDER']} erro de código {$resultA['CODIGO']} ". tratarErro($resultA['CODIGO']);
-				}else{
-					echo "Pedido {$resultB['DS_MERCHANT_ORDER']} cancelado com sucesso! ";
-				}
-				return $resultA;
-			}
-			//   print_r($array);
-			//   print_r($array_result);
-
-			  //print 'Operation completed without any errors';
-			 // echo $soap_request;
-			}
-
-
-	
-		die();
-		}
-		catch(Exception $ex){
-			print_r($ex);
+			// echo "sendRequestCurl:End<br>";
+			return tratarReturnPeticion($resultA, $resultB, $opAction);
+		
 			die();
 		}
-	}
+		catch(Exception $ex){
+			//print_r($ex);
+		// echo "sendRequestCurl:Exception<br>";
+			$json = json_encode(array('descricao' => 'pedido_'.$resultB['DS_MERCHANT_ORDER'].' - sendRequestCurl  EXCEPTION ', $ex ));
+			include('../comprar/logiPagareChamada.php');
 
+			return array('success'=>false);
+			// die();
+		}
+		// echo "sendRequestCurl:End Function<br>";
+		
+	}
+	
+
+	/**
+	 * Retorno da requisição SOAP
+	 * param $resultA 
+	 * Parametro da requisição SOAP
+	 * param $resultB 
+	 */
+	function tratarReturnPeticion($resultA, $resultB,$opAction){
+	
+		if($opAction == OptionAction::AUTORIZAR){
+			if($resultA['CODIGO'] !== '0'){
+				$msg = "Falha no Pedido {$resultB['DS_MERCHANT_ORDER']} erro de código {$resultA['CODIGO']} ". tratarErro($resultA['CODIGO']);
+				return array('success'=>false, 'error'=> $msg);
+			}else{
+				$msg = "Pedido {$resultB['DS_MERCHANT_ORDER']} realizado com sucesso! ";
+				return  array('success'=>true, 'transaction'=> $resultA);
+			}
+	
+		}
+		else if($opAction == OptionAction::CAPTURAR){
+			if($resultA['CODIGO'] !== '0'){
+				$msg = "Falha no Pedido {$resultB['DS_MERCHANT_ORDER']} erro de código {$resultA['CODIGO']} ". tratarErro($resultA['CODIGO']);
+				return array('success'=>false, 'error'=> $msg);
+			}else{
+				$msg = "Pedido {$resultB['DS_MERCHANT_ORDER']} capturado com sucesso! ";
+				return array('success'=>true, 'transaction'=> $resultA);				
+			}
+		}
+		else if($opAction == OptionAction::CANCELAR	){
+			if($resultA['CODIGO'] !== '0'){
+				$msg = "Falha no Pedido {$resultB['DS_MERCHANT_ORDER']} erro de código {$resultA['CODIGO']} ". tratarErro($resultA['CODIGO']);
+				return array('success'=>false, 'error'=> $msg, 'result'=>$resultA);
+			}else{
+				$msg = "Pedido {$resultB['DS_MERCHANT_ORDER']} cancelado com sucesso! ";
+				return array('success'=>true, 'transaction'=> $resultA);
+			}
+		}
+		
+	}
+	
 	function tratarErro($sisId){
 		// CÓDIGO  ERRO SIS DESCRIÇÃO 
 		$ERRO_SIS = array(
@@ -414,7 +542,8 @@ class PeticionResponse {
 		,"SIS0418"=>"Não existe plano de vendas vigente para esta operação"
 		,"SIS0419"=>"O valor do campo DS_MERCHANT_ACCOUNTTYPE (CRE/DEB) é incompatível a configuração do cartão "
 		,"SIS0420"=>"A loja não possui formas de pagamento habilitadas para este tipo de operação"
-		,"SIS0428"=>"Transação de débito não autenticada");
+		,"SIS0428"=>"Transação de débito não autenticada"
+		,-1 => "Erro não encontrado!");
 		
 
 	   return $ERRO_SIS[$sisId];		
@@ -426,42 +555,101 @@ class PeticionResponse {
 		return $value;
 	}
 
+	function processarTransacao(trataPeticion $objSend, $chaveAcesso, $opAction, $on3DES = false){
+		$objSend->DS_MERCHANT_MERCHANTCODE = $config['MERCHANTCODE'];
+		$objSend->DS_MERCHANT_TERMINAL = '001';
 
-	function walk_recursive_to_tag( $array, $tag) {
-		$res = array();
-		
-		foreach ($array as $k => $v) {
-			if(count($res) > 0){
-				echo 'parei';
-				break;
-			}
-			if($k == $tag){
-				echo "key $k \n\r";
-				// print_r($v);
-				 $res = $v;
-			}
-			else if (!is_array($v)) {
-				walk_recursive_to_tag($v, $tag);				
-			}
-
-		}
-
-		return $res;
-	}
-
-
-	function processarTransacao(trataPeticion $objSend, $chaveAcesso, $opAction){
 		$xmlResult = processarDados($objSend, $chaveAcesso, $opAction);
 		
 				if(!$xmlResult){
-					echo 'Falha no processamento dos dados!';
-					return false;
+					$msg = 'Falha no processamento dos dados!';
+					$json = json_encode(array('descricao' => 'pedido_'.$resultB['DS_MERCHANT_ORDER'].' - processarTransacao ', $msg ));
+					include('../comprar/logiPagareChamada.php');
+					return array('success'=>false);
 				}
 				else{
-					return sendRequestCurl($xmlResult,$opAction);
+					return sendRequestCurl($xmlResult,$opAction, $on3DES);
 					// return sendRequest($xmlResult);
 				}
 	}
+
+
+
+	function getInfoPedido($id_pedido){
+		$mainConnection = mainConnection();
+		
+			$query = "SELECT
+						P.ID_PEDIDO_VENDA,
+						C.CD_EMAIL_LOGIN,
+						ISNULL(P.VL_FRETE, 0) AS VL_FRETE,
+						P.VL_TOTAL_PEDIDO_VENDA,
+						P.ID_IP,
+						C.ID_CLIENTE,
+						C.CD_CPF,
+						C.CD_RG,
+						C.DS_NOME,
+						C.DS_SOBRENOME,
+						CONVERT(VARCHAR(10),DT_NASCIMENTO, 110) AS DT_NASCIMENTO,
+						ISNULL(C.IN_SEXO, 'M') AS IN_SEXO,
+						C.DS_ENDERECO,
+						C.NR_ENDERECO,
+						C.DS_COMPL_ENDERECO,
+						C.DS_BAIRRO,
+						C.DS_CIDADE,
+						E.SG_ESTADO,
+						C.CD_CEP,
+						C.DS_DDD_TELEFONE,
+						C.DS_TELEFONE,
+						C.DS_DDD_CELULAR,
+						C.DS_CELULAR,
+						P.NR_PARCELAS_PGTO,
+						P.CD_BIN_CARTAO,
+						MP.CD_MEIO_PAGAMENTO,
+		
+						P.IN_RETIRA_ENTREGA,
+						P.DS_CUIDADOS_DE,
+						P.NM_CLIENTE_VOUCHER,
+						P.DS_EMAIL_VOUCHER,
+						P.DS_ENDERECO_ENTREGA,
+						P.NR_ENDERECO_ENTREGA,
+						P.DS_COMPL_ENDERECO_ENTREGA,
+						P.DS_BAIRRO_ENTREGA,
+						P.DS_CIDADE_ENTREGA,
+						E2.SG_ESTADO AS SG_ESTADO_ENTREGA,
+						P.CD_CEP_ENTREGA,
+		
+						C.ID_DOC_ESTRANGEIRO,
+						P.NM_TITULAR_CARTAO
+					FROM MW_PEDIDO_VENDA P
+					INNER JOIN MW_CLIENTE C ON C.ID_CLIENTE = P.ID_CLIENTE
+					INNER JOIN MW_ESTADO E ON E.ID_ESTADO = C.ID_ESTADO
+					LEFT JOIN MW_ESTADO E2 ON E2.ID_ESTADO = P.ID_ESTADO
+					LEFT JOIN MW_MEIO_PAGAMENTO MP ON MP.ID_MEIO_PAGAMENTO = P.ID_MEIO_PAGAMENTO
+					WHERE P.ID_PEDIDO_VENDA = ?";
+		
+			$rs = executeSQL($mainConnection, $query, array($id_pedido), true);
+		
+			foreach($rs as $key => $val) {
+				$rs[$key] = utf8_encode($val);
+			}	
+
+
+		// INICIO DO BLOCO DA PREPARAÇÂO DA REQUISIÇÃO
+		$trataPeticion = new trataPeticion();
+		// INFORMAÇÃO DA LOJA
+		// $trataPeticion->DS_MERCHANT_MERCHANTCODE = '';
+		// $trataPeticion->DS_MERCHANT_TERMINAL = '001';
+		//FIM INFORMAÇÃO DA LOJA
+		
+		//Informação do Pedido
+		$trataPeticion->DS_MERCHANT_AMOUNT = ($rs['VL_TOTAL_PEDIDO_VENDA'] * 100);
+		$trataPeticion->DS_MERCHANT_ORDER = $id_pedido;
+		//Fim Informação do Pedido    
+		
+		return $trataPeticion;
+	}
+
+
 
 	/**
 	 * DS_MERCHANT_TRANSACTIONTYPE: Obrigatório – Indica o tipo de transação: 
@@ -471,7 +659,8 @@ class PeticionResponse {
 	 * 
 	 */
 
-    function autorizarCompraCredito(trataPeticion $objSend, $chaveAcesso){
+    function autorizarCompraCredito(trataPeticion $objSend){
+		
 		// Tipo da transação
 		$objSend->DS_MERCHANT_TRANSACTIONTYPE = 'A';
 		// 01-Crédito ou 02-Débito
@@ -479,16 +668,32 @@ class PeticionResponse {
 		return processarTransacao($objSend,$chaveAcesso,OptionAction::AUTORIZAR);
 	}
 	
-	function autorizarCompraDebito(trataPeticion $objSend, $chaveAcesso){
+	function autorizarCompraDebito(trataPeticion $objSend){
+	
 		// Tipo da transação
 		$objSend->DS_MERCHANT_TRANSACTIONTYPE = '0';
 		// 01-Crédito ou 02-Débito
 		$objSend->DS_MERCHANT_ACCOUNTTYPE = '02';
 		$objSend->DS_MERCHANT_PLANTYPE = '01';
-		$objSend->DS_MERCHANT_PLANINSTALLMENTSNUMBER = '01';
+		//$objSend->DS_MERCHANT_PLANINSTALLMENTSNUMBER = '01';
 		
+		$objSend->DS_MERCHANT_ACCEPTHEADER = trim($_SERVER['HTTP_ACCEPT']);
+		$objSend->DS_MERCHANT_USERAGENT = trim($_SERVER['HTTP_USER_AGENT']);
+
+		//Retorno da primeira requisição débito
+		$resultProcess = processarTransacao($objSend,$chaveAcesso,OptionAction::AUTORIZAR, true);
+
+		return $resultProcess;
+		//$_SESSION['SDP'] = $objSend;
 		
-		return processarTransacao($objSend,$chaveAcesso,OptionAction::AUTORIZAR);
+		// if($resultProcess){
+		// 	redirectClientToBank($resultProcess,$objSend);
+		// 	//return true;
+		// }
+		// else{
+		// 	return false;
+		// }
+
 	}
 
 	function capturarCompra(trataPeticion $objSend,$chaveAcesso){
@@ -517,11 +722,15 @@ class PeticionResponse {
 	 */
 	function processarDados(trataPeticion $objSend, $chaveAcesso,  $opAction){
 		if($objSend === null || $chaveAcesso === null || $chaveAcesso == '' ){
-			echo "processarDados Erro 001!";
+			$msg = "processarDados Erro 001!";
+			$json = json_encode(array('descricao' => 'pedido_'.$resultB['DS_MERCHANT_ORDER'].' - processarDados ', $msg ));
+			include('../comprar/logiPagareChamada.php');
 			return false;
 		}
 		else if(!validarDados($objSend,$opAction)){
-			echo "processarDados Erro 002!";
+			$msg = "processarDados Erro 002!";
+			$json = json_encode(array('descricao' => 'pedido_'.$resultB['DS_MERCHANT_ORDER'].' - processarDados ', $msg ));
+			include('../comprar/logiPagareChamada.php');
 			return false;
 		}
 
@@ -556,9 +765,11 @@ class PeticionResponse {
 			$objSend->DS_MERCHANT_TRANSACTIONTYPE == ''
 			or $objSend->DS_MERCHANT_TRANSACTIONTYPE === null
 		){
-				echo "validarDados Erro 001!";
-				print_r($objSend);
-				die();
+				$msg = "validarDados Erro 001!";
+				//print_r($objSend);
+				$json = json_encode(array('descricao' => 'pedido_'.$resultB['DS_MERCHANT_ORDER'].' - processarDados ', $msg,'object' => $objSend ));
+				include('../comprar/logiPagareChamada.php');
+				
 				$resultValidation = false;
 			} 	
 			
@@ -568,7 +779,10 @@ class PeticionResponse {
 				or empty($objSend->DS_MERCHANT_CVV2)
 				or $objSend->DS_MERCHANT_CVV2 === null
 				){
-					echo "validarDados Erro 002!";
+					$msg = "validarDados Erro 002!";
+					$json = json_encode(array('descricao' => 'pedido_'.$resultB['DS_MERCHANT_ORDER'].' - processarDados ', $msg ));
+					include('../comprar/logiPagareChamada.php');
+
 					$resultValidation = false;
 			}
 		}
@@ -595,6 +809,17 @@ class PeticionResponse {
 			$chave_str .= $objSend->DS_MERCHANT_CVV2; 
 		}
 		$chave_str .= $objSend->DS_MERCHANT_TRANSACTIONTYPE;
+		$chave_str .= $CHAVE;	
+
+		return hash('sha256',$chave_str);
+	}
+	function gerarChaveAssinaturaDebito($objSend, $CHAVE){
+		$chave_str = '';
+		$chave_str .= $objSend->DS_MERCHANT_ORDER;
+		$chave_str .= $objSend->DS_MERCHANT_MERCHANTCODE;
+		$chave_str .= $objSend->DS_MERCHANT_TRANSACTIONTYPE;
+		$chave_str .= $objSend->DS_MERCHANT_MD;
+
 		$chave_str .= $CHAVE;	
 
 		return hash('sha256',$chave_str);
@@ -736,7 +961,111 @@ class PeticionResponse {
         return ($xml_array);
     }
 	
+	// Retorno da segunda requisição débito
+	if(isset($_REQUEST['action']) && $_REQUEST['action'] == 'retBank'){
+		
+		if(isset($_REQUEST['DS_MERCHANT_ORDER'])){
+			
+
+			//Objeto para envio de solicitação de aprovação à GLOBAL PAYMENTS
+			$objs = new stdClass;
+			
+			$objs->DS_MERCHANT_ORDER = $_REQUEST['DS_MERCHANT_ORDER'];
+			$objs->DS_MERCHANT_MERCHANTCODE = $_REQUEST['DS_MERCHANT_MERCHANTCODE'];
+			$objs->DS_MERCHANT_TERMINAL =  $_REQUEST['DS_MERCHANT_TERMINAL'];
+			$objs->DS_MERCHANT_TRANSACTIONTYPE = $_REQUEST['DS_MERCHANT_TRANSACTIONTYPE'];
+			$objs->DS_MERCHANT_PARESPONSE = $_REQUEST['PaRes'];
+			$objs->DS_MERCHANT_MD = $_REQUEST['MD'];
+			$objs->DS_MERCHANT_MERCHANTSIGNATURE  = gerarChaveAssinaturaDebito($objs,$chaveAcesso);
+
+			$paramsXML = array2xml($objs,'DATOSENTRADA');
+
+
+			//Convert param to array
+			$paramsArr = xmlToarray($paramsXML);
+			//Percorre array multidimensional e trasforma num unico array dimensional resultante
+			array_walk_recursive($paramsArr, function($v,$k)use(&$resultB){
+				$resultB[$k]=$v;
+			});
+			
+			$soap_request = getEnvelopeSoap($paramsXML);
+			   
+			$header = array(
+				"Content-type: application/soap+xml",
+				"SOAPAction: \" \"",
+				"Content-length: ".strlen($soap_request)
+			// "User-Agent: ".$_SERVER['HTTP_USER_AGENT']
+			);		   		   
+
+			//DEBUG RESPONSE
+			file_put_contents('global_payments_sended_bank_'.$resultB['DS_MERCHANT_ORDER'].'.xml', $paramsXML);
+
+			$result = sendCurl($soap_request, $header);
+
+			
+			//Convert result to xml	
+			$xml = getReturnSOAP($result);
+			
+			//DEBUG RESPONSE
+			file_put_contents('global_payments_response_bank_'.$resultB['DS_MERCHANT_ORDER'].'.xml', $xml->asXML());
 	
+			$array = xml2array($xml->asXML());
+					
+			//Percorre array multidimensional e trasforma num unico array dimensional resultante
+			array_walk_recursive($array, function($v,$k)use(&$resultA){
+					$resultA[$k]=$v;
+			});
+			
+			//echo "Result Pagamento débito GLOBAL PAYMENTS<br>";
+			// print_r($result);
+			tratarReturnPeticion($resultA, $resultB, OptionAction::AUTORIZAR);
+		}else{
+			echo "Sessão não encontrada!";
+		}
+
+		die();
+	}
+
+	function redirectClientToBank($objSend, trataPeticion $objParamSend){
+		
+		$html ='<html> 
+		<head> 
+		<title>ii</title> 
+		</head> 
+		<body OnLoad="OnLoadEvent();" > 
+		<form name="downloadForm" action="'.$objSend['Ds_AcsUrl'].'" method="POST"> 
+		<noscript> 
+		<br> 
+		<br> 
+		<center> 
+		<h1>Processing your 3-D Secure Transaction</h1> 
+		<h2> 
+		JavaScript is currently disabled or is not supported 
+		by your browser.<br></h2> 
+		<h3>Please click Submit to continue 
+		the processing of your 3-D Secure 
+		transaction.</h3> 
+		<input type="submit" value="Submit"> 
+		</center> 
+		</noscript> 
+		<input type="hidden" name="PaReq" value="'.$objSend['Ds_PaRequest'].'">
+		<input type="hidden" name="TermUrl" value="http://localhost:98/settings/global_functions.php?action=retBank&DS_MERCHANT_ORDER='.$objParamSend->DS_MERCHANT_ORDER.'&DS_MERCHANT_MERCHANTCODE='.$objParamSend->DS_MERCHANT_MERCHANTCODE.'&DS_MERCHANT_TERMINAL='.$objParamSend->DS_MERCHANT_TERMINAL.'&DS_MERCHANT_TRANSACTIONTYPE='.$objParamSend->DS_MERCHANT_TRANSACTIONTYPE.'"> 
+		<input type="hidden" name="MD" value="'.$objSend['Ds_MD'].'"> 
+		</form> 
+		<SCRIPT LANGUAGE="Javascript" > 
+		<!-- 
+		function OnLoadEvent() 
+		{ 
+		document.downloadForm.submit(); 
+		} 
+		//--> 
+		</SCRIPT> 
+		</body> 
+	    </html> 
+		';
+		echo $html;
+
+	}
 	
 	
 	// echo "Function<br>";
@@ -752,27 +1081,30 @@ class PeticionResponse {
 	// header('Content-type: text/xml');
 	// print $xml_data;
 	
-	// INICIO DO BLOCO DA PREPARAÇÂO DA REQUISIÇÃO
-	$trataPeticion = new trataPeticion();
-	// INFORMAÇÃO DA LOJA
-	$chaveAcesso = 'qwertyasdf0123456789';
-	$trataPeticion->DS_MERCHANT_MERCHANTCODE = '012005510536001';
-	$trataPeticion->DS_MERCHANT_TERMINAL = '001';
-	//FIM INFORMAÇÃO DA LOJA
+
+	// if(!isset($_SESSION['ORDER'])){ // BEGIN SESSION ORDER
+		// $_SESSION['ORDER'] = rand(1,10000000);
+
+	// // INICIO DO BLOCO DA PREPARAÇÂO DA REQUISIÇÃO
+	// $trataPeticion = new trataPeticion();
+	// // INFORMAÇÃO DA LOJA
+	// $trataPeticion->DS_MERCHANT_MERCHANTCODE = '012005510536001';
+	// $trataPeticion->DS_MERCHANT_TERMINAL = '001';
+	// //FIM INFORMAÇÃO DA LOJA
 	
-	//Informação do Pedido
-	$trataPeticion->DS_MERCHANT_AMOUNT = (100.00 * 100);
-	$trataPeticion->DS_MERCHANT_ORDER = rand(1,10000000);
-	//Fim Informação do Pedido
+	// //Informação do Pedido
+	// $trataPeticion->DS_MERCHANT_AMOUNT = (100.00 * 100);
+	// $trataPeticion->DS_MERCHANT_ORDER = rand(1,10000000);
+	// //Fim Informação do Pedido
 	
 	//*******************AUTORIZAÇÃO DE COMPRA ***********************/
 		
 	// $trataPeticion->DS_MERCHANT_CURRENCY = 986; //Informação definida por padrão
 	//Cartões válidos
 	// Pagamento à vista:
-	$trataPeticion->DS_MERCHANT_PAN = '4548812049400004' ;
-	$trataPeticion->DS_MERCHANT_CVV2 = '123';
-	$trataPeticion->DS_MERCHANT_EXPIRYDATE = '2012';
+	// $trataPeticion->DS_MERCHANT_PAN = '4548810000000003' ;
+	// $trataPeticion->DS_MERCHANT_CVV2 = '123';
+	// $trataPeticion->DS_MERCHANT_EXPIRYDATE = '4912';
 	
 	// // Pagamento parcelado:
 	// $trataPeticion->DS_MERCHANT_PAN = '4761120000000148' ;
@@ -787,59 +1119,60 @@ class PeticionResponse {
 
 //********* Cartão de Crédito ******/
 // $result = autorizarCompraCredito($trataPeticion,$chaveAcesso);
+// unset($trataPeticion);
 // if(!$result){
-	// 	echo 'Falha ao enviar solicitação';
-	// }
+// 	echo 'Falha ao enviar solicitação';
+// }
 
 //*********Fim Cartão de Crédito ******/
 
 //********* Cartão de Débito ******/
-$result = autorizarCompraDebito($trataPeticion,$chaveAcesso);
-if(!$result){
-		echo 'Falha ao enviar solicitação';
-		print_r($trataPeticion);
-}
+// $result = autorizarCompraDebito($trataPeticion,$chaveAcesso);
+// if(!$result){
+// 		echo 'Falha ao enviar solicitação';
+// 		print_r($trataPeticion);
+// }
 
 //*********Fim Cartão de Débito ******/
 
-	
+
 //*******************FIM AUTORIZAÇÃO DE COMPRA ***********************/
 
 //*******************CAPTURA DE COMPRA ***********************/
 // $trataPeticion->DS_MERCHANT_ORDER = '1132184';
 // $result = capturarCompra($trataPeticion,$chaveAcesso);
 // if(!$result){
-// 	echo 'Falha ao enviar solicitação';
-// }else{
-// 	print_r($result);
-// }
-
-//*******************FIM CAPTURA DE COMPRA ***********************/
-
-//*******************CANCELAMENTO DE COMPRA ***********************/
-// $trataPeticion->DS_MERCHANT_ORDER = '1132184';
-// $result = cancelarCompra($trataPeticion,$chaveAcesso);
-// if(!$result){
-// 	echo 'Falha ao enviar solicitação';
-// }else{
-// 	print_r($result);
-// }
-//*******************FIM CANCELAMENTO DE COMPRA ***********************/
-
-
-
-//Teste Cartão Débito
-
-
-
-
-//Teste de valores
-
-// $valor1 = 100.00;
-// $valor2 = 0.01;
-// $valor3 = 0.10;
-
-// echo OptionAction::AUTORIZAR;
+	// 	echo 'Falha ao enviar solicitação';
+	// }else{
+		// 	print_r($result);
+		// }
+		
+		//*******************FIM CAPTURA DE COMPRA ***********************/
+		
+		//*******************CANCELAMENTO DE COMPRA ***********************/
+		// $trataPeticion->DS_MERCHANT_ORDER = '1132184';
+		// $result = cancelarCompra($trataPeticion,$chaveAcesso);
+		// if(!$result){
+			// 	echo 'Falha ao enviar solicitação';
+			// }else{
+				// 	print_r($result);
+				// }
+				//*******************FIM CANCELAMENTO DE COMPRA ***********************/
+				
+			// } // FIM IF SESSION ORDER
+			
+			
+			//Teste Cartão Débito
+			
+			
+			
+			//Teste de valores
+			
+			// $valor1 = 100.00;
+			// $valor2 = 0.01;
+			// $valor3 = 0.10;
+			
+			// echo OptionAction::AUTORIZAR;
 
 // echo "valor 1= ".($valor1 * 100)
 // 	."<br>"

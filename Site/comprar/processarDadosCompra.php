@@ -12,6 +12,7 @@ require('../settings/pagseguro_functions.php');
 require('../settings/pagarme_functions.php');
 require('../settings/tipagos_functions.php');
 require('../settings/cielo_functions.php');
+require('../settings/global_functions.php');
 
 // reCAPTCHA v2 ---------------
 $post_data = http_build_query(array('secret'    => $recaptcha['private_key'],
@@ -511,6 +512,7 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
     $pagamento_pagarme = in_array($_POST['codCartao'], array('910', '911'));
     $pagamento_tipagos = in_array($_POST['codCartao'], array('998'));
     $pagamento_cielo = in_array($_POST['codCartao'], array('920', '921'));
+    $pagamento_global = in_array($_POST['codCartao'], array('922', '923'));
     $pagamento_braspag = (!$pagamento_fastcash and !$pagamento_pagseguro and !$pagamento_pagarme and !$pagamento_tipagos and !$pagamento_cielo);
 
     // pular o bloco abaixo para vendas pelo fastcash e pagseguro
@@ -884,6 +886,52 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
             require('concretizarAssinatura.php');
 
             die("redirect.php?redirect=".urlencode("pagamento_ok.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : '')));
+        }
+            // pagamentos via global
+        elseif ($pagamento_global) {
+                
+            $query = "UPDATE P SET ID_MEIO_PAGAMENTO = M.ID_MEIO_PAGAMENTO, IN_SITUACAO = 'P'
+                        FROM MW_PEDIDO_VENDA P, MW_MEIO_PAGAMENTO M
+                        WHERE P.ID_PEDIDO_VENDA = ? AND M.CD_MEIO_PAGAMENTO = ?";
+            $params = array($parametros['OrderData']['OrderId'], $_POST['codCartao']);
+            $result = executeSQL($mainConnection, $query, $params);
+
+            $objPeticion = getInfoPedido($parametros['OrderData']['OrderId']);
+
+            if($_POST['codCartao'] == '922')
+                $response = autorizarCompraCredito($objPeticion);
+            else if($_POST['codCartao'] == '923')
+                $response = autorizarCompraDebito($objPeticion);
+
+
+            executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+                array($_SESSION['user'], json_encode(array('descricao' => 'Retorno do pedido global=' . $parametros['OrderData']['OrderId'], 'global_obj' => base64_encode(serialize($response['transaction'])))))
+            );
+
+            // credit card
+            if ($response['success']) {
+
+                $result = new stdClass();
+
+                $result->AuthorizeTransactionResult->OrderData->BraspagOrderId = 'Global';
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId = $response['transaction']['DS_MERCHANT_ORDER'];
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId = $response['transaction']['DS_MERCHANT_ORDER'];
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AuthorizationCode = $response['transaction']['DS_MERCHANT_MERCHANTSIGNATURE'];
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->PaymentMethod = $_POST['codCartao'];
+
+                require('concretizarCompra.php');
+
+                // se necessario, replica os dados de assinatura e imprime url de redirecionamento
+                require('concretizarAssinatura.php');
+
+                die("redirect.php?redirect=".urlencode("pagamento_ok.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : '')));
+            }
+            else {
+                $descricao_erro = $response['error'] ? $response['error'] : 'Transação não autorizada.';
+            }
+            
+          
+
         }
         // compra normal
         else{

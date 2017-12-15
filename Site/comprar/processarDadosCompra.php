@@ -1,4 +1,9 @@
 <?php
+
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
+
 require_once('../settings/functions.php');
 require_once('../settings/settings.php');
 require_once('../settings/Log.class.php');
@@ -513,34 +518,35 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
     $pagamento_tipagos = in_array($_POST['codCartao'], array('998'));
     $pagamento_cielo = in_array($_POST['codCartao'], array('920', '921'));
     $pagamento_global = in_array($_POST['codCartao'], array('922', '923'));
-    $pagamento_braspag = (!$pagamento_fastcash and !$pagamento_pagseguro and !$pagamento_pagarme and !$pagamento_tipagos and !$pagamento_cielo);
+    $pagamento_braspag = (!$pagamento_fastcash and !$pagamento_pagseguro and !$pagamento_pagarme and !$pagamento_tipagos and !$pagamento_cielo and !$pagamento_global);
 
+    
     // pular o bloco abaixo para vendas pelo fastcash e pagseguro
     if ($_SESSION['usuario_pdv'] !== 1 and $PaymentDataCollection['Amount'] != 0 and $pagamento_braspag) {
         try {
             executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
-                array($_SESSION['user'], json_encode(array('descricao' => '3. inicialização do pedido ' . $parametros['OrderData']['OrderId'], 'url' => $url_braspag)))
-            );
-
-            $client = @new SoapClient($url_braspag, $options);
-
+            array($_SESSION['user'], json_encode(array('descricao' => '3. inicialização do pedido ' . $parametros['OrderData']['OrderId'], 'url' => $url_braspag)))
+        );
+        
+        $client = @new SoapClient($url_braspag, $options);
+        
+        executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+        array($_SESSION['user'], json_encode(array('descricao' => '4. envio do pedido=' . $parametros['OrderData']['OrderId'], 'post' => $parametrosLOG)))
+    );
+    
+    $result = $client->AuthorizeTransaction(array('request' => $parametros));
+    
             executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
-                array($_SESSION['user'], json_encode(array('descricao' => '4. envio do pedido=' . $parametros['OrderData']['OrderId'], 'post' => $parametrosLOG)))
-            );
-            
-            $result = $client->AuthorizeTransaction(array('request' => $parametros));
-
-            executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
-                array($_SESSION['user'], json_encode(array('descricao' => '5. retorno do pedido=' . $parametros['OrderData']['OrderId'], 'post' => $result)))
-            );
-            
-        } catch (SoapFault $e) {
-            $descricao_erro = $e->getMessage();
-        } catch (Exception $e) {
-            $descricao_erro = $e->getMessage();
+            array($_SESSION['user'], json_encode(array('descricao' => '5. retorno do pedido=' . $parametros['OrderData']['OrderId'], 'post' => $result)))
+        );
+        
+    } catch (SoapFault $e) {
+        $descricao_erro = $e->getMessage();
+    } catch (Exception $e) {
+        $descricao_erro = $e->getMessage();
         }
-
-
+        
+        
         if ($result->AuthorizeTransactionResult->CorrelationId == $ri and $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->Status == '1') {    
             // CHECAGEM PELO CLEARSALE
             $query = "SELECT COUNT(1) AS IN_ANTI_FRAUDE FROM MW_RESERVA R
@@ -551,18 +557,18 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
 
             if ($rs['IN_ANTI_FRAUDE']) {
                 $array_dados_extra = array();
-
+                
                 $array_dados_extra['Orders']['Order']['Payments']['Payment']['CardExpirationDate'] = $PaymentDataCollection['CardExpirationDate'];
                 $array_dados_extra['Orders']['Order']['Payments']['Payment']['Name'] = $PaymentDataCollection['CardHolder'];
                 $array_dados_extra['Orders']['Order']['Payments']['Payment']['Nsu'] = $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId;
                 
                 // se verificarAntiFraude = false negar a compra
                 if (!verificarAntiFraude($parametros['OrderData']['OrderId'], $array_dados_extra)) {
-
+                    
                     cancelarPedido($result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId);
-
+                    
                     executeSQL($mainConnection, "UPDATE MW_PEDIDO_VENDA SET IN_SITUACAO = 'N' WHERE ID_PEDIDO_VENDA = ? AND ID_CLIENTE = ?", array($newMaxId, $_SESSION['user']));
-
+                    
                     echo "Transação não autorizada.";
                     die();
                 } else {
@@ -573,18 +579,18 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
                 // se o pedido ja foi negado e o anti fraude foi desligado
                 executeSQL($mainConnection, "UPDATE MW_PEDIDO_VENDA SET IN_SITUACAO = 'P' WHERE ID_PEDIDO_VENDA = ? AND ID_CLIENTE = ? AND IN_SITUACAO = 'N'", array($newMaxId, $_SESSION['user']));
             }
-
+            
             if (confirmarPedido($result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId)) {
                 $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->Status = '0';
             } else {
                 cancelarPedido($result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId);
-
+                
                 echo "Transação não autorizada.";
                 die();
             }
         }
     }
-
+    
     // echo "<pre>";
     // var_dump($client);
     // var_dump($result);
@@ -896,12 +902,28 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
             $params = array($parametros['OrderData']['OrderId'], $_POST['codCartao']);
             $result = executeSQL($mainConnection, $query, $params);
 
-            $objPeticion = getInfoPedido($parametros['OrderData']['OrderId']);
+            executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+                array($_SESSION['user'], json_encode(array('descricao' => 'iniciando transação captura informação pedido para global=' . $parametros['OrderData']['OrderId'])))
+            );
 
+                        
+            $config = getConfigGlobal();
+
+            $chaveAcesso = $config['merchantKey'];
+
+            if(isset($objPeticion))
+                unset($objPeticion);
+
+            $objPeticion = getInfoPedido($parametros['OrderData']['OrderId'],$_POST);
+
+            executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+                array($_SESSION['user'], json_encode(array('descricao' => 'antes da solicitacao de compra  global=' . $parametros['OrderData']['OrderId'], 'objPeticion' => $objPeticion )))
+            );
+            
             if($_POST['codCartao'] == '922')
-                $response = autorizarCompraCredito($objPeticion);
+                $response = autorizarCompraCredito($objPeticion, $chaveAcesso,$config);
             else if($_POST['codCartao'] == '923')
-                $response = autorizarCompraDebito($objPeticion);
+                $response = autorizarCompraDebito($objPeticion, $chaveAcesso,$config);
 
 
             executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",

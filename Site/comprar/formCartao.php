@@ -152,6 +152,12 @@ if ($_POST) {
                         $formatoCartao = '00000000000000000000';
                         $formatoCodigo = '0000';
                     }
+                    // Global
+                    elseif (in_array($rs['cd_meio_pagamento'], array('922', '923'))) {
+                        $carregar_global_lib = true;
+                        $formatoCartao = '00000000000000000000';
+                        $formatoCodigo = '0000';
+                    }
                     // outros meios
                     else {
                         $formatoCartao = ($rs['nm_cartao_exibicao_site'] == 'Amex' ? '0000-000000-00000' : '0000-0000-0000-0000');

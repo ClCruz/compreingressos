@@ -495,7 +495,8 @@ function estonarPedidoCielo($payment_id, $id_pedido) {
 		"MerchantId: $merchantId",
 		"MerchantKey: $merchantKey"
 	);
-	executeSQL($mainConnection, 'INSERT INTO tab_log_gabriel (data, passo, parametros) VALUES (GETDATE(), ?, ?)', array('Json Enviado Cielo (estonarPedidoCielo)', json_encode(array($payment_id, $id_pedido)));
+	executeSQL($mainConnection, 'INSERT INTO tab_log_gabriel (data, passo, parametros) VALUES (GETDATE(), ?, ?)',
+			 array('Json Enviado Cielo (estonarPedidoCielo)', json_encode(array($payment_id, $id_pedido))));
 
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_HTTPHEADER, $header); 

@@ -63,7 +63,7 @@ $(function(){
 
     		$('#dadosPagamento').addClass('dirty');
 
-    		$.confirmDialog({
+	    		$.confirmDialog({
 				text: 'O seu pedido está sendo processado e isso pode levar alguns segundos.<br/>Por favor, não feche ou atualize seu navegador. Em instantes você será redirecionado(a) a página de confirmação.<br/><br/><img src="../images/ico_loading.gif">',
 				detail: '',
 				uiOptions: {buttons: {'': ['']}}
@@ -133,7 +133,7 @@ $(function(){
 												.eq(1).slideUp().end().end()
 								.find('#bancos').slideUp().end()
 								.find('.frase .alt').eq(0).text('Presente');
-		} else if ($cartao.next('label').next('p.nome').text().toLowerCase().indexOf('débito') > -1 && $('[name=codCartao]:checked').val() != '921') {
+		} else if ($cartao.next('label').next('p.nome').text().toLowerCase().indexOf('débito') > -1 && $('[name=codCartao]:checked').val() != '921' &&  $('[name=codCartao]:checked').val() != '923') {
 			$('.container_dados').find('.linha:not(#bancos)').eq(0).slideUp().end()
 												.eq(1).slideUp().end().end()
 								.find('#bancos').slideDown().end()

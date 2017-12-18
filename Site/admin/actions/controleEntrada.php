@@ -9,8 +9,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 
 		$query = "SELECT STUFF ((
 						SELECT ',' + CONVERT(VARCHAR, CODAPRESENTACAO)
-						FROM TABAPRESENTACAO
-						WHERE CODPECA = ? AND convert(varchar(10), DATAPRESENTACAO, 112) = ? AND HORSESSAO = ?
+						FROM 	TABAPRESENTACAO
+						WHERE 	CODPECA = ? 
+						AND 	convert(varchar(10), DATAPRESENTACAO, 112) = ? 
+						AND 	HORSESSAO = ?
 						FOR XML PATH('')
 					),1,1,'')";
 		$params = array($_POST['cboPeca'], $_POST['cboApresentacao'], $_POST['cboHorario']);
@@ -34,6 +36,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 
 	} else if ($_POST['codigo'] != '') { /*------------ CHECAR BILHETE ------------*/
 
+		$conn = getConnection($_POST['cboTeatro']);
+
 		if (!is_numeric($_POST['codigo']) or strlen($_POST['codigo']) != 22) {
 			echo json_encode(array(
 				'class' => 'falha',
@@ -42,11 +46,26 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 			die();
 		}
 
+
 		// data confere?
-		if (substr($_POST['cboApresentacao'], -4) != substr($_POST['codigo'], 6, 4)) {
+		$query = "SELECT SUBSTRING(CONVERT(VARCHAR(10),DatApresentacao,112),5,4) as Data FROM TABAPRESENTACAO WHERE CodApresentacao = ?";
+		$params = array($_POST['cboApresentacao']);
+		$rs = executeSQL($conn, $query, $params, true);
+
+		if ( $rs['Data'] != substr($_POST['codigo'], 6, 4)) {
 			echo json_encode(array(
 				'class' => 'falha',
 				'mensagem' => 'Data do ingresso inválida para a apresentação.<br />Ingresso válido para: ' . substr($_POST['codigo'], 8, 2) .'/'. substr($_POST['codigo'], 6, 2)
+			));
+			die();
+		}
+
+
+		if ($_POST['cboSetor']!='TODOS' && $_POST['cboSetor'] != substr($_POST['codigo'], 5, 1) )  {
+
+			echo json_encode(array(
+				'class' => 'falha',
+				'mensagem' => 'Setor inválido para a apresentação.<br />Ingresso válido para: '
 			));
 			die();
 		}
@@ -60,7 +79,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 			die();
 		}
 
-		$conn = getConnection($_POST['cboTeatro']);
+	
 		
 		// evento confere?
 		$query = "SELECT CODPECA FROM TABAPRESENTACAO WHERE CODAPRESENTACAO = ?";
@@ -189,7 +208,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 
 		$conn = getConnection($_GET['cboTeatro']);
 
-		$query = "SELECT tbAp.DatApresentacao
+		$query = "SELECT tbAp.CodApresentacao
+						,tbAp.DatApresentacao
 		            from tabApresentacao tbAp (nolock)
 		            inner join tabPeca tbPc (nolock)
 		                        on        tbPc.CodPeca = tbAp.CodPeca
@@ -202,15 +222,16 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 					-- AND CONVERT(DATETIME, CONVERT(VARCHAR(8), TBAP.DATAPRESENTACAO, 112) + ' ' + TBAP.HORSESSAO) >= CONVERT(DATETIME, CONVERT(VARCHAR(8), DATEADD(DAY, -1, GETDATE()), 112) + ' 22:00')
 					-- AND TBAP.DATAPRESENTACAO <= GETDATE()
 					----------------------------
-		            group by tbAp.DatApresentacao
+		            group by tbAp.CodApresentacao,tbAp.DatApresentacao
 		            order by tbAp.DatApresentacao";
 		$params = array($_GET['cboTeatro'], $_SESSION['admin'], $_GET['cboPeca']);
+
 		$result = executeSQL($conn, $query, $params);
 
 		$html = '<option value="">Selecione...</option>';
 		
 		while($rs = fetchResult($result)){
-			$html .= '<option value="'. $rs["DatApresentacao"]->format("Ymd") .'">'. $rs["DatApresentacao"]->format("d/m/Y") .'</option>';	
+			$html .= '<option value="'. $rs["CodApresentacao"].'">'. $rs["DatApresentacao"]->format("d/m/Y") .'</option>';	
 		}
 		
 		echo $html;
@@ -232,7 +253,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 		            -- comentar para homologacao
 		            -- AND CONVERT(DATETIME, CONVERT(VARCHAR(8), TBAP.DATAPRESENTACAO, 112) + ' ' + TBAP.HORSESSAO) >= CONVERT(DATETIME, CONVERT(VARCHAR(8), DATEADD(DAY, -1, GETDATE()), 112) + ' 22:00')
 					----------------------------
-		            AND TBAP.DATAPRESENTACAO = CONVERT(DATETIME, ?, 112)
+		            AND TBAP.CodApresentacao = ?
 		            group by tbAp.HorSessao
 		            order by tbAp.HorSessao";
 		$params = array($_GET['cboTeatro'], $_SESSION['admin'], $_GET['cboPeca'], $_GET['cboApresentacao']);
@@ -245,6 +266,41 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 		}
 
 		echo $html;
+		die();
+	
+	} elseif ($_GET['action'] == 'cboSetor' and $_GET['cboApresentacao'] != null) {
+
+		print_r($_GET);
+
+		$conn = getConnection($_GET['cboTeatro']);
+
+
+		$query = 	"SELECT	
+						codsetor
+						,nomsetor 
+					FROM	
+						tabSetor se
+					INNER JOIN 
+						tabApresentacao ap ON ap.CodSala = se.CodSala 
+					WHERE	
+						ap.codApresentacao = ?
+					ORDER BY nomsetor";
+
+
+		$params = array($_GET['cboApresentacao']);
+		$result = executeSQL($conn, $query, $params);
+
+		$html = "<option value=''>Selecione...</option>
+				 <option value='TODOS'>&lt; TODOS &gt;</option>";
+
+		//$html = "<option value=''>Selecione...</option>
+		//		 <option value='TODOS'>" . $_GET['cboApresentacao'].  "</option>";
+		 
+
+		while($rs = fetchResult($result)){
+			$html .= '<option value="'. $rs["codsetor"] .'">' . utf8_encode($rs["nomsetor"]) .'</option>';	
+		}
+		echo $html ;
 		die();
 
 	}

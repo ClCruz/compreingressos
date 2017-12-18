@@ -31,13 +31,14 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
                 $cboPeca = $('#cboPeca'),
                 $cboApresentacao = $('#cboApresentacao'),
                 $cboHorario = $('#cboHorario'),
+                $cboSetor = $('#cboSetor'),
                 $table_entrada_saida = $('#table_entrada_saida');
 
             $('.button, [type="button"]').button();
 
             $play_stop.on('click', function(){
 
-                if ($cboTeatro.val() == '' || $cboPeca.val() == '' || $cboApresentacao.val() == '' || $cboHorario.val() == '') {
+                if ($cboTeatro.val() == '' || $cboPeca.val() == '' || $cboApresentacao.val() == '' || $cboHorario.val() == '' || $cboSetor.val() == '') {
                     $.dialog({
                             title: 'Alerta...',
                             text: 'Preencha todas as informações antes de iniciar a leitura.'
@@ -133,6 +134,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
             });
 
             $cboPeca.on('change', function(){
+              // alert($cboPeca.val());
                 $.ajax({
                     url: pagina + '?action=cboApresentacao&cboTeatro=' + $cboTeatro.val() + '&cboPeca=' + $cboPeca.val()
                 }).done(function(html){
@@ -147,6 +149,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
                     $cboHorario.html(html).trigger('change');
                 });
             })
+
+            $cboHorario.on('change', function(){
+                $.ajax({
+                    url: pagina + '?action=cboSetor&cboTeatro=' + $cboTeatro.val() + '&cboPeca=' + $cboPeca.val() + '&cboApresentacao=' + $cboApresentacao.val() + '&cboHorario=' + $cboHorario.val()
+                }).done(function(html){
+                    $cboSetor.html(html).trigger('change');
+                });
+            });
+
         });
     </script>
     <head>
@@ -229,6 +240,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
                         <input type="radio" id="radio2" name="sentido" value="saida"><label for="radio2">Saída</label>
                     </div>
                 </td>
+                <td>&nbsp;</td>
             </tr>
             <tr>
                 <td>
@@ -240,6 +252,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
                     <br>
                     <strong>Hor&aacute;rio:</strong><br>
                     <select name="cboHorario" id="cboHorario"><option value="">Selecione uma Apresentação...</option></select>
+                </td>
+                <td>
+                    <br>
+                    <strong>Setor:</strong><br>
+                    <select name="cboSetor" id="cboSetor"><option value="">Selecione um Hor&aacute;rio...</option></select>
                 </td>
                 <td style="vertical-align: bottom;">
                     <input id="play_stop" type="button" value="Iniciar Leitura" />

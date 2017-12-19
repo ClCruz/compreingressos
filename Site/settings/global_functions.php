@@ -231,6 +231,7 @@ class PeticionResponse {
 		curl_setopt($soap_do, CURLOPT_RETURNTRANSFER, true );
 		curl_setopt($soap_do, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($soap_do, CURLOPT_SSL_VERIFYHOST, false);
+		curl_setopt($ch, CURLOPT_SSLVERSION, 6); //force version TLS 1.2
 		curl_setopt($soap_do, CURLOPT_POST,           true );
 		curl_setopt($soap_do, CURLOPT_POSTFIELDS,     $soap_request);
 		curl_setopt($soap_do, CURLOPT_HTTPHEADER,     $header);

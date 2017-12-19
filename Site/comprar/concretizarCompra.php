@@ -37,6 +37,10 @@ $query = "UPDATE MW_PEDIDO_VENDA SET
 			WHERE ID_PEDIDO_VENDA = ? and in_situacao = 'P'";
 executeSQL($mainConnection, $query, array($braspag_transaction_id, $braspag_id, $transaction_auth, $transaction_id, $id_meio_pagamento, $pedido_id));
 
+executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+array($_SESSION['user'], json_encode(array('descricao' => '5.3.1 concretizando retorno executeSQL do pedido=' . $pedido_id, 'result' => $result,'id_meio_pagamento'=> $id_meio_pagamento)))
+);
+
 //beginTransaction($mainConnection);
 
 if (isset($_SESSION['usuario_pdv']) and $_SESSION['usuario_pdv'] == 1) {

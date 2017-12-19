@@ -923,24 +923,67 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
             if($_POST['codCartao'] == '922')
                 $response = autorizarCompraCredito($objPeticion, $chaveAcesso,$config);
             else if($_POST['codCartao'] == '923')
-                $response = autorizarCompraDebito($objPeticion, $chaveAcesso,$config);
+                $response = autorizarCompraDebito($objPeticion, $chaveAcesso,$config,$parametros['OrderData']['OrderId'],$_POST['codCartao']);
 
 
             executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
                 array($_SESSION['user'], json_encode(array('descricao' => 'Retorno do pedido global=' . $parametros['OrderData']['OrderId'], 'global_obj' => base64_encode(serialize($response['transaction'])))))
             );
 
+            // debit card
+            if($response['success'] and $response['redirect']){
+                extenderTempo($horas_antes_apresentacao_pagamento * 60);
+
+                $query = "SELECT DISTINCT E.ID_BASE FROM MW_RESERVA R
+                            INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
+                            INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
+                            WHERE R.ID_SESSION = ?";
+                $params = array(session_id());
+                $result = executeSQL($mainConnection, $query, $params);
+
+                $conn = array();
+                while ($rs = fetchResult($result)) {
+                    $conn[$rs['ID_BASE']] = (isset($conn[$rs['ID_BASE']]) ? $conn[$rs['ID_BASE']] : getConnection($rs['ID_BASE']));
+                }
+                
+                $query = "UPDATE MW_PROMOCAO SET ID_SESSION = ? WHERE ID_SESSION = ?";
+                $params = array($parametros['OrderData']['OrderId'], session_id());
+                executeSQL($mainConnection, $query, $params);
+                
+                $query = "UPDATE MW_RESERVA SET ID_SESSION = ? WHERE ID_SESSION = ?";
+                executeSQL($mainConnection, $query, $params);
+                
+                $query = "UPDATE TABLUGSALA SET ID_SESSION = ? WHERE ID_SESSION = ?";
+                foreach ($conn as $key => $value) {
+                    executeSQL($value, $query, $params);
+                }
+               
+                $_SESSION['global_pay'] = base64_encode(serialize($response));
+
+                limparCookies();
+
+                executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+                    array($_SESSION['user'], json_encode(array('descricao' => 'redirecionamento debito do pedido=' . $parametros['OrderData']['OrderId'], 'global' => $pagamento_global, 'response'=> $response)))
+                );
+
+                die("redirect.php?redirect=".urlencode($response['redirect']));
+            }
             // credit card
-            if ($response['success']) {
+            else if ($response['success']) {
 
                 $result = new stdClass();
 
                 $result->AuthorizeTransactionResult->OrderData->BraspagOrderId = 'Global';
-                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId = $response['transaction']['DS_MERCHANT_ORDER'];
-                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId = $response['transaction']['DS_MERCHANT_ORDER'];
-                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AuthorizationCode = $response['transaction']['DS_MERCHANT_MERCHANTSIGNATURE'];
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId = $parametros['OrderData']['OrderId'];
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId = $response['transaction']['Ds_AuthorisationCode'];
+                $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AuthorizationCode = $response['transaction']['Ds_Order'];
                 $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->PaymentMethod = $_POST['codCartao'];
 
+                
+                executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+                    array($_SESSION['user'], json_encode(array('descricao' => 'concretizar compra credito do pedido=' . $parametros['OrderData']['OrderId'], 'stdClass'=>$result, 'response' => $response, 'POST'=>$_POST)))
+                );
+                
                 require('concretizarCompra.php');
 
                 // se necessario, replica os dados de assinatura e imprime url de redirecionamento

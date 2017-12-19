@@ -29,6 +29,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                         CONVERT(VARCHAR(23), P.DT_PEDIDO_VENDA, 126) DATA,
                         P.VL_TOTAL_PEDIDO_VENDA VALOR,
                         P.ID_TRANSACTION_BRASPAG BRASPAG_ID,
+                        P.CD_NUMERO_TRANSACAO,
                         P.ID_CLIENTE,
                         M.IN_TRANSACAO_PDV,
                         P.IN_PACOTE,
@@ -119,7 +120,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
             $is_estorno_brasbag = ($pedido["IN_TRANSACAO_PDV"] == 0 and !$pedido["FILHO"] and ($pedido['INGRESSOS_PROMOCIONAIS'] == 0 and $pedido['VALOR'] != 0)
                                     and !($pedido_principal["BRASPAG_ID"] == 'POS' and isset($_POST['pos_serial'])) and $pedido_principal["BRASPAG_ID"] != 'Fastcash'
                                     and $pedido_principal["ID_PEDIDO_IPAGARE"] != 'PagSeguro' and $pedido_principal["ID_PEDIDO_IPAGARE"] != 'Pagar.me'
-                                    and $pedido_principal["ID_PEDIDO_IPAGARE"] != 'Cielo' and $pedido_principal["ID_PEDIDO_IPAGARE"] != 'TiPagos');
+                                    and $pedido_principal["ID_PEDIDO_IPAGARE"] != 'Cielo' and $pedido_principal["ID_PEDIDO_IPAGARE"] != 'TiPagos'
+                                    and $pedido_principal["ID_PEDIDO_IPAGARE"] != 'Global');
 
             $options = array(
                 'local_cert' => file_get_contents('../settings/cert.pem'),
@@ -311,6 +313,40 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                                                 por favor, efetue o procedimento de cancelamento junto a operadora manualmente.<br/><br/>
                                                 Os dados do sistema do Middleway foram atualizados com sucesso.";
                     $force_system_refund = true;
+                }
+            }
+           // tratamento para global
+           elseif ($pedido_principal["ID_PEDIDO_IPAGARE"] == 'Global') {
+
+                require_once('../settings/global_functions.php');
+                $config = getConfigGlobal();
+                
+                executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+                        array($_SESSION['user'], json_encode(array('descricao' => 'antes cancelarCompra Global do pedido ' . $pedido['ID_PEDIDO_VENDA'])))
+                );
+                $trataPeticion = new trataPeticion();
+                // INFORMAÇÃO DA LOJA
+                $trataPeticion->DS_MERCHANT_MERCHANTCODE = $config['merchantCode'];
+                $trataPeticion->DS_MERCHANT_TERMINAL = '001';
+
+                $trataPeticion->DS_MERCHANT_ORDER = $pedido['CD_NUMERO_TRANSACAO'] ;
+                $trataPeticion->DS_MERCHANT_AMOUNT = ($pedido['VALOR'] * 100);
+
+                $response = cancelarCompra($trataPeticion, $config);
+
+                executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
+                        array($_SESSION['user'], json_encode(array('descricao' => 'depois cancelarCompra Global do pedido ' . $pedido['ID_PEDIDO_VENDA'], 'resposta'=> $response)))
+                );
+
+                if ($response['success']) {
+                    $resposta_geral = "Pedido cancelado/estornado.";
+                    $retorno = 'ok';
+                } else {
+                    $resposta_geral = $response['error']."<br/><br/><b>Não foi possível efetuar o estorno junto à Operadora (Global)</b>, 
+                                                por favor, efetue o procedimento de cancelamento junto a operadora manualmente.<br/><br/>
+                                                Os dados do sistema do Middleway foram atualizados com sucesso.";
+                    $force_system_refund = true;
+                   
                 }
             }
 

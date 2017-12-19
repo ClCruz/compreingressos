@@ -186,57 +186,6 @@ class PeticionResponse {
 
 }
 
-/*
-	function sendRequest($params, $function = 'trataPeticion'){
-		$url_ws="https://sis-t.redsys.es:25443/sis/services/SerClsWSEntrada";
-
-		//  print_r($params);
-	 	//die();
-
- 
-		 
-		// $url_ws  ="https://sis-t.redsys.es:25443/apl02/services/SerClsWSConsulta?wsdl";
-
-		try{
-			$client = new SoapClient($url_ws,array(
-				'trace'=>true, 
-				'exceptions'=>true
-			   ));
-			
-		    // $result = $client->__soapCall($function,array('<![CDATA['.str_replace('<?xml version="1.0">','',$params).' ] ]>'));
-			$result = new stdClass();
-			$result->trataPeticionResponse = $client->trataPeticion('<![CDATA['.str_replace('<?xml version="1.0"?>','',$params).']]>');
-			//print_r($client->__getFunctions());	
-			print_r($result);
-			die();
-		}
-		catch(SoapFault $ex){
-			print_r($ex);
-			die();
-		}
-		catch(Exception $ex){
-			print_r($ex);
-			die();
-		}
-
-			
-		if(isset($result->trataPeticionReturn) && $result->trataPeticionReturn < 0){
-			echo 'Response Fail: ';
-			print_r($result);
-			
-			return false;
-		}
-		else{
-			echo 'Response Success: ';
-			print_r($result->trataPeticionReturn);
-			echo '<br>';
-			return true;
-		}
-
-	}
-*/
-
-	
 	
 	function getEnvelopeSoap($content){
 		
@@ -277,8 +226,8 @@ class PeticionResponse {
 
 		$soap_do = curl_init();
 		curl_setopt($soap_do, CURLOPT_URL, $soapUrl );
-		curl_setopt($soap_do, CURLOPT_CONNECTTIMEOUT, 10);
-		curl_setopt($soap_do, CURLOPT_TIMEOUT,        10);
+		curl_setopt($soap_do, CURLOPT_CONNECTTIMEOUT, 30);
+		curl_setopt($soap_do, CURLOPT_TIMEOUT,        30);
 		curl_setopt($soap_do, CURLOPT_RETURNTRANSFER, true );
 		curl_setopt($soap_do, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($soap_do, CURLOPT_SSL_VERIFYHOST, false);
@@ -287,19 +236,31 @@ class PeticionResponse {
 		curl_setopt($soap_do, CURLOPT_HTTPHEADER,     $header);
 		curl_setopt($soap_do, CURLOPT_HEADER, false);
 		
-		
-		$result = curl_exec($soap_do);
-		if( $result === false) {
-			$err = 'Curl error: ' . curl_error($soap_do);
-			curl_close($soap_do);
-			
-			$json = json_encode(array('descricao' => 'sendCurl ERROR ', $err, 'url'=>$soapUrl, 'soap_request'=>$soap_request, 'header'=>$header));
-			include('../comprar/logiPagareChamada.php');
-			//print $err;
+		$json = json_encode(array('descricao' => 'sendCurl ', 'url'=>$soapUrl, 'soap_request'=>$soap_request, 'header'=>$header));
+		include('../comprar/logiPagareChamada.php');
 
-		} else {
-			curl_close($soap_do);
+		$tentativa = 0;
+		$execSuccess = false;
+		while($tentativa < 3 && !$execSuccess){
+			$result = curl_exec($soap_do);
+			if( $result === false) {
+				$err = 'Curl error: ' . curl_error($soap_do);
+				if($tentativa == 2){ //caso estoure o numero limite de tentativas 
+					curl_close($soap_do);
+				}
+				$tentativa +=1;
+
+				$json = json_encode(array('descricao' => 'sendCurl ERROR tentativa-'.$tentativa, $err, 'url'=>$soapUrl, 'soap_request'=>$soap_request, 'header'=>$header));
+				include('../comprar/logiPagareChamada.php');
+				//print $err;
+
+			} else {
+				curl_close($soap_do);
+				$execSuccess = true;
+			}
 		}
+
+
 		return $result;  
 	}
 
@@ -678,7 +639,7 @@ class PeticionResponse {
 		return processarTransacao($objSend,$chaveAcesso,OptionAction::AUTORIZAR,false,$config);
 	}
 	
-	function autorizarCompraDebito(trataPeticion $objSend, $chaveAcesso, $config){
+	function autorizarCompraDebito(trataPeticion $objSend, $chaveAcesso, $config, $id_pedido,$codCartao){
 	
 		// Tipo da transação
 		$objSend->DS_MERCHANT_TRANSACTIONTYPE = '0';
@@ -695,14 +656,15 @@ class PeticionResponse {
 
 		
 		if($resultProcess['success']){
-			$json = json_encode(array('descricao' => 'pedido_'.$objSend->DS_MERCHANT_ORDER.' - autorizarCompraDebito (sucesso) processarTransacao ','resultProcess' => $resultProcess ));
+			$json = json_encode(array('descricao' => 'pedido_'.$id_pedido.' - autorizarCompraDebito (sucesso) processarTransacao ','resultProcess' => $resultProcess ));
 			include('../comprar/logiPagareChamada.php');
-			
-			redirectClientToBank($resultProcess['transaction'],$objSend,$config);
+		
+			return array('success'=>true,'redirect'=> $config['returnUrl'], 'transaction'=> $resultProcess['transaction'], 'objSend'=>serialize($objSend),'config'=> $config, 'id_pedido'=>$id_pedido,'codCartao'=>$codCartao);
+		//	redirectClientToBank($resultProcess['transaction'],$objSend,$config);
 			//return true;
 		}
 		else{
-			$json = json_encode(array('descricao' => 'pedido_'.$objSend->DS_MERCHANT_ORDER.' - autorizarCompraDebito  (falha) processarTransacao','resultProcess' => $resultProcess ));
+			$json = json_encode(array('descricao' => 'pedido_'.$id_pedido.' - autorizarCompraDebito  (falha) processarTransacao','resultProcess' => $resultProcess ));
 			include('../comprar/logiPagareChamada.php');
 			return array('success'=>false);
 		}
@@ -714,9 +676,10 @@ class PeticionResponse {
 		return processarTransacao($objSend,$chaveAcesso,OptionAction::CAPTURAR);
 	}
 	
-	function cancelarCompra(trataPeticion $objSend,$chaveAcesso){
+	function cancelarCompra(trataPeticion $objSend,$config){
 		$objSend->DS_MERCHANT_TRANSACTIONTYPE = '3'; 
-		return processarTransacao($objSend,$chaveAcesso,OptionAction::CANCELAR);		
+		return processarTransacao($objSend,$config['merchantKey'],OptionAction::CANCELAR,false,$config);		
+		// return array('success'=>false,$objSend,$config['merchantKey'],OptionAction::CANCELAR,false,$config);
 	}
 
 
@@ -977,6 +940,8 @@ class PeticionResponse {
 	function getReturnTransactionDebito(){
 		$config = getConfigGlobal();
 		$chaveAcesso = $config['merchantKey'];
+		$id_pedido = $_GET['ID_PEDIDO'];
+
 
 		//Objeto para envio de solicitação de aprovação à GLOBAL PAYMENTS
 		$objs = new stdClass;
@@ -998,18 +963,20 @@ class PeticionResponse {
 		array_walk_recursive($paramsArr, function($v,$k)use(&$resultB){
 			$resultB[$k]=$v;
 		});
-		
 		$soap_request = getEnvelopeSoap($paramsXML);
-		   
+		
 		$header = array(
 			"Content-type: application/soap+xml",
 			"SOAPAction: \" \"",
 			"Content-length: ".strlen($soap_request)
-		// "User-Agent: ".$_SERVER['HTTP_USER_AGENT']
+			// "User-Agent: ".$_SERVER['HTTP_USER_AGENT']
 		);		   		   
-
-		//DEBUG RESPONSE
-		file_put_contents('global_payments_sended_bank_'.$resultB['DS_MERCHANT_ORDER'].'.xml', $paramsXML);
+		
+		$json = json_encode(array('descricao' => 'Passo global_payments_sended_bank_'.$resultB['DS_MERCHANT_ORDER'].' - getReturnTransactionDebito', trim(str_replace('<?xml version="1.0" ?>','',$paramsXML))));
+		include('../comprar/logiPagareChamada.php');
+		
+		// //DEBUG RESPONSE
+		// file_put_contents('global_payments_sended_bank_'.$id_pedido.'.xml', $paramsXML);
 
 		$result = sendCurl($soap_request, $header, $config);
 
@@ -1017,8 +984,10 @@ class PeticionResponse {
 		//Convert result to xml	
 		$xml = getReturnSOAP($result);
 		
-		//DEBUG RESPONSE
-		file_put_contents('global_payments_response_bank_'.$resultB['DS_MERCHANT_ORDER'].'.xml', $xml->asXML());
+		$json = json_encode(array('descricao' => 'Passo global_payments_response_bank_'.$resultB['DS_MERCHANT_ORDER'].' - getReturnTransactionDebito', trim(str_replace('<?xml version="1.0" ?>','',$xml->asXML()))));
+		include('../comprar/logiPagareChamada.php');
+		// //DEBUG RESPONSE
+		// file_put_contents('global_payments_response_bank_'.$id_pedido.'.xml', $xml->asXML());
 
 		$array = xml2array($xml->asXML());
 				
@@ -1033,19 +1002,19 @@ class PeticionResponse {
 	}
 	
 	// Retorno da segunda requisição débito
-	if(isset($_REQUEST['action']) && $_REQUEST['action'] == 'retBank'){
+	// if(isset($_REQUEST['action']) && $_REQUEST['action'] == 'retBank'){
 		
-		if(isset($_REQUEST['DS_MERCHANT_ORDER'])){
-			getReturnTransactionDebito();
+	// 	if(isset($_REQUEST['DS_MERCHANT_ORDER'])){
+	// 		getReturnTransactionDebito();
 		
-		}else{
-			echo "Sessão não encontrada!";
-		}
+	// 	}else{
+	// 		echo "Sessão não encontrada!";
+	// 	}
 
-		die();
-	}
+	// 	die();
+	// }
 
-	function redirectClientToBank($objSend, trataPeticion $objParamSend,$config){
+	function redirectClientToBank($objSend, trataPeticion $objParamSend,$config,$id_pedido,$codCartao){
 		
 		$html ='<html> 
 		<head> 
@@ -1068,7 +1037,7 @@ class PeticionResponse {
 		</center> 
 		</noscript> 
 		<input type="hidden" name="PaReq" value="'.$objSend['Ds_PaRequest'].'">
-		<input type="hidden" name="TermUrl" value="http://localhost:98/settings/global_functions.php?action=retBank&DS_MERCHANT_ORDER='.$objParamSend->DS_MERCHANT_ORDER.'&DS_MERCHANT_MERCHANTCODE='.$objParamSend->DS_MERCHANT_MERCHANTCODE.'&DS_MERCHANT_TERMINAL='.$objParamSend->DS_MERCHANT_TERMINAL.'&DS_MERCHANT_TRANSACTIONTYPE='.$objParamSend->DS_MERCHANT_TRANSACTIONTYPE.'"> 
+		<input type="hidden" name="TermUrl" value="'.$config['returnUrl'].'?action=retBank&ID_PEDIDO='.$id_pedido.'&DS_MERCHANT_ORDER='.$objParamSend->DS_MERCHANT_ORDER.'&DS_MERCHANT_MERCHANTCODE='.$objParamSend->DS_MERCHANT_MERCHANTCODE.'&DS_MERCHANT_TERMINAL='.$objParamSend->DS_MERCHANT_TERMINAL.'&DS_MERCHANT_TRANSACTIONTYPE='.$objParamSend->DS_MERCHANT_TRANSACTIONTYPE.'&codCartao='.$codCartao.'"> 
 		<input type="hidden" name="MD" value="'.$objSend['Ds_MD'].'"> 
 		</form> 
 		<SCRIPT LANGUAGE="Javascript" > 
@@ -1082,10 +1051,10 @@ class PeticionResponse {
 		</body> 
 	    </html> 
 		';
-		echo 'wd = window.open ("", "_blank"); 
-			  wd.document.body.innerHTML = '.$html.'
-		';
-		// echo $html;
+		// echo 'wd = window.open ("", "_blank"); 
+		// 	  wd.document.body.innerHTML = '.$html.'
+		// ';
+		echo $html;
 
 	}
 	

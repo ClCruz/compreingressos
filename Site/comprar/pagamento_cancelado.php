@@ -99,7 +99,7 @@ if (isset($_COOKIE['ipagareError'])) {
 
 $campanha = get_campanha_etapa('etapa5');
 
-if ($_GET['cielo']) {
+if ($_GET['cielo'] || $_GET['global']) {
 ?>
 <link rel='stylesheet' type='text/css' href='../stylesheets/reset.css' />
 

@@ -11,7 +11,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 29, true)) {
 
         require('actions/' . $pagina);
     } else {
-        $query = "SELECT L.ID_LOCAL_EVENTO,L.DS_LOCAL_EVENTO,L.ID_TIPO_LOCAL,L.ID_MUNICIPIO, M.ID_ESTADO FROM MW_LOCAL_EVENTO L INNER JOIN MW_MUNICIPIO M ON M.ID_MUNICIPIO = L.ID_MUNICIPIO";
+        $query = "SELECT L.ID_LOCAL_EVENTO,L.DS_LOCAL_EVENTO,L.ID_TIPO_LOCAL,L.ID_MUNICIPIO, M.ID_ESTADO,L.IN_ATIVO FROM MW_LOCAL_EVENTO L INNER JOIN MW_MUNICIPIO M ON M.ID_MUNICIPIO = L.ID_MUNICIPIO";
         $result = executeSQL($mainConnection, $query, $params);
 ?>
         <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
@@ -43,6 +43,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 29, true)) {
                                     tr.find('td:not(.button):eq(1)').html($('#tipolocal option:selected').text());
                                     tr.find('td:not(.button):eq(2)').html($('#idestado option:selected').text());
                                     tr.find('td:not(.button):eq(3)').html($('#idmunicipio option:selected').text());
+                                    tr.find('td:not(.button):eq(4)').html($('#idativo option:selected').text());
 
                                     $this.text('Editar').attr('href', pagina + '?action=edit&' + id);
                                     tr.removeAttr('id');
@@ -74,6 +75,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 29, true)) {
                         $('#idestado').change();
                         $('#idmunicipio option').filter(function(){return $(this).text() == values[3]}).prop('selected', 'selected');
 
+                        tr.find('td:not(.button):eq(4)').html('<select id="idativo" name="idativo" class="inputStyle">'+'<?php echo comboAtivoOptions('idativo', "", 0); ?>'+'</select>');                        
+                        $('#idativo option').filter(function(){return $(this).text() == values[4]}).prop('selected', 'selected');
+
                         $this.text('Salvar').attr('href', pagina + '?action=update&' + id );
 
                         setDatePickers();
@@ -90,6 +94,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 29, true)) {
                         '<td>' + '<select name="tipolocal" class="inputStyle" id="tipolocal"><?php echo comboTipoLocalOptions("tipolocal", ""); ?></select></td>' +
                         '<td>' + '<select name="idestado" class="inputStyle" id="idestado"><?php echo comboEstadoOptions("idestado", "", true); ?></select></td>' +
                         '<td>' + '<select name="idmunicipio" class="inputStyle" id="idmunicipio"><?php echo comboMunicipio("idmunicipio", $_GET["idmunicipio"], $_GET["idestado"], true); ?></select></td>' +
+                        '<td>' + '<select name="idativo" class="inputStyle" id="idativo"><?php echo comboAtivo("idativo", $_GET["idativo"], true); ?></select></td>' +
                         '<td class="button"><a href="' + pagina + '?action=add">Salvar</a></td>' +
                         '</tr>';
                     $(newLine).appendTo('#app table tbody');
@@ -123,7 +128,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 29, true)) {
                         <th width="20%">Tipo do local</th>
                         <th width="20%">Estado</th>
                         <th width="20%">Município</th>
-                        <th style="text-align: center;" width="20%">Ações</th>
+                        <th withn="10%">Ativo</th>
+                        <th style="text-align: center;" width="10%">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -136,6 +142,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 29, true)) {
                     <td><?php echo comboTipoLocal("tipolocal", $rs["ID_TIPO_LOCAL"], false); ?></td>
                     <td><?php echo comboEstado("idestado", $rs["ID_ESTADO"], true, false); ?></td>
                     <td><?php echo comboMunicipio("idmunicipio", $rs["ID_MUNICIPIO"], $rs["ID_ESTADO"], false); ?></td>
+                    <td><?php echo comboAtivo("idativo", $rs["IN_ATIVO"], false); ?></td>
                     <td class="button"><a href="<?php echo $pagina; ?>?action=edit&id=<?php echo $id; ?>">Editar</a></td>
                 </tr>
             <?php

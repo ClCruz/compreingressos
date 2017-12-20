@@ -4,8 +4,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 29, true)) {
 
     if ($_GET['action'] == 'add') { /* ------------ INSERT ------------ */
 
-        $query = "INSERT INTO MW_LOCAL_EVENTO (DS_LOCAL_EVENTO, ID_TIPO_LOCAL, ID_MUNICIPIO) VALUES (?, ?, ?); SELECT @@IDENTITY AS 'ID';";
-        $params = array(utf8_decode($_POST['nome']), $_POST["tipolocal"], $_POST["idmunicipio"]);
+        $query = "INSERT INTO MW_LOCAL_EVENTO (DS_LOCAL_EVENTO, ID_TIPO_LOCAL, ID_MUNICIPIO,IN_ATIVO) VALUES (?, ?, ?,?); SELECT @@IDENTITY AS 'ID';";
+        $params = array(utf8_decode($_POST['nome']), $_POST["tipolocal"], $_POST["idmunicipio"],$_POST["idativo"]);
         $dados = executeSQL($mainConnection, $query, $params);
         sqlsrv_next_result($dados);
         sqlsrv_fetch($dados);
@@ -20,8 +20,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 29, true)) {
             $log->save($mainConnection);
         }
     } else if ($_GET['action'] == 'update' and isset($_GET['id'])) { /* ------------ UPDATE ------------ */
-        $query = "UPDATE MW_LOCAL_EVENTO SET DS_LOCAL_EVENTO = ?, ID_TIPO_LOCAL = ?, ID_MUNICIPIO = ?  WHERE ID_LOCAL_EVENTO = ?";
-        $params = array(utf8_decode($_POST['nome']), $_POST['tipolocal'], $_POST["idmunicipio"], $_GET["id"]);
+        $query = "UPDATE MW_LOCAL_EVENTO SET DS_LOCAL_EVENTO = ?, ID_TIPO_LOCAL = ?, ID_MUNICIPIO = ?, IN_ATIVO = ?  WHERE ID_LOCAL_EVENTO = ?";
+        $params = array(utf8_decode($_POST['nome']), $_POST['tipolocal'], $_POST["idmunicipio"],$_POST["idativo"], $_GET["id"]);
 
         if (executeSQL($mainConnection, $query, $params)) {
             $log = new Log($_SESSION['admin']);

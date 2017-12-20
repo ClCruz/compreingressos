@@ -191,7 +191,7 @@ session_start();
 						<p class="erro">informe sua cidade</p>
 						<p class="help"></p>
 					</div>
-					<input type="text" name="bairro" id="bairro" placeholder="bairro/district/barrio" maxlength="50" pattern=".{1,50}" value="<?php echo utf8_encode($rs['DS_BAIRRO']); ?>" readonly="readonly">
+					<input type="text" name="bairro" id="bairro" placeholder="bairro/district/barrio" maxlength="70" pattern=".{1,70}" value="<?php echo utf8_encode($rs['DS_BAIRRO']); ?>" readonly="readonly">
 					<div class="erro_help">
 						<p class="erro">informe seu bairro</p>
 						<p class="help"></p>

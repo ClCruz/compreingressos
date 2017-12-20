@@ -4,6 +4,10 @@ session_start();
 require_once('../settings/functions.php');
 require_once('../settings/settings.php');
 
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
+
 // print_r($_SESSION['global_pay']);
 //DESCOMENTAR APÓS PRIMEIRO TESTE POIS JA FOI ADICIONADO O ENCONDE NA OUTRA PONTA
 // base64_decode(unserialize($_SESSION['global_pay']));
@@ -72,10 +76,12 @@ if (empty($rs) && !isset($_GET['action']) && $_GET['action'] != 'retBank' && !is
 	
 	$response = getReturnTransactionDebito();
 
-	if ($response['success']) {
+if ($response['success'] 
+&& !is_null($response['transaction']['Ds_AuthorisationCode'])
+ && !empty($response['transaction']['Ds_AuthorisationCode']) ) {
 		
 		$parametros['OrderData']['OrderId'] = $_GET['ID_PEDIDO'];
-		
+
 		$result = new stdClass();
 		
 		$result->AuthorizeTransactionResult->OrderData->BraspagOrderId = 'Global';
@@ -100,21 +106,37 @@ if (empty($rs) && !isset($_GET['action']) && $_GET['action'] != 'retBank' && !is
 }
 else{
 	//*******************CANCELAMENTO DE COMPRA ***********************/
-			$result = cancelarCompra($response['objSend']->DS_MERCHANT_ORDER,$response['config']['merchantKey']);
-			if(!$result['success']){
-				$msg = 'Falha ao enviar solicitação de cancelamento';
-								
-				$json = json_encode(array('descricao' => 'pagamento global - dados recebidos (FALHA) cancelamento ', 'error' => $msg));
-				include('logiPagareChamada.php');
-			}else{
-				$msg = 'Solicitação de cancelamento enviada com sucesso';
-				$json = json_encode(array('descricao' => 'pagamento global - dados recebidos (SUCESSO) cancelamento ', 'msg' => $msg));
-				include('logiPagareChamada.php');	
-			}
-		//*******************FIM CANCELAMENTO DE COMPRA ***********************/
 
-		header("Location: pagamento_cancelado.php?manualmente=1&global=1");
-        die();
+		$query = "SELECT QT_HR_ANTECED FROM MW_MEIO_PAGAMENTO WHERE CD_MEIO_PAGAMENTO = ?";
+		$params = array($rs['CD_MEIO_PAGAMENTO']);
+		$rsExt = executeSQL($mainConnection, $query, $params, true);
+		$horas_antes_apresentacao_pagamento = is_null($rsExt['QT_HR_ANTECED']) ?  1 : $rsExt['QT_HR_ANTECED'];
+
+		extenderTempo($horas_antes_apresentacao_pagamento * 10);
+
+				
+		$query = "UPDATE MW_RESERVA SET ID_SESSION = ? WHERE ID_SESSION = ?";
+		$params = array(session_id(), $_GET['ID_PEDIDO']);
+		executeSQL($mainConnection, $query, $params);
+
+		// print_r($params);
+		header("Location: etapa5.php");
+		die();
+		// 	$result = cancelarCompra($response['objSend'],$response['config']);
+		// 	if(!$result['success']){
+		// 		$msg = 'Falha ao enviar solicitação de cancelamento';
+								
+		// 		$json = json_encode(array('descricao' => 'pagamento global - dados recebidos (FALHA) cancelamento ', 'error' => $msg));
+		// 		include('logiPagareChamada.php');
+		// 	}else{
+		// 		$msg = 'Solicitação de cancelamento enviada com sucesso';
+		// 		$json = json_encode(array('descricao' => 'pagamento global - dados recebidos (SUCESSO) cancelamento ', 'msg' => $msg));
+		// 		include('logiPagareChamada.php');	
+		// 	}
+		// //*******************FIM CANCELAMENTO DE COMPRA ***********************/
+
+		// header("Location: pagamento_cancelado.php?manualmente=1&global=1");
+        // die();
 	}
 
 

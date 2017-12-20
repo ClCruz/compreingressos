@@ -70,7 +70,7 @@ session_start();
 				<div class="icone"></div>
 				<div class="inputs">
 					<p class="titulo">Sexo</p>
-					<input id="radio_masculino" type="radio" name="sexo" class="radio" value="M" checked="true"<?php echo ($rs['IN_SEXO'] == 'M') ? 'checked ' : ''; ?>>
+					<input id="radio_masculino" type="radio" name="sexo" class="radio" value="M" <?php echo ($rs['IN_SEXO'] == 'M') ? 'checked ' : ''; ?>>
 					<label class="radio" for="radio_masculino">masculino</label>
 					<input id="radio_feminino" type="radio" name="sexo" class="radio" value="F" <?php echo ($rs['IN_SEXO'] == 'F') ? 'checked ' : ''; ?>>
 					<label class="radio" for="radio_feminino">feminino</label>
@@ -186,17 +186,17 @@ session_start();
 						<p class="erro">selecione o estado</p>
 						<p class="help"></p>
 					</div>
-					<input type="text" name="cidade" id="cidade" placeholder="cidade/city/ciudad" maxlength="50" pattern=".{1,50}" value="<?php echo utf8_encode($rs['DS_CIDADE']); ?>" readonly="readonly">
+					<input type="text" name="cidade" id="cidade" placeholder="cidade/city/ciudad" maxlength="50" pattern=".{1,50}" value="<?php echo utf8_encode($rs['DS_CIDADE']); ?>">
 					<div class="erro_help">
 						<p class="erro">informe sua cidade</p>
 						<p class="help"></p>
 					</div>
-					<input type="text" name="bairro" id="bairro" placeholder="bairro/district/barrio" maxlength="70" pattern=".{1,70}" value="<?php echo utf8_encode($rs['DS_BAIRRO']); ?>" readonly="readonly">
+					<input type="text" name="bairro" id="bairro" placeholder="bairro/district/barrio" maxlength="70" pattern=".{1,70}" value="<?php echo utf8_encode($rs['DS_BAIRRO']); ?>">
 					<div class="erro_help">
 						<p class="erro">informe seu bairro</p>
 						<p class="help"></p>
 					</div>
-					<input type="text" name="endereco" id="endereco" placeholder="logradouro/address/calle" maxlength="150" pattern=".{1,150}" value="<?php echo utf8_encode($rs['DS_ENDERECO']); ?>" readonly="readonly">
+					<input type="text" name="endereco" id="endereco" placeholder="logradouro/address/calle" maxlength="150" pattern=".{1,150}" value="<?php echo utf8_encode($rs['DS_ENDERECO']); ?>">
 					<div class="erro_help">
 						<p class="erro">informe seu logradouro</p>
 						<p class="help"></p>

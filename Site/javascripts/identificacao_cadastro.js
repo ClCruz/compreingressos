@@ -262,8 +262,8 @@ $(function() {
 
 		} else {
 			var $this = $(this),
-				 naoRequeridos = '#email,[name=sexo],#complemento,#checkbox_guia,#checkbox_sms,#checkbox_estrangeiro',
-				 especiais = '#ddd_fixo,#fixo,#email1,#email2,#senha1,#senha2,[name="tag"],.recaptcha :input,[type="button"],#cpf,#tipo_documento,#rg,#ddd_celular,#celular,[id^=nascimento],#nascimento_dia,#nascimento_mes,#nascimento_ano',
+				 naoRequeridos = '#email,[id^=nascimento],[name=sexo],#complemento,#checkbox_guia,#checkbox_sms,#checkbox_estrangeiro',
+				 especiais = '#ddd_fixo,#fixo,#email1,#email2,#senha1,#senha2,[name="tag"],.recaptcha :input,[type="button"],#cpf,#tipo_documento,#rg,#ddd_celular,#celular',
 				 formulario = $('#form_cadastro'),
 				 campos,
 				 valido = true;
@@ -341,26 +341,6 @@ $(function() {
 					valido = false;
 				} else $('#senha2').removeClass('erro').findNextMsg().slideUp('slow');
 			}
-			/* DATA DE NASCIMENTO*/
-				if ($('#nascimento_dia').val() == '') {
-					$('#nascimento_dia').addClass('erro').findNextMsg().slideDown('fast');
-					valido = false;
-				} else $('#nascimento_dia').removeClass('erro').findNextMsg().slideUp('slow');
-
-				if ($('#nascimento_mes').val() == '') {
-					$('#nascimento_mes').addClass('erro').findNextMsg().slideDown('fast');
-					valido = false;
-				} else $('#nascimento_mes').removeClass('erro').findNextMsg().slideUp('slow');
-
-				if ($('#nascimento_ano').val() == '') {
-					$('#nascimento_ano').addClass('erro').findNextMsg().slideDown('fast');
-					valido = false;
-				} else $('#nascimento_ano').removeClass('erro').findNextMsg().slideUp('slow');	
-			/* /DATA DE NASCIMENTO*/
-			if ($('#rg').val() == '') {
-					$('#rg').addClass('erro').findNextMsg().slideDown('fast');
-					valido = false;
-				} else $('#rg').removeClass('erro').findNextMsg().slideUp('slow');
 
 			if ($('#checkbox_estrangeiro').is(':checked')) {
 				if ($('#tipo_documento').val() == '') {

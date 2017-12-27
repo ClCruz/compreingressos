@@ -106,9 +106,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
                 $.ajax({
                     url: pagina+'?action=pessoas',
                     type: 'POST',
-                    data: $dados.serialize(),
+                    data: $dados.serialize()+'&dataapresentacao='+ $('#cboApresentacao option:selected').text(),
                     dataType: "json"
                 }).done(function(data){
+                    console.log (JSON.stringify(data));
                     $table_entrada_saida
                         .find('.green .qtd').text(data.in).end()
                         .find('.yellow .qtd').text(data.on).end()

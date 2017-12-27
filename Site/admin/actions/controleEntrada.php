@@ -7,6 +7,27 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 
 		$conn = getConnection($_POST['cboTeatro']);
 
+		$query = "
+			SELECT 
+				isnull(SUM(CASE WHEN DATHRENTRADA IS NOT NULL THEN 1 ELSE 0 END), 0) -
+				isnull(SUM(CASE WHEN DATHRSAIDA IS NOT NULL THEN 1 ELSE 0 END), 0) as 'on'
+				,isnull(SUM(CASE WHEN DATHRENTRADA IS NOT NULL THEN 1 ELSE 0 END), 0) AS 'in'
+				,isnull(SUM(CASE WHEN DATHRSAIDA IS NOT NULL THEN 1 ELSE 0 END), 0) AS 'out'
+			FROM 
+				TABCONTROLESEQVENDA
+			WHERE
+				STATUSINGRESSO = 'U'
+			AND
+				CodApresentacao IN (SELECT 
+										CodApresentacao
+									FROM 
+										tabApresentacao
+									WHERE
+									 	CODPECA = ? 
+									AND 	convert(varchar(10), DATAPRESENTACAO, 112) = convert(varchar, convert(datetime,?,103), 112)
+									AND 	HORSESSAO = ?) ";
+
+/*
 		$query = "SELECT STUFF ((
 						SELECT ',' + CONVERT(VARCHAR, CODAPRESENTACAO)
 						FROM 	TABAPRESENTACAO
@@ -18,6 +39,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 		$params = array($_POST['cboPeca'], $_POST['cboApresentacao'], $_POST['cboHorario']);
 		$rs = executeSQL($conn, $query, $params, true);
 
+
 		$query = "SELECT isnull(COUNT(DISTINCT(B.CODBAR)), 0) as 'in', isnull(SUM(CASE WHEN B.DATHRSAIDA IS NOT NULL THEN 1 ELSE 0 END), 0) as 'out'
 					FROM TABCONTROLESEQVENDA A
 					INNER JOIN TABCONTROLESEQVENDA B ON B.CODAPRESENTACAO = A.CODAPRESENTACAO AND B.INDICE = A.INDICE AND B.STATUSINGRESSO = A.STATUSINGRESSO
@@ -28,11 +50,18 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 
 		$rs['on'] = $rs['in'] - $rs['out'];
 
+*/
+
+		$params = array($_POST['cboPeca'], $_POST['dataapresentacao'], $_POST['cboHorario']);
+		$rs = executeSQL($conn, $query, $params, true);
+
 		unset($rs[0]);
 		unset($rs[1]);
 		unset($rs[2]);
 
 		echo json_encode($rs);
+
+		die();
 
 	} else if ($_POST['codigo'] != '') { /*------------ CHECAR BILHETE ------------*/
 

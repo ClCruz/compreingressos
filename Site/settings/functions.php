@@ -724,6 +724,45 @@ function comboEstado($name, $selected, $extenso = false, $isCombo = true, $extra
     return $isCombo ? $combo : $text;
 }
 
+function comboAtivo($name, $selected, $isCombo = true) {
+
+    $combo = '<option value="">Selecione um Status...</option>';
+    $combo .= '<option value="0">Não</option>';
+    $combo .= '<option value="1">Sim</option>';
+  
+    $text = '<span name="' . $name . '" class="inputStyle">'. ($selected==0 ? 'Não':'Sim') . '</span>';
+ 
+
+    return $isCombo ? $combo : $text;
+}
+
+
+function comboAtivoOptions($name,$selected,$in_ativo,$isCombo = true) {
+
+    $isSelected = '';
+     $combo = '<option value="">Selecione um Status...</option>';
+    if ($selected == 0 ) {
+        $isSelected = 'selected';
+        $text = '<span name="' . $name . '" class="inputStyle">Não</span>';
+    } 
+    $combo .= '<option value="0" ' . $isSelected . '>Não</option>';
+
+    if ($selected==1) {
+        $isSelected = 'selected';
+        $text = '<span name="' . $name . '" class="inputStyle">Sim</span>';
+    }
+    $combo .= '<option value="1" ' . $isSelected . '>Sim</option>';
+    $combo .= '</select>';
+
+    if (sqlErrors ())
+    return print_r(sqlErrors()) . print_r($params);
+    else
+    return $isCombo ? $combo : $text;
+
+
+}
+
+
 function comboEstadoOptions($name, $selected, $extenso = false, $isCombo = true) {
     $mainConnection = mainConnection();
     $query = 'SELECT ID_ESTADO, ' . (($extenso) ? 'DS_ESTADO' : 'SG_ESTADO') . ' FROM MW_ESTADO ORDER BY DS_ESTADO';

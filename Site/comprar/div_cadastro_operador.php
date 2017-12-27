@@ -37,7 +37,7 @@
 									<input type="text" name="cidade" id="cidade" size="30" maxlength="50"/>
 									<p class="err_msg">Insira a cidade</p>
 									<h2>Bairro</h2>
-									<input type="text" name="bairro" id="bairro" size="30" maxlength="50"/>
+									<input type="text" name="bairro" id="bairro" size="30" maxlength="70"/>
 									<p class="err_msg">Insira o bairro</p>
 									<h2>Endere&ccedil;o (rua/av./pra&ccedil; e n&uacute;mero)</h2>
 									<input type="text" name="endereco" id="endereco" size="30" maxlength="150"/>

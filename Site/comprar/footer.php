@@ -99,19 +99,20 @@ if (isset($_SESSION['operador']) and in_array($etapa_atual, $etapas_para_exibir)
             <div class="selos">
                 <!-- selos -->
                 <div id="selos2">
-                    <script language='javascript'>function vopenw(){tbar='location=no,status=yes,resizable=yes,scrollbars=yes,width=560,height=535';sw=window.open('https://www.certisign.com.br/seal/splashcerti.htm','CRSN_Splash',tbar);sw.focus();}</script>
-                    <table style="float:left;width:90px;">
-                        <tr>
-                            <td>
-                                <a href='javascript:vopenw()'>
-                                    <img src="/images/100x46_fundo_branco.gif" style="width:100%;" border="0" align="center" alt="Certisign">
-                                </a>
-                            </td>
-                            <td>
-                                <script src=https://seal.verisign.com/getseal?host_name=www.compreingressos.com&size=S&use_flash=NO&use_transparent=getsealjs_b.js&lang=pt></script>
-                            </td>
-                        </tr>
-                    </table>
+                    <!-- START ENTRUST.NET SEAL CODE -->
+                    <script type="text/javascript">
+                          (function(d, t) {
+                            var s = d.createElement(t), options = {'domain':'compra.compreingressos.com','style':'9','container':'entrust-net-seal'};
+                            s.src = 'https://seal.entrust.net/sealv2.js';
+                            s.async = true;
+                            var scr = d.getElementsByTagName(t)[0], par = scr.parentNode; par.insertBefore(s, scr);
+                            s.onload = s.onreadystatechange = function() {
+                            var rs = this.readyState; if (rs) if (rs != 'complete') if (rs != 'loaded') return;
+                            try{goEntrust(options)} catch (e) {} };
+                            })(document, 'script');
+                    </script>
+                    <div id="entrust-net-seal"><a href="https://www.entrust.com/ssl-certificates/">SSL Certificate</a></div>
+                    <!-- END ENTRUST.NET SEAL CODE -->
                     <style type="text/css">
                         #selos2 table { margin-top: -3px;  }
                     </style>

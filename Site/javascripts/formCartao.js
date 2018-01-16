@@ -127,6 +127,9 @@ $(function(){
 	$('input[name=codCartao]').on('change', function(){
 		var $cartao = $('input[name=codCartao]:checked');
 
+		$('[name=nomeCartao], [name=numCartao], [name=codSeguranca], #validadeMes, #validadeAno').val('');
+
+
 		if ($cartao.next('label').next('p.nome').text().toLowerCase().indexOf('fastcash') > -1
 			|| $cartao.next('label').next('p.nome').text().toLowerCase().indexOf('boleto') > -1) {
 			$('.container_dados').find('.linha:not(#bancos)').eq(0).slideUp().end()

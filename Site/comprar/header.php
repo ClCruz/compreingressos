@@ -75,7 +75,7 @@ $rows = numRows($mainConnection, "SELECT 1 FROM MW_RESERVA WHERE ID_SESSION = ?"
 						<li><a href="minha_conta.php">Minha Conta</a></li>
 						<li><a href="http://compreingressos.com/espetaculos">Todos os Espetáculos</a></li>
 						<li><a href="http://compreingressos.com/teatros">Teatros e Casas de Show</a></li>
-						<li><a href="http://suporte.compreingressos.com/" >SAC & Suporte</a></li>
+						<li><a href="https://compreingressos.tomticket.com/kb/" >SAC & Suporte</a></li>
 					</ul>
 				</div>
 

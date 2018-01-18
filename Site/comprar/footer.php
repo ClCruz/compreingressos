@@ -47,7 +47,7 @@ if (isset($_SESSION['operador']) and in_array($etapa_atual, $etapas_para_exibir)
         </ul>
         <ul>
             <li class="title">Ajuda</li>
-            <li><a href="http://suporte.compreingressos.com/" target="_blank">Sac & Suporte</a></li>
+            <li><a href="https://compreingressos.tomticket.com/kb/" target="_blank">Sac & Suporte</a></li>
             <li><a href="https://compra.compreingressos.com/comprar/loginBordero.php?redirect=..%2Fadmin%2F%3Fp%3DrelatorioBordero">Borderô web</a></li>
             <li><a href="http://compreingressos.com/institucional">Institucional</a></li>
             <li><a href="http://compreingressos.com/especiais/3-Lei_6103-11">Lei 6103/11</a></li>

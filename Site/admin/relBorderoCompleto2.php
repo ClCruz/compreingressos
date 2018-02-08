@@ -1,9 +1,9 @@
 <?php
 if(isset($_GET["exportar"]) && $_GET["exportar"] == "true"){
-	header("Content-type: application/vnd.ms-excel");
-	header("Content-type: application/force-download");
-	header("Content-Disposition: attachment; filename=relatorio.xls");
-	header("Pragma: no-cache");
+  header("Content-type: application/vnd.ms-excel");
+  header("Content-type: application/force-download");
+  header("Content-Disposition: attachment; filename=relatorio.xls");
+  header("Pragma: no-cache");
 }
 
 require_once("../settings/functions.php");
@@ -305,10 +305,22 @@ if (isset($err) && $err != "") {
                     }
                     $listaIngExcedentes = substr(trim($listaIngExcedentes), 0, strlen(trim($listaIngExcedentes)) - 1);
                     
+                    //prepara query para calcular debitos
+                    $strSqlDetTemp = "SP_REL_BORDERO_VENDAS;" . (($codSala == 'TODOS') ? '11' : '5') . " '" . $dataIni . "','" . $dataFim . "'," . $codPeca . "," . $codSala . ",'" . (($horSessao == "--") ? "" : $horSessao) . "','" . $_SESSION["NomeBase"] . "'";
+
+                    $queryDetTemp = executeSQL($conn, $strSqlDetTemp);
+                    while ($pRSDetalhamento = fetchResult($queryDetTemp)) {
+                      $nBrutoTot += $pRSDetalhamento["totfat"];
+                      $nTotLiqu += $pRSDetalhamento["liquido"];
+                    }
+
+                    $taxaDosCartoes = $nBrutoTot - $nTotLiqu;
+                    $taxaDosCartoesPorSala = ($taxaDosCartoes > 0) ? $taxaDosCartoes / $qtdeSalas : $taxaDosCartoes;
+
                     //Percorre todas as apresentações entre o período informado
                     do {
                       //Obtem os débitos do borderô da tabela tabDebBordero
-                      $strDebito = "SP_REL_BORDERO_COMPLETO ?, ?, ?, ?, ?";
+                      $strDebito = "SP_REL_BORDERO_COMPLETO ?, ?, ?, ?, ?, ?";
                       //Define os parâmetros para a consulta dos débitos
                       if ($codSala == 'TODOS') {
                         //Parâmetros p/ quando selecionado Todas as Apresentações
@@ -316,14 +328,16 @@ if (isset($err) && $err != "") {
                             $rsApresentacoes["CodApresentacao"],
                             $dataIni,
                             $qtdIngressosExcedidos,
-                            $listaIngExcedentes);
+                            $listaIngExcedentes,
+                            $taxaDosCartoesPorSala);
                       } else {
                         //Parâmetros p/ quando selecionado uma única Apresentação
                         $paramDebito = array($pRSBordero["CodPeca"],
                             $pRSBordero["CodApresentacao"],
                             $pRSBordero["DatApresentacao"]->format("Ymd"),
                             0,
-                            $listaIngExcedentes);
+                            $listaIngExcedentes,
+                            $taxaDosCartoes);
                       }
 
                       $strDebito = logQuery($strDebito, $paramDebito);
@@ -355,6 +369,7 @@ if (isset($err) && $err != "") {
                         $despesas[$rs["CodTipDebBordero"]]['valor'] += $valor;
                         $despesas[$rs["CodTipDebBordero"]]['valor_real'] += $rs["ValorReal"];
                         $despesas[$rs["CodTipDebBordero"]]['limite'] += $rs["VlMinimoDebBordero"];
+                        $despesas[$rs["CodTipDebBordero"]]['in_DescontaCartao'] += $rs["in_DescontaCartao"];
                       }
                     } while ($rsApresentacoes = fetchResult($rsApresentacao));
 
@@ -369,15 +384,8 @@ if (isset($err) && $err != "") {
                         $nTotalDesp += $forma['valor'];
                       }
                     }
-
-                    $strSqlDetTemp = "SP_REL_BORDERO_VENDAS;" . (($codSala == 'TODOS') ? '11' : '5') . " '" . $dataIni . "','" . $dataFim . "'," . $codPeca . "," . $codSala . ",'" . (($horSessao == "--") ? "" : $horSessao) . "','" . $_SESSION["NomeBase"] . "'";
-                    $queryDetTemp = executeSQL($conn, $strSqlDetTemp);
-                    while ($pRSDetalhamento = fetchResult($queryDetTemp)) {
-                      $nBrutoTot += $pRSDetalhamento["totfat"];
-                      $nTotLiqu += $pRSDetalhamento["liquido"];
-                    }
-
-                    $taxaDosCartoes = $nBrutoTot - $nTotLiqu;
+                    
+                    
 
                     
                     // verificar se existe algum registro na tabForPagamento com StaTaxaCartoes = S

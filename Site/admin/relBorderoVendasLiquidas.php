@@ -341,9 +341,13 @@ if (isset($err) && $err != "") {
                   }
                   $listaIngExcedentes = substr(trim($listaIngExcedentes), 0, strlen(trim($listaIngExcedentes)) - 1);
 
+
+                  $taxaDosCartoes = $nBrutoTot - $nTotLiqu;
+                  $taxaDosCartoesPorSala = ($taxaDosCartoes > 0) ? $taxaDosCartoes / $qtdeSalas : $taxaDosCartoes;
+
                   do {
                     //Obtem os débitos do borderô da tabela tabDebBordero
-                    $strDebito = "SP_REL_BORDERO_COMPLETO ?, ?, ?, ?, ?";
+                    $strDebito = "SP_REL_BORDERO_COMPLETO ?, ?, ?, ?, ?, ?";
                     //Define os parâmetros para a consulta dos débitos
                     if ($CodSala == 'TODOS') {
                       //Parâmetros p/ quando selecionado Todas as Apresentações
@@ -351,14 +355,16 @@ if (isset($err) && $err != "") {
                           $rsApresentacao["CodApresentacao"],
                           $DataIni,
                           $qtdIngressosExcedidos,
-                          $listaIngExcedentes);
+                          $listaIngExcedentes,
+                          $taxaDosCartoesPorSala);
                     } else {
                       //Parâmetros p/ quando selecionado uma única Apresentação
                       $paramDebito = array($pRSBordero["CodPeca"],
                           $pRSBordero["CodApresentacao"],
                           $pRSBordero["DatApresentacao"]->format("Ymd"),
                           0,
-                          $listaIngExcedentes);
+                          $listaIngExcedentes,
+                          $taxaDosCartoesPorSala);
                     }
 
                     $strDebito = logQuery($strDebito, $paramDebito);
@@ -405,7 +411,7 @@ if (isset($err) && $err != "") {
                     }
                   }
 
-                  $taxaDosCartoes = $nBrutoTot - $nTotLiqu;
+                  //$taxaDosCartoes = $nBrutoTot - $nTotLiqu;
 
                     
                   // verificar se existe algum registro na tabForPagamento com StaTaxaCartoes = S

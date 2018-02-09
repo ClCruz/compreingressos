@@ -129,6 +129,7 @@ $(function() {
         close: function() {
             document.forms[1].reset();
             id.val("");
+            tips.text("");
             allFields.removeClass( "ui-state-error" );
         }
     });

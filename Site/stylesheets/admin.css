@@ -75,6 +75,12 @@ body {
 			text-align:left;
 			vertical-align:middle;
 		}
+
+		#app table .text-right {
+			text-align: right;
+			width: 100px;
+			font-weight: bold;
+		}
 			
 			#app th, .appExtension th {
 				padding:7px 4px 5px 4px;

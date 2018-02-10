@@ -55,7 +55,7 @@ if ($_POST) {
         $quantidadeGateway = numRows($mainConnection, $query, $params);
         if($quantidadeGateway == 0 || $quantidadeGateway > 1){
             // gateway de pagamento padrao
-            $rs['ID_GATEWAY'] = 6;// 6 = pagar.me
+            $rs['ID_GATEWAY'] = 8;// 8 = Cielo
         }
 
 

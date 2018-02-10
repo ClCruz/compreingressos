@@ -12,10 +12,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 620, true)) {
     if (isset($_GET['action']) or isset($_POST['codigo'])) {
         
         require('actions/'.$pagina);
-
+        
     } else {
 
-    	$query = "SELECT * FROM mw_produtor ORDER BY ds_razao_social";
+    	$query = "SELECT * FROM mw_produtor WHERE in_ativo = 1 ORDER BY ds_razao_social";
     	$stmt = executeSQL($mainConnection, $query, array());
 ?>
 <style type="text/css">

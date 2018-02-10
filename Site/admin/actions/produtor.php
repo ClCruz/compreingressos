@@ -5,8 +5,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 620, true)) {
 	if ($_GET['action'] != 'delete') {
 		$ddd_celular = trim(substr($_POST['celular'], 0, 3));
         $celular = str_replace("-","",substr($_POST['celular'], 3, 10));
-        $ddd_telefone = substr(str_replace("-","", trim($_POST['telefone'])), 0, 2);
-        $telefone = substr(str_replace("-","", trim($_POST['telefone'])), 2, 9);
+        $ddd_telefone = (trim($_POST['telefone']) != "") ? substr(str_replace("-","", trim($_POST['telefone'])), 0, 2) : "";
+        $telefone = (trim($_POST['telefone']) != "") ? substr(str_replace("-","", trim($_POST['telefone'])), 2, 9) : "";
 	}
 
 	if ($_GET['action'] == 'add') {
@@ -26,15 +26,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 620, true)) {
 			die();
 		}
 
-		$query = "INSERT INTO mw_produtor VALUES(?, ?, ?, ?, ?, ?, ?, ?);";
+		$query = "INSERT INTO mw_produtor VALUES(?, ?, ?, ?, ?, ?, ?, ?, 1);";
 		$params = array(strtoupper(utf8_decode(trim($_POST["razao_social"]))), 
 						trim($_POST["cpf_cnpj"]), 
 						ucwords(utf8_decode(trim($_POST["nome"]))), 
 						trim(strtolower($_POST["email"])), 
-						$ddd_telefone,
+						trim($ddd_telefone),
 						trim($telefone), 
 						$ddd_celular, 
-						trim($celular));
+						$celular);
 
 		$rs = executeSQL($mainConnection, $query, $params);
 		$retorno = 'true?id=' . $rs["ID"];
@@ -51,7 +51,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 620, true)) {
 					  ds_ddd_telefone = ?,
 					  ds_telefone = ?,
 					  ds_ddd_celular = ?,
-					  ds_celular = ?
+					  ds_celular = ?,
+					  in_ativo = 1
 				 WHERE id_produtor = ?";
 
 		$params = array(strtoupper(utf8_decode(trim($_POST["razao_social"]))), 						
@@ -72,7 +73,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 620, true)) {
 
 	} else if ($_GET['action'] == 'delete' and isset($_GET['id'])) { /* ------------ DELETE ------------ */
 
-		$query = 'DELETE FROM mw_produtor WHERE id_produtor = ?';
+		$query = 'UPDATE mw_produtor SET in_ativo = 0 WHERE id_produtor = ?';
         $params = array($_GET['id']);
         
         if (executeSQL($mainConnection, $query, $params)) {

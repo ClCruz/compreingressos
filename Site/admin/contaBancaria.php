@@ -147,6 +147,24 @@ $(function() {
         }
     });
 
+    function check(split) {
+        valid = true;
+
+         $.ajax({
+            url: 'contaBancaria.php',
+            async: false,
+            type: 'get',
+            data: 'action=check&produtor='+ $('#produtor').val(),
+            success: function(data) {
+                if((data + split) > 100) {                
+                    valid = false;
+                }
+            }
+        });
+
+        return valid;
+    }
+
     function add() {
     	var valid = true;
         allFields.removeClass( 'ui-state-error' );
@@ -158,13 +176,19 @@ $(function() {
             } else {
                 $this.removeClass('ui-state-error');
             }
-        });
+        });        
 
         if(split.val() > 100) {
             tips.text("O valor do Split não pode ser maior do que 100.").addClass( "ui-state-highlight" );
             split.addClass("ui-state-error");
             valid = false;
         }
+
+        if(!check(split.val())) {
+            tips.text("O valor do Split na soma das contas não pode ser maior do que 100.").addClass( "ui-state-highlight" );
+            split.addClass("ui-state-error");
+            valid = false;
+        }        
 
         if ( valid ) {
         	if ( id.val() == "" ){

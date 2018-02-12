@@ -92,6 +92,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 630, true)) {
         }
         $retorno = json_encode($ret);
 
+    } else if ($_GET['action'] == 'check' and isset($_GET['produtor'])){
+    	$query = "SELECT SUM(nr_percentual_split) AS split FROM mw_conta_bancaria WHERE id_produtor = ? AND in_ativo = 1";
+    	$param = array($_GET["produtor"]);
+    	$stmt  = executeSQL($mainConnection, $query, $param, true);
+    	$retorno = $stmt["split"];
 	} else {
 		$retorno = "Nenhuma ação executada.";
 	}

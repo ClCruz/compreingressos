@@ -147,16 +147,19 @@ $(function() {
         }
     });
 
-    function check(split) {
+    function check(split, conta) {
         valid = true;
 
-         $.ajax({
+        conta = (conta == null || conta == "") ? -1 : conta;
+
+        $.ajax({
             url: 'contaBancaria.php',
             async: false,
             type: 'get',
-            data: 'action=check&produtor='+ $('#produtor').val(),
+            data: 'action=check&produtor='+ $('#produtor').val() + '&conta='+ conta,
             success: function(data) {
-                if((data + split) > 100) {                
+                soma = parseInt(data) + parseInt(split);
+                if(soma > 100) {                
                     valid = false;
                 }
             }
@@ -184,7 +187,7 @@ $(function() {
             valid = false;
         }
 
-        if(!check(split.val())) {
+        if(!check(split.val(), id.val())) {
             tips.text("O valor do Split na soma das contas não pode ser maior do que 100.").addClass( "ui-state-highlight" );
             split.addClass("ui-state-error");
             valid = false;

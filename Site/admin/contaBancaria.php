@@ -264,7 +264,7 @@ $(function() {
             <label for="agencia">Agência:</label>
 		    <input type="text" id="agencia" name="agencia" maxlength="6" class="text ui-widget-content ui-corner-all" />
 		    <label for="conta_bancaria">Conta:</label>
-		    <input type="text" id="conta_bancaria" name="conta_bancaria" maxlength="15" class="text ui-widget-content ui-corner-all conta" /> - 
+		    <input type="text" id="conta_bancaria" name="conta_bancaria" maxlength="13" class="text ui-widget-content ui-corner-all conta" /> - 
             <input type="text" id="dv_conta_bancaria" name="dv_conta_bancaria" maxlength="1" class="text ui-widget-content ui-corner-all conta-dv" />
 		    <label for="tipo">Tipo da Conta:</label>
 			<select id="tipo" name="tipo" class="ui-widget-content ui-corner-all">

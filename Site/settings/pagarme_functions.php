@@ -120,6 +120,13 @@ function pagarPedidoPagarme($id_pedido, $dados_extra) {
 	// erro
 	else return false;
 
+	$split = consultarSplitPagarme($id_pedido);
+	if (is_array($split)) {
+		$transaction_data = array_merge($transaction_data, array(
+			"split_rules" => $split
+		));
+	}
+
 	try {
 
 		$transaction = new PagarMe_Transaction($transaction_data);
@@ -236,4 +243,65 @@ function tratarErroPagarme($error_obj, $id_pedido) {
 	}
 
 	return $nova_msg;
+}
+
+function salvarContaBancariaPagarme($data, $produtor) {	
+
+	$mainConnection = mainConnection();
+
+	$query = "SELECT ds_razao_social, cd_cpf_cnpj FROM mw_produtor WHERE id_produtor = ?";
+	$rs = executeSQL($mainConnection, $query, array($produtor), true);
+
+	$recipient = new PagarMe_Recipient(array(
+		"anticipatable_volume_percentage" => 100, 
+	    "automatic_anticipation_enabled" => false, 
+	    "bank_account" => array(
+	    	"bank_code" => $data["banco"],
+	        "agencia" => $data["agencia"],
+	        "conta" => $data["conta_bancaria"],
+	        "type" => $data["tipo"] == "CC" ? "conta_corrente" : "conta_poupanca",
+	        "conta_dv" => $data["dv_conta_bancaria"],
+	        "document_number" => $rs["cd_cpf_cnpj"],
+	        "legal_name" => $rs["ds_razao_social"]
+	    )
+	));
+
+    return $recipient->create();
+}
+
+function consultarSplitPagarme($pedido) {
+	$mainConnection = mainConnection();
+
+	$query = "select distinct e.CodPeca, e.id_base
+			  from mw_pedido_venda pv
+			  inner join mw_item_pedido_venda ipv on ipv.id_pedido_venda = pv.id_pedido_venda
+			  inner join mw_apresentacao a on a.id_apresentacao = ipv.id_apresentacao
+			  inner join mw_evento e on e.id_evento = a.id_evento
+			  where pv.id_pedido_venda = ?";
+	$param = array($pedido);
+	$stmt = executeSQL($mainConnection, $query, $param, true);
+
+	$query = "select cb.*
+			  from tabPeca tb
+			  inner join CI_MIDDLEWAY..mw_produtor p on p.id_produtor = tb.id_produtor
+			  inner join CI_MIDDLEWAY..mw_conta_bancaria cb on cb.id_produtor = p.id_produtor
+			  where tb.CodPeca = ? and cb.in_ativo = 1";
+
+	$conn = getConnection($stmt["id_base"]);
+	$param = array($stmt["CodPeca"]);
+	$result = executeSQL($conn, $query, $param);
+
+	if(!hasRows($result))
+		return null;
+
+	$split = array();
+	while($rs = fetchResult($result)) {
+		$split[] = array(
+			"recipient_id" => $rs["recipient_id"],
+	    	"percentage" => $rs["nr_percentual_split"],
+	    	"liable" => true,
+	    	"charge_processing_fee" => true);
+	}
+
+	return $split;
 }

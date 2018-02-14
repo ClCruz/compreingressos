@@ -1,14 +1,26 @@
 <?php
 
+require('../settings/pagarme_functions.php');
+
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 630, true)) {
 
 	if ($_GET['action'] != 'delete') {
 		
 	}
 
-	if ($_GET['action'] == 'add') {		
+	if ($_GET['action'] == 'add') {
 
-		$query = "INSERT INTO mw_conta_bancaria VALUES(?, ?, ?, ?, ?, ?, ?, ?);";
+		$query = "BEGIN TRANSACTION
+				  SET NOCOUNT ON
+
+				  INSERT INTO mw_conta_bancaria (cd_banco, cd_agencia, cd_conta_bancaria, dv_conta_bancaria, cd_tipo_conta, id_produtor, nr_percentual_split, in_ativo)
+				  VALUES(?, ?, ?, ?, ?, ?, ?, ?)
+
+				  SELECT @@IDENTITY AS id
+
+				  SET NOCOUNT OFF
+				  COMMIT TRANSACTION";
+
 		$params = array($_POST["banco"], 
 						trim($_POST["agencia"]), 
 						trim($_POST["conta_bancaria"]), 
@@ -18,8 +30,16 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 630, true)) {
 						trim($_POST["split"]),
 						$_POST["status"]);
 
-		$rs = executeSQL($mainConnection, $query, $params);
-		$retorno = 'true?id=' . $rs["ID"];
+		$rs = executeSQL($mainConnection, $query, $params, true);
+		
+		$recipient = salvarContaBancariaPagarme($_POST, $_GET["produtor"]);
+
+		$query = "UPDATE mw_conta_bancaria SET recipient_id = ? WHERE id_conta_bancaria = ?";
+		$param = array($recipient["id"], $rs["id"]);
+		executeSQL($mainConnection, $query, $param);
+
+		$retorno = 'true?id=' . $rs["id"];
+
 		if(sqlErrors()) {
 			$retorno = sqlErrors();
 		}

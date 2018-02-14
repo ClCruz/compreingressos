@@ -311,7 +311,8 @@ $(function() {
 				<th>Conta</th>
 				<th>Tipo da Conta</th>
 				<th>Percentual p/ Split</th>
-                <th>Status</th>
+                <th>Recebedor (Pagar.me)</th>
+                <th>Status</th>                
 				<th colspan="2" class="th-action">Ações</th>
 			</tr>
 		</thead>
@@ -327,6 +328,7 @@ $(function() {
 				<td><?php echo $conta; ?></td>
 				<td><?php echo $rs["cd_tipo_conta"] == "CC" ? "Conta Corrente" : "Conta Poupança"; ?></td>
 				<td><?php echo $rs["nr_percentual_split"]; ?></td>
+                <td><?php echo $rs["recipient_id"]; ?></td>
                 <td><?php echo $rs["in_ativo"] ? "Ativo" : "Inativo"; ?></td>
 				<td class="td-action"><a href="<?php echo $pagina; ?>?action=edit&id=<?php echo $id; ?>" class="button">Editar</a></td>
                 <td class="td-action"><a href="<?php echo $pagina; ?>?action=delete&id=<?php echo $id; ?>" class="button">Apagar</a></td>

@@ -258,6 +258,7 @@ function salvarContaBancariaPagarme($data, $produtor) {
 	    "bank_account" => array(
 	    	"bank_code" => $data["banco"],
 	        "agencia" => $data["agencia"],
+	        "dv_agencia" => $data["dv_agencia"],
 	        "conta" => $data["conta_bancaria"],
 	        "type" => $data["tipo"] == "CC" ? "conta_corrente" : "conta_poupanca",
 	        "conta_dv" => $data["dv_conta_bancaria"],
@@ -281,11 +282,12 @@ function consultarSplitPagarme($pedido) {
 	$param = array($pedido);
 	$stmt = executeSQL($mainConnection, $query, $param, true);
 
-	$query = "select cb.*
+	$query = "select r.recipient_id, rs.nr_percentual_split
 			  from tabPeca tb
 			  inner join CI_MIDDLEWAY..mw_produtor p on p.id_produtor = tb.id_produtor
-			  inner join CI_MIDDLEWAY..mw_conta_bancaria cb on cb.id_produtor = p.id_produtor
-			  where tb.CodPeca = ? and cb.in_ativo = 1";
+		      inner join CI_MIDDLEWAY..mw_regra_split rs on rs.id_produtor = p.id_produtor
+			  inner join CI_MIDDLEWAY..mw_recebedor r on rs.id_recebedor = r.id_recebedor
+			  where tb.CodPeca = ? and rs.in_ativo = 1";
 
 	$conn = getConnection($stmt["id_base"]);
 	$param = array($stmt["CodPeca"]);
@@ -304,4 +306,14 @@ function consultarSplitPagarme($pedido) {
 	}
 
 	return $split;
+}
+
+function consultarExtratoRecebedorPagarme($recipient_id) {
+	$balance_operations = PagarMe_Recipient::findAllByRecipientId($recipient_id);
+	return $balance_operations->__toJSON(true);
+}
+
+function consultarSaldoRecebedorPagarme($recipient_id) {
+	$balance_operations = PagarMe_Recipient::findSaldoByRecipientId($recipient_id);
+	return $balance_operations->__toJSON(true);
 }

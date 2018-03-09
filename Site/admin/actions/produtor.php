@@ -59,9 +59,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 620, true)) {
 						ucwords(utf8_decode(trim($_POST["nome"]))), 
 						trim($_POST["cpf_cnpj"]), 
 						trim(strtolower($_POST["email"])), 
-						$ddd_telefone,
+						trim($ddd_telefone),
 						trim($telefone), 
-						$ddd_celular, 
+						trim($ddd_celular), 
 						trim($celular),
 						$_GET['id']);
 

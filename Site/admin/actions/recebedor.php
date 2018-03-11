@@ -34,7 +34,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
 
 		$rs = executeSQL($mainConnection, $query, $params, true);
 		
-		$recipient = salvarContaBancariaPagarme($_POST, $_GET["produtor"]);
+		$recipient = salvarRecebedorPagarme($_POST);
 
 		$query = "UPDATE mw_recebedor SET recipient_id = ? WHERE id_recebedor = ?";
 		$param = array($recipient["id"], $rs["id"]);

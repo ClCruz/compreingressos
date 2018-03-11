@@ -20,8 +20,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
 
     	$query = "SELECT * FROM mw_recebedor cb 
                   INNER JOIN mw_banco b ON b.cd_banco = cb.cd_banco 
-                  WHERE id_produtor = ? AND in_ativo = 1 
-                  ORDER BY ds_razao_social";
+                  WHERE id_produtor = ?
+                  ORDER BY in_ativo DESC, ds_razao_social";
     	$stmt = executeSQL($mainConnection, $query, array($_GET["produtor"]));
 ?>
 <style type="text/css">
@@ -44,6 +44,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
     #app #new {margin: 0px;}
     .text-left{text-align: left;}
     .text-right{text-align: right;}
+    .text-center{text-align: center;}
 </style>
 <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
 <script src="../javascripts/jquery.maskedinput.min.js" type="text/javascript"></script>
@@ -362,7 +363,7 @@ $(function() {
 			<th class="text-left">Banco</th>
 			<th class="text-right">Agência</th>
 			<th class="text-right">Conta</th>
-			<th class="text-left">Tipo da Conta</th>
+			<th class="text-center">Tipo da Conta</th>
             <th class="text-left">Recebedor (Pagar.me)</th>
             <th class="text-left">Status</th>                
 			<th colspan="2" class="th-action">Ações</th>
@@ -379,7 +380,7 @@ $(function() {
 			<td class="text-left"><?php echo utf8_encode($rs["ds_banco"]); ?></td>
 			<td class="text-right"><?php echo $agencia; ?></td>
 			<td class="text-right"><?php echo $conta; ?></td>
-			<td class="text-left"><?php echo $rs["cd_tipo_conta"] == "CC" ? "Conta Corrente" : "Conta Poupança"; ?></td>
+			<td class="text-center"><?php echo $rs["cd_tipo_conta"] == "CC" ? "Conta Corrente" : "Conta Poupança"; ?></td>
             <td class="text-left"><?php echo $rs["recipient_id"]; ?></td>
             <td class="text-left"><?php echo $rs["in_ativo"] ? "Ativo" : "Inativo"; ?></td>
 			<td class="td-action"><a href="<?php echo $pagina; ?>?action=edit&id=<?php echo $id; ?>" class="button">Editar</a></td>

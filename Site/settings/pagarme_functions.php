@@ -245,12 +245,9 @@ function tratarErroPagarme($error_obj, $id_pedido) {
 	return $nova_msg;
 }
 
-function salvarContaBancariaPagarme($data, $produtor) {	
+function salvarRecebedorPagarme($data) {	
 
 	$mainConnection = mainConnection();
-
-	$query = "SELECT ds_razao_social, cd_cpf_cnpj FROM mw_produtor WHERE id_produtor = ?";
-	$rs = executeSQL($mainConnection, $query, array($produtor), true);
 
 	$recipient = new PagarMe_Recipient(array(
 		"anticipatable_volume_percentage" => 100, 
@@ -262,8 +259,8 @@ function salvarContaBancariaPagarme($data, $produtor) {
 	        "conta" => $data["conta_bancaria"],
 	        "type" => $data["tipo"] == "CC" ? "conta_corrente" : "conta_poupanca",
 	        "conta_dv" => $data["dv_conta_bancaria"],
-	        "document_number" => $rs["cd_cpf_cnpj"],
-	        "legal_name" => $rs["ds_razao_social"]
+	        "document_number" => $data["cpf_cnpj"],
+	        "legal_name" => $data["razao_social"]
 	    )
 	));
 

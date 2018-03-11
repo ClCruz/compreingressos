@@ -50,6 +50,7 @@ $(function() {
         split       = $("#split"),
         status      = $("#status"),
         evento      = $("#evento"),
+        recebedor   = $("#recebedor"),
         allFields   = $([]).add(split),
         tips        = $(".validateTips");
 
@@ -65,12 +66,17 @@ $(function() {
         tr = $this.closest('tr');
 
         if (href.indexOf('?action=edit') != -1) {
+            atualizarRecebedor();
         	$.get('regraSplit.php?action=load&' + id, function(data) {
             	data = $.parseJSON(data);
 
             	$("#id").val(data.id);            	
             	$("#split").val(data.split);
             	$("#status").val(data.status);
+                $('[name=recebedor] option').filter(function() { 
+                    return ($(this).val() == data.recebedor);
+                }).prop('selected', true);
+                $("#recebedor").attr("disabled", true);             
 
             	dialog.dialog( "open" );
             });
@@ -83,7 +89,7 @@ $(function() {
                             $(this).dialog('close');
                             $.get(href, function(data) {
                                 if (data.replace(/^\s*/, "").replace(/\s*$/, "") == 'true') {
-                                    tr.remove();
+                                    atualizarSplit();
                                 } else {
                                     $.dialog({text: data});
                                 }
@@ -134,16 +140,16 @@ $(function() {
         }
     });
 
-    function check(split, conta) {
+    function check(split, recebedor) {
         valid = true;
 
-        conta = (conta == null || conta == "") ? -1 : conta;
+        recebedor = (recebedor == null || recebedor == "") ? -1 : recebedor;
 
         $.ajax({
             url: 'regraSplit.php',
             async: false,
             type: 'get',
-            data: 'action=check&produtor='+ $('#produtor').val() + '&evento='+ conta,
+            data: 'action=check&produtor='+ $('#produtor').val() + '&evento='+ $("#evento").val() + '&recebedor='+ recebedor,
             success: function(data) {
                 soma = parseInt(data) + parseInt(split);
                 if(soma > 100) {                
@@ -158,6 +164,7 @@ $(function() {
     function add() {
     	var valid = true;
         allFields.removeClass( 'ui-state-error' );
+        $("#recebedor").attr("disabled", false);
         $.each(allFields, function() {
             var $this = $(this);
             if ($this.val() == '') {
@@ -168,17 +175,23 @@ $(function() {
             }
         });
 
+        if(split.val() <= 0) {
+            tips.text("O valor do Split deve ser maior que zero.").addClass( "ui-state-highlight" );
+            split.addClass("ui-state-error");
+            valid = false;
+        }
+
         if(split.val() > 100) {
             tips.text("O valor do Split não pode ser maior do que 100.").addClass( "ui-state-highlight" );
             split.addClass("ui-state-error");
             valid = false;
         }
 
-        // if(!check(split.val(), id.val())) {
-        //     tips.text("O valor do Split na soma das contas não pode ser maior do que 100.").addClass( "ui-state-highlight" );
-        //     split.addClass("ui-state-error");
-        //     valid = false;
-        // }        
+        if(!check(split.val(), recebedor.val())) {
+            tips.text("O valor do Split na soma das regras não pode ser maior do que 100.").addClass( "ui-state-highlight" );
+            split.addClass("ui-state-error");
+            valid = false;
+        }        
 
         if ( valid ) {
         	if ( id.val() == "" ){
@@ -193,7 +206,7 @@ $(function() {
 				data: $('#regra').serialize(),
 				success: function(data) {
 					if (trim(data).substr(0, 4) == 'true') {
-                        location.reload();
+                        atualizarSplit();
                     } else {
                         $.dialog({text: data});
                     }
@@ -224,28 +237,7 @@ $(function() {
                 text: 'Selecione o Evento!'
             });
         } else {
-
-            $.ajax({
-                url: pagina + '?action=load_recebedor',
-                type: 'post',
-                data: $('#dados').serialize(),
-                success: function(data) {
-                    data = $.parseJSON(data);
-                    $("#recebedor").html('<option value="-1">Selecione...</option>');
-                    $.each(data, function(key, value) {
-                        $("#recebedor").append('<option value='+ value.id_recebedor + '>' + value.ds_razao_social + '</option>');
-                    });
-                },
-                error: function(){
-                    $("#evento").html('<option value="-1">Selecione...</option>');
-                    $.dialog({
-                        title: 'Erro...',
-                        text: 'Erro na chamada dos dados !!!'
-                    });
-                    return false;
-                }
-            });
-
+            atualizarRecebedor();
             dialog.dialog( "open" );    
         }        
     });
@@ -281,6 +273,11 @@ $(function() {
 
     $("#evento").change(function() {
         $("#split-body").html("");
+        atualizarSplit();
+    });
+
+    function atualizarSplit() {
+        $("#split-body").html("");
         $.ajax({
             url: pagina + '?action=load_split',
             type: 'post',
@@ -296,6 +293,7 @@ $(function() {
                         .append('<td class="td-action"><a href="<?php echo $pagina; ?>?action=delete&id='+ value.id_regra_split +'" class="button">Apagar</a></td>')
                         .append('</tr>');
                 });
+                $('.button').button();
             },
             error: function(){                
                 $.dialog({
@@ -304,14 +302,37 @@ $(function() {
                 });
                 return false;
             }
-        }); 
-    });
+        });
+    }
+
+    function atualizarRecebedor() {
+        $.ajax({
+            url: pagina + '?action=load_recebedor',
+            type: 'post',
+            data: $('#dados').serialize(),
+            success: function(data) {
+                data = $.parseJSON(data);
+                $("#recebedor").html('<option value="-1">Selecione...</option>');
+                $.each(data, function(key, value) {
+                    $("#recebedor").append('<option value='+ value.id_recebedor + '>' + value.ds_razao_social + '</option>');
+                });
+            },
+            error: function(){
+                $("#evento").html('<option value="-1">Selecione...</option>');
+                $.dialog({
+                    title: 'Erro...',
+                    text: 'Erro na chamada dos dados !!!'
+                });
+                return false;
+            }
+        });
+    }
 
 });
 </script>
 <h2>Regra de Split</h2>
 
-<div id="dialog-form" title="Informações da Conta">
+<div id="dialog-form" title="Informações da Regra">
 	<p class="validateTips"></p>
 	<form id="regra" name="regra" action="?p=regraSplit" method="POST">
 		<fieldset>
@@ -366,8 +387,7 @@ $(function() {
 		<thead>
 			<tr class="ui-widget-header">
                 <th>Recebedor (Pagar.me)</th>
-				<th>Percentual p/ Split</th>
-                <th>Status</th>   
+				<th>Percentual p/ Split</th>  
 				<th colspan="2" class="th-action">Ações</th>
 			</tr>
 		</thead>
@@ -375,7 +395,6 @@ $(function() {
 			<tr>
 				<td><?php echo $rs["cd_conta_bancaria"]; ?></td>
                 <td><?php echo $rs["nr_percentual_split"]; ?></td>
-                <td><?php echo $rs["in_ativo"] ? "Ativo" : "Inativo"; ?></td>
 				<td class="td-action"><a href="<?php echo $pagina; ?>?action=edit&id=<?php echo $id; ?>" class="button">Editar</a></td>
                 <td class="td-action"><a href="<?php echo $pagina; ?>?action=delete&id=<?php echo $id; ?>" class="button">Apagar</a></td>
 			</tr>

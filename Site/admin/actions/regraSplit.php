@@ -21,17 +21,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 650, true)) {
 		}
 	} else if ($_GET['action'] == 'update' and isset($_GET['id'])) {
 
-		$query = "UPDATE mw_regra_split
-				  SET id_recebedor = ?,
-					  nr_percentual_split = ?,
-					  in_ativo = ?
-				  WHERE id_regra_split = ?";
+		$query = "UPDATE mw_regra_split SET nr_percentual_split = ? WHERE id_regra_split = ?";
 
-		$params = array($_POST["banco"], 
-						$_GET["produtor"],
-						trim($_POST["split"]),
-						$_POST["status"],
-						$_GET['id']);
+		$params = array(trim($_POST["split"]), $_GET['id']);
 
 		if (executeSQL($mainConnection, $query, $params)) {
             $retorno = 'true?id=' . $_GET['id'];
@@ -52,27 +44,22 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 650, true)) {
 
 	 } else if ($_GET['action'] == 'load' and isset($_GET['id'])){
 		$query = 'SELECT
-                   id_conta_bancaria,
-                   cd_banco,
-                   cd_agencia,
-                   cd_conta_bancaria,
-                   dv_conta_bancaria,
-                   cd_tipo_conta,
+                   id_regra_split,
                    id_produtor,
+                   id_evento,
+                   id_recebedor,
                    nr_percentual_split,
                    in_ativo
-                  FROM mw_conta_bancaria WHERE id_conta_bancaria = ?';
+                  FROM mw_regra_split WHERE id_regra_split = ?';
         $params = array($_GET['id']);
         $result = executeSQL($mainConnection, $query, $params);
 
         while ($rs = fetchResult($result)) {            
             $ret = array(
-            	"id" => $rs["id_conta_bancaria"],
-            	"banco" => $rs["cd_banco"],
-            	"agencia" => $rs["cd_agencia"],
-            	"conta_bancaria" => $rs["cd_conta_bancaria"],
-            	"dv_conta_bancaria" => $rs["dv_conta_bancaria"],
-            	"tipo" => $rs["cd_tipo_conta"],
+            	"id" => $rs["id_regra_split"],
+            	"produtor" => $rs["id_produtor"],
+                "evento" => $rs["id_evento"],
+                "recebedor" => $rs["id_recebedor"],
             	"split" => $rs["nr_percentual_split"],
             	"status" => $rs["in_ativo"]
             );
@@ -80,8 +67,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 650, true)) {
         $retorno = json_encode($ret);
 
     } else if ($_GET['action'] == 'check' and isset($_GET['produtor'])){
-    	$query = "SELECT SUM(nr_percentual_split) AS split FROM mw_regra_split WHERE id_produtor = ? AND (id_evento != ? OR ? = -1)";
-    	$param = array($_GET["produtor"], $_GET["evento"], $_GET["evento"]);
+    	$query = "SELECT SUM(nr_percentual_split) AS split FROM mw_regra_split WHERE id_produtor = ? AND id_evento = ? AND (id_recebedor != ? OR ? = -1) AND in_ativo = 1";
+    	$param = array($_GET["produtor"], $_GET["evento"], $_GET["recebedor"], $_GET["recebedor"]);
     	$stmt  = executeSQL($mainConnection, $query, $param, true);
     	$retorno = (!isset($stmt["split"]) || $stmt["split"] == null) ? 0 : $stmt["split"];
 
@@ -96,7 +83,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 650, true)) {
         	$json[] = array("id_regra_split" => $rs["id_regra_split"],
         					"ds_razao_social" => utf8_encode($rs["ds_razao_social"]),
         					"nr_percentual_split" => $rs["nr_percentual_split"],
-        					"in_status" => $rs["in_status"]);
+        					"in_ativo" => $rs["in_ativo"]);
         }
         $retorno = json_encode($json);
 	} else if ($_GET['action'] == 'load_evento') {

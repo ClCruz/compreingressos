@@ -255,7 +255,7 @@ function salvarRecebedorPagarme($data) {
 	    "bank_account" => array(
 	    	"bank_code" => $data["banco"],
 	        "agencia" => $data["agencia"],
-	        "dv_agencia" => $data["dv_agencia"],
+	        "agencia_dv" => $data["dv_agencia"],
 	        "conta" => $data["conta_bancaria"],
 	        "type" => $data["tipo"] == "CC" ? "conta_corrente" : "conta_poupanca",
 	        "conta_dv" => $data["dv_conta_bancaria"],
@@ -275,7 +275,7 @@ function atualizarRecebedorPagarme($data, $id) {
     $bank_account = new Pagarme_Bank_Account(array(
 	    	"bank_code" => $data["banco"],
 	        "agencia" => $data["agencia"],
-	        "dv_agencia" => $data["dv_agencia"],
+	        "agencia_dv" => $data["dv_agencia"],
 	        "conta" => $data["conta_bancaria"],
 	        "type" => $data["tipo"] == "CC" ? "conta_corrente" : "conta_poupanca",
 	        "conta_dv" => $data["dv_conta_bancaria"],

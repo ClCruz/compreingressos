@@ -114,6 +114,9 @@ $(function() {
             	$("#split").val(data.split);
             	$("#status").val(data.status);
 
+                $("#razao_social").attr("disabled", true);
+                $("#cpf_cnpj").attr("disabled", true);
+
             	dialog.dialog( "open" );
             });
         }  else if (href.indexOf('?action=delete') != -1) {

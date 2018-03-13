@@ -267,6 +267,29 @@ function salvarRecebedorPagarme($data) {
     return $recipient->create();
 }
 
+function atualizarRecebedorPagarme($data, $id) {
+	$recipient = PagarMe_Recipient::findById($id);
+
+    $recipient->setAnticipatableVolumePercentage(100);
+
+    $bank_account = new Pagarme_Bank_Account(array(
+	    	"bank_code" => $data["banco"],
+	        "agencia" => $data["agencia"],
+	        "dv_agencia" => $data["dv_agencia"],
+	        "conta" => $data["conta_bancaria"],
+	        "type" => $data["tipo"] == "CC" ? "conta_corrente" : "conta_poupanca",
+	        "conta_dv" => $data["dv_conta_bancaria"],
+	        "document_number" => $data["cpf_cnpj"],
+	        "legal_name" => $data["razao_social"]
+	    )
+	);
+    $bank_account->create();
+
+    $recipient->setBankAccountId($bank_account->getId());
+
+    $recipient->save();
+}
+
 function consultarSplitPagarme($pedido) {
 	$mainConnection = mainConnection();
 

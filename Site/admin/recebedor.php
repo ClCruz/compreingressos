@@ -295,7 +295,7 @@ $(function() {
         <fieldset>
             <legend>Dados do Recebedor</legend>
             <label for="razao_social">Razão Social:</label>
-            <input type="text" id="razao_social" name="razao_social" maxlength="250" class="text ui-widget-content ui-corner-all" />
+            <input type="text" id="razao_social" name="razao_social" maxlength="30" class="text ui-widget-content ui-corner-all" />
             <label for="cpf_cnpj">CPF / CNPJ:</label>
             <input type="text" id="cpf_cnpj" name="cpf_cnpj" maxlength="14" class="text ui-widget-content ui-corner-all" />
             <label for="nome">Nome:</label>

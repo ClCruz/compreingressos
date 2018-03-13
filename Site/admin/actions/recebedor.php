@@ -85,6 +85,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
 						$_GET['id']);
 
 		if (executeSQL($mainConnection, $query, $params)) {
+			$query = "SELECT recipient_id FROM mw_recebedor WHERE id_recebedor = ?";
+			$param = array($_GET['id']);
+			$rs = executeSQL($mainConnection, $query, $param, true);
+
+			atualizarRecebedorPagarme($_POST, $rs['recipient_id']);
+
             $retorno = 'true?id=' . $_GET['id'];
         } else {
             $retorno = sqlErrors();

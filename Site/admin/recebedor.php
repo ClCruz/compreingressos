@@ -272,6 +272,8 @@ $(function() {
                 text: 'Selecione o Produtor!'
             });
         } else {
+            $("#razao_social").attr("disabled", false);
+            $("#cpf_cnpj").attr("disabled", false);
             dialog.dialog( "open" );    
         }        
     });

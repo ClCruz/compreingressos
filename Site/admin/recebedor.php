@@ -114,8 +114,8 @@ $(function() {
             	$("#split").val(data.split);
             	$("#status").val(data.status);
 
-                $("#razao_social").attr("disabled", true);
-                $("#cpf_cnpj").attr("disabled", true);
+                $("#razao_social").attr("readonly", true);
+                $("#cpf_cnpj").attr("readonly", true);
 
             	dialog.dialog( "open" );
             });
@@ -272,8 +272,8 @@ $(function() {
                 text: 'Selecione o Produtor!'
             });
         } else {
-            $("#razao_social").attr("disabled", false);
-            $("#cpf_cnpj").attr("disabled", false);
+            $("#razao_social").attr("readonly", false);
+            $("#cpf_cnpj").attr("readonly", false);
             dialog.dialog( "open" );    
         }        
     });

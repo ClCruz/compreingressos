@@ -337,3 +337,30 @@ function consultarSaldoRecebedorPagarme($recipient_id) {
 	$balance_operations = PagarMe_Recipient::findSaldoByRecipientId($recipient_id);
 	return $balance_operations->__toJSON(true);
 }
+
+function efetuarSaquePagarme($recipient_id, $amount) {
+	try {
+		$request = new PagarMe_Request("/transfers", "POST");
+		$request->setParameters(array("amount" => $amount, "recipient_id" => $recipient_id));
+		$response = $request->run();
+		return array("status" => "success", "msg" => "A Transação de Saque foi efetuada com sucesso!");
+	} catch (Exception $e) {
+		return array("status" => "error", "msg" => $e->getMessage());
+	}
+}
+
+function efetuarAntecipacaoPagarme($recipient_id, $amount, $payment_date, $timeframe) {
+	try {
+		$request = new PagarMe_Request("/recipients/$recipient_id/bulk_anticipations", "POST");
+		$request->setParameters(array(
+			"payment_date" => $payment_date,
+			"timeframe" => $timeframe,
+			"requested_amount" => $amount,
+			"build" => false
+		));
+		$response = $request->run();
+		return array("status" => "success", "msg" => "A Transação de Antecipação foi efetuada com sucesso!");
+	} catch (Exception $e) {
+		return array("status" => "error", "msg" => $e->getMessage());
+	}
+}

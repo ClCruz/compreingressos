@@ -31,32 +31,47 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
     .produtor {margin-bottom: 20px; display: inline; float: right;}
     .ui-dialog{ padding: .3em; }
     .validateTips { border: 1px solid transparent; padding: 0.3em; }
-    .saldo {display: inline; margin-left: 20px;}
-    .saldo .disponivel, .saldo .receber{display: inline; padding: 0px 10px;}
+    .saldo {display: block; margin-bottom: 20px; text-align: right;}
+    .saldo .disponivel, .saldo .receber{display: inline; padding: 0px 10px; font-weight: bold; font-size: 14px;}
+    .periodo {margin-bottom: 12px;}
+    .periodo label {display: inline !important;}
+    .periodo input {vertical-align: middle; !important; display: inline !important;}
+    .fields{width: 50%; float: left; margin-bottom: 15px;}
+    .fields label {display:block; font-weight: bold;}
+    .fields select {width: 70%; margin-bottom: 10px;}
+    .actions{width: 50%; float: right;}
 </style>
 <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
 <script src="../javascripts/jquery.maskedinput.min.js" type="text/javascript"></script>
+<script type='text/javascript' src='../javascripts/jquery.numeric.js'></script>
 <script>
 $(function() {
 	var pagina = '<?php echo $pagina; ?>';
 	var dialog, 
 		form,
-		emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
-        id = $( "#id" ),
+		emailRegex   = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+        id           = $( "#id" ),
         razao_social = $("#razao_social"),
-        cpf_cnpj = $("#cpf_cnpj"),
-        nome = $("#nome"),
-        email = $("#email"),
-        telefone = $("#telefone"),
-        celular = $("#celular"),
-        allFields = $( [] ).add(razao_social).add(cpf_cnpj).add(nome).add(email).add(celular),
-        tips = $( ".validateTips" );
+        cpf_cnpj     = $("#cpf_cnpj"),
+        nome         = $("#nome"),
+        email        = $("#email"),
+        telefone     = $("#telefone"),
+        celular      = $("#celular"),
+        recebedor    = $("#recebedor"),
+        valor        = $("#valor"),
+        data         = $("#data"),
+        allFields    = $( [] ).add(valor).add(data),
+        tips         = $( ".validateTips" );
 
 	$('.button').button();
 	$("#telefone").mask("99 9999-9999");
     $('#celular').mask("99 9999-9999?9");
 
     $("#cpf_cnpj").keypress(verificaNumero);
+    $("#btn-saque").prop('disabled', true);
+    $("#btn-antecipacao").prop('disabled', true);
+    $("#data").datepicker({minDate: 0, dateFormat: 'yy-mm-dd'});
+    $("#valor").numeric(",");
 
     $('#app table').delegate('a', 'click', function(event) {
         event.preventDefault();
@@ -126,7 +141,7 @@ $(function() {
         width: 600,
         modal: true,
         buttons: {
-            "Salvar": add,
+            "Efetuar Antecipação": antecipar,
             Cancelar: function() {
                 dialog.dialog( "close" );
             }
@@ -220,7 +235,7 @@ $(function() {
         });
     });
 
-    $("#recebedor").change(function() {
+    function load_saldo() {
         $(".disponivel span").html("R$ 0,00");
         $(".receber span").html("R$ 0,00");
         $.ajax({
@@ -230,20 +245,29 @@ $(function() {
             success: function(data) {
                 data = $.parseJSON(data);
                 $.each(data, function(key, value) {
-                    $(".disponivel span").html("R$ "+ (data.available.amount/100));
-                    $(".receber span").html("R$ "+ (data.waiting_funds.amount/100));
+                    var valor_disponivel = data.available.amount / 100;
+                    var valor_areceber = data.waiting_funds.amount / 100;
+                    $(".disponivel span").html("R$ "+ valor_disponivel);
+                    $(".receber span").html("R$ "+ valor_areceber);
                 });
+                var disponivel = ($(".disponivel span").val() > 0);
+                var receber = ($(".receber span").val() > 0);
+                
+                $("#btn-saque").prop('disabled', disponivel);
+                $("#btn-antecipacao").prop('disabled', receber);                
             },
             error: function(){
                 $(".disponivel span").html("R$ 0,00");
                 $(".receber span").html("R$ 0,00");
-                $.dialog({
-                    title: 'Erro...',
-                    text: 'Erro na chamada dos dados !!!'
-                });
+                $.dialog({text: 'Erro na chamada dos dados !!!'});
                 return false;
             }
         });
+    }
+
+    $("#recebedor").change(function() {
+        
+        load_saldo();
 
         $("#table-extrato tbody").html("");
         $.ajax({
@@ -273,66 +297,113 @@ $(function() {
         
     });
 
+    $("#btn-saque").click(function(event){
+        event.preventDefault();
+        $.ajax({
+            url: pagina + '?action=saque',
+            type: 'post',
+            data: $('#dados').serialize(),
+            success: function(data) {
+                data = $.parseJSON(data);
+                $.dialog({text: data.msg.split("\n").join("<br />")});
+                if (data.status == 'success') {
+                    dialog.dialog( "close" );
+                }
+            },
+            error: function(data){
+                $.dialog({text: data});
+                return false;
+            }
+        });
+    });
+
+    $("#btn-antecipacao").click(function(event){
+        event.preventDefault();
+        dialog.dialog( "open" );        
+    });
+
+    function antecipar() {
+        $.ajax({
+            url: pagina + '?action=antecipacao&recebedor='+ recebedor.val(),
+            type: 'post',
+            data: $('#antecipacao').serialize(),
+            success: function(data) {
+                data = $.parseJSON(data);
+                $.dialog({text: data.msg.split("\n").join("<br />")});
+                if(data.status == 'success') {                    
+                    dialog.dialog( "close" );
+                }
+            },
+            error: function(data){
+                $.dialog({text: data});
+                return false;
+            }
+        });
+    }
+
 });
 </script>
 <h2>Extrato</h2>
 
-<div id="dialog-form" title="Informações do Produtor">
+<div id="dialog-form" title="Nova Antecipação">
 	<p class="validateTips"></p>
-	<form id="produtor" name="produtor" action="?p=produtor" method="POST">
+	<form id="antecipacao" name="antecipacao" action="?p=extrato" method="POST">
 		<fieldset>
-			<input type="hidden" name="id" id="id" value="" />
-		    <label for="razao_social">Razão Social:</label>
-		    <input type="text" id="razao_social" name="razao_social" maxlength="250" class="text ui-widget-content ui-corner-all" />
-		    <label for="cpf_cnpj">CPF / CNPJ:</label>
-		    <input type="text" id="cpf_cnpj" name="cpf_cnpj" maxlength="14" class="text ui-widget-content ui-corner-all" />
-		    <label for="nome">Nome:</label>
-		    <input type="text" id="nome" name="nome" maxlength="100" class="text ui-widget-content ui-corner-all" />
-		    <label for="email">E-mail:</label>
-			<input type="text" id="email" name="email" maxlength="100" class="text ui-widget-content ui-corner-all"/>
-		    <label for="telefone">Telefone:</label>
-		    <input type="text" id="telefone" name="telefone" maxlength="10" class="text ui-widget-content ui-corner-all" />
-		    <label for="celular">Celular:</label>
-		    <input type="text" id="celular" name="celular" maxlength="10" class="text ui-widget-content ui-corner-all" />
+			<label>Período:</label>
+            <div class="periodo">
+                <label>Início <input type="radio" name="periodo" value="start" selected /></label>
+                <label>Final <input type="radio" name="periodo" value="end"/></label>
+            </div>
+
+            <label>Informe o Valor:</label>
+            <input type="text" name="valor" id="valor" class="text ui-widget-content ui-corner-all" />
+
+            <label>Prazo:</label>
+            <input type="text" name="data" id="data" class="text ui-widget-content ui-corner-all" />
 		</fieldset>
 	</form>
 </div>
 
 <form id="dados" name="dados" method="post">
-    <label>Produtor:</label>
-    <select id="produtor" name="produtor">
-        <option value="-1">Selecione</option>
-        <?php
-            $query = "SELECT id_produtor, ds_razao_social FROM mw_produtor WHERE in_ativo = 1 ORDER BY ds_razao_social";
-            $stmtProdutor = executeSQL($mainConnection, $query);
-            while($rs = fetchResult($stmtProdutor)) {
-                $selected = $rs["id_produtor"] == $_GET["produtor"] ? "selected" : "";
-        ?>
-        <option <?php echo $selected; ?> value="<?php echo $rs['id_produtor']; ?>"><?php echo utf8_encode($rs['ds_razao_social']); ?></option>
-        <?php
-            }
-        ?>
-    </select>
+    <div class="fields">
+        <label>Produtor:</label>
+        <select id="produtor" name="produtor">
+            <option value="-1">Selecione</option>
+            <?php
+                $query = "SELECT id_produtor, ds_razao_social FROM mw_produtor WHERE in_ativo = 1 ORDER BY ds_razao_social";
+                $stmtProdutor = executeSQL($mainConnection, $query);
+                while($rs = fetchResult($stmtProdutor)) {
+                    $selected = $rs["id_produtor"] == $_GET["produtor"] ? "selected" : "";
+            ?>
+            <option <?php echo $selected; ?> value="<?php echo $rs['id_produtor']; ?>"><?php echo utf8_encode($rs['ds_razao_social']); ?></option>
+            <?php
+                }
+            ?>
+        </select>
+        <br>
 
-    <label>Recebedor:</label>
-    <select id="recebedor" name="recebedor">
-        <option value="-1">Selecione</option>
-    </select>   
+        <label>Recebedor:</label>
+        <select id="recebedor" name="recebedor">
+            <option value="-1">Selecione</option>
+        </select>
+    </div>
 
-    <div class="saldo">
-        <div class="disponivel">
-            <label>Saldo Disponível</label>
-            <span>R$ 0,00</span>
+    <div class="actions">
+        <div class="saldo">
+            <div class="disponivel">
+                <label>Saldo Disponível</label>
+                <span>R$ 0,00</span>
+            </div>
+            <div class="receber">
+                <label>Saldo a Receber</label>
+                <span>R$ 0,00</span>
+            </div>
+        </div> 
+
+        <div class="produtor">
+            <input type="button" id="btn-saque" class="button" value="Realizar Saque">
+            <input type="button" id="btn-antecipacao" class="button" value="Criar Antecipação">
         </div>
-        <div class="receber">
-            <label>Saldo a Receber</label>
-            <span>R$ 0,00</span>
-        </div>
-    </div> 
-
-    <div class="produtor">
-        <a id="new" href="#new" class="button">Realizar Saque</a>
-        <a id="new" href="#new" class="button">Criar Antecipação</a>    
     </div>
 </form>
 

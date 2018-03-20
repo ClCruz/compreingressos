@@ -75,7 +75,7 @@ require_once('header.php');
 				</table>
 			</form>
 			<?php } else { ?>
-			<h2>Login</h2>
+			<h3>Login </h3>
 			<form action="autenticacao.php" method="post">
 				<table border="0" cellspacing="0" cellpadding="0">
 					<tr>

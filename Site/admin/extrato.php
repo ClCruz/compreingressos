@@ -366,7 +366,7 @@ $(function() {
 
 <form id="dados" name="dados" method="post">
     <div class="fields">
-        <label>Produtor:</label>
+        <label>Organizador:</label>
         <select id="produtor" name="produtor">
             <option value="-1">Selecione</option>
             <?php

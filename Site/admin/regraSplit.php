@@ -229,7 +229,7 @@ $(function() {
         if($("#produtor").val() == -1) {
             $.dialog({
                 title: 'Alerta...',
-                text: 'Selecione o Produtor!'
+                text: 'Selecione o Organizador!'
             });
         } else if($("#evento").val() == -1) { 
             $.dialog({
@@ -355,7 +355,7 @@ $(function() {
 	
     <div class="filtro">
         <div class="col-sm-3">
-            <label>Produtor:</label>
+            <label>Organizador:</label>
             <select id="produtor" name="produtor">
                 <option value="-1">Selecione</option>
                 <?php
@@ -386,8 +386,9 @@ $(function() {
 	<table class="ui-widget ui-widget-content">
 		<thead>
 			<tr class="ui-widget-header">
-                <th>Recebedor (Pagar.me)</th>
+                <th>Recebedor</th>
 				<th>Percentual p/ Split</th>  
+                <th>Valor mínimo</th>  
 				<th colspan="2" class="th-action">Ações</th>
 			</tr>
 		</thead>
@@ -395,6 +396,7 @@ $(function() {
 			<tr>
 				<td><?php echo $rs["cd_conta_bancaria"]; ?></td>
                 <td><?php echo $rs["nr_percentual_split"]; ?></td>
+                <td>-</td>
 				<td class="td-action"><a href="<?php echo $pagina; ?>?action=edit&id=<?php echo $id; ?>" class="button">Editar</a></td>
                 <td class="td-action"><a href="<?php echo $pagina; ?>?action=delete&id=<?php echo $id; ?>" class="button">Apagar</a></td>
 			</tr>

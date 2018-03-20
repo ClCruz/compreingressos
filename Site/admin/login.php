@@ -85,6 +85,13 @@ require_once('header_new.php');
 				<div class="mask rgba-white-slight"></div>
 			</a>
 		</div>
+		
+		<div class="view overlay">
+		<h3>
+			<strong><font color="#FFFFFF" face="verdana" size="5">Seja bem-vindo!</font></strong><br><br>
+			<font color="#FFFFFF" face="verdana" size="3">Faça <b>login</b> para ter acesso a todas as <br>funcionalidades do Portal de Administração.</font>
+		</h3>
+		</div>
 
 	
 		<!--Card-->
@@ -109,7 +116,7 @@ require_once('header_new.php');
 					</div>
 
 					<div class="text-center mt-4">
-						<button class="btn btn-primary" id="Enviar" type="submit">Enviar</button>
+						<button class="btn btn-danger" id="Enviar" type="submit">Entrar</button>
 					</div>
 				</form>
 			</div>

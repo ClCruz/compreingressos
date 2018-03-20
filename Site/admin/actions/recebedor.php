@@ -14,7 +14,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
 	if ($_GET['action'] == 'add') {
 
 		$query = "EXEC SP_REC_INS001 ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?";
+		$dv_agencia = "";
 
+		if (!isset($_POST["dv_agencia"])) {
+			$dv_agencia = "";
+		}
+		else {
+			$dv_agencia = trim($_POST["dv_agencia"]);
+		}
+		
 		$params = array(strtoupper(utf8_decode(trim($_POST["razao_social"]))), 
 						$_POST["cpf_cnpj"],
 						ucwords(utf8_decode(trim($_POST["nome"]))), 
@@ -25,7 +33,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
 						trim($celular),
 						$_POST["banco"], 
 						trim($_POST["agencia"]),
-						trim($_POST["dv_agencia"]),
+						$dv_agencia,
 						trim($_POST["conta_bancaria"]), 
 						trim($_POST["dv_conta_bancaria"]), 
 						$_POST["tipo"],

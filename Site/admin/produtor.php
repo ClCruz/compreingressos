@@ -198,9 +198,9 @@ $(function() {
 
 });
 </script>
-<h2>Produtores</h2>
+<h2>Organizadores</h2>
 
-<div id="dialog-form" title="Informações do Produtor">
+<div id="dialog-form" title="Informações do Organizador">
 	<p class="validateTips"></p>
 	<form id="produtor" name="produtor" action="?p=produtor" method="POST">
 		<fieldset>

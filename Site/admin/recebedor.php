@@ -71,7 +71,7 @@ $(function() {
         tipo        = $("#tipo"),
         split       = $("#split"),
         status      = $("#status"),
-        allFields   = $([]).add(produtor).add(razao_social).add(cpf_cnpj).add(nome).add(email).add(celular).add(banco).add(conta).add(dv_conta_bancaria).add(dv_agencia).add(agencia).add(tipo).add(split),
+        allFields   = $([]).add(produtor).add(razao_social).add(cpf_cnpj).add(nome).add(email).add(celular).add(banco).add(conta).add(dv_conta_bancaria).add(agencia).add(tipo).add(split),
         tips        = $(".validateTips");
 
 	$('.button').button();
@@ -269,7 +269,7 @@ $(function() {
         if($("#produtor").val() == -1) {
             $.dialog({
                 title: 'Alerta...',
-                text: 'Selecione o Produtor!'
+                text: 'Selecione o Organizador!'
             });
         } else {
             $("#razao_social").attr("readonly", false);
@@ -318,7 +318,7 @@ $(function() {
 		    <label for="banco">Banco:</label>		    
             <select id="banco" name="banco" class="ui-widget-content ui-corner-all" />
 		    <?php while($rs = fetchResult($stmtBanco)) { ?>
-            <option value="<?php echo $rs['cd_banco']; ?>"><?php echo utf8_encode($rs['ds_banco']); ?></option>
+            <option value="<?php echo $rs['cd_banco']; ?>"><?php echo utf8_encode($rs['cd_banco'] . " - " . $rs['ds_banco']); ?></option>
             <?php } ?>
             </select>            
             <label for="agencia">Agência:</label>
@@ -343,7 +343,7 @@ $(function() {
 
 <form id="dados" name="dados" method="post">	
 	<div class="add-conta">
-        <label>Produtor: </label>
+        <label>Organizador: </label>
         <select id="produtor" name="produtor">
             <option value="-1">Selecione</option>
             <?php
@@ -369,7 +369,7 @@ $(function() {
 			<th class="text-right">Agência</th>
 			<th class="text-right">Conta</th>
 			<th class="text-center">Tipo da Conta</th>
-            <th class="text-left">Recebedor (Pagar.me)</th>
+            <!--th class="text-left">Recebedor (Pagar.me)</th-->
             <th class="text-left">Status</th>                
 			<th colspan="2" class="th-action">Ações</th>
 		</tr>
@@ -382,11 +382,11 @@ $(function() {
 		?>
 		<tr>
 			<td class="text-left"><?php echo utf8_encode($rs["ds_nome"]); ?></td>
-			<td class="text-left"><?php echo utf8_encode($rs["ds_banco"]); ?></td>
+			<td class="text-left"><?php echo utf8_encode($rs["cd_banco"] . " - " . $rs["ds_banco"]); ?></td>
 			<td class="text-right"><?php echo $agencia; ?></td>
 			<td class="text-right"><?php echo $conta; ?></td>
 			<td class="text-center"><?php echo $rs["cd_tipo_conta"] == "CC" ? "Conta Corrente" : "Conta Poupança"; ?></td>
-            <td class="text-left"><?php echo $rs["recipient_id"]; ?></td>
+            <!--td class="text-left"><?php //echo $rs["recipient_id"]; ?></td-->
             <td class="text-left"><?php echo $rs["in_ativo"] ? "Ativo" : "Inativo"; ?></td>
 			<td class="td-action"><a href="<?php echo $pagina; ?>?action=edit&id=<?php echo $id; ?>" class="button">Editar</a></td>
             <td class="td-action"><a href="<?php echo $pagina; ?>?action=delete&id=<?php echo $id; ?>" class="button">Apagar</a></td>

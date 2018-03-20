@@ -71,6 +71,7 @@ $(function() {
         tipo        = $("#tipo"),
         split       = $("#split"),
         status      = $("#status"),
+        transfer_day= $("#transfer_day"),
         allFields   = $([]).add(produtor).add(razao_social).add(cpf_cnpj).add(nome).add(email).add(celular).add(banco).add(conta).add(dv_conta_bancaria).add(agencia).add(tipo).add(split),
         tips        = $(".validateTips");
 
@@ -85,6 +86,7 @@ $(function() {
     $("#dv_conta_bancaria").keypress(verificaNumero);
     $("#split").keypress(verificaNumero);
     $("#cpf_cnpj").keypress(verificaNumero);
+    $("#transfer_day").keypress(verificaNumero);    
 
     $('#app table').delegate('a', 'click', function(event) {
         event.preventDefault();
@@ -113,6 +115,7 @@ $(function() {
             	$("#tipo").val(data.tipo);
             	$("#split").val(data.split);
             	$("#status").val(data.status);
+                $("#transfer_day").val(data.transfer_day);                
 
                 $("#razao_social").attr("readonly", true);
                 $("#cpf_cnpj").attr("readonly", true);
@@ -231,6 +234,15 @@ $(function() {
             cpf_cnpj.addClass('ui-state-error');
         }
 
+        if (!empty(transfer_day.val())) {
+            $transferday = intval(transfer_day.val());
+            if ($transferday<0 || $transferday>31) {
+                valid = false;
+                updateTips ("Dia da transferência precisa ser entre 1 e 31!");
+                transfer_day.addClass('ui-state-error');
+            }
+        }
+
         valid = valid && checkRegexp( email, emailRegex, "E-mail inválido!" );        
 
         if ( valid ) {
@@ -311,6 +323,8 @@ $(function() {
             <input type="text" id="telefone" name="telefone" maxlength="10" class="text ui-widget-content ui-corner-all" />
             <label for="celular">Celular:</label>
             <input type="text" id="celular" name="celular" maxlength="10" class="text ui-widget-content ui-corner-all" />
+            <label for="celular">Dia da transferência automática:</label>
+            <input type="text" id="transfer_day" name="transfer_day" maxlength="2" class="text ui-widget-content ui-corner-all" />
         </fieldset>
 
         <fieldset>

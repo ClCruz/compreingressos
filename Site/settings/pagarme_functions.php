@@ -255,7 +255,10 @@ function salvarRecebedorPagarme($data) {
  
 	$recipient = new PagarMe_Recipient(array(
 		"anticipatable_volume_percentage" => 100, 
-	    "automatic_anticipation_enabled" => false, 
+		"automatic_anticipation_enabled" => false, 
+		"transfer_enabled" => false,
+		"transfer_interval" => "monthly",
+		"transfer_day" => array_key_exists("transfer_day", $data) && isset($data["transfer_day"]) && $data["transfer_day"]!="" && !empty($data["transfer_day"]) ? $data["transfer_day"] : 0,
 	    "bank_account" => array(
 	    	"bank_code" => $data["banco"],
 	        "agencia" => $data["agencia"],

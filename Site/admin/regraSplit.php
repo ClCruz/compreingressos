@@ -289,6 +289,7 @@ $(function() {
                         .append('<tr>')
                         .append('<td>' + value.ds_razao_social + '</td>')
                         .append('<td>' + value.nr_percentual_split + '</td>')
+                        .append('<td>-</td>')
                         .append('<td class="td-action"><a href="<?php echo $pagina; ?>?action=edit&id='+ value.id_regra_split +'" class="button">Editar</a></td>')
                         .append('<td class="td-action"><a href="<?php echo $pagina; ?>?action=delete&id='+ value.id_regra_split +'" class="button">Apagar</a></td>')
                         .append('</tr>');

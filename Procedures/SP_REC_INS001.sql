@@ -23,7 +23,10 @@ CREATE PROCEDURE [dbo].[SP_REC_INS001]
 	@dv_conta_bancaria VARCHAR(2),
 	@cd_tipo_conta CHAR(2),
 	@id_produtor INT,
-	@in_ativo BIT
+	@in_ativo BIT,
+      @transfer_day INT,
+      @transfer_interval VARCHAR(10),
+      @transfer_enabled BIT
 AS
 	BEGIN TRANSACTION
 	SET NOCOUNT ON
@@ -44,7 +47,10 @@ AS
            ,[dv_conta_bancaria]
            ,[cd_tipo_conta]
            ,[id_produtor]
-           ,[in_ativo])
+           ,[in_ativo]
+           ,transfer_day
+           ,transfer_interval
+           ,transfer_enabled)
      VALUES
            (@ds_razao_social
            ,@cd_cpf_cnpj
@@ -61,7 +67,10 @@ AS
            ,@dv_conta_bancaria
            ,@cd_tipo_conta
            ,@id_produtor
-           ,@in_ativo)
+           ,@in_ativo
+           ,@transfer_day
+           ,@transfer_interval
+           ,@transfer_enabled)
 
 	SELECT @@IDENTITY AS id
 

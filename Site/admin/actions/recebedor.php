@@ -38,7 +38,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
 						trim($_POST["dv_conta_bancaria"]), 
 						$_POST["tipo"],
 						$_GET["produtor"],
-						$_POST["status"]);
+						$_POST["status"],
+						$_POST["transfer_day"]);
 
 		$rs = executeSQL($mainConnection, $query, $params, true);
 		
@@ -71,7 +72,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
 					  dv_conta_bancaria = ?,
 					  cd_tipo_conta = ?,
 					  id_produtor = ?,
-					  in_ativo = ?
+					  in_ativo = ?,
+					  transfer_enabled = ?,
+					  transfer_interval = ?,
+					  transfer_day = ?,
 				  WHERE id_recebedor = ?";
 
 		$params = array(strtoupper(utf8_decode(trim($_POST["razao_social"]))), 
@@ -90,6 +94,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
 						$_POST["tipo"],
 						$_GET["produtor"],
 						$_POST["status"],
+						$_POST["transfer_day"],
+						"monthly",
+						0,
 						$_GET['id']);
 
 		if (executeSQL($mainConnection, $query, $params)) {
@@ -133,7 +140,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
                    dv_conta_bancaria,
                    cd_tipo_conta,
                    id_produtor,
-                   in_ativo
+                   in_ativo,
+				   transfer_day,
+				   transfer_interval,
+				   transfer_enabled
                   FROM mw_recebedor WHERE id_recebedor = ?';
         $params = array($_GET['id']);
         $result = executeSQL($mainConnection, $query, $params);
@@ -153,7 +163,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
             	"conta_bancaria" => $rs["cd_conta_bancaria"],
             	"dv_conta_bancaria" => $rs["dv_conta_bancaria"],
             	"tipo" => $rs["cd_tipo_conta"],
-            	"status" => $rs["in_ativo"]
+				"status" => $rs["in_ativo"],
+				"transfer_day" => $rs["transfer_day"],
+				"transfer_interval" => $rs["transfer_interval"],
+				"transfer_enabled" => $rs["transfer_enabled"]
             );
         }
         $retorno = json_encode($ret);

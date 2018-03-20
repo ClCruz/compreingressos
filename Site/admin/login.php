@@ -76,11 +76,11 @@ require_once('header_new.php');
 			</form>
 			<?php } else { ?>
 			
-<div style="height: 100vh">
+<div>
 	<div class="flex-center flex-column">
 	
 		<div class="view overlay">
-			<img src="../images/menu_logo2.png" style="width:80%; max-width:180px;" class="mx-auto d-block mb-4" alt="">
+			<img src="../images/logo.png" style="width:100%; max-width:350px;" class="mx-auto d-block mb-4" alt="">
 			<a href="#">
 				<div class="mask rgba-white-slight"></div>
 			</a>
@@ -88,24 +88,26 @@ require_once('header_new.php');
 		
 		<div class="view overlay">
 		<h3>
-			<strong><font color="#FFFFFF" face="verdana" size="5">Seja bem-vindo!</font></strong><br><br>
-			<font color="#FFFFFF" face="verdana" size="3">Faça <b>login</b> para ter acesso a todas as <br>funcionalidades do Portal de Administração.</font>
+			<p class="text-center"><font color="#FFFFFF"  face="verdana" size="5">Seja bem-vindo!</font></strong></p>
+			<p class="text-center mt-2"><font color="#FFFFFF" face="verdana" size="3">Faça <b>login</b> para ter acesso a todas as <br>funcionalidades do Portal de Administração.</font></p>
 		</h3>
 		</div>
 
 	
 		<!--Card-->
-		<div class="card">
+		<div class="card mt-4">
 			<!--Card content-->
 			<div class="card-body">
 				<!--Title-->
-				<h4 class="card-title">Acesso - Administrativo</h4>
+				<h4 class="card-title">
+				<i class="fa fa-laptop" aria-hidden="true"></i>
+				Portal de Administração</h4>
 				<!--Text-->
 				<form action="autenticacao.php" method="post">
 
 					<!-- Material input email -->
 					<div class="md-form">
-						<i class="fa fa-envelope prefix grey-text"></i>
+						<i class="fa fa-user prefix grey-text"></i>
 						<input type="text" id="usuario" placeholder="Usuário" name="usuario" class="form-control">
 					</div>
 
@@ -116,7 +118,7 @@ require_once('header_new.php');
 					</div>
 
 					<div class="text-center mt-4">
-						<button class="btn btn-danger" id="Enviar" type="submit">Entrar</button>
+						<button class="btn btn-danger" id="enviar" type="submit">Entrar</button>
 					</div>
 				</form>
 			</div>

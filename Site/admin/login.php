@@ -80,7 +80,7 @@ require_once('header_new.php');
 	<div class="flex-center flex-column">
 	
 		<div class="view overlay">
-			<img src="../images/menu_logo2.png" class="mx-auto d-block z-depth-3 mt-3 mb-5" alt="">
+			<img src="../images/menu_logo2.png" style="width:80%; max-width:180px;" class="mx-auto d-block mb-4" alt="">
 			<a href="#">
 				<div class="mask rgba-white-slight"></div>
 			</a>
@@ -124,5 +124,5 @@ require_once('header_new.php');
 		</div>
     </div>
 <?php
-//require_once('footer.php');
+require_once('footer_new.php');
 ?>

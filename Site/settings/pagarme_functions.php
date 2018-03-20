@@ -277,12 +277,14 @@ function salvarRecebedorPagarme($data) {
 function atualizarRecebedorPagarme($data, $id) {
 	$recipient = PagarMe_Recipient::findById($id);
 
-    $recipient->setAnticipatableVolumePercentage(100);
+	$recipient->setAnticipatableVolumePercentage(100);
+
+	$recipient->setTransferDay(array_key_exists("transfer_day", $data) && isset($data["transfer_day"]) && $data["transfer_day"]!="" && !empty($data["transfer_day"]) ? $data["transfer_day"] : 0);
 
     $bank_account = new Pagarme_Bank_Account(array(
 	    	"bank_code" => $data["banco"],
 	        "agencia" => $data["agencia"],
-	        "agencia_dv" => $data["dv_agencia"],
+	        "agencia_dv" => array_key_exists("dv_agencia", $data) && isset($data["dv_agencia"]) && $data["dv_agencia"]!="" && !empty($data["dv_agencia"]) ? $data["dv_agencia"] : null,
 	        "conta" => $data["conta_bancaria"],
 	        "type" => $data["tipo"] == "CC" ? "conta_corrente" : "conta_poupanca",
 	        "conta_dv" => $data["dv_conta_bancaria"],

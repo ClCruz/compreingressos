@@ -96,9 +96,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
 						$_POST["tipo"],
 						$_GET["produtor"],
 						$_POST["status"],
-						$_POST["transfer_day"],
-						"monthly",
 						0,
+						"monthly",
+						$_POST["transfer_day"],
 						$_GET['id']);
 
 		if (executeSQL($mainConnection, $query, $params)) {

@@ -252,14 +252,14 @@ function tratarErroPagarme($error_obj, $id_pedido) {
 function salvarRecebedorPagarme($data) {	
 
 	$mainConnection = mainConnection();
-
+ 
 	$recipient = new PagarMe_Recipient(array(
 		"anticipatable_volume_percentage" => 100, 
 	    "automatic_anticipation_enabled" => false, 
 	    "bank_account" => array(
 	    	"bank_code" => $data["banco"],
 	        "agencia" => $data["agencia"],
-	        "agencia_dv" => $data["dv_agencia"],
+	        "agencia_dv" => array_key_exists("dv_agencia", $data) && isset($data["dv_agencia"]) && $data["dv_agencia"]!="" && !empty($data["dv_agencia"]) ? $data["dv_agencia"] : null,
 	        "conta" => $data["conta_bancaria"],
 	        "type" => $data["tipo"] == "CC" ? "conta_corrente" : "conta_poupanca",
 	        "conta_dv" => $data["dv_conta_bancaria"],

@@ -38,7 +38,8 @@ require_once('header_new.php');
 							if (data.substr(0, 4) == 'redi') {
 								document.location = data;
 							} else {
-								$.dialog({title: 'Aviso...', text: data});
+								$("#idmessagerror").html(data);
+								$("#iderroralert").show();
 							}
 						},
 						complete: function() {
@@ -93,6 +94,12 @@ require_once('header_new.php');
 		</h3>
 		</div>
 
+		<div id="iderroralert" class="alert alert-warning alert-dismissible fade show" style="display: none" role="alert">
+		  <button  type="button" class="close" data-dismiss="alert" aria-label="Close" onclick="javascript:$('#iderroralert').hide()">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		  <span id="idmessagerror"></span>
+		</div>
 	
 		<!--Card-->
 		<div class="card mt-4">
@@ -104,7 +111,6 @@ require_once('header_new.php');
 				Portal de Administração</h4>
 				<!--Text-->
 				<form action="autenticacao.php" method="post">
-
 					<!-- Material input email -->
 					<div class="md-form">
 						<i class="fa fa-user prefix grey-text"></i>

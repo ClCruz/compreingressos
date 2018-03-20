@@ -15,7 +15,7 @@ if ($_GET['action'] == 'logout') {
 require_once('../settings/settings.php');
 require_once('../settings/functions.php');
 
-require_once('header.php');
+require_once('header_new.php');
 ?>
     <div id='content'>
     	<div id='app'>
@@ -75,31 +75,54 @@ require_once('header.php');
 				</table>
 			</form>
 			<?php } else { ?>
-			<h2>Login 2</h2>
-			<!-- teste -->
-			<form action="autenticacao.php" method="post">
-				<table border="0" cellspacing="0" cellpadding="0">
-					<tr>
-						<td align="right">Usu&aacute;rio:</td>
-						<td><input type="text" name="usuario" /></td>
-					</tr>
-					<tr>
-						<td align="right">Senha:</td>
-						<td><input type="password" name="senha" /></td>
-					</tr>
-					<tr>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-					</tr>
-					<tr>
-						<td>&nbsp;</td>
-						<td><input type="submit" id="enviar" value="Enviar" /></td>
-					</tr>
-				</table>
-			</form>
+			
+<div style="height: 100vh">
+	<div class="flex-center flex-column">
+	
+		<div class="view overlay">
+			<img src="../images/menu_logo2.png" class="mx-auto d-block z-depth-3 mt-3 mb-5" alt="">
+			<a href="#">
+				<div class="mask rgba-white-slight"></div>
+			</a>
+		</div>
+
+	
+		<!--Card-->
+		<div class="card">
+			<!--Card content-->
+			<div class="card-body">
+				<!--Title-->
+				<h4 class="card-title">Acesso - Administrativo</h4>
+				<!--Text-->
+				<form action="autenticacao.php" method="post">
+
+					<!-- Material input email -->
+					<div class="md-form">
+						<i class="fa fa-envelope prefix grey-text"></i>
+						<input type="text" id="usuario" placeholder="Usuário" name="usuario" class="form-control">
+					</div>
+
+					<!-- Material input password -->
+					<div class="md-form">
+						<i class="fa fa-lock prefix grey-text"></i>
+						<input type="password" id="senha"placeholder="Senha" name="senha" class="form-control">
+					</div>
+
+					<div class="text-center mt-4">
+						<button class="btn btn-primary" id="Enviar" type="submit">Enviar</button>
+					</div>
+				</form>
+			</div>
+
+		</div>
+		<!--/.Card-->
+		
+	</div>
+</div>
+			
 			<?php } ?>
 		</div>
     </div>
 <?php
-require_once('footer.php');
+//require_once('footer.php');
 ?>

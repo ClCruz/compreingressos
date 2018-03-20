@@ -13,7 +13,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
 
 	if ($_GET['action'] == 'add') {
 
-		$query = "EXEC SP_REC_INS001 ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?";
+		$query = "EXEC SP_REC_INS001 ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?";
 		$dv_agencia = "";
 
 		if (!isset($_POST["dv_agencia"])) {
@@ -39,7 +39,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
 						$_POST["tipo"],
 						$_GET["produtor"],
 						$_POST["status"],
-						$_POST["transfer_day"]);
+						$_POST["transfer_day"],
+						"monthly",
+						0);
 
 		$rs = executeSQL($mainConnection, $query, $params, true);
 		
@@ -75,7 +77,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
 					  in_ativo = ?,
 					  transfer_enabled = ?,
 					  transfer_interval = ?,
-					  transfer_day = ?,
+					  transfer_day = ?
 				  WHERE id_recebedor = ?";
 
 		$params = array(strtoupper(utf8_decode(trim($_POST["razao_social"]))), 

@@ -234,9 +234,9 @@ $(function() {
             cpf_cnpj.addClass('ui-state-error');
         }
 
-        if (!empty(transfer_day.val())) {
-            $transferday = intval(transfer_day.val());
-            if ($transferday<0 || $transferday>31) {
+        if (transfer_day.val() != "") {
+            var transferday = Number(transfer_day.val());
+            if (transferday<0 || transferday>31) {
                 valid = false;
                 updateTips ("Dia da transferência precisa ser entre 1 e 31!");
                 transfer_day.addClass('ui-state-error');

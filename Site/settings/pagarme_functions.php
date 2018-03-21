@@ -17,6 +17,8 @@ if ($_ENV['IS_TEST']) {
 
 function pagarPedidoPagarme($id_pedido, $dados_extra) {
 	global $postback_url;
+	global $transaction;
+	global $response;
 
 	$mainConnection = mainConnection();
 
@@ -132,19 +134,19 @@ function pagarPedidoPagarme($id_pedido, $dados_extra) {
 	}
 
 	try {
-
+		//error_log("Executando o pagar.me");
 		$transaction = new PagarMe_Transaction($transaction_data);
 		$transaction->charge();
 
 		$response = array('success' => true, 'transaction' => $transaction);
-
-		$query = 'INSERT INTO MW_PEDIDO_PAGSEGURO (ID_PEDIDO_VENDA, DT_STATUS, CD_STATUS, OBJ_PAGSEGURO) VALUES (?, GETDATE(), ?, ?)';
-		$params = array($id_pedido, $transaction->status, base64_encode(serialize($transaction)));
-		executeSQL($mainConnection, $query, $params);
-
 	} catch (Exception $e) {
+		error_log("Erro no pagar.me: " . $e->getMessage());
 		$response = array('success' => false, 'error' => tratarErroPagarme($e, $id_pedido));
 	}
+	//error_log("Salvado dados que veio do pagar.me");
+	$query = 'INSERT INTO MW_PEDIDO_PAGSEGURO (ID_PEDIDO_VENDA, DT_STATUS, CD_STATUS, OBJ_PAGSEGURO) VALUES (?, GETDATE(), ?, ?)';
+	$params = array($id_pedido, $transaction->status, base64_encode(serialize($transaction)));
+	executeSQL($mainConnection, $query, $params);
 
 	return $response;
 }

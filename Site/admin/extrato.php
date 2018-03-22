@@ -241,6 +241,7 @@ $(function() {
             type: 'post',
             data: $('#dados').serialize(),
             success: function(data) {
+                valor_areceber = 0;
                 data = $.parseJSON(data);
                 $("#recebedor").html('<option value="-1">Selecione...</option>');
                 $.each(data, function(key, value) {
@@ -258,7 +259,10 @@ $(function() {
         });
     });
 
+    var valor_areceber = 0;
+
     function load_saldo() {
+        valor_areceber = 0;
         $(".disponivel span").html("R$ 0,00");
         $(".receber span").html("R$ 0,00");
         $.ajax({
@@ -269,9 +273,9 @@ $(function() {
                 data = $.parseJSON(data);
                 $.each(data, function(key, value) {
                     var valor_disponivel = data.available.amount / 100;
-                    var valor_areceber = data.waiting_funds.amount / 100;
+                    valor_areceber = data.waiting_funds.amount;
                     $(".disponivel span").html("R$ "+ valor_disponivel);
-                    $(".receber span").html("R$ "+ valor_areceber);
+                    $(".receber span").html("R$ "+ valor_areceber / 100);
                 });
                 var disponivel = ($(".disponivel span").val() > 0);
                 var receber = ($(".receber span").val() > 0);
@@ -345,6 +349,7 @@ $(function() {
     $("#btn-antecipacao").click(function(event){
         event.preventDefault();
         dialog.dialog( "open" );        
+        createSlider(valor_areceber);
     });
 
     function antecipar() {
@@ -366,6 +371,22 @@ $(function() {
         });
     }
 
+    function createSlider(maxAmout) {
+        if ($( "#slider-amount" ).hasClass("ui-slider"))
+            $( "#slider-amount" ).slider( "destroy" );
+        $( "#slider-amount" ).slider({
+            range: "max",
+            min: 0.1,
+            max: maxAmout/100,
+            step: 0.01,
+            value: 0.01,
+            slide: function( event, ui ) {
+                $( "#valor" ).val( ui.value );
+            }
+        });
+        $( "#valor" ).val( $( "#slider-amount" ).slider( "value" ) );
+    }
+
 });
 </script>
 <h2>Extrato</h2>
@@ -381,7 +402,8 @@ $(function() {
             </div>
 
             <label>Informe o Valor:</label>
-            <input type="text" name="valor" id="valor" class="text ui-widget-content ui-corner-all" />
+            <div id="slider-amount"></div>
+            <input type="text" name="valor" readonly id="valor" class="text ui-widget-content ui-corner-all" />
 
             <label>Prazo:</label>
             <input type="text" name="data" id="data" class="text ui-widget-content ui-corner-all" />

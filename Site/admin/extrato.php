@@ -176,7 +176,22 @@ $(function() {
             allFields.removeClass( "ui-state-error" );
         }
     });
+    function movement_objectTypeToString(value) {
+        var ret = value;
+        switch (ret) {
+            case "debit":
+                ret = "Débito";
+            break;
+            case "credit":
+                ret = "Crédito";
+            break;
+            case "boleto":
+                ret = "Boleto";
+            break;
 
+        }
+        return ret;
+    }
     function add() {
     	var valid = true;
         allFields.removeClass( 'ui-state-error' );
@@ -306,14 +321,24 @@ $(function() {
                 data = $.parseJSON(data);
                 $("#table-extrato tbody").html("");
 				if (data.length == 0)
-					$("#table-extrato tbody").html("<tr><td colspan='3'>Nenhum dado encontrado.</td></tr>");
+					$("#table-extrato tbody").html("<tr><td colspan='5'>Nenhum dado encontrado.</td></tr>");
+
+                var total = 0;
                 $.each(data, function(key, value) {
+                    total += value.amount-value.fee;
                     $("#table-extrato tbody").append("<tr>")
                                         .append("<td>"+ new Date(value.date_created).toJSON().slice(0, 10).split("-").reverse().join("/") +"</td>")
                                         .append("<td>"+ new Date(value.movement_object.payment_date).toJSON().slice(0, 10).split("-").reverse().join("/") +"</td>")
-                                       .append("<td class='text-right'>R$ "+ ((value.amount-value.fee)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>")
+                                        .append("<td>"+ movement_objectTypeToString(value.movement_object.type) +"</td>")
+                                        .append("<td class='text-right'>R$ "+ (value.amount/100).toFixed(2).toString().replace(',','').replace('.',',') + " - R$ " + (value.fee/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>")
+                                        .append("<td class='text-right'>R$ "+ ((value.amount-value.fee)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>")
                                        .append("</tr>");
                 });
+                $("#table-extrato tfoot").html("");
+                $("#table-extrato tfoot").append("<tr class=ui-widget-header'>")
+                                        //.append("<td class='text-right'>Total</td>")
+                                       .append("<td colspan='5' class='text-right ui-widget-header'>Total R$ "+ ((total)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>")
+                                       .append("</tr>");
             },
             error: function(){
                 $("#table-extrato tbody").html("");
@@ -472,16 +497,20 @@ $(function() {
 <table id="table-extrato" class="ui-widget ui-widget-content">
 	<thead>
 		<tr class="ui-widget-header">
-            <th width="100">Data da compra</th>
+            <th width="100">Data da venda</th>
             <th width="100">Data de pagamento</th>
+            <th width="100">Tipo</th>
+            <th width="100">Composição do valor</th>
 			<th class="text-right">Valor</th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
-			<td colspan="3">Nenhum registro no momento.</td>
+			<td colspan="5">Nenhum registro no momento.</td>
 		</tr>
-	</tbody>
+    </tbody>
+    <tfoot>
+    </tfoot>
 </table>
 
 <br/>

@@ -183,6 +183,7 @@ foreach ($itensPedido as $item) {
             'item_hora' => ($is_assinatura ? '' : $item['descricao_item']['hora']),
             'item_extra_style' => ($ingressosCount % 4 == 0 ? '' : 'border-right:2px dashed #EEEEEE;')
         );
+        $valores['workaround'] = $item['descricao_item']['workaround'];
     }
 
     // se nao tiver servico destacado ingressos é igual total

@@ -9,7 +9,7 @@ require_once('../settings/antiFraude.php');
 require('acessoPermitido.php');
 
 require('../settings/pagseguro_functions.php');
-require('../settings/pagarme_functions.php');
+require_once('../settings/pagarme_functions.php');
 require('../settings/tipagos_functions.php');
 require('../settings/cielo_functions.php');
 

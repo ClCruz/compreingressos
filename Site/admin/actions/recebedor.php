@@ -1,6 +1,6 @@
 <?php
 
-require('../settings/pagarme_functions.php');
+require_once('../settings/pagarme_functions.php');
 
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
 

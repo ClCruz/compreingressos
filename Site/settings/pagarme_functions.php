@@ -339,6 +339,14 @@ function consultarSplitPagarme($pedido) {
 	return $split;
 }
 
+function getDate($value) {
+	$ret = "";
+	if ($value!="") {
+		$ret =  (string)(strtotime($value)*1000);
+	}
+	return $ret;
+}
+
 function consultarExtratoRecebedorPagarme($recipient_id, $status, $start_date, $end_date, $count) {
 	$start_date_modified = "";
 	$end_date_modified = "";
@@ -355,7 +363,7 @@ function consultarExtratoRecebedorPagarme($recipient_id, $status, $start_date, $
 		$end_date_modified = $end_dateSplit[2] . "-" . $end_dateSplit[1] . "-" . $end_dateSplit[0];
 	}
 
-	$balance_operations = PagarMe_Recipient::getOperationHistory($recipient_id, $status, $count, $start_date_modified, $end_date_modified);
+	$balance_operations = PagarMe_Recipient::getOperationHistory($recipient_id, $status, $count, getDate($start_date_modified), getDate($end_date_modified));
 	// error_log("result is....");
 	// error_log($balance_operations->__toJSON(true));
 	return $balance_operations->__toJSON(true);
@@ -372,6 +380,38 @@ function efetuarSaquePagarme($recipient_id, $amount) {
 		$request->setParameters(array("amount" => $amount, "recipient_id" => $recipient_id));
 		$response = $request->run();
 		return array("status" => "success", "msg" => "A Transação de Saque foi efetuada com sucesso!");
+	} catch (Exception $e) {
+		return array("status" => "error", "msg" => $e->getMessage());
+	}
+}
+
+function verificarAntecipacao($recipient_id, $amount, $payment_date, $timeframe) {
+	try {
+		$request = new PagarMe_Request("/recipients/$recipient_id/bulk_anticipations", "POST");
+		$request->setParameters(array(
+			"payment_date" => getDate($payment_date),
+			"timeframe" => $timeframe,
+			"requested_amount" => $amount,
+			"build" => true
+		));
+		$response = $request->run();
+
+		error_log("...");
+		error_log($response);
+
+		$idToRemove = $response->getId();
+
+		error_log("2...");
+
+		$requestRemove = new PagarMe_Request("/recipients/$recipient_id/bulk_anticipations/bulk_anticipation_id", "DELETE");
+		$requestRemove->setParameters(array(
+			"recipient_id" => $recipient_id,
+			"bulk_anticipation_id" => $idToRemove
+		));
+		$responseRemove = $requestRemove->run();
+
+		error_log("3...");
+		return $response->__toJSON(true);
 	} catch (Exception $e) {
 		return array("status" => "error", "msg" => $e->getMessage());
 	}

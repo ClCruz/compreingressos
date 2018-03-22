@@ -323,7 +323,7 @@ $(function() {
             <input type="text" id="telefone" name="telefone" maxlength="10" class="text ui-widget-content ui-corner-all" />
             <label for="celular">Celular:</label>
             <input type="text" id="celular" name="celular" maxlength="10" class="text ui-widget-content ui-corner-all" />
-            <label for="celular">Dia da transferência automática:</label>
+            <label for="celular">Dia do mês para o repasse:</label>
             <input type="text" id="transfer_day" name="transfer_day" maxlength="2" class="text ui-widget-content ui-corner-all" />
         </fieldset>
 

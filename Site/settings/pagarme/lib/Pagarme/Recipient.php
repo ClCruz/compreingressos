@@ -26,16 +26,6 @@ class PagarMe_Recipient extends PagarMe_Model {
             $status = "waiting_funds";
         }
 
-        $start_date_timestamp = "";
-        $end_date_timestamp = "";
-
-        if ($start_date!="") {
-            $start_date_timestamp =  (string)(strtotime($start_date)*1000);
-        }
-        if ($end_date!="") {
-            $end_date_timestamp = (string)(strtotime($end_date)*1000);
-        }
-
         //error_log("start_date_timestamp " . $start_date_timestamp);
         //error_log("end_date_timestamp " . $end_date_timestamp);
 
@@ -45,8 +35,8 @@ class PagarMe_Recipient extends PagarMe_Model {
         $params = array("recipient_id"=> $recipientId
         ,"status" => $status
         ,"count"=> 1000
-        ,"start_date" => $start_date_timestamp
-        ,"end_date" => $end_date_timestamp
+        ,"start_date" => $start_date
+        ,"end_date" => $end_date
         );
 
         $response = $request->runWithParameter($params);

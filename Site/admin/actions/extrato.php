@@ -122,6 +122,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 		$valor = $_POST["valor"];		
 		$ret = efetuarAntecipacaoPagarme($_GET["recebedor"], $valor, $timestamp, $_POST["periodo"]);
 		$retorno = json_encode($ret);
+	}
+	else if ($_GET['action'] == 'verificaantecipacao') {
+		$ret = verificarAntecipacao($_GET["recebedor"], $_POST["valor"], $_POST["data"], $_POST["periodo"]);
+		$retorno = json_encode($ret);
 	} else {
 		$retorno = "Nenhuma ação executada.";
 	}

@@ -396,6 +396,21 @@ $(function() {
         });
     }
 
+    function verificaantecipacao() {
+        $.ajax({
+            url: pagina + '?action=verificaantecipacao&recebedor='+ recebedor.val(),
+            type: 'post',
+            data: $('#antecipacao').serialize(),
+            success: function(data) {
+                data = $.parseJSON(data);
+                console.log(data);
+            },
+            error: function(data){
+                $.dialog({text: data});
+                return false;
+            }
+        });
+    }
     function createSlider(maxAmout) {
         if ($( "#slider-amount" ).hasClass("ui-slider"))
             $( "#slider-amount" ).slider( "destroy" );
@@ -407,6 +422,7 @@ $(function() {
             value: 0.01,
             slide: function( event, ui ) {
                 $( "#valor" ).val( ui.value );
+                verificaantecipacao();
             }
         });
         $( "#valor" ).val( $( "#slider-amount" ).slider( "value" ) );
@@ -419,20 +435,22 @@ $(function() {
 <div id="dialog-form" title="Nova Antecipação">
 	<p class="validateTips"></p>
 	<form id="antecipacao" name="antecipacao" action="?p=extrato" method="POST">
-		<fieldset>
-			<label>Período:</label>
-            <div class="periodo">
-                <label>Início <input type="radio" name="periodo" value="start" selected /></label>
-                <label>Final <input type="radio" name="periodo" value="end"/></label>
-            </div>
-
-            <label>Informe o Valor:</label>
+        <fieldset>
+            <legend>Como deseja antecipar? </legend>
+            <label for="radio-1" style="display:inline"><input type="radio" name="periodo" checked id="periodo-1" class="radio" style="display:inline" value="start"> Do Início</label>
+            <label for="radio-2" style="display:inline"><input type="radio" name="periodo" id="periodo-2" class="radio" style="display:inline" value="end">Do Final</label>
+        </fieldset>
+        <br />
+        <fieldset>
+            <legend>Quando deseja receber? </legend>
+            <input type="text" name="data" id="data" class="text ui-widget-content ui-corner-all" />
+        </fieldset>
+        <br />
+        <fieldset>
+            <legend>Escolha o valor </legend>
             <div id="slider-amount"></div>
             <input type="text" name="valor" readonly id="valor" class="text ui-widget-content ui-corner-all" />
-
-            <label>Prazo:</label>
-            <input type="text" name="data" id="data" class="text ui-widget-content ui-corner-all" />
-		</fieldset>
+        </fieldset>
 	</form>
 </div>
 
@@ -461,9 +479,9 @@ $(function() {
 
         <label>Status:</label>
         <select id="status" name="status">
-            <option value="waiting_funds">Em espera</option>
-            <option value="available">Disponível</option>
-            <option value="transferred">Transferido</option>
+            <option value="waiting_funds">Saldo a Receber</option>
+            <option value="available">Saldo Disponível</option>
+            <option value="transferred">Saldo transferido</option>
         </select>
 
         <label>Periodo:</label>

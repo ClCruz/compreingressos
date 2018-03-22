@@ -339,11 +339,16 @@ function consultarSplitPagarme($pedido) {
 	return $split;
 }
 
-function getDate($value) {
+function getDatePagarMe($value) {
 	$ret = "";
 	if ($value!="") {
 		$ret =  (string)(strtotime($value)*1000);
 	}
+	return $ret;
+}
+
+function getAmountPagarMe($value) {
+	$ret = $value*100;
 	return $ret;
 }
 
@@ -363,7 +368,7 @@ function consultarExtratoRecebedorPagarme($recipient_id, $status, $start_date, $
 		$end_date_modified = $end_dateSplit[2] . "-" . $end_dateSplit[1] . "-" . $end_dateSplit[0];
 	}
 
-	$balance_operations = PagarMe_Recipient::getOperationHistory($recipient_id, $status, $count, getDate($start_date_modified), getDate($end_date_modified));
+	$balance_operations = PagarMe_Recipient::getOperationHistory($recipient_id, $status, $count, getDatePagarMe($start_date_modified), getDatePagarMe($end_date_modified));
 	// error_log("result is....");
 	// error_log($balance_operations->__toJSON(true));
 	return $balance_operations->__toJSON(true);
@@ -389,9 +394,9 @@ function verificarAntecipacao($recipient_id, $amount, $payment_date, $timeframe)
 	try {
 		$request = new PagarMe_Request("/recipients/$recipient_id/bulk_anticipations", "POST");
 		$request->setParameters(array(
-			"payment_date" => getDate($payment_date),
+			"payment_date" => getDatePagarMe($payment_date),
 			"timeframe" => $timeframe,
-			"requested_amount" => $amount,
+			"requested_amount" => getAmountPagarMe($amount),
 			"build" => true
 		));
 		$response = $request->run();

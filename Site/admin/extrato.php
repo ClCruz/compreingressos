@@ -404,6 +404,7 @@ $(function() {
             success: function(data) {
                 data = $.parseJSON(data);
                 console.log(data);
+                unblockAntecipacao();
             },
             error: function(data){
                 $.dialog({text: data});
@@ -411,6 +412,14 @@ $(function() {
             }
         });
     }
+
+    function blockAntecipacao() {
+        $("button > span:contains('Efetuar Antecipação')").parent().hide();
+    }
+    function unblockAntecipacao() {
+        $("button > span:contains('Efetuar Antecipação')").parent().show();
+    }
+
     function createSlider(maxAmout) {
         if ($( "#slider-amount" ).hasClass("ui-slider"))
             $( "#slider-amount" ).slider( "destroy" );
@@ -422,7 +431,7 @@ $(function() {
             value: 0.01,
             slide: function( event, ui ) {
                 $( "#valor" ).val( ui.value );
-                verificaantecipacao();
+                blockAntecipacao();
             }
         });
         $( "#valor" ).val( $( "#slider-amount" ).slider( "value" ) );
@@ -450,6 +459,15 @@ $(function() {
             <legend>Escolha o valor </legend>
             <div id="slider-amount"></div>
             <input type="text" name="valor" readonly id="valor" class="text ui-widget-content ui-corner-all" />
+        </fieldset>
+
+        <fieldset>
+            <legend>Resumo da antecipação</legend>
+            <input type="button" class="button" id="btnResumoAntecipacao" value="Recuperar resumo da antecipação" />&nbsp;
+            <span>Custo da antecipação:</span>
+            <span id="custoAntecipacao"></span>
+            <span>Valor total:</span>
+            <span id="valorAntecipacao"></span>
         </fieldset>
 	</form>
 </div>

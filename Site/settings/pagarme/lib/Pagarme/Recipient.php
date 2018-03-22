@@ -53,6 +53,22 @@ class PagarMe_Recipient extends PagarMe_Model {
         $response = $request->run();
         $class = get_called_class();
         return new $class($response);
+    }
+    
+    public static function getLimits($recipientId, $payment_date, $timeframe)
+	{
+		$request = new PagarMe_Request(
+            self::ENDPOINT_RECIPIENTS . '/' . $recipientId . '/bulk_anticipations/limits', 'GET'
+        );
+
+        $params = array("payment_date"=> $payment_date
+        ,"timeframe" => $timeframe
+        );
+
+        $response = $request->runWithParameter($params);
+
+        $class = get_called_class();
+        return new $class($response);
 	}
 
 }

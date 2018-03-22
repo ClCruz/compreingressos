@@ -128,7 +128,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 		$retorno = json_encode($ret);
 	}
 	else if ($_GET['action'] == 'antecipacaomaxmin') {
-		$ret = verificarAntecipacao($_GET["recebedor"], $_POST["data"], $_POST["periodo"]);
+		$ret = verificaMinimoMaximoAntecipacao($_GET["recebedor"], $_POST["data"], $_POST["periodo"]);
 		$retorno = json_encode($ret);
 	} else {
 		$retorno = "Nenhuma ação executada.";

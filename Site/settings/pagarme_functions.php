@@ -392,14 +392,11 @@ function efetuarSaquePagarme($recipient_id, $amount) {
 
 function verificaMinimoMaximoAntecipacao($recipient_id,  $payment_date, $timeframe) {
 	try {
-		$request = new PagarMe_Request("/recipients/$recipient_id/bulk_anticipations/limits", "GET");
-		$request->setParameters(array(
-			"payment_date" => getDatePagarMe($payment_date),
-			"timeframe" => $timeframe
-		));
-		$response = $request->run();
-
-		return $response->__toJSON(true);
+		$dateSplit = explode("/", $payment_date);
+		$date_modified = $dateSplit[2] . "-" . $dateSplit[1] . "-" . $dateSplit[0];
+	
+		$ret = PagarMe_Recipient::getLimits($recipient_id, $date_modified, $timeframe);
+		return $ret->__toJSON(true);
 	} catch (Exception $e) {
 		return array("status" => "error", "msg" => $e->getMessage());
 	}
@@ -407,9 +404,12 @@ function verificaMinimoMaximoAntecipacao($recipient_id,  $payment_date, $timefra
 
 function verificarAntecipacao($recipient_id, $amount, $payment_date, $timeframe) {
 	try {
+		$dateSplit = explode("/", $payment_date);
+		$date_modified = $dateSplit[2] . "-" . $dateSplit[1] . "-" . $dateSplit[0];
+
 		$request = new PagarMe_Request("/recipients/$recipient_id/bulk_anticipations", "POST");
 		$request->setParameters(array(
-			"payment_date" => getDatePagarMe($payment_date),
+			"payment_date" => getDatePagarMe($date_modified),
 			"timeframe" => $timeframe,
 			"requested_amount" => getAmountPagarMe($amount),
 			"build" => true

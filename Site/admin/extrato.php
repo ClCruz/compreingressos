@@ -70,7 +70,10 @@ $(function() {
     $("#cpf_cnpj").keypress(verificaNumero);
     $("#btn-saque").prop('disabled', true);
     $("#btn-antecipacao").prop('disabled', true);
-    $("#data").datepicker({minDate: 0, dateFormat: 'yy-mm-dd'});
+    $("#data").datepicker({minDate: 0, dateFormat: 'dd/mm/yy',
+        onClose: function(){
+            antecipacaoMaximoMinimo(); 
+			   }});
     $("#valor").numeric(",");
 
     $("#start_date").mask("99/99/9999");
@@ -371,10 +374,12 @@ $(function() {
         });
     });
 
+    
+
     $("#btn-antecipacao").click(function(event){
         event.preventDefault();
         dialog.dialog( "open" );        
-        antecipacaoMaximoMinimo();
+        
         //createSlider(valor_areceber);
     });
 
@@ -417,6 +422,10 @@ $(function() {
             }
         });
     }
+
+    $('#data').on('input',function(e){
+        antecipacaoMaximoMinimo();
+    });
 
     function verificaantecipacao() {
         $.ajax({

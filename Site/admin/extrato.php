@@ -76,7 +76,7 @@ $(function() {
     $("#start_date").mask("99/99/9999");
     $("#end_date").mask("99/99/9999");
 
-    $('#start_date').datepicker({
+    $('.extratoSearch').datepicker({
             changeMonth: true,
             changeYear: true,
             onSelect: function(date, e) {
@@ -298,13 +298,16 @@ $(function() {
             url: pagina + '?action=load',
             type: 'post',
             data: $('#dados').serialize(),
-            success: function(data) {
+            success: function(data) {	
                 data = $.parseJSON(data);
                 $("#table-extrato tbody").html("");
+				if (data.length == 0)
+					$("#table-extrato tbody").html("<tr><td colspan='3'>Nenhum dado encontrado.</td></tr>");
                 $.each(data, function(key, value) {
-                    $("#table-extrato").append("<tr>")
-                                       .append("<td>"+ value.date_created +"</td>")
-                                       .append("<td>"+ value.amount +"</td>")
+                    $("#table-extrato tbody").append("<tr>")
+                                        .append("<td>"+ new Date(value.date_created).toJSON().slice(0, 10).split("-").reverse().join("/") +"</td>")
+                                        .append("<td>"+ new Date(value.movement_object.payment_date).toJSON().slice(0, 10).split("-").reverse().join("/") +"</td>")
+                                       .append("<td class='text-right'>R$ "+ ((value.amount-value.fee)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>")
                                        .append("</tr>");
                 });
             },
@@ -417,8 +420,8 @@ $(function() {
         </select>
 
         <label>Periodo:</label>
-        <input type="text" id="start_date" name="start_date" class="datepicker" />
-        <input type="text" id="end_date" name="end_date" class="datepicker" />
+        <input type="text" id="start_date" name="start_date" class="datepicker extratoSearch" />
+        <input type="text" id="end_date" name="end_date" class="datepicker extratoSearch" />
 
         <input type="hidden" id="count" name="count" value="1000" />
         <input type="button" class="button" id="btnBuscarExtrato" value="Buscar historico" />&nbsp;
@@ -447,8 +450,8 @@ $(function() {
 <table id="table-extrato" class="ui-widget ui-widget-content">
 	<thead>
 		<tr class="ui-widget-header">
-			<th width="100">Data</th>
-			<th class="text-left">Dia</th>
+            <th width="100">Data da compra</th>
+            <th width="100">Data de pagamento</th>
 			<th class="text-right">Valor</th>
 		</tr>
 	</thead>

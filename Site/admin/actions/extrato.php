@@ -90,7 +90,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 		, $_POST["start_date"]
 		, $_POST["end_date"]
 		, $_POST["count"]);
-		error_log("aqui..." . $retorno);
+		//error_log("aqui..." . $retorno);
 		//consultarExtratoRecebedorPagarme2($_POST["recebedor"]);
 	} else if ($_GET['action'] == 'load_saldo'){
 		$retorno = consultarSaldoRecebedorPagarme($_POST["recebedor"]);

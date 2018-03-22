@@ -30,14 +30,14 @@ class PagarMe_Recipient extends PagarMe_Model {
         $end_date_timestamp = "";
 
         if ($start_date!="") {
-            $start_date_timestamp =  (string)strtotime($start_date);
+            $start_date_timestamp =  (string)(strtotime($start_date)*1000);
         }
         if ($end_date!="") {
-            $end_date_timestamp = (string)strtotime($end_date);
+            $end_date_timestamp = (string)(strtotime($end_date)*1000);
         }
 
-        error_log("start_date_timestamp " . $start_date_timestamp);
-        error_log("end_date_timestamp " . $end_date_timestamp);
+        //error_log("start_date_timestamp " . $start_date_timestamp);
+        //error_log("end_date_timestamp " . $end_date_timestamp);
 
 		$request = new PagarMe_Request(
             '/balance/operations', 'GET'

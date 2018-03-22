@@ -374,7 +374,12 @@ $(function() {
     $("#btn-antecipacao").click(function(event){
         event.preventDefault();
         dialog.dialog( "open" );        
-        createSlider(valor_areceber);
+        antecipacaoMaximoMinimo();
+        //createSlider(valor_areceber);
+    });
+
+    $("#btnResumoAntecipacao").click(function(event){
+        verificaantecipacao();
     });
 
     function antecipar() {
@@ -388,6 +393,23 @@ $(function() {
                 if(data.status == 'success') {                    
                     dialog.dialog( "close" );
                 }
+            },
+            error: function(data){
+                $.dialog({text: data});
+                return false;
+            }
+        });
+    }
+
+    function antecipacaoMaximoMinimo() {
+        
+        $.ajax({
+            url: pagina + '?action=antecipacaomaxmin&recebedor='+ recebedor.val(),
+            type: 'post',
+            data: $('#antecipacao').serialize(),
+            success: function(data) {
+                data = $.parseJSON(data);
+                console.log(data);
             },
             error: function(data){
                 $.dialog({text: data});

@@ -390,6 +390,21 @@ function efetuarSaquePagarme($recipient_id, $amount) {
 	}
 }
 
+function verificaMinimoMaximoAntecipacao($recipient_id,  $payment_date, $timeframe) {
+	try {
+		$request = new PagarMe_Request("/recipients/$recipient_id/bulk_anticipations/limits", "GET");
+		$request->setParameters(array(
+			"payment_date" => getDatePagarMe($payment_date),
+			"timeframe" => $timeframe
+		));
+		$response = $request->run();
+
+		return $response->__toJSON(true);
+	} catch (Exception $e) {
+		return array("status" => "error", "msg" => $e->getMessage());
+	}
+}
+
 function verificarAntecipacao($recipient_id, $amount, $payment_date, $timeframe) {
 	try {
 		$request = new PagarMe_Request("/recipients/$recipient_id/bulk_anticipations", "POST");

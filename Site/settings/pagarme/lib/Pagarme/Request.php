@@ -36,6 +36,29 @@ class PagarMe_Request extends PagarMe {
 			}
 		}
 	}
+	public function runWithParameter($input)
+	{
+		if(!parent::getApiKey()) {
+			throw new PagarMe_Exception("You need to configure API key before performing requests.");
+		}
+		$input["api_key"] = parent::getApiKey();
+		$this->parameters = array_merge($this->parameters, $input);
+		// var_dump($this->parameters);
+		// $this->headers = (PagarMe::live) ? array("X-Live" => 1) : array();
+		$client = new RestClient(array("method" => $this->method, "url" => $this->full_api_url($this->path), "headers" => $this->headers, "parameters" => $this->parameters ));
+		$response = $client->run();
+		$decode = json_decode($response["body"], true);
+		if($decode === NULL) {
+			throw new Exception("Failed to decode json from response.\n\n Response: ".$response);
+		} else {
+			if($response["code"] == 200) {
+				return $decode;
+
+			} else {
+				throw PagarMe_Exception::buildWithFullMessage($decode);
+			}
+		}
+	}
 
 
 	public function setParameters($parameters)

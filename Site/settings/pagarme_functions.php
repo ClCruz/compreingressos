@@ -339,8 +339,29 @@ function consultarSplitPagarme($pedido) {
 	return $split;
 }
 
-function consultarExtratoRecebedorPagarme($recipient_id) {
+function consultarExtratoRecebedorPagarme3($recipient_id) {
 	$balance_operations = PagarMe_Recipient::findAllByRecipientId($recipient_id);
+	return $balance_operations->__toJSON(true);
+}
+function consultarExtratoRecebedorPagarme($recipient_id, $status, $start_date, $end_date, $count) {
+	$start_date_modified = "";
+	$end_date_modified = "";
+
+	if ($start_date!="")
+	{
+		$start_dateSplit = explode("/", $start_date);
+		$start_date_modified = $start_dateSplit[2] . "-" . $start_dateSplit[1] . "-" . $start_dateSplit[0];
+	}
+
+	if ($end_date!="")
+	{
+		$end_dateSplit = explode("/", $end_date);
+		$end_date_modified = $end_dateSplit[2] . "-" . $end_dateSplit[1] . "-" . $end_dateSplit[0];
+	}
+	
+	$balance_operations = PagarMe_Recipient::getOperationHistory($recipient_id, $status, $count, $start_date_modified, $end_date_modified);
+	// error_log("result is....");
+	// error_log($balance_operations->__toJSON(true));
 	return $balance_operations->__toJSON(true);
 }
 

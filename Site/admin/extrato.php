@@ -73,6 +73,29 @@ $(function() {
     $("#data").datepicker({minDate: 0, dateFormat: 'yy-mm-dd'});
     $("#valor").numeric(",");
 
+    $("#start_date").mask("99/99/9999");
+    $("#end_date").mask("99/99/9999");
+
+    $('#start_date').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            onSelect: function(date, e) {
+                if ($(this).is('#start_date')) {
+                    $('#end_date').datepicker('option', 'minDate', $(this).datepicker('getDate'));
+                }
+            }
+        }).datepicker('option', $.datepicker.regional['pt-BR']);
+
+    function formatar(src, mask){
+        var i = src.value.length;
+        var saida = mask.substring(0,1);
+        var texto = mask.substring(i)
+        if (texto.substring(0,1) != saida)
+        {
+            src.value += texto.substring(0,1);
+        }
+    }
+
     $('#app table').delegate('a', 'click', function(event) {
         event.preventDefault();
 
@@ -265,10 +288,11 @@ $(function() {
         });
     }
 
-    $("#recebedor").change(function() {
-        
-        load_saldo();
+    $("#recebedor").change(function() {        
+        load_saldo();        
+    });
 
+    $("#btnBuscarExtrato").click(function(event) {
         $("#table-extrato tbody").html("");
         $.ajax({
             url: pagina + '?action=load',
@@ -279,7 +303,6 @@ $(function() {
                 $("#table-extrato tbody").html("");
                 $.each(data, function(key, value) {
                     $("#table-extrato").append("<tr>")
-                                       .append("<td>"+ value.date_created +"</td>")
                                        .append("<td>"+ value.date_created +"</td>")
                                        .append("<td>"+ value.amount +"</td>")
                                        .append("</tr>");
@@ -294,7 +317,6 @@ $(function() {
                 return false;
             }
         });
-        
     });
 
     $("#btn-saque").click(function(event){
@@ -386,6 +408,21 @@ $(function() {
         <select id="recebedor" name="recebedor">
             <option value="-1">Selecione</option>
         </select>
+
+        <label>Status:</label>
+        <select id="status" name="status">
+            <option value="waiting_funds">Em espera</option>
+            <option value="available">Disponível</option>
+            <option value="transferred">Transferido</option>
+        </select>
+
+        <label>Periodo:</label>
+        <input type="text" id="start_date" name="start_date" class="datepicker" />
+        <input type="text" id="end_date" name="end_date" class="datepicker" />
+
+        <input type="hidden" id="count" name="count" value="1000" />
+        <input type="button" class="button" id="btnBuscarExtrato" value="Buscar historico" />&nbsp;
+
     </div>
 
     <div class="actions">

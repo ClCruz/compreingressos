@@ -117,10 +117,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 		$ret = efetuarSaquePagarme($_POST["recebedor"], 100);
 		$retorno = json_encode($ret);
 	} else if ($_GET['action'] == 'antecipacao') {
-		$data = new DateTime($_POST["data"]);
-		$timestamp = $data->getTimestamp() * 1000;
-		$valor = $_POST["valor"];		
-		$ret = efetuarAntecipacaoPagarme($_GET["recebedor"], $valor, $timestamp, $_POST["periodo"]);
+		$ret = efetuarAntecipacaoPagarme($_GET["recebedor"], $_POST["valor"], $_POST["data"], $_POST["periodo"]);
 		$retorno = json_encode($ret);
 	}
 	else if ($_GET['action'] == 'verificaantecipacao') {

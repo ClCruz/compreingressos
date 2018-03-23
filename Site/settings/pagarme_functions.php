@@ -414,11 +414,14 @@ function verificarAntecipacao($recipient_id, $amount, $payment_date, $timeframe)
 
 function efetuarAntecipacaoPagarme($recipient_id, $amount, $payment_date, $timeframe) {
 	try {
+		$dateSplit = explode("/", $payment_date);
+		$date_modified = getDatePagarMe($dateSplit[2] . "-" . $dateSplit[1] . "-" . $dateSplit[0]);
+
 		$request = new PagarMe_Request("/recipients/$recipient_id/bulk_anticipations", "POST");
 		$request->setParameters(array(
-			"payment_date" => $payment_date,
+			"payment_date" => $date_modified,
 			"timeframe" => $timeframe,
-			"requested_amount" => $amount,
+			"requested_amount" => getAmountPagarMe($amount),
 			"build" => false
 		));
 		$response = $request->run();

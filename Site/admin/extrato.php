@@ -40,6 +40,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
     .fields label {display:block; font-weight: bold;}
     .fields select {width: 70%; margin-bottom: 10px;}
     .actions{width: 50%; float: right;}
+
 </style>
 <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
 <script src="../javascripts/jquery.maskedinput.min.js" type="text/javascript"></script>
@@ -169,10 +170,12 @@ $(function() {
         buttons: {
             "Efetuar Antecipação": antecipar,
             Cancelar: function() {
+                destroySlider();
                 dialog.dialog( "close" );
             }
         },
         close: function() {
+            destroySlider();
             document.forms[1].reset();
             id.val("");
             tips.text("");
@@ -378,6 +381,7 @@ $(function() {
 
     $("#btn-antecipacao").click(function(event){
         event.preventDefault();
+        destroySlider();
         dialog.dialog( "open" );
     });
 
@@ -448,9 +452,13 @@ $(function() {
                 var amount = data.amount;
                 var fee = data.fee;
                 var antfee = data.anticipation_fee;
-                var valor = (amount-fee-antfee)*100;
+                var valor = (amount-fee-antfee)/100;
+
+                $("#custoAntecipacaoFull").show();
+                $("#valorAntecipacaoFull").show();
+
                 $("#custoAntecipacao").val("R$ " + valor.toFixed(2).toString().replace(',','').replace('.',','));
-                $("#valorAntecipacao").val("R$ " + antfee.toFixed(2).toString().replace(',','').replace('.',','));
+                $("#valorAntecipacao").val("R$ " + (antfee/100).toFixed(2).toString().replace(',','').replace('.',','));
 
                 unblockAntecipacao();
             },
@@ -471,6 +479,11 @@ $(function() {
         if ($( "#slider-amount" ).hasClass("ui-slider"))
             $( "#slider-amount" ).slider( "destroy" );
 
+
+        blockAntecipacao();
+        $("#valorAntecipacaoFull").hide();
+        $("#custoAntecipacaoFull").hide();
+
         $("#fsResumo").hide();
         $("#fsValor").hide();
     }
@@ -486,6 +499,8 @@ $(function() {
             value: 0.01,
             slide: function( event, ui ) {
                 $( "#valor" ).val( ui.value );
+                $("#custoAntecipacaoFull").hide();
+                $("#valorAntecipacaoFull").hide();
                 blockAntecipacao();
             }
         });
@@ -518,12 +533,16 @@ $(function() {
 
         <fieldset id="fsResumo" style="display:none">
             <legend>Resumo da antecipação</legend>
-            <input type="button" class="button" id="btnResumoAntecipacao" value="Recuperar resumo da antecipação" />&nbsp;
-            <span>Custo da antecipação:</span>
-            <span id="custoAntecipacao"></span>
+            <input type="button" class="button" id="btnResumoAntecipacao" value="Avançar" />&nbsp;
+                <div class="myInput" id="custoAntecipacaoFull" style="display:none">
+                    <label for="custoAntecipacao">Custo Antecipação</label>
+                    <input type="text" id="custoAntecipacao" readonly placeholder="R$ 0,00">
+                </div>
             <br />
-            <span>Valor total:</span>
-            <span id="valorAntecipacao"></span>
+                <div class="myInput" id="valorAntecipacaoFull" style="display:none">
+                    <label for="valorAntecipacao">Valor Antecipação</label>
+                    <input type="text" id="valorAntecipacao" readonly placeholder="R$ 0,00">
+                </div>
         </fieldset>
 	</form>
 </div>

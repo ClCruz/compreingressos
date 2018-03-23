@@ -81,24 +81,17 @@ class PagarMe_Recipient extends PagarMe_Model {
         ,"requested_amount" => $amount
         ,"build" => true
         );
-        error_log("1.");
         $response = $request->runWithParameter($params);
-        error_log("2.");
         $class = get_called_class();
-        error_log("3.");
-        $id = $response->getId();
-        error_log("4.");
-        error_log("5." . $id);
+        $ret = new $class($response);
+        $id = $ret->getId();
         $request2 = new PagarMe_Request(
-            self::ENDPOINT_RECIPIENTS . '/' . $recipientId . '/bulk_anticipations/' . $id, 'DELETE'
+           self::ENDPOINT_RECIPIENTS . '/' . $recipientId . '/bulk_anticipations/' . $id, 'DELETE'
         );
-        error_log("6.");
         $params2 = array("build" => true);
-        error_log("7.");
         $response2 = $request2->runWithParameter($params2);
-        error_log("8.");
 
-        return new $class($response);
+        return $ret;
 	}
 
 }

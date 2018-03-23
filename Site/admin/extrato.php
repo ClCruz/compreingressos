@@ -419,12 +419,15 @@ $(function() {
                     $.dialog({text: obj.errors[0].message});
                     $("#data").val("");
                     destroySlider();
+                    blockAntecipacao();
                 }
                 else {
                     createSlider(obj.minimum.amount, obj.maximum.amount);
                 }
             },
             error: function(data){
+                destroySlider();
+                blockAntecipacao();
                 $.dialog({text: data});
                 return false;
             }
@@ -442,7 +445,13 @@ $(function() {
             data: $('#antecipacao').serialize(),
             success: function(data) {
                 data = $.parseJSON(data);
-                console.log(data);
+                var amount = data.amount;
+                var fee = data.fee;
+                var antfee = data.anticipation_fee;
+                var valor = (amount-fee-antfee)*100;
+                $("#custoAntecipacao").val("R$ " + valor.toFixed(2).toString().replace(',','').replace('.',','));
+                $("#valorAntecipacao").val("R$ " + antfee.toFixed(2).toString().replace(',','').replace('.',','));
+
                 unblockAntecipacao();
             },
             error: function(data){
@@ -512,6 +521,7 @@ $(function() {
             <input type="button" class="button" id="btnResumoAntecipacao" value="Recuperar resumo da antecipação" />&nbsp;
             <span>Custo da antecipação:</span>
             <span id="custoAntecipacao"></span>
+            <br />
             <span>Valor total:</span>
             <span id="valorAntecipacao"></span>
         </fieldset>

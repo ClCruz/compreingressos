@@ -289,6 +289,7 @@ $(function() {
     }
 
     function load_saldo() {
+        loading(".saldo");
         valor_areceber = 0;
         $(".disponivel span").html("R$ 0,00");
         $(".receber span").html("R$ 0,00");
@@ -308,7 +309,8 @@ $(function() {
                 var receber = ($(".receber span").val() > 0);
                 
                 $("#btn-saque").prop('disabled', disponivel);
-                $("#btn-antecipacao").prop('disabled', receber);                
+                $("#btn-antecipacao").prop('disabled', receber);    
+                $(".saldo").loading("stop");            
             },
             error: function(){
                 $(".disponivel span").html("R$ 0,00");
@@ -403,11 +405,13 @@ $(function() {
     });
 
     function antecipar() {
+        loading(".ui-dialog");
         $.ajax({
             url: pagina + '?action=antecipacao&recebedor='+ recebedor.val(),
             type: 'post',
             data: $('#antecipacao').serialize(),
             success: function(data) {
+                $(".ui-dialog").loading("stop");
                 data = $.parseJSON(data);
                 $.dialog({text: data.msg.split("\n").join("<br />")});
                 if(data.status == 'success') {                    
@@ -415,6 +419,7 @@ $(function() {
                 }
             },
             error: function(data){
+                $(".ui-dialog").loading("stop");
                 $.dialog({text: data});
                 return false;
             }
@@ -425,6 +430,7 @@ $(function() {
         if ($("#data").val() == "") {
             return;
         }
+        loading(".ui-dialog");
         $.ajax({
             url: pagina + '?action=antecipacaomaxmin&recebedor='+ recebedor.val(),
             type: 'post',
@@ -441,8 +447,10 @@ $(function() {
                 else {
                     createSlider(obj.minimum.amount, obj.maximum.amount);
                 }
+                $(".ui-dialog").loading("stop");
             },
             error: function(data){
+                $(".ui-dialog").loading("stop");
                 destroySlider();
                 blockAntecipacao();
                 $.dialog({text: data});
@@ -451,8 +459,25 @@ $(function() {
         });
     }
 
+    function loading(id, message) {
+        message = message == undefined || message == null ? "Carregando" : message;
+        $(id).loading(
+            { 
+                theme: 'dark',
+                stoppable: true, 
+                message: message,
+                onStart: function(loading) {
+                    loading.overlay.slideDown(400);
+                },
+                onStop: function(loading) {
+                    loading.overlay.slideUp(400);
+                }
+            });
+    }
+
     function getTransaction(id) {
-        $("#table-extrato").loading('Carregando...');
+        loading("#table-extrato");
+        $().loading({ stoppable: true, message: "Carregando..." });
         $.ajax({
             url: pagina + '?action=gettransaction&transaction_id='+ id,
             type: 'post',
@@ -480,10 +505,13 @@ $(function() {
                 });
                 message+="<br />";
                 //console.log(obj);
+                $("#table-extrato").loading("stop");
                 $.dialog({text: message});
             },
             error: function(data){
                 $.dialog({text: data});
+                $("#table-extrato").loading("stop");
+                
                 return false;
             }
         });
@@ -494,6 +522,7 @@ $(function() {
     });
 
     function verificaantecipacao() {
+        loading(".ui-dialog");
         $.ajax({
             url: pagina + '?action=verificaantecipacao&recebedor='+ recebedor.val(),
             type: 'post',
@@ -512,8 +541,10 @@ $(function() {
                 $("#valorAntecipacao").val("R$ " + (antfee/100).toFixed(2).toString().replace(',','').replace('.',','));
 
                 unblockAntecipacao();
+                $(".ui-dialog").loading("stop");
             },
             error: function(data){
+                $(".ui-dialog").loading("stop");
                 $.dialog({text: data});
                 return false;
             }

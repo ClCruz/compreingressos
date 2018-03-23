@@ -282,6 +282,10 @@ $(function() {
 
     var valor_areceber = 0;
 
+    function lineClick(id) {
+        getTransaction(id);
+    }
+
     function load_saldo() {
         valor_areceber = 0;
         $(".disponivel span").html("R$ 0,00");
@@ -312,11 +316,11 @@ $(function() {
             }
         });
     }
-
+    
     $("#recebedor").change(function() {        
         load_saldo();        
     });
-
+    
     $("#btnBuscarExtrato").click(function(event) {
         $("#table-extrato tbody").html("");
         $.ajax({
@@ -332,19 +336,26 @@ $(function() {
                 var total = 0;
                 $.each(data, function(key, value) {
                     total += value.amount-value.fee;
-                    $("#table-extrato tbody").append("<tr>")
-                                        .append("<td>"+ new Date(value.date_created).toJSON().slice(0, 10).split("-").reverse().join("/") +"</td>")
-                                        .append("<td>"+ new Date(value.movement_object.payment_date).toJSON().slice(0, 10).split("-").reverse().join("/") +"</td>")
-                                        .append("<td>"+ movement_objectTypeToString(value.movement_object.type) +"</td>")
-                                        .append("<td class='text-right'>R$ "+ (value.amount/100).toFixed(2).toString().replace(',','').replace('.',',') + " - R$ " + (value.fee/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>")
-                                        .append("<td class='text-right'>R$ "+ ((value.amount-value.fee)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>")
-                                       .append("</tr>");
+                    
+                    //console.log(value);
+                    var toAppend = "<tr style='cursor: pointer;' id='" + value.movement_object.transaction_id + "' class='toClick' data='" + value.movement_object.transaction_id + "'><td>" + new Date(value.date_created).toJSON().slice(0, 10).split("-").reverse().join("/") +"</td>";
+                    toAppend += "<td>"+ new Date(value.movement_object.payment_date).toJSON().slice(0, 10).split("-").reverse().join("/") +"</td>";
+                    toAppend += "<td>"+ movement_objectTypeToString(value.movement_object.type) +"</td>";
+                    toAppend += "<td class='text-right'>R$ "+ (value.amount/100).toFixed(2).toString().replace(',','').replace('.',',') + " - R$ " + (value.fee/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                    toAppend += "<td class='text-right'>R$ "+ ((value.amount-value.fee)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                    toAppend += "</tr>";
+                    $("#table-extrato tbody").append(toAppend);
                 });
                 $("#table-extrato tfoot").html("");
-                $("#table-extrato tfoot").append("<tr class=ui-widget-header'>")
-                                        //.append("<td class='text-right'>Total</td>")
-                                       .append("<td colspan='5' class='text-right ui-widget-header'>Total R$ "+ ((total)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>")
-                                       .append("</tr>");
+
+                var toAppend = "<tr class=ui-widget-header'>"
+                toAppend += "<td colspan='5' class='text-right ui-widget-header'>Total R$ "+ ((total)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                toAppend += "</tr>";
+                $("#table-extrato tfoot").append(toAppend);
+
+                $(".toClick").click(function(obj) {
+                    lineClick($(this).attr("data"));
+                });
             },
             error: function(){
                 $("#table-extrato tbody").html("");
@@ -432,6 +443,36 @@ $(function() {
             error: function(data){
                 destroySlider();
                 blockAntecipacao();
+                $.dialog({text: data});
+                return false;
+            }
+        });
+    }
+
+    function getTransaction(id) {
+        $.ajax({
+            url: pagina + '?action=gettransaction&transaction_id='+ id,
+            type: 'post',
+            data: $('#antecipacao').serialize(),
+            success: function(aux) {
+                var obj = $.parseJSON(aux);
+                var message = "Nome do cliente: " + (obj.customerName == "" ? obj.customerName : obj.card_holder_name);
+                message+="<br /><br /><br /><p>Regras do Split:</p>"; 
+                $.each(obj.split, function( index, value ){
+                    var amount = (value.amount/100).toFixed(2).toString().replace(',','').replace('.',','); 
+                    var fee = (value.fee/100).toFixed(2).toString().replace(',','').replace('.',','); 
+                    var total = ((value.amount-value.fee)/100).toFixed(2).toString().replace(',','').replace('.',','); 
+                    message+="<br />"; 
+                    message+="<p>" + value.name + "</p>";
+                    message+="<p>Valor sem taxas: R$ " + amount + "</p>";
+                    message+="<p>Taxas: R$ " + fee + "</p>";
+                    message+="<p>Valor a receber: R$" + total + "</p>";
+                });
+                message+="<br />";
+                //console.log(obj);
+                $.dialog({text: message});
+            },
+            error: function(data){
                 $.dialog({text: data});
                 return false;
             }

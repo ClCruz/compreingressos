@@ -390,6 +390,16 @@ function efetuarSaquePagarme($recipient_id, $amount) {
 	}
 }
 
+function getTransaction($transaction_id) {
+	try {
+		$ret = PagarMe_Recipient::getTransaction($transaction_id);
+		//error_log($ret);
+		return $ret;
+	} catch (Exception $e) {
+		return array("status" => "error", "msg" => $e->getMessage());
+	}
+}
+
 function verificaMinimoMaximoAntecipacao($recipient_id,  $payment_date, $timeframe) {
 	try {
 		$dateSplit = explode("/", $payment_date);

@@ -14,6 +14,29 @@ class PagarMe_Recipient extends PagarMe_Model {
         $class = get_called_class();
         return new $class($response);
     }
+
+
+    public static function findRecebedor($recipientId)
+	{
+		$request = new PagarMe_Request(
+            self::ENDPOINT_RECIPIENTS . '/' . $recipientId, 'GET'
+        );
+
+        $response = $request->run();
+        $class = get_called_class();
+        return new $class($response);
+    }
+
+    public static function findBankAccount($bank_account_id)
+	{
+		$request = new PagarMe_Request(
+             '/bank_accounts/' . $bank_account_id, 'GET'
+        );
+
+        $response = $request->run();
+        $class = get_called_class();
+        return new $class($response);
+    }
     
 
     public static function getOperationHistory($recipientId, $status, $count, $start_date, $end_date)
@@ -53,6 +76,79 @@ class PagarMe_Recipient extends PagarMe_Model {
         $response = $request->run();
         $class = get_called_class();
         return new $class($response);
+    }
+
+    public static function getTransaction($transaction_id)
+	{
+		$request = new PagarMe_Request(
+            '/transactions/' . $transaction_id, 'GET'
+        );
+        $params = array("transaction_id"=> $transaction_id);
+        $response = $request->runWithParameter($params);
+        $class = get_called_class();
+        $transactions = new $class($response);
+
+        $request2 = new PagarMe_Request(
+            '/transactions/' . $transaction_id . '/payables', 'GET'
+        );
+        $response2 = $request2->runWithParameter($params);
+
+        $class2 = get_called_class();
+        $payables = new $class($response2);
+
+
+        $obj->amount = $transactions->getAmount();
+        $obj->card_holder_name = $transactions["card_holder_name"];
+		try {
+			$obj->customerName = $transactions["customer"]["name"];    
+		}
+		catch (Exception $e) {
+			$obj->customerName = "";    
+        }
+        
+        $split = array();
+
+        try {
+            foreach ($transactions["split_rules"] as $value) {
+                $recipient_id = $value["recipient_id"];
+                $percentage = $value["percentage"];
+                $recebedor = PagarMe_Recipient::findRecebedor($recipient_id);
+                $bank =PagarMe_Recipient::findBankAccount($recebedor["bank_account"]["id"]);
+                $name = $bank["legal_name"];
+                $documentNumber = $bank["document_number"];
+                $documentType = $bank["document_type"];
+
+                foreach ($payables as $value2) {
+                    $recipient_idPlayable = $value2["recipient_id"];
+                    $amount = $value2["amount"];
+                    $fee = $value2["fee"];
+                    $anticipation_fee = $value2["anticipation_fee"];
+
+                    if ($recipient_id == $recipient_idPlayable) {
+                        array_push($split, array(
+                            "recipient_id" => $recipient_id,
+                            "amount" => $amount,
+                            "fee" => $fee,
+                            "anticipation_fee" => anticipation_fee,
+                            "name" => $name,
+                            "documentNumber" => $documentNumber,
+                            "documentType" => $documentType
+                        ));
+                    }                    
+                }
+            }
+            $obj->split = $split;
+        }
+        catch (Exception $e) {
+            error_log('erro do split.');
+        }
+    
+
+        error_log( print_r( $obj, true ) );
+
+        $ret = json_encode($obj);
+
+        return $ret;
     }
     
     public static function getLimits($recipientId, $payment_date, $timeframe)

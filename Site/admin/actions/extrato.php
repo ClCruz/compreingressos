@@ -126,6 +126,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 	}
 	else if ($_GET['action'] == 'antecipacaomaxmin') {
 		$ret = verificaMinimoMaximoAntecipacao($_GET["recebedor"], $_POST["data"], $_POST["periodo"]);
+		$retorno = $ret;
+	}
+	else if ($_GET['action'] == 'gettransaction') {
+		$ret = getTransaction($_GET["transaction_id"]);
 		error_log($ret);
 		$retorno = $ret;
 	} else {

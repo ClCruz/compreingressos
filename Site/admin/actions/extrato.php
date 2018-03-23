@@ -125,11 +125,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 	}
 	else if ($_GET['action'] == 'verificaantecipacao') {
 		$ret = verificarAntecipacao($_GET["recebedor"], $_POST["valor"], $_POST["data"], $_POST["periodo"]);
-		$retorno = json_encode($ret);
+		$retorno = $ret;
 	}
 	else if ($_GET['action'] == 'antecipacaomaxmin') {
 		$ret = verificaMinimoMaximoAntecipacao($_GET["recebedor"], $_POST["data"], $_POST["periodo"]);
-		$retorno = json_encode($ret);
+		error_log($ret);
+		$retorno = $ret;
 	} else {
 		$retorno = "Nenhuma ação executada.";
 	}

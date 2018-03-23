@@ -393,8 +393,7 @@ function efetuarSaquePagarme($recipient_id, $amount) {
 function verificaMinimoMaximoAntecipacao($recipient_id,  $payment_date, $timeframe) {
 	try {
 		$dateSplit = explode("/", $payment_date);
-		$date_modified = $dateSplit[2] . "-" . $dateSplit[1] . "-" . $dateSplit[0];
-	
+		$date_modified = getDatePagarMe($dateSplit[2] . "-" . $dateSplit[1] . "-" . $dateSplit[0]);
 		$ret = PagarMe_Recipient::getLimits($recipient_id, $date_modified, $timeframe);
 		return $ret->__toJSON(true);
 	} catch (Exception $e) {
@@ -405,33 +404,9 @@ function verificaMinimoMaximoAntecipacao($recipient_id,  $payment_date, $timefra
 function verificarAntecipacao($recipient_id, $amount, $payment_date, $timeframe) {
 	try {
 		$dateSplit = explode("/", $payment_date);
-		$date_modified = $dateSplit[2] . "-" . $dateSplit[1] . "-" . $dateSplit[0];
-
-		$request = new PagarMe_Request("/recipients/$recipient_id/bulk_anticipations", "POST");
-		$request->setParameters(array(
-			"payment_date" => getDatePagarMe($date_modified),
-			"timeframe" => $timeframe,
-			"requested_amount" => getAmountPagarMe($amount),
-			"build" => true
-		));
-		$response = $request->run();
-
-		error_log("...");
-		error_log($response);
-
-		$idToRemove = $response->getId();
-
-		error_log("2...");
-
-		$requestRemove = new PagarMe_Request("/recipients/$recipient_id/bulk_anticipations/bulk_anticipation_id", "DELETE");
-		$requestRemove->setParameters(array(
-			"recipient_id" => $recipient_id,
-			"bulk_anticipation_id" => $idToRemove
-		));
-		$responseRemove = $requestRemove->run();
-
-		error_log("3...");
-		return $response->__toJSON(true);
+		$date_modified = getDatePagarMe($dateSplit[2] . "-" . $dateSplit[1] . "-" . $dateSplit[0]);
+		$ret = PagarMe_Recipient::getResumo($recipient_id, getAmountPagarMe($amount), $date_modified, $timeframe);
+		return $ret->__toJSON(true);
 	} catch (Exception $e) {
 		return array("status" => "error", "msg" => $e->getMessage());
 	}

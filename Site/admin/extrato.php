@@ -378,9 +378,7 @@ $(function() {
 
     $("#btn-antecipacao").click(function(event){
         event.preventDefault();
-        dialog.dialog( "open" );        
-        
-        //createSlider(valor_areceber);
+        dialog.dialog( "open" );
     });
 
     $("#btnResumoAntecipacao").click(function(event){
@@ -407,14 +405,24 @@ $(function() {
     }
 
     function antecipacaoMaximoMinimo() {
-        
+        if ($("#data").val() == "") {
+            return;
+        }
         $.ajax({
             url: pagina + '?action=antecipacaomaxmin&recebedor='+ recebedor.val(),
             type: 'post',
             data: $('#antecipacao').serialize(),
-            success: function(data) {
-                data = $.parseJSON(data);
-                console.log(data);
+            success: function(aux) {
+                var obj = $.parseJSON(aux);
+                console.log(obj);
+                if (obj.errors && obj.errors.length>0) {
+                    $.dialog({text: obj.errors[0].message});
+                    $("#data").val("");
+                    destroySlider();
+                }
+                else {
+                    createSlider(obj.minimum.amount, obj.maximum.amount);
+                }
             },
             error: function(data){
                 $.dialog({text: data});
@@ -450,14 +458,21 @@ $(function() {
     function unblockAntecipacao() {
         $("button > span:contains('Efetuar Antecipação')").parent().show();
     }
-
-    function createSlider(maxAmout) {
+    function destroySlider() {
         if ($( "#slider-amount" ).hasClass("ui-slider"))
             $( "#slider-amount" ).slider( "destroy" );
+
+        $("#fsResumo").hide();
+        $("#fsValor").hide();
+    }
+    function createSlider(minAmount, maxAmount) {
+        destroySlider();
+        $("#fsResumo").show();
+        $("#fsValor").show();
         $( "#slider-amount" ).slider({
             range: "max",
-            min: 0.1,
-            max: maxAmout/100,
+            min: minAmount/100,
+            max: maxAmount/100,
             step: 0.01,
             value: 0.01,
             slide: function( event, ui ) {
@@ -486,13 +501,13 @@ $(function() {
             <input type="text" name="data" id="data" class="text ui-widget-content ui-corner-all" />
         </fieldset>
         <br />
-        <fieldset>
+        <fieldset id="fsValor" style="display:none">
             <legend>Escolha o valor </legend>
             <div id="slider-amount"></div>
             <input type="text" name="valor" readonly id="valor" class="text ui-widget-content ui-corner-all" />
         </fieldset>
 
-        <fieldset>
+        <fieldset id="fsResumo" style="display:none">
             <legend>Resumo da antecipação</legend>
             <input type="button" class="button" id="btnResumoAntecipacao" value="Recuperar resumo da antecipação" />&nbsp;
             <span>Custo da antecipação:</span>

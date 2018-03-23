@@ -42,7 +42,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
     .actions{width: 50%; float: right;}
 
 </style>
+<link rel="stylesheet" href="../stylesheets/loading.css" >
 <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
+<script type="text/javascript" src="../javascripts/loading.js"></script>
 <script src="../javascripts/jquery.maskedinput.min.js" type="text/javascript"></script>
 <script type='text/javascript' src='../javascripts/jquery.numeric.js'></script>
 <script>
@@ -450,6 +452,7 @@ $(function() {
     }
 
     function getTransaction(id) {
+        $("#table-extrato").loading('Carregando...');
         $.ajax({
             url: pagina + '?action=gettransaction&transaction_id='+ id,
             type: 'post',
@@ -462,8 +465,15 @@ $(function() {
                     var amount = (value.amount/100).toFixed(2).toString().replace(',','').replace('.',','); 
                     var fee = (value.fee/100).toFixed(2).toString().replace(',','').replace('.',','); 
                     var total = ((value.amount-value.fee)/100).toFixed(2).toString().replace(',','').replace('.',','); 
+                    var document = "";
+                    if (value.documentType == "cnpj") {
+                        document = value.documentNumber.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g,"\$1.\$2.\$3\/\$4\-\$5");
+                    }
+                    else {
+                        document = value.documentNumber.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/g,"\$1.\$2.\$3\-\$4");
+                    }
                     message+="<br />"; 
-                    message+="<p>" + value.name + "</p>";
+                    message+="<p>" + value.name + " - " + document + "</p>";
                     message+="<p>Valor sem taxas: R$ " + amount + "</p>";
                     message+="<p>Taxas: R$ " + fee + "</p>";
                     message+="<p>Valor a receber: R$" + total + "</p>";

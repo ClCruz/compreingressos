@@ -405,7 +405,7 @@ function verificaMinimoMaximoAntecipacao($recipient_id,  $payment_date, $timefra
 		$dateSplit = explode("/", $payment_date);
 		$date_modified = getDatePagarMe($dateSplit[2] . "-" . $dateSplit[1] . "-" . $dateSplit[0]);
 		$ret = PagarMe_Recipient::getLimits($recipient_id, $date_modified, $timeframe);
-		return $ret->__toJSON(true);
+		return $ret;
 	} catch (Exception $e) {
 		return array("status" => "error", "msg" => $e->getMessage());
 	}
@@ -415,7 +415,14 @@ function verificarAntecipacao($recipient_id, $amount, $payment_date, $timeframe)
 	try {
 		$dateSplit = explode("/", $payment_date);
 		$date_modified = getDatePagarMe($dateSplit[2] . "-" . $dateSplit[1] . "-" . $dateSplit[0]);
+		$stringAux = "recipient_id = ".$recipient_id;
+		$stringAux = $stringAux . " amount = ".getAmountPagarMe($amount);
+		$stringAux = $stringAux . " payment_date = ".$date_modified;
+		$stringAux = $stringAux . " timeframe = ".$timeframe;
+//		error_log( $stringAux );
 		$ret = PagarMe_Recipient::getResumo($recipient_id, getAmountPagarMe($amount), $date_modified, $timeframe);
+
+//		error_log( print_r( $ret, true ) );
 		return $ret->__toJSON(true);
 	} catch (Exception $e) {
 		return array("status" => "error", "msg" => $e->getMessage());

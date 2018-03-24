@@ -40,6 +40,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
     .fields label {display:block; font-weight: bold;}
     .fields select {width: 70%; margin-bottom: 10px;}
     .actions{width: 50%; float: right;}
+    .trline:hover { background-color: #ffa;}
 
 </style>
 <link rel="stylesheet" href="../stylesheets/loading.css" >
@@ -342,7 +343,7 @@ $(function() {
                     total += value.amount-value.fee;
                     
                     //console.log(value);
-                    var toAppend = "<tr style='cursor: pointer;' id='" + value.movement_object.transaction_id + "' class='toClick' data='" + value.movement_object.transaction_id + "'><td>" + new Date(value.date_created).toJSON().slice(0, 10).split("-").reverse().join("/") +"</td>";
+                    var toAppend = "<tr style='cursor: pointer;' id='" + value.movement_object.transaction_id + "' class='toClick trline' data='" + value.movement_object.transaction_id + "'><td>" + new Date(value.date_created).toJSON().slice(0, 10).split("-").reverse().join("/") +"</td>";
                     toAppend += "<td>"+ new Date(value.movement_object.payment_date).toJSON().slice(0, 10).split("-").reverse().join("/") +"</td>";
                     toAppend += "<td>"+ movement_objectTypeToString(value.movement_object.type) +"</td>";
                     toAppend += "<td class='text-right'>R$ "+ (value.amount/100).toFixed(2).toString().replace(',','').replace('.',',') + " - R$ " + (value.fee/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
@@ -437,7 +438,7 @@ $(function() {
             data: $('#antecipacao').serialize(),
             success: function(aux) {
                 var obj = $.parseJSON(aux);
-                console.log(obj);
+                //console.log(obj);
                 if (obj.errors && obj.errors.length>0) {
                     $.dialog({text: obj.errors[0].message});
                     $("#data").val("");
@@ -445,7 +446,7 @@ $(function() {
                     blockAntecipacao();
                 }
                 else {
-                    createSlider(obj.minimum.amount, obj.maximum.amount);
+                    createSlider(obj);
                 }
                 $(".ui-dialog").loading("stop");
             },
@@ -485,7 +486,9 @@ $(function() {
             success: function(aux) {
                 var obj = $.parseJSON(aux);
                 var message = "Nome do cliente: " + (obj.customerName == "" ? obj.customerName : obj.card_holder_name);
-                message+="<br /><br /><br /><p>Regras do Split:</p>"; 
+                message+="<br /><br /><br />";
+                message+="<p>Valor total da venda: R$ " + (obj.amount/100).toFixed(2).toString().replace(',','').replace('.',',') + "</p>"; 
+                message+="<br /><p>Composição:</p>";
                 $.each(obj.split, function( index, value ){
                     var amount = (value.amount/100).toFixed(2).toString().replace(',','').replace('.',','); 
                     var fee = (value.fee/100).toFixed(2).toString().replace(',','').replace('.',','); 
@@ -537,9 +540,12 @@ $(function() {
                 $("#custoAntecipacaoFull").show();
                 $("#valorAntecipacaoFull").show();
 
-                $("#custoAntecipacao").val("R$ " + valor.toFixed(2).toString().replace(',','').replace('.',','));
-                $("#valorAntecipacao").val("R$ " + (antfee/100).toFixed(2).toString().replace(',','').replace('.',','));
+                $("#valorAntecipacao").val("R$ " + valor.toFixed(2).toString().replace(',','').replace('.',','));
+                $("#custoAntecipacao").val("R$ " + (antfee/100).toFixed(2).toString().replace(',','').replace('.',','));
 
+                $("#slider-amount").slider('value',valor.toFixed(2));
+                $("#valor").val(valor.toFixed(2));
+                $("#valorShow").val("R$ " + valor.toFixed(2).toString().replace(',','').replace('.',','));
                 unblockAntecipacao();
                 $(".ui-dialog").loading("stop");
             },
@@ -569,10 +575,17 @@ $(function() {
         $("#fsResumo").hide();
         $("#fsValor").hide();
     }
-    function createSlider(minAmount, maxAmount) {
+    var sliderHelper = null;
+    function createSlider(obj) {
         destroySlider();
         $("#fsResumo").show();
         $("#fsValor").show();
+        sliderHelper = obj;
+        //console.log(obj);
+
+        var minAmount = obj.minimum.amount;
+        var maxAmount = obj.maximum.amount;
+
         $( "#slider-amount" ).slider({
             range: "max",
             min: minAmount/100,
@@ -581,6 +594,7 @@ $(function() {
             value: 0.01,
             slide: function( event, ui ) {
                 $( "#valor" ).val( ui.value );
+                $( "#valorShow" ).val("R$ " + ui.value.toFixed(2).toString().replace(',','').replace('.',','));
                 $("#custoAntecipacaoFull").hide();
                 $("#valorAntecipacaoFull").hide();
                 blockAntecipacao();
@@ -610,7 +624,8 @@ $(function() {
         <fieldset id="fsValor" style="display:none">
             <legend>Escolha o valor </legend>
             <div id="slider-amount"></div>
-            <input type="text" name="valor" readonly id="valor" class="text ui-widget-content ui-corner-all" />
+            <input type="text" name="valor" style="display:none" readonly id="valor" class="text ui-widget-content ui-corner-all" />
+            <input type="text" name="valorShow" readonly id="valorShow" class="text ui-widget-content ui-corner-all" />
         </fieldset>
 
         <fieldset id="fsResumo" style="display:none">

@@ -99,6 +99,7 @@ class PagarMe_Recipient extends PagarMe_Model {
 
         $obj->amount = $transactions->getAmount();
         $obj->card_holder_name = $transactions["card_holder_name"];
+        
 		try {
 			$obj->customerName = $transactions["customer"]["name"];    
 		}
@@ -144,11 +145,28 @@ class PagarMe_Recipient extends PagarMe_Model {
         }
     
 
-        error_log( print_r( $obj, true ) );
+       
 
         $ret = json_encode($obj);
 
         return $ret;
+    }
+
+    public static function getPayables($recipientId)
+	{
+		$request = new PagarMe_Request(
+            '/payables', 'GET'
+        );
+
+        $params = array("recipient_id"=> $recipientId
+        ,"status" => "waiting_funds"
+        ,"count" => 9999
+        );
+
+        $response = $request->runWithParameter($params);
+
+        $class = get_called_class();
+        return new $class($response);
     }
     
     public static function getLimits($recipientId, $payment_date, $timeframe)
@@ -164,7 +182,43 @@ class PagarMe_Recipient extends PagarMe_Model {
         $response = $request->runWithParameter($params);
 
         $class = get_called_class();
-        return new $class($response);
+
+        $limits = new $class($response);
+
+        $payables = PagarMe_Recipient::getPayables($recipient_id);
+
+        $maximum = array("amount"=> $limits["maximum"]["amount"]
+        ,"anticipation_fee"=> $limits["maximum"]["anticipation_fee"]
+        ,"fee"=> $limits["maximum"]["anticipation_fee"]);
+
+        $minimum = array("amount"=> $limits["minimum"]["amount"]
+        ,"anticipation_fee"=> $limits["minimum"]["anticipation_fee"]
+        ,"fee"=> $limits["minimum"]["anticipation_fee"]);
+
+        $play = array();
+
+        foreach ($payables as $value) {
+            if ($recipientId==$value["recipient_id"]) {
+                array_push($play, array(
+                    "id" => $value["id"],
+                    "amount" => $value["amount"],
+                    "status" => $value["status"],
+                    "fee" => $value["fee"],
+                    "anticipation_fee" => $value["anticipation_fee"],
+                    "transaction_id" => $value["transaction_id"],
+                    "recipient_id" => $value["recipient_id"]
+                ));
+            }
+        }
+
+        $obj = array("maximum"=> $maximum
+        ,"minimum" => $minimum
+        ,"payables" => $play
+        );
+
+        $ret = json_encode($obj);
+
+        return $ret;
     }
     public static function getResumo($recipientId, $amount, $payment_date, $timeframe)
 	{

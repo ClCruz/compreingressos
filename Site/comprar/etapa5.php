@@ -85,6 +85,86 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
 	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 	  })();
+
+	  function changeDadosCartaoBySelect(type) {
+		$(".container_card_others").show();
+		  switch (type) {
+			  case "card_others":
+				  $(".container_card_paypal").hide();
+				  $(".container_card_others").show();
+				  $(".botao_pagamento").show();
+			  break;
+			  case "card_paypal":
+			  	  $(".botao_pagamento").hide();
+				  $(".container_card_others").hide();
+				  $(".container_card_paypal").show();
+			  break;
+		  }
+	  }
+
+	  $(document).ready(function() {
+		$(".card_paypal").click(function() {
+			changeDadosCartaoBySelect("card_paypal");
+		});
+		$(".card_others").click(function() {
+			changeDadosCartaoBySelect("card_others");
+		});
+
+		paypal.Button.render({
+			env: 'sandbox', // Or 'sandbox'
+			commit: true, // Show a 'Pay Now' button
+			client: {
+				sandbox:    'AQ8hnNgMxLFzukyzkMMwfMFAkmHTBxv6uAuZ95rZLOOHdW6bAx7MyeMpGpVIzBN2DoIighIYNIBke1qO',
+				production: 'xxxxxxxxx'
+			},
+			locale: 'ja_JP',
+			style:  {
+				label: 'checkout',
+			tagline: false
+			},
+
+			payment: function(data, actions) {
+				//aqui
+				return actions.payment.create({
+					payment: {
+						transactions: [
+							{
+								amount: { total: <?php echo str_replace(",",".", $_COOKIE['total_exibicao']);?>, currency: 'BRL' }
+							}
+						]
+					}
+				});
+			},
+			onCancel: function(data, actions) {
+				$.dialog({text: 'Pagamento cancelado no paypal.'});
+				//console.log(data);
+			/* 
+			* Buyer cancelled the payment 
+			*/
+			},
+
+			onError: function(err) {
+				$.dialog({text: 'Ocorreu um erro ao tentar pagar no paypal. ' + err});
+				//console.log(err);
+			/* 
+			* An error occurred during the transaction 
+			*/
+			},
+
+			onAuthorize: function(data, actions) {
+				return actions.payment.execute().then(function(payment) {
+					$("#paypal_data").val(JSON.stringify(data));
+					$("#paypal_payment").val(JSON.stringify(payment));
+					$('.botao_pagamento').click();
+					//console.log(data);
+					//console.log(payment);
+					// The payment is complete!
+					// You can now show a confirmation message to the customer
+				});
+			}
+
+			}, '#paypal-button');
+	  });
 	</script>
 
 	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
@@ -107,6 +187,8 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 			</div>
 
 			<form id="dadosPagamento" action="formCartao.php" method="post">
+				<input type="hidden" name="paypal_data" id="paypal_data" />
+				<input type="hidden" name="paypal_payment" id="paypal_payment" />
 				<div class="centraliza">
 					<div class="descricao_pag">
 						<div class="img">
@@ -197,6 +279,9 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	if ($carregar_cielo_lib) {
 		echo '<script src="https://assets.pagar.me/js/pagarme.min.js"></script>';
 		echo '<script type="text/javascript" src="../javascripts/cielo.js"></script>';
+	}
+	if ($carregar_paypal) {
+		echo '<script src="https://www.paypalobjects.com/api/checkout.js"></script>';
 	}
 	?>
 </body>

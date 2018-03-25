@@ -55,7 +55,27 @@ $(function(){
 		            }
 		        }
 	        }
-        }
+		}
+		
+		if ($("[name=codCartao]:checked").length > 0 && $($("[name=codCartao]:checked")[0]).val() == "101") {
+			valido = false;
+			//paypal
+			if ($("#paypal_data").val()!="" && $("#paypal_payment").val() !="") {
+				var obj = JSON.parse($("#paypal_payment").val());
+				if (obj!=null && obj!=undefined) {
+					if (obj.state == "approved" && obj.transactions.length>0 
+					&& obj.transactions[0].related_resources.length>0 
+					&& obj.transactions[0].related_resources[0].sale.state == "completed") {
+						valido = true;
+					}
+				}
+			}
+
+			if (!valido) {
+				$.dialog({text: 'Realize o pagamento usando o botão do paypal.'});
+				return;
+			}
+		}
 
     	if (valido) {
     		// parar contagem regressiva
@@ -78,6 +98,8 @@ $(function(){
 
 				if (data.substr(0, 8) == 'redirect') {
 					document.location = data;
+				} else if (data == 'valorDiferentePaypal') {
+					$.dialog("Os valores pagos não conferem por favor entre em contato.");
 				} else if (data == 'valorDiferente') {
 					$.confirmDialog({
 						text: "Os dados referentes ao seu pedido foram alterados e o valor total pode ser diferente do valor exibido anteriormente.<br/>Por favor, revise o pedido antes de continuar.",
@@ -141,6 +163,8 @@ $(function(){
 												.eq(1).slideUp().end().end()
 								.find('#bancos').slideDown().end()
 								.find('.frase .alt').eq(0).text('Dados do Banco');
+		} else if ($cartao.next('label').next('p.nome').text().toLowerCase().indexOf('paypal') > -1) {
+			
 		} else {
 			$('.container_dados').find('.linha:not(#bancos)').eq(0).slideDown().end()
 												.eq(1).slideDown().end().end()

@@ -108,7 +108,7 @@ if ($_POST) {
         $parcelas = $rsParcelas['qt_parcelas'];
     ?>
         <input type="hidden" name="usuario_pdv" value="<?php echo (isset($_SESSION["usuario_pdv"])) ? $_SESSION["usuario_pdv"] : 0; ?>" />
-
+        
         <div class="container_cartoes">
             <p class="frase">5.1 Escolha o meio de pagamento</p>
             <div class="inputs">
@@ -116,7 +116,7 @@ if ($_POST) {
                 if ($_ENV['IS_TEST']) {
                 ?>
                 <div class="container_cartao">
-                    <input id="997" type="radio" name="codCartao" class="radio" value="997"
+                    <input id="997" type="radio" name="codCartao" class="radio card_others" value="997"
                         imgHelp="../images/cartoes/help_default.png" formatoCartao="0000-0000-0000-0000" formatoCodigo="000">
                     <label class="radio" for="997">
                         <img src="../images/cartoes/ico_default.png"><br>
@@ -129,6 +129,13 @@ if ($_POST) {
                     // nao exibir fastcash e pagseguro se tiver promo bin na reserva
                     if ($bin != '' and in_array($rs['cd_meio_pagamento'], array('892', '893', '900', '901', '902'))) continue;
 
+                    // paypal
+                    if (in_array($rs['cd_meio_pagamento'], array('101'))) {
+                        $carregar_paypal = true;
+                        $formatoCartao = '';
+                        $formatoCodigo = '';
+                    }
+                    
                     // pagseguro
                     if (in_array($rs['cd_meio_pagamento'], array('900', '901', '902'))) {
                         $carregar_pagseguro_lib = true;
@@ -160,7 +167,7 @@ if ($_POST) {
 
                 ?>
                 <div class="container_cartao">
-                    <input id="<?php echo $rs['cd_meio_pagamento']; ?>" type="radio" name="codCartao" class="radio" value="<?php echo $rs['cd_meio_pagamento']; ?>"
+                    <input id="<?php echo $rs['cd_meio_pagamento']; ?>" type="radio" name="codCartao" class="<?php echo ($rs['cd_meio_pagamento'] == 101 ? 'radio card_paypal' : 'radio card_others') ?>" value="<?php echo $rs['cd_meio_pagamento']; ?>"
                         imgHelp="../images/cartoes/help_<?php echo file_exists('../images/cartoes/help_'.$rs['nm_cartao_exibicao_site'].'.png') ? utf8_encode($rs['nm_cartao_exibicao_site']) : 'default'; ?>.png"
                         formatoCartao="<?php echo $formatoCartao ?>"
                         formatoCodigo="<?php echo $formatoCodigo ?>">
@@ -175,7 +182,15 @@ if ($_POST) {
 
             </div>
         </div>
-        <div class="container_dados" style="display:block;">
+        <div class="container_dados container_card_paypal" style="display:none;">
+                <p class="frase">5.3 <span class="alt">Conecte-se ao paypal e efetue o pagamento</span></p>
+                <div class="linha">
+                    <div class="input">
+                        <div id="paypal-button"></div>
+                    </div>
+                </div>
+        </div>
+        <div class="container_dados container_card_others" style="display:block;">
                 <?php
                 if($_SESSION['usuario_pdv'] == 0){
                 ?>

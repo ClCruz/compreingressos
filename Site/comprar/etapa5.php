@@ -111,11 +111,11 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 		});
 
 		paypal.Button.render({
-			env: 'sandbox', // Or 'sandbox'
+			env: 'production', // Or production - sandbox
 			commit: true, // Show a 'Pay Now' button
 			client: {
 				sandbox:    'AQ8hnNgMxLFzukyzkMMwfMFAkmHTBxv6uAuZ95rZLOOHdW6bAx7MyeMpGpVIzBN2DoIighIYNIBke1qO',
-				production: 'xxxxxxxxx'
+				production: 'AagFfpGw_irk48l196ERKmqntzzTw8kDmf2glId43tuRENMx0-DIqUMq_kgZewGos3-8WjmoeLKXYvIP'
 			},
 			locale: 'ja_JP',
 			style:  {

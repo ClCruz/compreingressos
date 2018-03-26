@@ -10,9 +10,18 @@ require('acessoPermitido.php');
 
 require('../settings/pagseguro_functions.php');
 require_once('../settings/pagarme_functions.php');
+require_once('../settings/paypal_functions.php');
 require('../settings/tipagos_functions.php');
 require('../settings/cielo_functions.php');
 
+$paypal_data_obj = getObjFromString($_POST["paypal_data"]);
+$paypal_payment_obj = getObjFromString($_POST["paypal_payment"]);
+error_log($_COOKIE['total_exibicao'])
+error_log($paypal_payment_obj["transactions"][0]["amount"]["total"]);
+//$paypal_ToSave = getObjToSave(7864809, 768710, $_POST["paypal_data"], $_POST["paypal_payment"]);
+//paypal_saveTo($paypal_ToSave);
+
+//die();
 // reCAPTCHA v2 ---------------
 $post_data = http_build_query(array('secret'    => $recaptcha['private_key'],
                                     'response'  => $_POST["g-recaptcha-response"],
@@ -67,6 +76,8 @@ if ($horas_antes_apresentacao_pagamento != null and $horas_antes_apresentacao_pa
     echo "Esta forma de pagamento não pode ser utilizada no momento. Por favor, selecione outra.";
     die();
 }
+
+
 
 
 $_POST['numCartao'] = preg_replace("/[^0-9]/", "", $_POST['numCartao']);
@@ -164,6 +175,8 @@ $parametros['CustomerData']['CustomerName'] = $rs['DS_NOME'] . ' ' . $rs['DS_SOB
 $parametros['CustomerData']['CustomerEmail'] = $rs['CD_EMAIL_LOGIN'];
 
 //Dados do cartão
+
+
 $PaymentDataCollection['CardHolder'] = $_POST['nomeCartao'];
 $PaymentDataCollection['PaymentMethod'] = $_POST['codCartao'];
 $PaymentDataCollection['CardNumber'] = $_POST['numCartao'];
@@ -363,6 +376,7 @@ while ($itens = fetchResult($result)) {
     $params2[$itensPedido] = array($newMaxId, $itens['ID_RESERVA'], $itens['ID_APRESENTACAO'], $itens['ID_APRESENTACAO_BILHETE'], $itens['DS_CADEIRA'], $itens['DS_SETOR'], 1, $itens['VL_LIQUIDO_INGRESSO'], $valorConveniencia + $valorConvenienciaAUX, 'XXXXXXXXXX', $itens['ID_CADEIRA']);
 }
 
+
 $PaymentDataCollection['Amount'] = ($totalIngressos + $frete + $totalConveniencia) * 100;
 
 //------------ ATUALIZAÇÃO DO PEDIDO
@@ -505,13 +519,13 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
     //     array('requestMascarado' => $parametrosLOG));
     // echo "</pre>";
     // die(''.time());
-
+    $pagamento_paypal = in_array($_POST['codCartao'], array('101'));
     $pagamento_fastcash = in_array($_POST['codCartao'], array('892', '893'));
     $pagamento_pagseguro = in_array($_POST['codCartao'], array('900', '901', '902'));
     $pagamento_pagarme = in_array($_POST['codCartao'], array('910', '911'));
     $pagamento_tipagos = in_array($_POST['codCartao'], array('998'));
     $pagamento_cielo = in_array($_POST['codCartao'], array('920', '921'));
-    $pagamento_braspag = (!$pagamento_fastcash and !$pagamento_pagseguro and !$pagamento_pagarme and !$pagamento_tipagos and !$pagamento_cielo);
+    $pagamento_braspag = (!$pagamento_fastcash and !$pagamento_pagseguro and !$pagamento_pagarme and !$pagamento_tipagos and !$pagamento_cielo and !$pagamento_paypal);
 
     // pular o bloco abaixo para vendas pelo fastcash e pagseguro
     if ($_SESSION['usuario_pdv'] !== 1 and $PaymentDataCollection['Amount'] != 0 and $pagamento_braspag) {
@@ -666,6 +680,34 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
             else {
                 $descricao_erro = $response['error'] ? $response['error'] : 'Transação não autorizada.';
             }
+        }
+        elseif ($pagamento_paypal) {
+
+            $paypal_ToSave = getObjToSave($parametros['OrderData']['OrderId'], $_POST["paypal_data"], $_POST["paypal_payment"]);
+            $totalParaVerificar = $totalIngressos + $frete + $totalConveniencia;
+            //if ($paypal_ToSave["amount"])
+
+            paypal_saveTo($paypal_ToSave);      
+
+            $query = "UPDATE P SET ID_MEIO_PAGAMENTO = M.ID_MEIO_PAGAMENTO, IN_SITUACAO = 'F',
+                        id_pedido_ipagare=?, cd_numero_autorizacao=?, cd_numero_transacao=?
+                        FROM MW_PEDIDO_VENDA P, MW_MEIO_PAGAMENTO M
+                        WHERE P.ID_PEDIDO_VENDA = ? AND M.CD_MEIO_PAGAMENTO = ?";
+
+            $params = array('Paypal'
+                ,$paypal_ToSave["paymentToken"]
+                ,$paypal_ToSave["paymentID"]
+                ,$parametros['OrderData']['OrderId']
+                ,$_POST['codCartao']);
+            $result = executeSQL($mainConnection, $query, $params);      
+
+
+            require('concretizarCompra.php');
+
+            // se necessario, replica os dados de assinatura e imprime url de redirecionamento
+            require('concretizarAssinatura.php');
+
+            die("redirect.php?redirect=".urlencode("pagamento_ok.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : '')));
         }
         // pagamentos via cielo
         elseif ($pagamento_cielo) {

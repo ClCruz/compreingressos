@@ -16,7 +16,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 480, true)) {
     }
 
     function pega_gateway($conn, $id_evento){
-        $gateway_default = 6;// 6 = pagar.me
+        $gateway_default = 8;// 8 = cielo
 
         $query = "SELECT ID_GATEWAY FROM MW_EXCECAO_PAGAMENTO WHERE ID_EVENTO = ?";
         $result = executeSQL($conn, $query, array($id_evento));

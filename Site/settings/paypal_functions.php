@@ -20,10 +20,32 @@ require_once('../settings/settings.php');
             "paymentJSON"=>utf8_encode($json_payment),
             "state"=>$paypal_payment["state"],
             "cart"=>$paypal_payment["cart"],
-            "amount"=>$paypal_payment["transactions"][0]["amount"]["total"] ,            
+            "amount"=>$paypal_payment["transactions"][0]["amount"]["total"] ,
+            "saleId"=>$paypal_payment["transactions"][0]["related_resources"][0]["sale"]["id"]         
         );
 		
 		return $toReturn;
+    }
+
+    function paypalRefund($id_pedido_venda) {
+        error_log("paypalRefund - id_pedido_venda: " . $id_pedido_venda);
+        $mainConnection = mainConnection();
+
+        $query = "
+        SELECT id_pedido_venda, saleId
+        FROM mw_gateway_paypal
+        WHERE id_pedido_venda=?";
+        $result = executeSQL($mainConnection, $query, array($_POST['pedido']));
+
+        $query = "SELECT id_pedido_venda, saleId
+        FROM mw_gateway_paypal
+        WHERE id_pedido_venda=?";
+        $params = array($id_pedido_venda);
+        $rs = executeSQL($mainConnection, $query, $params, true);
+
+        $saleId = $rs['saleId'];
+
+        error_log("paypalRefund - saleId: " . $saleId);
     }
 
     function paypal_saveTo($obj) {
@@ -39,10 +61,12 @@ require_once('../settings/settings.php');
                     ,[dataJSON]
                     ,[paymentJSON]
                     ,[state]
-                    ,[cart])
+                    ,[cart]
+                    ,[saleId])
                 VALUES
                     (?
                     ,GETDATE()
+                    ,?
                     ,?
                     ,?
                     ,?
@@ -60,7 +84,8 @@ require_once('../settings/settings.php');
             ,$obj["dataJSON"]
             ,$obj["paymentJSON"]
             ,$obj["state"]
-            ,$obj["cart"]);
+            ,$obj["cart"]
+            ,$obj["saleId"]);
 
             // error_log("query. " . $query);
             // error_log("params " . print_r($params, true));

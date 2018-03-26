@@ -14,8 +14,11 @@ require_once('../settings/paypal_functions.php');
 require('../settings/tipagos_functions.php');
 require('../settings/cielo_functions.php');
 
-$paypal_data_obj = getObjFromString($_POST["paypal_data"]);
-$paypal_payment_obj = getObjFromString($_POST["paypal_payment"]);
+
+if ($_POST["paypal_data"]!= "") {
+    $paypal_data_obj = getObjFromString($_POST["paypal_data"]);
+    $paypal_payment_obj = getObjFromString($_POST["paypal_payment"]);
+}
 // error_log($_COOKIE['total_exibicao'])
 // error_log($paypal_payment_obj["transactions"][0]["amount"]["total"]);
 //$paypal_ToSave = getObjToSave(7864809, 768710, $_POST["paypal_data"], $_POST["paypal_payment"]);
@@ -78,6 +81,10 @@ if ($horas_antes_apresentacao_pagamento != null and $horas_antes_apresentacao_pa
 }
 
 
+if (strlen($_POST['numCartao']) > 16) {
+    echo "Por favor verifique o número do cartão.";
+    die();
+}
 
 
 $_POST['numCartao'] = preg_replace("/[^0-9]/", "", $_POST['numCartao']);
@@ -157,6 +164,8 @@ $dadosExtrasEmail['email_presente'] = $_POST['emailPresente'];
 
 $parametros['RequestId'] = $ri;
 $parametros['Version'] = '1.0';
+
+
 
 //--------------------
 $rs_gateway_pagamento = executeSQL($mainConnection, 'SELECT CD_GATEWAY_PAGAMENTO, DS_URL FROM MW_GATEWAY_PAGAMENTO WHERE IN_ATIVO = 1', null, true);
@@ -275,6 +284,8 @@ $totalConveniencia = 0;
 
 beginTransaction($mainConnection);
 
+
+
 // verificar se o pedido já foi processado utitlizando o campo id_pedido_venda da mw_reserva
 $queryIdPedidoVenda = "select r.id_pedido_venda from mw_reserva r
                         inner join mw_pedido_venda p on p.id_pedido_venda = r.id_pedido_venda
@@ -317,7 +328,7 @@ if (hasRows($resultIdPedidoVenda)) {
                                 ,CD_BIN_CARTAO)
                                 VALUES
                                 (?, ?, ?, GETDATE(), ?, ?, ?, ?, ?, ?' .($entrega ? ', ?, ?, ?, ?, ?, ?, ?, ?' : ''). ', ?, ?)';
-
+                                
         if ($entrega) {
             $params = array($newMaxId, $_SESSION['user'], $_SESSION['operador'], 0, 'P', ($entrega ? 'E' : 'R'), 0, $frete,
                             0, $parametros['CustomerData']['DeliveryAddressData']['Street'], $parametros['CustomerData']['DeliveryAddressData']['Number'],
@@ -332,10 +343,12 @@ if (hasRows($resultIdPedidoVenda)) {
         
         $prosseguir = executeSQL($mainConnection, $query, $params);
     }
+
+    
     
     $queryIdPedidoVenda = "update mw_reserva set id_pedido_venda = ? where id_session = ?";
     $resultIdPedidoVenda = executeSQL($mainConnection, $queryIdPedidoVenda, array($newMaxId, session_id()));
-
+    
     extenderTempo($compraExpireTime);
 }
 
@@ -427,6 +440,8 @@ if ($itensPedido > 0) {
     executeSQL($mainConnection, 'DELETE FROM MW_PEDIDO_VENDA
                                     WHERE ID_PEDIDO_VENDA = ? AND ID_CLIENTE = ?', array($newMaxId, $_SESSION['user']));
 }
+
+
 
 //------------ GRAVAÇÂO DOS ITENS DO PEDIDO
 $query = 'INSERT INTO MW_ITEM_PEDIDO_VENDA (

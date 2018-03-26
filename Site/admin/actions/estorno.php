@@ -118,7 +118,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
             // VENDAS PELO PDV, PEDIDOS FILHOS (DE ASSINATURAS), PEDIDOS COM INGRESSOS PROMOCIONAIS, VALOR 0 E FEITOS PELO POS NÃO SÃO ESTORNADAS DO BRASPAG
             $is_estorno_brasbag = ($pedido["IN_TRANSACAO_PDV"] == 0 and !$pedido["FILHO"] and ($pedido['INGRESSOS_PROMOCIONAIS'] == 0 and $pedido['VALOR'] != 0)
                                     and !($pedido_principal["BRASPAG_ID"] == 'POS' and isset($_POST['pos_serial'])) and $pedido_principal["BRASPAG_ID"] != 'Fastcash'
-                                    and $pedido_principal["ID_PEDIDO_IPAGARE"] != 'PagSeguro' and $pedido_principal["ID_PEDIDO_IPAGARE"] != 'Pagar.me'
+                                    and $pedido_principal["ID_PEDIDO_IPAGARE"] != 'PagSeguro' and $pedido_principal["ID_PEDIDO_IPAGARE"] != 'Pagar.me' and $pedido_principal["ID_PEDIDO_IPAGARE"] != 'Paypal'
                                     and $pedido_principal["ID_PEDIDO_IPAGARE"] != 'Cielo' and $pedido_principal["ID_PEDIDO_IPAGARE"] != 'TiPagos');
 
             $options = array(
@@ -273,6 +273,21 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                                                 por favor, efetue o procedimento de cancelamento junto a operadora manualmente.<br/><br/>
                                                 Os dados do sistema do Middleway foram atualizados com sucesso.";
                     $force_system_refund = true;
+                } else {
+                    echo $response['error'];
+                    die();
+                }
+            }
+
+            elseif ($pedido_principal["ID_PEDIDO_IPAGARE"] == 'Paypal') {
+
+                require_once('../settings/paypal_functions.php');
+
+                $response = paypalRefund($pedido['ID_PEDIDO_VENDA']);
+
+                if ($response['success']) {
+                    $resposta_geral = "Pedido cancelado/estornado.";
+                    $retorno = 'ok';
                 } else {
                     echo $response['error'];
                     die();

@@ -110,7 +110,8 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 			changeDadosCartaoBySelect("card_others");
 		});
 
-		paypal.Button.render({
+		try {
+			paypal.Button.render({
 			env: 'production', // Or production - sandbox
 			commit: true, // Show a 'Pay Now' button
 			client: {
@@ -164,6 +165,9 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 			}
 
 			}, '#paypal-button');
+		} catch (e) {
+			
+		}
 	  });
 	</script>
 

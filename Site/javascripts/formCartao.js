@@ -9,6 +9,7 @@ $(function(){
 	});
 
 	$('#dadosPagamento').on('submit', function(e) {
+		valido = true;
 	    e.preventDefault();
 
 	    var $this = $(this),
@@ -25,11 +26,13 @@ $(function(){
 			&& $('[name=codCartao]:checked').next('label').next('p.nome').text().toLowerCase().indexOf('boleto') == -1
 			&& ($('[name=codCartao]:checked').next('label').next('p.nome').text().toLowerCase().indexOf('débito') == -1 && $('[name=codCartao]:checked').val() != '921')) {
 		    $this.find(':input:not(.compra_captcha :input, [name=nomePresente], [name=emailPresente], .pagseguro :input)').each(function(i,e) {
-		    	var e = $(e);
-	    		if (e.val().length < e.attr('maxlength')/2 || e.val() == '') {
-	    		    e.addClass('erro');
-	    		    valido = false;
-	    		} else e.removeClass('erro');
+				var e = $(e);
+				if (e.attr("id")!="paypal_data" && e.attr("id")!="paypal_payment") {
+					if (e.val().length < e.attr('maxlength')/2 || e.val() == '') {
+						e.addClass('erro');
+						valido = false;
+					} else e.removeClass('erro');
+				}
 		    });
 		}
 

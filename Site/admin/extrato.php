@@ -581,10 +581,22 @@ $(function() {
         $("#fsResumo").show();
         $("#fsValor").show();
         sliderHelper = obj;
-        //console.log(obj);
+        console.log(obj);
 
         var minAmount = obj.minimum.amount;
         var maxAmount = obj.maximum.amount;
+
+        if (maxAmount == 0) {
+            $.dialog({text: "Não é possivel criar antecipação, por favor verificar se já existem antecipações a serem realizadas."});
+            destroySlider();
+        }
+
+        if (maxAmount == minAmount && maxAmount!=0) {
+            $.dialog({text: "Só existe um valor a ser criado de antecipação."});
+        }
+
+        $( "#valor" ).val( minAmount );
+        $( "#valorShow" ).val("R$ " + minAmount.toFixed(2).toString().replace(',','').replace('.',','));
 
         $( "#slider-amount" ).slider({
             range: "max",

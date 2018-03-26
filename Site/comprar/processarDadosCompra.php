@@ -16,8 +16,8 @@ require('../settings/cielo_functions.php');
 
 $paypal_data_obj = getObjFromString($_POST["paypal_data"]);
 $paypal_payment_obj = getObjFromString($_POST["paypal_payment"]);
-error_log($_COOKIE['total_exibicao'])
-error_log($paypal_payment_obj["transactions"][0]["amount"]["total"]);
+// error_log($_COOKIE['total_exibicao'])
+// error_log($paypal_payment_obj["transactions"][0]["amount"]["total"]);
 //$paypal_ToSave = getObjToSave(7864809, 768710, $_POST["paypal_data"], $_POST["paypal_payment"]);
 //paypal_saveTo($paypal_ToSave);
 

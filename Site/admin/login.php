@@ -16,6 +16,18 @@ require_once('../settings/settings.php');
 require_once('../settings/functions.php');
 
 require_once('header_new.php');
+
+$nome = "";
+
+		if (isset($_SESSION['admin'])) {
+			$mainConnection = mainConnection();
+			$query = 'SELECT DS_NOME FROM MW_USUARIO WHERE ID_USUARIO = ?';
+			$params = array($_SESSION['admin']);
+			$rs = executeSQL($mainConnection, $query, $params, true);
+$nome = $rs['DS_NOME']; 
+		}
+
+
 ?>
     <div id='content'>
     	<div id='app'>
@@ -50,31 +62,70 @@ require_once('header_new.php');
 			})
 			</script>
 			<?php if ($_GET['action'] == 'trocarSenha') { ?>
-			<h2>Trocar Senha</h2>
-			<form action="autenticacao.php" method="post">
-				<table border="0" cellspacing="0" cellpadding="0">
-					<tr>
-						<td align="right">Senha atual:</td>
-						<td><input type="password" name="senhaOld" /></td>
-					</tr>
-					<tr>
-						<td align="right">Nova senha:</td>
-						<td><input type="password" name="senha1" /></td>
-					</tr>
-					<tr>
-						<td align="right">Confirme a senha:</td>
-						<td><input type="password" name="senha2" /></td>
-					</tr>
-					<tr>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-					</tr>
-					<tr>
-						<td>&nbsp;</td>
-						<td><input type="submit" id="enviar" value="Enviar" /></td>
-					</tr>
-				</table>
-			</form>
+
+<div>
+	<div class="flex-center flex-column">
+	
+		<div class="view overlay">
+			<img src="../images/logo.png" style="width:100%; max-width:350px;" class="mx-auto d-block mb-4" alt="">
+			<a href="#">
+				<div class="mask rgba-white-slight"></div>
+			</a>
+		</div>
+		
+		<div class="view overlay">
+		<h3>
+			<p class="text-center"><font color="#FFFFFF"  face="verdana" size="5">Trocar senha</font></strong></p>
+			<p class="text-center mt-2"><font color="#FFFFFF" face="verdana" size="3"><?php echo $nome ?>, por favor digite sua senha nova</font></p>
+		</h3>
+		</div>
+
+		<div id="iderroralert" class="alert alert-warning alert-dismissible fade show" style="display: none" role="alert">
+		  <button  type="button" class="close" data-dismiss="alert" aria-label="Close" onclick="javascript:$('#iderroralert').hide()">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		  <span id="idmessagerror"></span>
+		</div>
+	
+		<!--Card-->
+		<div class="card mt-4">
+			<!--Card content-->
+			<div class="card-body">
+				<!--Title-->
+				<h4 class="card-title">
+				<i class="fa fa-laptop" aria-hidden="true"></i>
+				Portal de Administração</h4>
+				<!--Text-->
+				<form action="autenticacao.php" method="post">
+					<!-- Material input email -->
+					<div class="md-form">
+						<i class="fa fa-lock prefix grey-text"></i>
+						<input type="password" id="senhaOld" placeholder="Senha antiga" name="senhaOld" class="form-control">
+					</div>
+
+					<div class="md-form">
+						<i class="fa fa-lock prefix grey-text"></i>
+						<input type="password" id="senha1" placeholder="Senha nova" name="senha1" class="form-control">
+					</div>
+
+					<!-- Material input password -->
+					<div class="md-form">
+						<i class="fa fa-lock prefix grey-text"></i>
+						<input type="password" id="senha2" placeholder="Confirme senha nova" name="senha2" class="form-control">
+					</div>
+
+					<div class="text-center mt-4">
+						<button class="btn btn-danger" id="enviar" type="submit">Trocar</button>
+					</div>
+				</form>
+			</div>
+
+		</div>
+		<!--/.Card-->
+		
+	</div>
+</div>
+
 			<?php } else { ?>
 			
 <div>

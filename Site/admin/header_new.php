@@ -41,29 +41,3 @@ session_start();
 </head>
 
 <body style="background-color: #7F0014">
-<div id='holder'>
-	<div id='header'>
-    	<p style='font-weight:bold' id="clock"><?php //echo date('d/m/Y - H:i (T)'); ?></p>
-		<?php
-		if (isset($_SESSION['admin'])) {
-			$mainConnection = mainConnection();
-			$query = 'SELECT DS_NOME FROM MW_USUARIO WHERE ID_USUARIO = ?';
-			$params = array($_SESSION['admin']);
-			$rs = executeSQL($mainConnection, $query, $params, true);
-		?>
-        <p>Bem vindo, <?php echo $rs['DS_NOME']; ?>!<br />
-		[<a href='./login.php?action=trocarSenha'>Trocar Senha</a>] [<a href='./login.php?action=logout'>Sair</a>]</p>
-		
-    	<?php
-		}
-		//getSiteLogo();
-		?>
-    </div>
-    
-    <div id='mainMenu'>
-    	<?php
-		if (isset($_SESSION['admin'])) {
-			require_once('mainMenu.php');
-		}
-		?>
-    </div>

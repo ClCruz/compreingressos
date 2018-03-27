@@ -14,10 +14,12 @@ require_once('../settings/paypal_functions.php');
 require('../settings/tipagos_functions.php');
 require('../settings/cielo_functions.php');
 
+$isPaypal = false;
 
 if ($_POST["paypal_data"]!= "") {
     $paypal_data_obj = getObjFromString($_POST["paypal_data"]);
     $paypal_payment_obj = getObjFromString($_POST["paypal_payment"]);
+    $isPaypal = true;
 }
 // error_log($_COOKIE['total_exibicao'])
 // error_log($paypal_payment_obj["transactions"][0]["amount"]["total"]);
@@ -41,7 +43,7 @@ curl_close($ch);
 
 $resp = json_decode($server_output, true);
 
-if (!$_ENV['IS_TEST'] and !isset($_SESSION['operador'])) {
+if (!$_ENV['IS_TEST'] and !isset($_SESSION['operador']) and !$isPaypal) {
     if (!$resp['success']) {
         echo "Entre com a informação solicitada no campo Autenticidade.";
         exit();

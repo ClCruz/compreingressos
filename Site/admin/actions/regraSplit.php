@@ -8,9 +8,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 650, true)) {
 
 	if ($_GET['action'] == 'add') {
 
-		$query = "INSERT INTO mw_regra_split (id_produtor, id_evento, id_recebedor, nr_percentual_split, in_ativo) VALUES(?, ?, ?, ?, 1);";
+		$query = "INSERT INTO mw_regra_split (id_produtor, id_evento, id_recebedor, nr_percentual_split, liable, charge_processing_fee, in_ativo) VALUES(?, ?, ?, ?, ?, ?, 1);";
 
-		$params = array($_GET["produtor"], $_GET["evento"], $_POST["recebedor"], $_POST["split"]);
+		// $params = array($_GET["produtor"], $_GET["evento"], $_POST["recebedor"], $_POST["split"], $_POST["liable"] == null ? 0 : 1, $_POST["charge_processing_fee"] == null ? 0 : 1);
+		$params = array($_GET["produtor"], $_GET["evento"], $_POST["recebedor"], $_POST["split"], 1, $_POST["charge_processing_fee"] == null ? 0 : 1);
 
 		executeSQL($mainConnection, $query, $params, false);
 
@@ -21,9 +22,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 650, true)) {
 		}
 	} else if ($_GET['action'] == 'update' and isset($_GET['id'])) {
 
-		$query = "UPDATE mw_regra_split SET nr_percentual_split = ? WHERE id_regra_split = ?";
+		$query = "UPDATE mw_regra_split SET nr_percentual_split = ?, charge_processing_fee = ? WHERE id_regra_split = ?";
+		// $query = "UPDATE mw_regra_split SET nr_percentual_split = ?, liable = ?, charge_processing_fee = ? WHERE id_regra_split = ?";
 
-		$params = array(trim($_POST["split"]), $_GET['id']);
+		$params = array(trim($_POST["split"]), $_POST["charge_processing_fee"] == null ? 0 : 1, $_GET['id']);
+		// $params = array(trim($_POST["split"]), $_POST["liable"] == null ? 0 : 1, $_POST["charge_processing_fee"] == null ? 0 : 1, $_GET['id']);
 
 		if (executeSQL($mainConnection, $query, $params)) {
             $retorno = 'true?id=' . $_GET['id'];
@@ -49,6 +52,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 650, true)) {
                    id_evento,
                    id_recebedor,
                    nr_percentual_split,
+				   liable,
+				   charge_processing_fee,
                    in_ativo
                   FROM mw_regra_split WHERE id_regra_split = ?';
         $params = array($_GET['id']);
@@ -61,6 +66,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 650, true)) {
                 "evento" => $rs["id_evento"],
                 "recebedor" => $rs["id_recebedor"],
             	"split" => $rs["nr_percentual_split"],
+            	"liable" => $rs["liable"],
+            	"charge_processing_fee" => $rs["charge_processing_fee"],
             	"status" => $rs["in_ativo"]
             );
         }
@@ -83,6 +90,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 650, true)) {
         	$json[] = array("id_regra_split" => $rs["id_regra_split"],
         					"ds_razao_social" => utf8_encode($rs["ds_razao_social"]),
         					"nr_percentual_split" => $rs["nr_percentual_split"],
+        					"liable" => $rs["liable"],
+        					"charge_processing_fee" => $rs["charge_processing_fee"],
         					"in_ativo" => $rs["in_ativo"]);
         }
         $retorno = json_encode($json);

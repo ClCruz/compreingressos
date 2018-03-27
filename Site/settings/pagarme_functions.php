@@ -313,7 +313,7 @@ function consultarSplitPagarme($pedido) {
 	$param = array($pedido);
 	$stmt = executeSQL($mainConnection, $query, $param, true);
 
-	$query = "select r.recipient_id, rs.nr_percentual_split
+	$query = "select r.recipient_id, rs.nr_percentual_split, rs.liable, rs.charge_processing_fee
 			  from tabPeca tb
 			  inner join CI_MIDDLEWAY..mw_produtor p on p.id_produtor = tb.id_produtor
 		      inner join CI_MIDDLEWAY..mw_regra_split rs on rs.id_produtor = p.id_produtor
@@ -332,8 +332,8 @@ function consultarSplitPagarme($pedido) {
 		$split[] = array(
 			"recipient_id" => $rs["recipient_id"],
 	    	"percentage" => $rs["nr_percentual_split"],
-	    	"liable" => true,
-	    	"charge_processing_fee" => true);
+	    	"liable" => $rs["liable"],
+	    	"charge_processing_fee" => $rs["charge_processing_fee"]);
 	}
 
 	return $split;

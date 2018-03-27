@@ -48,6 +48,8 @@ $(function() {
         produtor    = $("#produtor"),
         id_produtor = $("#id_produtor"),
         split       = $("#split"),
+        //liable       = $("#liable"),
+        charge_processing_fee       = $("#charge_processing_fee"),
         status      = $("#status"),
         evento      = $("#evento"),
         recebedor   = $("#recebedor"),
@@ -71,7 +73,9 @@ $(function() {
             	data = $.parseJSON(data);
 
             	$("#id").val(data.id);            	
-            	$("#split").val(data.split);
+                $("#split").val(data.split);
+                //$('#liable').prop('checked', data.liable);
+                $('#charge_processing_fee').prop('checked', data.charge_processing_fee);
             	$("#status").val(data.status);
                 $('[name=recebedor] option').filter(function() { 
                     return ($(this).val() == data.recebedor);
@@ -289,6 +293,8 @@ $(function() {
                         .append('<tr>')
                         .append('<td>' + value.ds_razao_social + '</td>')
                         .append('<td>' + value.nr_percentual_split + '</td>')
+                        .append('<td>' + (value.charge_processing_fee ? "Sim" : "Não") + '</td>')
+                        //.append('<td>' + (value.liable ? "Sim" : "Não") + '</td>')
                         .append('<td>-</td>')
                         .append('<td class="td-action"><a href="<?php echo $pagina; ?>?action=edit&id='+ value.id_regra_split +'" class="button">Editar</a></td>')
                         .append('<td class="td-action"><a href="<?php echo $pagina; ?>?action=delete&id='+ value.id_regra_split +'" class="button">Apagar</a></td>')
@@ -348,6 +354,10 @@ $(function() {
             </select>
             <label for="split">Percentual p/ Split:</label>
 		    <input type="text" id="split" name="split" maxlength="3" class="text ui-widget-content ui-corner-all" />		    
+            <label for="split">MDR:</label>
+		    <input type="checkbox" id="charge_processing_fee" value="1" name="charge_processing_fee" />		    
+            <!-- <label for="split">ChargeBack:</label>
+		    <input type="checkbox" id="liable" name="liable" value="1" />		     -->
 		</fieldset>
 	</form>
 </div>
@@ -389,6 +399,8 @@ $(function() {
 			<tr class="ui-widget-header">
                 <th>Recebedor</th>
 				<th>Percentual p/ Split</th>  
+				<th>MDR</th>  
+				<!-- <th>ChargeBack</th>   -->
                 <th>Valor mínimo</th>  
 				<th colspan="2" class="th-action">Ações</th>
 			</tr>
@@ -397,6 +409,8 @@ $(function() {
 			<tr>
 				<td><?php echo $rs["cd_conta_bancaria"]; ?></td>
                 <td><?php echo $rs["nr_percentual_split"]; ?></td>
+                <td><?php echo ($rs["charge_processing_fee"] ? "Sim" : "Não"); ?></td>
+                <!-- <td>echo ($rs["liable"] ? "Sim" : "Não");</td> -->
                 <td>-</td>
 				<td class="td-action"><a href="<?php echo $pagina; ?>?action=edit&id=<?php echo $id; ?>" class="button">Editar</a></td>
                 <td class="td-action"><a href="<?php echo $pagina; ?>?action=delete&id=<?php echo $id; ?>" class="button">Apagar</a></td>

@@ -97,10 +97,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 650, true)) {
     		$conn = getConnection($id_base);
 
     		$query = "SELECT CodPeca FROM tabPeca tp WHERE tp.id_produtor = ?";
-    		$stmt = executeSQL($conn, $query, array($_POST["produtor"]));
+    		$stmt2 = executeSQL($conn, $query, array($_POST["produtor"]));
     		
-    		while ($rs = fetchResult($stmt)) {
-    			$pecas[] = array("CodPeca" => $rs["CodPeca"], "id_base" => $id_base);
+    		while ($rs2 = fetchResult($stmt2)) {
+    			$pecas[] = array("CodPeca" => $rs2["CodPeca"], "id_base" => $id_base);
     		}
     	}
 

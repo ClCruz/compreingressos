@@ -110,6 +110,32 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 620, true)) {
         }
         $retorno = json_encode($ret);
 
+	} else if ($_GET['action'] == 'selectload'){
+		$query = 'SELECT
+                   id_produtor,
+                   ds_razao_social,
+                   cd_cpf_cnpj
+				  FROM mw_produtor
+				  WHERE in_ativo=1';
+		
+		$params = array();
+
+		if (isset($_GET['id'])) {
+			$query .= " AND id_produtor = ?"
+			$params = array($_GET['id']);
+		}
+        
+        $result = executeSQL($mainConnection, $query, $params);
+
+        while ($rs = fetchResult($result)) {            
+            $ret = array(
+            	"id_produtor" => $rs["id_produtor"],
+            	"razao_social" => utf8_encode($rs["ds_razao_social"]),
+            	"cpf_cnpj" => $rs["cd_cpf_cnpj"]
+            );
+        }
+        $retorno = json_encode($ret);
+
 	} else {
 		$retorno = "Nenhuma ação executada.";
 	}

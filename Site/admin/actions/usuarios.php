@@ -113,6 +113,32 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 		$login = $rs['CD_LOGIN'];
 		$nome = $rs['DS_NOME'];
 		$email = $rs['DS_EMAIL'];
+	}  else if ($_GET['action'] == 'selectload'){
+		$query = 'SELECT
+                   id_usuario,
+                   ,ds_nome
+				   ,cd_login
+				  FROM mw_usuario
+				  WHERE in_ativo=1';
+		
+		$params = array();
+
+		if (isset($_GET['id'])) {
+			$query .= " AND id_usuario = ?"
+			$params = array($_GET['id']);
+		}
+        
+        $result = executeSQL($mainConnection, $query, $params);
+
+        while ($rs = fetchResult($result)) {            
+            $ret = array(
+            	"id_usuario" => $rs["id_usuario"],
+            	"ds_nome" => utf8_encode($rs["ds_nome"]),
+            	"cd_login" => utf8_encode($rs["cd_login"])
+            );
+        }
+        $retorno = json_encode($ret);
+
 	} else {
 		$retorno = sqlErrors();
 	}

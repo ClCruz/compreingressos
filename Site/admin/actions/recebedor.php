@@ -178,6 +178,32 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
     	$param = array($_GET["produtor"], $_GET["conta"], $_GET["conta"]);
     	$stmt  = executeSQL($mainConnection, $query, $param, true);
     	$retorno = (!isset($stmt["split"]) || $stmt["split"] == null) ? 0 : $stmt["split"];
+	}  else if ($_GET['action'] == 'selectload'){
+		$query = 'SELECT
+                   id_recebedor,
+                   ds_razao_social,
+                   cd_cpf_cnpj
+				  FROM mw_recebedor
+				  WHERE in_ativo=1';
+		
+		$params = array();
+
+		if (isset($_GET['id'])) {
+			$query .= " AND id_recebedor = ?"
+			$params = array($_GET['id']);
+		}
+        
+        $result = executeSQL($mainConnection, $query, $params);
+
+        while ($rs = fetchResult($result)) {            
+            $ret = array(
+            	"id_recebedor" => $rs["id_recebedor"],
+            	"razao_social" => utf8_encode($rs["ds_razao_social"]),
+            	"cpf_cnpj" => $rs["cd_cpf_cnpj"]
+            );
+        }
+        $retorno = json_encode($ret);
+
 	} else {
 		$retorno = "Nenhuma ação executada.";
 	}

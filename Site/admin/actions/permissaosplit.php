@@ -1,6 +1,6 @@
 <?php
 
-if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
+if (acessoPermitido($mainConnection, $_SESSION['admin'], 662, true)) {
 	if ($_GET['action'] == 'add') {
 
 		$query = "INSERT INTO mw_permissao_split (id_usuario, id_produtor, id_recebedor, dt_criado, dt_alterado) VALUES (?, ?, ?, GETDATE(), GETDATE())";
@@ -52,7 +52,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
 				   ,p.cd_cpf_cnpj DocumentoProdutor
 				   ,r.ds_razao_social RazaoSocialRecebedor
 				   ,r.cd_cpf_cnpj DocumentoRecebedor
+				   ,u.ds_nome NomeUsuario
                   FROM mw_permissao_split ps
+				  INNER JOIN mw_usuario u ON ps.id_usuario=u.id_usuario
 				  INNER JOIN mw_produtor p ON ps.id_produtor=p.id_produtor
 				  LEFT JOIN mw_recebedor r ON ps.id_recebedor=r.id_recebedor
 				  WHERE id_permissaosplit = ?';
@@ -71,7 +73,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
             	"DocumentoProdutor" => $rs["DocumentoProdutor"],
             	"DocumentoRecebedor" => $rs["DocumentoRecebedor"],
             	"RazaoSocialProdutor" => utf8_encode($rs["RazaoSocialProdutor"]),
-            	"RazaoSocialRecebedor" => utf8_encode($rs["RazaoSocialRecebedor"])
+            	"RazaoSocialRecebedor" => utf8_encode($rs["RazaoSocialRecebedor"]),
+            	"NomeUsuario" => utf8_encode($rs["NomeUsuario"])
             );
         }
         $retorno = json_encode($ret);

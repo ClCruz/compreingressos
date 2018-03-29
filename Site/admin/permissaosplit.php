@@ -4,7 +4,7 @@ include('../settings/Log.class.php');
 $mainConnection = mainConnection();
 session_start();
 
-if (acessoPermitido($mainConnection, $_SESSION['admin'], 29, true)) {
+if (acessoPermitido($mainConnection, $_SESSION['admin'], 662, true)) {
     $pagina = basename(__FILE__);
 
     if (isset($_GET['action'])) {
@@ -17,6 +17,22 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 29, true)) {
         <script type="text/javascript">
             $(function() {
                 var pagina = '<?php echo $pagina; ?>';
+
+                function loading(id, message) {
+                    message = message == undefined || message == null ? "Carregando" : message;
+                    $(id).loading(
+                        { 
+                            theme: 'dark',
+                            stoppable: true, 
+                            message: message,
+                            onStart: function(loading) {
+                                loading.overlay.slideDown(400);
+                            },
+                            onStop: function(loading) {
+                                loading.overlay.slideUp(400);
+                            }
+                        });
+                }
 
                 $('#app table').delegate('a', 'click', function(event) {
                     event.preventDefault();
@@ -110,6 +126,70 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 29, true)) {
                     });
                     return valido;
                 }
+                $(document).ready(function () {
+                    loadGrid();
+                });
+
+                function loadGrid() {
+                    $("#table-grid tbody").html("");
+                    $.ajax({
+                        url: pagina + '?action=load',
+                        type: 'post',
+                        data: {},
+                        success: function(data) {	
+                            data = $.parseJSON(data);
+                            $("#table-grid tbody").html("");
+                            if (data.length == 0)
+                                $("#table-grid tbody").html("<tr><td colspan='5'>Nenhum dado encontrado.</td></tr>");
+
+                            var total = 0;
+                            $.each(data, function(key, value) {
+                                var DocumentoProdutor = "";
+                                if (value.DocumentoProdutor.length == 14) {
+                                    document = value.DocumentoProdutor.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g,"\$1.\$2.\$3\/\$4\-\$5");
+                                }
+                                else {
+                                    document = value.DocumentoProdutor.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/g,"\$1.\$2.\$3\-\$4");
+                                }
+                                var DocumentoRecebedor = "";
+                                if (value.DocumentoRecebedor.length == 14) {
+                                    document = value.DocumentoRecebedor.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g,"\$1.\$2.\$3\/\$4\-\$5");
+                                }
+                                else {
+                                    document = value.DocumentoRecebedor.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/g,"\$1.\$2.\$3\-\$4");
+                                }
+                                var toAppend = "<tr style='cursor: pointer;' id='" + value.id_permissaosplit + "' class='toClick trline' data='" + value.id_permissaosplit + "'>";
+                                toAppend += "<td>"+ value.NomeUsuario +"</td>";
+                                toAppend += "<td>"+ value.RazaoSocialProdutor + "(" + value.DocumentoProdutor + ")" +"</td>";
+                                toAppend += "<td>"+ value.RazaoSocialRecebedor + "(" + value.DocumentoRecebedor + ")" +"</td>";
+                                toAppend += "<td>"+ value.RazaoSocialRecebedor + "(" + value.DocumentoRecebedor + ")" +"</td>";
+                                toAppend += "<td><a href='" + pagina + "?action=edit&id=" + value.id_permissaosplit + "'" +"</td>";
+                                toAppend += "<td><a href='" + pagina + "?action=delete&id=" + value.id_permissaosplit + "'" +"</td>";
+                                
+                                toAppend += "</tr>";
+                                $("#table-extrato tbody").append(toAppend);
+                            });
+                            $("#table-extrato tfoot").html("");
+
+                            var toAppend = "<tr class=ui-widget-header'>"
+                            toAppend += "<td colspan='5' class='text-right ui-widget-header'>Total R$ "+ ((total)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                            toAppend += "</tr>";
+                            $("#table-extrato tfoot").append(toAppend);
+
+                            $(".toClick").click(function(obj) {
+                                lineClick($(this).attr("data"));
+                            });
+                        },
+                        error: function(){
+                            $("#table-extrato tbody").html("");
+                            $.dialog({
+                                title: 'Erro...',
+                                text: 'Erro na chamada dos dados !!!'
+                            });
+                            return false;
+                        }
+                    });
+                }
             });
         </script>
         <h2>Permissões para split</h2>
@@ -121,10 +201,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 29, true)) {
                         <th width="20%">Organizador</th>
                         <th width="20%">Recebedor</th>
                         <th withn="10%">Ativo</th>
-                        <th style="text-align: center;" width="10%">Ações</th>
+                        <th style="text-align: center;" colspan="2" width="10%">Ações</th>
                     </tr>
                 </thead>
                 <tr>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -135,3 +216,5 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 29, true)) {
     </table>
     <a id="new" href="#new">Novo</a>
 </form>
+        <?php }
+}?>

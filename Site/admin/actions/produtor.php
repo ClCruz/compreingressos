@@ -116,25 +116,23 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 620, true)) {
                    ds_razao_social,
                    cd_cpf_cnpj
 				  FROM mw_produtor
-				  WHERE in_ativo=1';
+				  WHERE in_ativo=1
+				  ORDER BY ds_razao_social';
 		
 		$params = array();
-
-		if (isset($_GET['id'])) {
-			$query .= " AND id_produtor = ?"
-			$params = array($_GET['id']);
-		}
         
-        $result = executeSQL($mainConnection, $query, $params);
+		$result = executeSQL($mainConnection, $query, $params);
+		
+		$json = array();
 
         while ($rs = fetchResult($result)) {            
-            $ret = array(
+            $json[] = array(
             	"id_produtor" => $rs["id_produtor"],
-            	"razao_social" => utf8_encode($rs["ds_razao_social"]),
-            	"cpf_cnpj" => $rs["cd_cpf_cnpj"]
+            	"ds_razao_social" => utf8_encode($rs["ds_razao_social"]),
+            	"cd_cpf_cnpj" => $rs["cd_cpf_cnpj"]
             );
         }
-        $retorno = json_encode($ret);
+        $retorno = json_encode($json);
 
 	} else {
 		$retorno = "Nenhuma ação executada.";

@@ -708,7 +708,7 @@ $(function() {
         </div> 
 
         <div class="produtor">
-            <input type="button" id="btn-saque" class="button" value="Realizar Saque">
+            <input type="button" style="display:none" id="btn-saque" class="button" value="Realizar Saque">
             <input type="button" id="btn-antecipacao" class="button" value="Criar Antecipação">
         </div>
     </div>

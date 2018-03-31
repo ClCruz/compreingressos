@@ -78,10 +78,10 @@ $(function() {
     //$("#split").keypress(verificaNumero);
     new Cleave('.per', {
         numeral: true,
+        numeralPositiveOnly: true,
         numeralThousandsGroupStyle: "none",
-        numeralDecimalScale: 2,
-        numeralDecimalMark: ',',
-        numeralPositiveOnly: true
+        numeralDecimalScale: 0,
+
     });
 
     function numberToBR(value) {
@@ -451,8 +451,9 @@ $(function() {
             "percentage_boleto_web": $("#percentage_boleto_web").val() == "" ? numeral("0")._value : numeral(numberToUS($("#percentage_boleto_web").val()))._value,
             "percentage_credit_box_office": $("#percentage_credit_box_office").val() == "" ? numeral("0")._value : numeral(numberToUS($("#percentage_credit_box_office").val()))._value,
             "percentage_debit_box_office": $("#percentage_debit_box_office").val() == "" ? numeral("0")._value : numeral(numberToUS($("#percentage_debit_box_office").val()))._value,
-            "charge_processing_fee": $("#charge_processing_fee").val()
+            "charge_processing_fee": $("#charge_processing_fee:checked").length == 0 ? 0 : 1
         };
+        console.log(ret);
         return ret;
     }
 
@@ -500,18 +501,18 @@ $(function() {
             <fieldset>
                 <legend style="padding-bottom:13px">Percentual Web:</legend>
                     <label for="percentage_credit_web">Crédito:</label>
-                    <input type="text" id="percentage_credit_web" name="percentage_credit_web" maxlength="5" style="width: 49px;" class="per text" />		    
+                    <input type="text" id="percentage_credit_web" name="percentage_credit_web" maxlength="3" style="width: 49px;" class="per text" />		    
                     <label for="split">Debito:</label>
-                    <input type="text" id="percentage_debit_web" name="percentage_debit_web" maxlength="5" style="width: 49px;" class="per text" />		    
+                    <input type="text" id="percentage_debit_web" name="percentage_debit_web" maxlength="3" style="width: 49px;" class="per text" />		    
                     <label for="split">Boleto:</label>
-                    <input type="text" id="percentage_boleto_web" name="percentage_boleto_web" maxlength="5" style="width: 49px;" class="per text" />		    
+                    <input type="text" id="percentage_boleto_web" name="percentage_boleto_web" maxlength="3" style="width: 49px;" class="per text" />		    
             </fieldset>
             <fieldset>
                 <legend style="padding-bottom:13px">Percentual Bilheteria:</legend>
                 <label for="split">Crédito:</label>
-                <input type="text" id="percentage_credit_box_office" name="percentage_credit_box_office" maxlength="5" style="width: 49px;" class="per text" />		    
+                <input type="text" id="percentage_credit_box_office" name="percentage_credit_box_office" maxlength="3" style="width: 49px;" class="per text" />		    
                 <label for="split">Debito:</label>
-                <input type="text" id="percentage_debit_box_office" name="percentage_debit_box_office" maxlength="5" style="width: 49px;" class="per text" />		    
+                <input type="text" id="percentage_debit_box_office" name="percentage_debit_box_office" maxlength="3" style="width: 49px;" class="per text" />		    
             </fieldset>
             <fieldset>
                 <label for="charge_processing_fee">MDR:</label>

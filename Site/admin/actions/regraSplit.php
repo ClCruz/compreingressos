@@ -7,7 +7,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 650, true)) {
 	}
 
 	if ($_GET['action'] == 'add') {
-
 		$query = "INSERT INTO mw_regra_split 
 		(id_produtor, id_evento, id_recebedor, 
 		liable, charge_processing_fee, in_ativo, 
@@ -19,10 +18,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 650, true)) {
 		?, ?, ?);";
 		// $params = array($_GET["produtor"], $_GET["evento"], $_POST["recebedor"], $_POST["split"], $_POST["liable"] == null ? 0 : 1, $_POST["charge_processing_fee"] == null ? 0 : 1);
 		$params = array($_GET["produtor"], $_GET["evento"], $_POST["recebedor"], 
-			1, ($_POST["charge_processing_fee"] == null ? 0 : 1), 1,
+			1, ($_POST["charge_processing_fee"] == null ? 0 : $_POST["charge_processing_fee"]), 1,
 			floatval($_POST["percentage_credit_web"]), 
 			floatval($_POST["percentage_debit_web"]), 
-			floatval($_POST["percentage_boleto_websplit"]),
+			floatval($_POST["percentage_boleto_web"]),
 			floatval($_POST["percentage_credit_box_office"]), 
 			floatval($_POST["percentage_debit_box_office"]),
 			floatval($_POST["percentage_credit_web"])
@@ -48,7 +47,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 650, true)) {
 		WHERE id_regra_split = ?";
 		// $query = "UPDATE mw_regra_split SET nr_percentual_split = ?, liable = ?, charge_processing_fee = ? WHERE id_regra_split = ?";
 
-		$params = array(($_POST["charge_processing_fee"] == null ? 0 : 1),
+		$params = array(($_POST["charge_processing_fee"] == null ? 0 : $_POST["charge_processing_fee"]),
 		floatval($_POST["percentage_credit_web"]), 
 		floatval($_POST["percentage_debit_web"]), 
 		floatval($_POST["percentage_boleto_web"]),

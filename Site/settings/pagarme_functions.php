@@ -127,28 +127,37 @@ function pagarPedidoPagarme($id_pedido, $dados_extra) {
 	}
 	// erro
 	else return false;
-
+	executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . basename($_SERVER['PHP_SELF']) . " - 1" ));
 	$split = consultarSplitPagarme($id_pedido, "web", $payment_method);
+	executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . print_r($split, true) . " - SPLIT" ));
+	error_log(print_r($split, true));
 	if (is_array($split)) {
 		$transaction_data = array_merge($transaction_data, array(
 			"split_rules" => $split
 		));
 	}
+	executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . basename($_SERVER['PHP_SELF']) . " - 2" ));
 
 	try {
 		//error_log("Executando o pagar.me");
+		executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . basename($_SERVER['PHP_SELF']) . " - 3" ));
 		$transaction = new PagarMe_Transaction($transaction_data);
 		$transaction->charge();
+		executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . basename($_SERVER['PHP_SELF']) . " - 4" ));
 
 		$response = array('success' => true, 'transaction' => $transaction);
 	} catch (Exception $e) {
+		executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . basename($_SERVER['PHP_SELF']) . " - 5" ));
+
 		error_log("Erro no pagar.me: " . $e->getMessage());
 		$response = array('success' => false, 'error' => tratarErroPagarme($e, $id_pedido));
 	}
+	executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . basename($_SERVER['PHP_SELF']) . " - 6" ));
 	//error_log("Salvado dados que veio do pagar.me");
 	$query = 'INSERT INTO MW_PEDIDO_PAGSEGURO (ID_PEDIDO_VENDA, DT_STATUS, CD_STATUS, OBJ_PAGSEGURO) VALUES (?, GETDATE(), ?, ?)';
 	$params = array($id_pedido, $transaction->status, base64_encode(serialize($transaction)));
 	executeSQL($mainConnection, $query, $params);
+	executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . basename($_SERVER['PHP_SELF']) . " - 7" ));
 
 	return $response;
 }
@@ -372,7 +381,7 @@ function consultarSplitPagarme($pedido, $where, $payment_method) {
 		}
 		$split[] = array(
 			"recipient_id" => $rs["recipient_id"],
-	    	"percentage" => $rs["nr_percentual_split"],
+	    	"percentage" => $perToUse,
 	    	"liable" => $rs["liable"],
 	    	"charge_processing_fee" => $rs["charge_processing_fee"]);
 	}

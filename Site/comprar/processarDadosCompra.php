@@ -4,7 +4,6 @@ require_once('../settings/settings.php');
 require_once('../settings/Log.class.php');
 
 require_once('../settings/antiFraude.php');
-
 // verifica se o acesso via operador/pdv esta vendendo apenas aquilo que tem permissao
 require('acessoPermitido.php');
 
@@ -62,6 +61,7 @@ if (!$_ENV['IS_TEST'] and $_POST['codCartao'] == 997) {
     die();
 }
 
+
 // verifica se o meio de pagamento ainda pode ser utilizado
 $query = "SELECT TOP 1 DATEDIFF(HOUR, GETDATE(), CONVERT(DATETIME, CONVERT(VARCHAR, A.DT_APRESENTACAO, 112) + ' ' + LEFT(A.HR_APRESENTACAO,2) + ':' + RIGHT(A.HR_APRESENTACAO,2) + ':00')) HORAS
             FROM MW_RESERVA R
@@ -87,6 +87,7 @@ if (strlen($_POST['numCartao']) > 16) {
     echo "Por favor verifique o número do cartão.";
     die();
 }
+
 
 
 $_POST['numCartao'] = preg_replace("/[^0-9]/", "", $_POST['numCartao']);
@@ -167,8 +168,6 @@ $dadosExtrasEmail['email_presente'] = $_POST['emailPresente'];
 $parametros['RequestId'] = $ri;
 $parametros['Version'] = '1.0';
 
-
-
 //--------------------
 $rs_gateway_pagamento = executeSQL($mainConnection, 'SELECT CD_GATEWAY_PAGAMENTO, DS_URL FROM MW_GATEWAY_PAGAMENTO WHERE IN_ATIVO = 1', null, true);
 $parametros['OrderData']['MerchantId'] = $rs_gateway_pagamento['CD_GATEWAY_PAGAMENTO'];
@@ -186,8 +185,6 @@ $parametros['CustomerData']['CustomerName'] = $rs['DS_NOME'] . ' ' . $rs['DS_SOB
 $parametros['CustomerData']['CustomerEmail'] = $rs['CD_EMAIL_LOGIN'];
 
 //Dados do cartão
-
-
 $PaymentDataCollection['CardHolder'] = $_POST['nomeCartao'];
 $PaymentDataCollection['PaymentMethod'] = $_POST['codCartao'];
 $PaymentDataCollection['CardNumber'] = $_POST['numCartao'];
@@ -285,8 +282,6 @@ $totalIngressos = 0;
 $totalConveniencia = 0;
 
 beginTransaction($mainConnection);
-
-
 
 // verificar se o pedido já foi processado utitlizando o campo id_pedido_venda da mw_reserva
 $queryIdPedidoVenda = "select r.id_pedido_venda from mw_reserva r
@@ -623,25 +618,20 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
 
     if ($descricao_erro == '') {
         setcookie('id_braspag', $result->AuthorizeTransactionResult->OrderData->BraspagOrderId);
-
         // pagamentos via pagarme
         if ($pagamento_pagarme){
-
             $query = "UPDATE P SET ID_MEIO_PAGAMENTO = M.ID_MEIO_PAGAMENTO, IN_SITUACAO = 'P'
                         FROM MW_PEDIDO_VENDA P, MW_MEIO_PAGAMENTO M
                         WHERE P.ID_PEDIDO_VENDA = ? AND M.CD_MEIO_PAGAMENTO = ?";
             $params = array($parametros['OrderData']['OrderId'], $_POST['codCartao']);
             $result = executeSQL($mainConnection, $query, $params);
-
             $response = pagarPedidoPagarme($parametros['OrderData']['OrderId'], $_POST);
-
             executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
                 array($_SESSION['user'], json_encode(array('descricao' => '4. retorno do pedido pagarme=' . $parametros['OrderData']['OrderId'], 'pagseguro_obj' => base64_encode(serialize($response['transaction'])))))
             );
 
             // credit card
             if ($response['success'] AND $response['transaction']['status'] == 'paid') {
-
                 $result = new stdClass();
 
                 $result->AuthorizeTransactionResult->OrderData->BraspagOrderId = 'Pagar.me';
@@ -649,9 +639,7 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
                 $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId = $response['transaction']->nsu;
                 $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AuthorizationCode = $response['transaction']->authorization_code;
                 $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->PaymentMethod = $_POST['codCartao'];
-
                 require('concretizarCompra.php');
-
                 // se necessario, replica os dados de assinatura e imprime url de redirecionamento
                 require('concretizarAssinatura.php');
 

@@ -7,11 +7,25 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 650, true)) {
 	}
 
 	if ($_GET['action'] == 'add') {
-
-		$query = "INSERT INTO mw_regra_split (id_produtor, id_evento, id_recebedor, nr_percentual_split, liable, charge_processing_fee, in_ativo) VALUES(?, ?, ?, ?, ?, ?, 1);";
-
+		$query = "INSERT INTO mw_regra_split 
+		(id_produtor, id_evento, id_recebedor, 
+		liable, charge_processing_fee, in_ativo, 
+		percentage_credit_web, percentage_debit_web, percentage_boleto_web, 
+		percentage_credit_box_office, percentage_debit_box_office, nr_percentual_split) VALUES 
+		(?, ?, ?, 
+		?, ?, ?,
+		?, ?, ?,
+		?, ?, ?);";
 		// $params = array($_GET["produtor"], $_GET["evento"], $_POST["recebedor"], $_POST["split"], $_POST["liable"] == null ? 0 : 1, $_POST["charge_processing_fee"] == null ? 0 : 1);
-		$params = array($_GET["produtor"], $_GET["evento"], $_POST["recebedor"], $_POST["split"], 1, $_POST["charge_processing_fee"] == null ? 0 : 1);
+		$params = array($_GET["produtor"], $_GET["evento"], $_POST["recebedor"], 
+			1, ($_POST["charge_processing_fee"] == null ? 0 : $_POST["charge_processing_fee"]), 1,
+			floatval($_POST["percentage_credit_web"]), 
+			floatval($_POST["percentage_debit_web"]), 
+			floatval($_POST["percentage_boleto_web"]),
+			floatval($_POST["percentage_credit_box_office"]), 
+			floatval($_POST["percentage_debit_box_office"]),
+			floatval($_POST["percentage_credit_web"])
+		);
 
 		executeSQL($mainConnection, $query, $params, false);
 
@@ -22,10 +36,25 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 650, true)) {
 		}
 	} else if ($_GET['action'] == 'update' and isset($_GET['id'])) {
 
-		$query = "UPDATE mw_regra_split SET nr_percentual_split = ?, charge_processing_fee = ? WHERE id_regra_split = ?";
+		$query = "UPDATE mw_regra_split SET 
+			charge_processing_fee = ? 
+			,percentage_credit_web = ?
+			,percentage_debit_web = ?
+			,percentage_boleto_web = ?
+			,percentage_credit_box_office = ?
+			,percentage_debit_box_office = ?
+			,nr_percentual_split = ? 
+		WHERE id_regra_split = ?";
 		// $query = "UPDATE mw_regra_split SET nr_percentual_split = ?, liable = ?, charge_processing_fee = ? WHERE id_regra_split = ?";
 
-		$params = array(trim($_POST["split"]), $_POST["charge_processing_fee"] == null ? 0 : 1, $_GET['id']);
+		$params = array(($_POST["charge_processing_fee"] == null ? 0 : $_POST["charge_processing_fee"]),
+		floatval($_POST["percentage_credit_web"]), 
+		floatval($_POST["percentage_debit_web"]), 
+		floatval($_POST["percentage_boleto_web"]),
+		floatval($_POST["percentage_credit_box_office"]), 
+		floatval($_POST["percentage_debit_box_office"]),
+		floatval($_POST["percentage_credit_web"]), 
+		$_GET['id']);
 		// $params = array(trim($_POST["split"]), $_POST["liable"] == null ? 0 : 1, $_POST["charge_processing_fee"] == null ? 0 : 1, $_GET['id']);
 
 		if (executeSQL($mainConnection, $query, $params)) {
@@ -51,10 +80,14 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 650, true)) {
                    id_produtor,
                    id_evento,
                    id_recebedor,
-                   nr_percentual_split,
 				   liable,
 				   charge_processing_fee,
-                   in_ativo
+                   in_ativo,
+				   percentage_credit_web,
+				   percentage_debit_web,
+				   percentage_boleto_web,
+				   percentage_credit_box_office,
+				   percentage_debit_box_office
                   FROM mw_regra_split WHERE id_regra_split = ?';
         $params = array($_GET['id']);
         $result = executeSQL($mainConnection, $query, $params);
@@ -65,33 +98,76 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 650, true)) {
             	"produtor" => $rs["id_produtor"],
                 "evento" => $rs["id_evento"],
                 "recebedor" => $rs["id_recebedor"],
-            	"split" => $rs["nr_percentual_split"],
             	"liable" => $rs["liable"],
             	"charge_processing_fee" => $rs["charge_processing_fee"],
+            	"percentage_credit_web" => $rs["percentage_credit_web"],
+            	"percentage_debit_web" => $rs["percentage_debit_web"],
+            	"percentage_boleto_web" => $rs["percentage_boleto_web"],
+            	"percentage_credit_box_office" => $rs["percentage_credit_box_office"],
+            	"percentage_debit_box_office" => $rs["percentage_debit_box_office"],
             	"status" => $rs["in_ativo"]
             );
         }
         $retorno = json_encode($ret);
 
     } else if ($_GET['action'] == 'check' and isset($_GET['produtor'])){
-    	$query = "SELECT SUM(nr_percentual_split) AS split FROM mw_regra_split WHERE id_produtor = ? AND id_evento = ? AND (id_recebedor != ? OR ? = -1) AND in_ativo = 1";
-    	$param = array($_GET["produtor"], $_GET["evento"], $_GET["recebedor"], $_GET["recebedor"]);
-    	$stmt  = executeSQL($mainConnection, $query, $param, true);
-    	$retorno = (!isset($stmt["split"]) || $stmt["split"] == null) ? 0 : $stmt["split"];
+    	$query = "SELECT 
+		SUM(percentage_credit_web) AS percentage_credit_web, 
+		SUM(percentage_debit_web) AS percentage_debit_web, 
+		SUM(percentage_boleto_web) AS percentage_boleto_web, 
+		SUM(percentage_credit_box_office) AS percentage_credit_box_office, 
+		SUM(percentage_debit_box_office) AS percentage_debit_box_office
+		FROM mw_regra_split WHERE id_produtor = ? AND id_evento = ? AND id_recebedor != ? AND in_ativo = 1";
+		$param = array($_GET["produtor"], $_GET["evento"], $_GET["recebedor"]);
 
-    } else if ($_GET['action'] == 'load_split') {
+		$stmt  = executeSQL($mainConnection, $query, $param);		
+		$retorno = array(
+			"percentage_credit_web" => 0,
+			"percentage_debit_web" => 0,
+			"percentage_boleto_web" => 0,
+			"percentage_credit_box_office" => 0,
+			"percentage_debit_box_office" => 0);
+
+		while($rs = fetchResult($stmt)){
+        	$retorno = array(
+        					"percentage_credit_web" => $rs["percentage_credit_web"],
+        					"percentage_debit_web" => $rs["percentage_debit_web"],
+        					"percentage_boleto_web" => $rs["percentage_boleto_web"],
+        					"percentage_credit_box_office" => $rs["percentage_credit_box_office"],
+        					"percentage_debit_box_office" => $rs["percentage_debit_box_office"]);
+		}
+
+		
+		$retorno = json_encode($retorno);
+
+    } else if ($_GET['action'] == 'checkRecebedorOk') {
+    	$query = "SELECT * 
+    			  FROM mw_regra_split rs
+    			  WHERE rs.id_produtor = ? AND rs.id_evento=? AND rs.in_ativo = 1 AND rs.id_recebedor=?";
+        $stmt = executeSQL($mainConnection, $query, array($_GET["produtor"], $_GET["evento"], $_GET["recebedor"]));
+        $json = array();
+        while($rs = fetchResult($stmt)){
+        	$json[] = array("id_regra_split" => $rs["id_regra_split"]);
+		}
+		//error_log("erro: " . print_r( sqlsrv_errors(), true));
+        $retorno = json_encode($json);
+	} else if ($_GET['action'] == 'load_split') {
     	$query = "SELECT * 
     			  FROM mw_regra_split rs 
     			  INNER JOIN mw_recebedor cb ON cb.id_recebedor = rs.id_recebedor 
-    			  WHERE rs.id_produtor = ? AND rs.in_ativo = 1";
-        $stmt = executeSQL($mainConnection, $query, array($_POST["produtor"]));
+    			  WHERE rs.id_produtor = ? AND rs.id_evento=? AND rs.in_ativo = 1";
+        $stmt = executeSQL($mainConnection, $query, array($_POST["produtor"], $_POST["evento"]));
         $json = array();
         while($rs = fetchResult($stmt)){
         	$json[] = array("id_regra_split" => $rs["id_regra_split"],
         					"ds_razao_social" => utf8_encode($rs["ds_razao_social"]),
-        					"nr_percentual_split" => $rs["nr_percentual_split"],
         					"liable" => $rs["liable"],
         					"charge_processing_fee" => $rs["charge_processing_fee"],
+        					"percentage_credit_web" => $rs["percentage_credit_web"],
+        					"percentage_debit_web" => $rs["percentage_debit_web"],
+        					"percentage_boleto_web" => $rs["percentage_boleto_web"],
+        					"percentage_credit_box_office" => $rs["percentage_credit_box_office"],
+        					"percentage_debit_box_office" => $rs["percentage_debit_box_office"],
         					"in_ativo" => $rs["in_ativo"]);
         }
         $retorno = json_encode($json);

@@ -32,13 +32,27 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 650, true)) {
 
     #app #new {margin: 0px;}
 
-    #regra label, #regra input { display:block; }
+    /* #regra label, #regra input { display:block; } */
     #regra input.text, #regra select { margin-bottom:12px; width:95%; padding: .4em; }
     /**#produtor {float: left; width: initial; padding: initial;}**/
 
+.ui-widget-header-gray {
+	border: 1px solid #000000;
+	background: #e3e8e3;
+	color: #000000;
+	font-weight: bold;
+}
+.ui-widget-header-green {
+	border: 1px solid #00ff87;
+	background: #e3e8e3;
+	color: #000000;
+	font-weight: bold;
+}
+
 </style>
 <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
-<script src="../javascripts/jquery.maskedinput.min.js" type="text/javascript"></script>
+<script src="../javascripts/cleave.min.js"></script>
+<script src="../javascripts/numeral.min.js"></script>
 <script>
 $(function() {
 	var pagina = '<?php echo $pagina; ?>';
@@ -47,17 +61,38 @@ $(function() {
         id          = $("#id"),
         produtor    = $("#produtor"),
         id_produtor = $("#id_produtor"),
-        split       = $("#split"),
+        percentage_credit_web       = $("#percentage_credit_web"),
+        percentage_debit_web       = $("#percentage_debit_web"),
+        percentage_boleto_web       = $("#percentage_boleto_web"),
+        percentage_credit_box_office       = $("#percentage_credit_box_office"),
+        percentage_debit_box_office       = $("#percentage_debit_box_office"),
         //liable       = $("#liable"),
         charge_processing_fee       = $("#charge_processing_fee"),
         status      = $("#status"),
         evento      = $("#evento"),
         recebedor   = $("#recebedor"),
-        allFields   = $([]).add(split),
+        allFields   = $([]),
         tips        = $(".validateTips");
 
 	$('.button').button();
-    $("#split").keypress(verificaNumero);
+    //$("#split").keypress(verificaNumero);
+    new Cleave('.per', {
+        numeral: true,
+        numeralPositiveOnly: true,
+        numeralThousandsGroupStyle: "none",
+        numeralDecimalScale: 0,
+
+    });
+
+    function numberToBR(value) {
+        if (value == null || value == undefined) return "0";
+        return value.toString().replace(".", ",");
+    }
+    function numberToUS(value) {
+        if (value == null || value == undefined) return "0";
+        return value.toString().replace(",", ".");
+    }
+
 
     $('#app table').delegate('a', 'click', function(event) {
         event.preventDefault();
@@ -70,16 +105,18 @@ $(function() {
         if (href.indexOf('?action=edit') != -1) {
             atualizarRecebedor();
         	$.get('regraSplit.php?action=load&' + id, function(data) {
-            	data = $.parseJSON(data);
+                data = $.parseJSON(data);
 
             	$("#id").val(data.id);            	
-                $("#split").val(data.split);
+                $("#percentage_credit_web").val(numberToBR(numeral(data.percentage_credit_web)._value));
+                $("#percentage_debit_web").val(numberToBR(numeral(data.percentage_debit_web)._value));
+                $("#percentage_boleto_web").val(numberToBR(numeral(data.percentage_boleto_web)._value));
+                $("#percentage_credit_box_office").val(numberToBR(numeral(data.percentage_credit_box_office)._value));
+                $("#percentage_debit_box_office").val(numberToBR(numeral(data.percentage_debit_box_office)._value));
                 //$('#liable').prop('checked', data.liable);
                 $('#charge_processing_fee').prop('checked', data.charge_processing_fee);
-            	$("#status").val(data.status);
-                $('[name=recebedor] option').filter(function() { 
-                    return ($(this).val() == data.recebedor);
-                }).prop('selected', true);
+                $("#status").val(data.status);
+                $("#recebedor").val(data.recebedor);
                 $("#recebedor").attr("disabled", true);             
 
             	dialog.dialog( "open" );
@@ -144,8 +181,8 @@ $(function() {
         }
     });
 
-    function check(split, recebedor) {
-        valid = true;
+    function check(percentage_credit_web, percentage_debit_web, percentage_boleto_web, percentage_credit_box_office, percentage_debit_box_office, recebedor) {
+        notValid = "";
 
         recebedor = (recebedor == null || recebedor == "") ? -1 : recebedor;
 
@@ -155,14 +192,48 @@ $(function() {
             type: 'get',
             data: 'action=check&produtor='+ $('#produtor').val() + '&evento='+ $("#evento").val() + '&recebedor='+ recebedor,
             success: function(data) {
-                soma = parseInt(data) + parseInt(split);
-                if(soma > 100) {                
-                    valid = false;
+                data = $.parseJSON(data);
+                if ((percentage_credit_web + numeral(numberToUS(data.percentage_credit_web))._value)>100) { 
+                    notValid = "<br />Percentual - Web - Crédito";
+                }
+                if ((percentage_debit_web + numeral(numberToUS(data.percentage_debit_web))._value)>100) { 
+                    notValid = "<br />Percentual - Web - Debito";
+                }
+                if ((percentage_boleto_web + numeral(numberToUS(data.percentage_boleto_web))._value)>100) { 
+                    notValid = "<br />Percentual - Web - Boleto";
+                }
+                if ((percentage_credit_box_office + numeral(numberToUS(data.percentage_credit_box_office))._value)>100) { 
+                    notValid = "<br />Percentual - Bilheteria - Crédito";
+                }
+                if ((percentage_debit_box_office + numeral(numberToUS(data.percentage_debit_box_office))._value)>100) { 
+                    notValid = "<br />Percentual - Bilheteria - Debito";
                 }
             }
         });
 
-        return valid;
+        return notValid;
+    }
+    function checkRecebedor() {
+        ret = false;
+        if (($('#produtor').val() == "" || $('#produtor').val() == "0" || $('#produtor').val() == "-1")
+        || ($('#evento').val() == "" || $('#evento').val() == "0" || $('#evento').val() == "-1")
+        || ($('#recebedor').val() == "" || $('#recebedor').val() == "0" || $('#recebedor').val() == "-1"))
+        {
+            return ret;
+        }
+
+        $.ajax({
+            url: 'regraSplit.php',
+            async: false,
+            type: 'get',
+            data: 'action=checkRecebedorOk&produtor='+ $('#produtor').val() + '&evento='+ $("#evento").val() + '&recebedor='+ $("#recebedor").val(),
+            success: function(data) {
+                data = $.parseJSON(data);
+                ret = data.length == 0;
+            }
+        });
+
+        return ret;
     }
 
     function add() {
@@ -179,21 +250,37 @@ $(function() {
             }
         });
 
-        if(split.val() <= 0) {
+        if (id.val() == "" && !checkRecebedor()) {
+            $.dialog({text: "Já existe cadastro para esse recebedor nesse evento com esse organizador."});
+            return;
+        }
+
+        var vl_percentage_credit_web = percentage_credit_web.val() == "" ? numeral("0")._value : numeral(numberToUS(percentage_credit_web.val()))._value;
+        var vl_percentage_debit_web = percentage_debit_web.val() == "" ? numeral("0")._value : numeral(numberToUS(percentage_debit_web.val()))._value;
+        var vl_percentage_boleto_web = percentage_boleto_web.val() == "" ? numeral("0")._value : numeral(numberToUS(percentage_boleto_web.val()))._value;
+        var vl_percentage_credit_box_office = percentage_credit_box_office.val() == "" ? numeral("0")._value : numeral(numberToUS(percentage_credit_box_office.val()))._value;
+        var vl_percentage_debit_box_office = percentage_debit_box_office.val() == "" ? numeral("0")._value : numeral(numberToUS(percentage_debit_box_office.val()))._value;
+
+        if(vl_percentage_credit_web < 0 || vl_percentage_debit_web < 0 ||
+        vl_percentage_boleto_web < 0 || vl_percentage_credit_box_office < 0 ||
+        vl_percentage_debit_box_office < 0) {
             tips.text("O valor do Split deve ser maior que zero.").addClass( "ui-state-highlight" );
             split.addClass("ui-state-error");
             valid = false;
         }
 
-        if(split.val() > 100) {
+        if(vl_percentage_credit_web > 100 || vl_percentage_debit_web > 100 ||
+        vl_percentage_boleto_web > 100 || vl_percentage_credit_box_office > 100 ||
+        vl_percentage_debit_box_office > 100) {
             tips.text("O valor do Split não pode ser maior do que 100.").addClass( "ui-state-highlight" );
             split.addClass("ui-state-error");
             valid = false;
         }
 
-        if(!check(split.val(), recebedor.val())) {
-            tips.text("O valor do Split na soma das regras não pode ser maior do que 100.").addClass( "ui-state-highlight" );
-            split.addClass("ui-state-error");
+        var checkResult = check(vl_percentage_credit_web, vl_percentage_debit_web, vl_percentage_boleto_web, 
+        vl_percentage_credit_box_office,vl_percentage_debit_box_office, recebedor.val());
+        if(checkResult!= "") {
+            $.dialog({text: checkResult});
             valid = false;
         }        
 
@@ -204,10 +291,13 @@ $(function() {
                 var p = 'regraSplit.php?action=update&id='+ id.val() +'&produtor='+ produtor.val();
             }
 
+
+            var dataToSend = regraGetJSON();
+
             $.ajax({
 				url: p,
 				type: 'post',
-				data: $('#regra').serialize(),
+				data: dataToSend,
 				success: function(data) {
 					if (trim(data).substr(0, 4) == 'true') {
                         atualizarSplit();
@@ -276,30 +366,70 @@ $(function() {
     });
 
     $("#evento").change(function() {
-        $("#split-body").html("");
+        $("#table-split tbody").html("");
+        $("#table-split tfoot").html("");
         atualizarSplit();
     });
 
     function atualizarSplit() {
-        $("#split-body").html("");
+        $("#table-split tbody").html("");
+        $("#table-split tfoot").html("");
         $.ajax({
             url: pagina + '?action=load_split',
             type: 'post',
             data: $('#dados').serialize(),
             success: function(data) {
                 data = $.parseJSON(data);
+                var total_percentage_credit_web = 0;
+                var total_percentage_debit_web = 0;
+                var total_percentage_boleto_web = 0;
+                var total_percentage_credit_box_office = 0;
+                var total_percentage_debit_box_office = 0;
+
+                if (data.length == 0) {
+                    $("#table-split tbody").append("<tr><td colspan='10 text-center'>Sem dados</td></tr>");
+                }
+
                 $.each(data, function(key, value) {
-                    $("#split-body")
-                        .append('<tr>')
-                        .append('<td>' + value.ds_razao_social + '</td>')
-                        .append('<td>' + value.nr_percentual_split + '</td>')
-                        .append('<td>' + (value.charge_processing_fee ? "Sim" : "Não") + '</td>')
-                        //.append('<td>' + (value.liable ? "Sim" : "Não") + '</td>')
-                        .append('<td>-</td>')
-                        .append('<td class="td-action"><a href="<?php echo $pagina; ?>?action=edit&id='+ value.id_regra_split +'" class="button">Editar</a></td>')
-                        .append('<td class="td-action"><a href="<?php echo $pagina; ?>?action=delete&id='+ value.id_regra_split +'" class="button">Apagar</a></td>')
-                        .append('</tr>');
+                    total_percentage_credit_web += numeral(value.percentage_credit_web)._value;
+                    total_percentage_debit_web += numeral(value.percentage_debit_web)._value;
+                    total_percentage_boleto_web += numeral(value.percentage_boleto_web)._value;
+                    total_percentage_credit_box_office += numeral(value.percentage_credit_box_office)._value;
+                    total_percentage_debit_box_office += numeral(value.percentage_debit_box_office)._value;
+                    
+                    var toAppend = "<tr>";
+                    toAppend += '<td>' + value.ds_razao_social + '</td>';
+                    toAppend += '<td>' + numberToBR(numeral(value.percentage_credit_web)._value) + ' %</td>';
+                    toAppend += '<td>' + numberToBR(numeral(value.percentage_debit_web)._value) + ' %</td>';
+                    toAppend += '<td>' + numberToBR(numeral(value.percentage_boleto_web)._value) + ' %</td>';
+                    toAppend += '<td>' + numberToBR(numeral(value.percentage_credit_box_office)._value) + ' %</td>';
+                    toAppend += '<td>' + numberToBR(numeral(value.percentage_debit_box_office)._value) + ' %</td>';
+                    toAppend += '<td>' + (value.charge_processing_fee ? "Sim" : "Não") + '</td>';
+                    //.append('<td>' + (value.liable ? "Sim" : "Não") + '</td>')
+                    toAppend += '<td>-</td>';
+                    toAppend += '<td class="td-action"><a href="<?php echo $pagina; ?>?action=edit&id='+ value.id_regra_split +'" class="button">Editar</a></td>';
+                    toAppend += '<td class="td-action"><a href="<?php echo $pagina; ?>?action=delete&id='+ value.id_regra_split +'" class="button">Apagar</a></td>';
+                    toAppend += "</tr>";
+                    $("#table-split tbody").append(toAppend);
                 });
+                $("#table-split tfoot").html("");
+
+                var warning_total_percentage_credit_web = total_percentage_credit_web == 100 ? "ui-widget-header-green" : (total_percentage_credit_web > 0 && (total_percentage_credit_web <100 || total_percentage_credit_web > 100) ? "ui-widget-header" : "ui-widget-header-gray");
+                var warning_total_percentage_debit_web = total_percentage_debit_web == 100 ? "ui-widget-header-green" : (total_percentage_debit_web > 0 && (total_percentage_debit_web <100 || total_percentage_debit_web > 100) ? "ui-widget-header" : "ui-widget-header-gray");
+                var warning_total_percentage_boleto_web = total_percentage_boleto_web == 100 ? "ui-widget-header-green" : (total_percentage_boleto_web > 0 && (total_percentage_boleto_web <100 || total_percentage_boleto_web > 100) ? "ui-widget-header" : "ui-widget-header-gray");
+                var warning_total_percentage_credit_box_office = total_percentage_credit_box_office == 100 ? "ui-widget-header-green" : (total_percentage_credit_box_office > 0 && (total_percentage_credit_box_office <100 || total_percentage_credit_box_office > 100) ? "ui-widget-header" : "ui-widget-header-gray");
+                var warning_total_percentage_debit_box_office = total_percentage_debit_box_office == 100 ? "ui-widget-header-green" : (total_percentage_debit_box_office > 0 && (total_percentage_debit_box_office <100 || total_percentage_debit_box_office > 100) ? "ui-widget-header" : "ui-widget-header-gray");
+
+                var footAppend = "<tr class=ui-widget-header'>"
+                footAppend += '<td class="text-right ui-widget-header-gray"><b>Total</b></td>';
+                footAppend += '<td class="text-right ' + warning_total_percentage_credit_web + '">' + numberToBR(total_percentage_credit_web) + ' %</td>';
+                footAppend += '<td class="text-right ' + warning_total_percentage_debit_web + '">' + numberToBR(total_percentage_debit_web) + ' %</td>';
+                footAppend += '<td class="text-right ' + warning_total_percentage_boleto_web + '">' + numberToBR(total_percentage_boleto_web) + ' %</td>';
+                footAppend += '<td class="text-right ' + warning_total_percentage_credit_box_office + '">' + numberToBR(total_percentage_credit_box_office) + ' %</td>';
+                footAppend += '<td class="text-right ' + warning_total_percentage_debit_box_office + '">' + numberToBR(total_percentage_debit_box_office) + ' %</td>';
+                footAppend += '<td class="text-right ui-widget-header-gray" colspan="4"></td>';
+                footAppend += "</tr>";
+                $("#table-split tfoot").append(footAppend);
                 $('.button').button();
             },
             error: function(){                
@@ -310,6 +440,21 @@ $(function() {
                 return false;
             }
         });
+    }
+    function regraGetJSON() {
+        var ret = {
+            "id": $("#id").val(),
+            "id_produtor": $("#id_produtor").val(),
+            "recebedor": $("#recebedor").val(),
+            "percentage_credit_web": $("#percentage_credit_web").val() == "" ? numeral("0")._value : numeral(numberToUS($("#percentage_credit_web").val()))._value,
+            "percentage_debit_web": $("#percentage_debit_web").val() == "" ? numeral("0")._value : numeral(numberToUS($("#percentage_debit_web").val()))._value,
+            "percentage_boleto_web": $("#percentage_boleto_web").val() == "" ? numeral("0")._value : numeral(numberToUS($("#percentage_boleto_web").val()))._value,
+            "percentage_credit_box_office": $("#percentage_credit_box_office").val() == "" ? numeral("0")._value : numeral(numberToUS($("#percentage_credit_box_office").val()))._value,
+            "percentage_debit_box_office": $("#percentage_debit_box_office").val() == "" ? numeral("0")._value : numeral(numberToUS($("#percentage_debit_box_office").val()))._value,
+            "charge_processing_fee": $("#charge_processing_fee:checked").length == 0 ? 0 : 1
+        };
+        console.log(ret);
+        return ret;
     }
 
     function atualizarRecebedor() {
@@ -352,12 +497,29 @@ $(function() {
                 <option value="<?php echo $rs["id_conta_bancaria"]; ?>"><?php echo $rs["cd_conta_bancaria"]; ?></option>
                 <?php } ?>
             </select>
-            <label for="split">Percentual p/ Split:</label>
-		    <input type="text" id="split" name="split" maxlength="3" class="text ui-widget-content ui-corner-all" />		    
-            <label for="split">MDR:</label>
-		    <input type="checkbox" id="charge_processing_fee" value="1" name="charge_processing_fee" />		    
-            <!-- <label for="split">ChargeBack:</label>
-		    <input type="checkbox" id="liable" name="liable" value="1" />		     -->
+
+            <fieldset>
+                <legend style="padding-bottom:13px">Percentual Web:</legend>
+                    <label for="percentage_credit_web">Crédito:</label>
+                    <input type="text" id="percentage_credit_web" name="percentage_credit_web" maxlength="3" style="width: 49px;" class="per text" />		    
+                    <label for="split">Debito:</label>
+                    <input type="text" id="percentage_debit_web" name="percentage_debit_web" maxlength="3" style="width: 49px;" class="per text" />		    
+                    <label for="split">Boleto:</label>
+                    <input type="text" id="percentage_boleto_web" name="percentage_boleto_web" maxlength="3" style="width: 49px;" class="per text" />		    
+            </fieldset>
+            <fieldset>
+                <legend style="padding-bottom:13px">Percentual Bilheteria:</legend>
+                <label for="split">Crédito:</label>
+                <input type="text" id="percentage_credit_box_office" name="percentage_credit_box_office" maxlength="3" style="width: 49px;" class="per text" />		    
+                <label for="split">Debito:</label>
+                <input type="text" id="percentage_debit_box_office" name="percentage_debit_box_office" maxlength="3" style="width: 49px;" class="per text" />		    
+            </fieldset>
+            <fieldset>
+                <label for="charge_processing_fee">MDR:</label>
+                <input type="checkbox" id="charge_processing_fee" value="1" name="charge_processing_fee" />		    
+                <!-- <label for="liable">ChargeBack:</label>
+                <input type="checkbox" id="liable" name="liable" value="1" />		     -->
+            </fieldset>
 		</fieldset>
 	</form>
 </div>
@@ -394,28 +556,25 @@ $(function() {
         </div>
     </div>
 
-	<table class="ui-widget ui-widget-content">
+	<table id="table-split" class="ui-widget ui-widget-content">
 		<thead>
 			<tr class="ui-widget-header">
                 <th>Recebedor</th>
-				<th>Percentual p/ Split</th>  
+				<th>% Split - Web - Crédito</th>  
+				<th>% Split - Web - Debito</th>  
+				<th>% Split - Web - Boleto</th>  
+				<th>% Split - Bilheteria - Crédito</th>  
+				<th>% Split - Bilheteria - Débito</th>  
 				<th>MDR</th>  
 				<!-- <th>ChargeBack</th>   -->
                 <th>Valor mínimo</th>  
 				<th colspan="2" class="th-action">Ações</th>
 			</tr>
 		</thead>
-		<tbody id="split-body">
-			<tr>
-				<td><?php echo $rs["cd_conta_bancaria"]; ?></td>
-                <td><?php echo $rs["nr_percentual_split"]; ?></td>
-                <td><?php echo ($rs["charge_processing_fee"] ? "Sim" : "Não"); ?></td>
-                <!-- <td>echo ($rs["liable"] ? "Sim" : "Não");</td> -->
-                <td>-</td>
-				<td class="td-action"><a href="<?php echo $pagina; ?>?action=edit&id=<?php echo $id; ?>" class="button">Editar</a></td>
-                <td class="td-action"><a href="<?php echo $pagina; ?>?action=delete&id=<?php echo $id; ?>" class="button">Apagar</a></td>
-			</tr>
+		<tbody>
 		</tbody>
+		<tfoot>
+		</tfoot>
 	</table>
 </form>
 <br/>

@@ -4,7 +4,7 @@ include('../settings/Log.class.php');
 $mainConnection = mainConnection();
 session_start();
 
-if (acessoPermitido($mainConnection, $_SESSION['admin'], 662, true)) {
+if (acessoPermitido($mainConnection, $_SESSION['admin'], 661, true)) {
     $pagina = basename(__FILE__);
 
     if (isset($_GET['action'])) {

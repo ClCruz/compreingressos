@@ -11,7 +11,7 @@ if ($_ENV['IS_TEST']) {
 } else {
 	//ticketpay: ak_live_pcYp3eGXxpOBHqViOLfBQ61NQ4433y
 	//compreingressos: ak_live_5aYKGG3AyIb8cvv7Tq44q7ZasJzPl8
-	Pagarme::setApiKey("ak_live_5aYKGG3AyIb8cvv7Tq44q7ZasJzPl8");
+	Pagarme::setApiKey("ak_live_pcYp3eGXxpOBHqViOLfBQ61NQ4433y");
 	$postback_url = 'https://compra.compreingressos.com/comprar/pagarme_receiver.php';
 }
 

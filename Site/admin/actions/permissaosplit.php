@@ -1,7 +1,7 @@
 <?php
 require_once('../settings/functions.php');
 
-if (acessoPermitido($mainConnection, $_SESSION['admin'], 662, true)) {
+if (acessoPermitido($mainConnection, $_SESSION['admin'], 661, true)) {
 	if ($_GET['action'] == 'add') {
 
 		$query = "SET NOCOUNT ON;INSERT INTO mw_permissao_split (id_usuario, id_produtor, id_recebedor, dt_criado, dt_alterado) VALUES (?, ?, ?, GETDATE(), GETDATE()); SELECT @@IDENTITY id_permissao_split;SET NOCOUNT OFF;";

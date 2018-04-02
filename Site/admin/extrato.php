@@ -532,22 +532,32 @@ $(function() {
             data: $('#antecipacao').serialize(),
             success: function(data) {
                 data = $.parseJSON(data);
-                var amount = data.amount;
-                var fee = data.fee;
-                var antfee = data.anticipation_fee;
-                var valor = (amount-fee-antfee)/100;
 
-                $("#custoAntecipacaoFull").show();
-                $("#valorAntecipacaoFull").show();
+                if (data.errors && data.errors.length>0) {
+                    $(".ui-dialog").loading("stop");
+                    $("#custoAntecipacaoFull").hide();
+                    $("#valorAntecipacaoFull").hide();
+                    $.dialog({text: data.errors[0].message});
+                }
+                else {
+                    console.log(data);
+                    $(".ui-dialog").loading("stop");
+                    var amount = data.amount;
+                    var fee = data.fee;
+                    var antfee = data.anticipation_fee;
+                    var valor = (amount-fee-antfee)/100;
 
-                $("#valorAntecipacao").val("R$ " + valor.toFixed(2).toString().replace(',','').replace('.',','));
-                $("#custoAntecipacao").val("R$ " + (antfee/100).toFixed(2).toString().replace(',','').replace('.',','));
+                    $("#custoAntecipacaoFull").show();
+                    $("#valorAntecipacaoFull").show();
 
-                $("#slider-amount").slider('value',valor.toFixed(2));
-                $("#valor").val(valor.toFixed(2));
-                $("#valorShow").val("R$ " + valor.toFixed(2).toString().replace(',','').replace('.',','));
-                unblockAntecipacao();
-                $(".ui-dialog").loading("stop");
+                    $("#valorAntecipacao").val("R$ " + valor.toFixed(2).toString().replace(',','').replace('.',','));
+                    $("#custoAntecipacao").val("R$ " + (antfee/100).toFixed(2).toString().replace(',','').replace('.',','));
+
+                    $("#slider-amount").slider('value',valor.toFixed(2));
+                    $("#valor").val(valor.toFixed(2));
+                    $("#valorShow").val("R$ " + valor.toFixed(2).toString().replace(',','').replace('.',','));
+                    unblockAntecipacao();
+                }
             },
             error: function(data){
                 $(".ui-dialog").loading("stop");
@@ -595,8 +605,8 @@ $(function() {
             $.dialog({text: "Só existe um valor a ser criado de antecipação."});
         }
 
-        $( "#valor" ).val( minAmount );
-        $( "#valorShow" ).val("R$ " + minAmount.toFixed(2).toString().replace(',','').replace('.',','));
+        $( "#valor" ).val( (minAmount/100) );
+        $( "#valorShow" ).val("R$ " + (minAmount/100).toFixed(2).toString().replace(',','').replace('.',','));
 
         $( "#slider-amount" ).slider({
             range: "max",

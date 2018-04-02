@@ -91,15 +91,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 662, true)) {
                     tr = $this.closest('tr');
 
                     if (href.indexOf('?action=edit') != -1) {
-                        $.get('permissaosplit.php?action=load&' + id, function(data) {
-                            data = $.parseJSON(data);
+                        // $.get('permissaosplit.php?action=load&' + id, function(data) {
+                        //     data = $.parseJSON(data);
 
-                            $("#id_permissaosplit").val(data.id_permissaosplit);
-                            $("#id_usuario").val(data.id_usuario);
-                            $("#id_produtor").val(data.id_produtor);
-                            $("#id_recebedor").val(data.id_recebedor);
-                            dialog.dialog( "open" );
-                        });
+                        //     $("#id_permissaosplit").val(data.id_permissaosplit);
+                        //     $("#id_usuario").val(data.id_usuario);
+                        //     $("#id_produtor").val(data.id_produtor);
+                        //     $("#id_recebedor").val(data.id_recebedor);
+                        //     dialog.dialog( "open" );
+                        // });
                     }  else if (href.indexOf('?action=delete') != -1) {
                         $.confirmDialog({
                             text: 'Tem certeza que deseja apagar este registro?',
@@ -122,6 +122,25 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 662, true)) {
                     }
                 });
 
+                
+                function checkAdd() {
+                    notValid = "";
+
+                    $.ajax({
+                        url: 'permissaosplit.php',
+                        async: false,
+                        type: 'get',
+                        data: 'action=check&id_usuario='+ $('#id_usuario').val() + '&id_produtor='+ $("#id_produtor").val() + '&id_recebedor='+ $("#id_recebedor").val(),
+                        success: function(data) {
+                            data = $.parseJSON(data);
+                            if (!data.ok) {
+                                notValid = "Dados já cadastrados.";
+                            }
+                        }
+                    });
+
+                    return notValid;
+                }
                 function add() {
                     var valid = true;
 
@@ -132,14 +151,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 662, true)) {
                         valid = false;
                         $.dialog({text: "Escolha um usuário."});
                     } 
-                    // if ($("#id_produtor").val() == "-1") {
-                    //     $("#id_produtor").addClass('ui-state-error');
-                    //     valid = false;
-                    // } 
-                    // if ($("#id_recebedor").val() == "-1") {
-                    //     $("#id_recebedor").addClass('ui-state-error');
-                    //     valid = false;
-                    // } 
+                    var check = checkAdd(); 
+                    if (check!="") {
+                        valid = false;
+                        $.dialog({text: check});
+                    }
+                  
 
                     if ( valid ) {
                         loading(".ui-dialog:visible", null, true, false);
@@ -343,7 +360,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 662, true)) {
                                 toAppend += "<td>"+ value.NomeUsuario +"</td>";
                                 toAppend += "<td>"+ value.RazaoSocialProdutor + documentoProdutor +"</td>";
                                 toAppend += "<td>"+ value.RazaoSocialRecebedor + documentoRecebedor +"</td>";
-                                toAppend += "<td><a href='" + pagina + "?action=edit&id=" + value.id_permissaosplit + "'>" +"Editar</a></td>";
+                                // toAppend += "<td><a href='" + pagina + "?action=edit&id=" + value.id_permissaosplit + "'>" +"Editar</a></td>";
                                 toAppend += "<td><a href='" + pagina + "?action=delete&id=" + value.id_permissaosplit + "'>" +"Apagar</a></td>";
                                 
                                 toAppend += "</tr>";
@@ -351,9 +368,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 662, true)) {
                             });
                             $("#table-grid tfoot").html("");
                             $("#table-grid").loading("stop");
-                            $(".toClick").click(function(obj) {
-                                lineClick($(this).attr("data"));
-                            });
                         },
                         error: function(){
                             $("#table-grid tbody").html("");

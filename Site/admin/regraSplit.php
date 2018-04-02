@@ -532,8 +532,19 @@ $(function() {
             <select id="produtor" name="produtor">
                 <option value="-1">Selecione</option>
                 <?php
-                    $query = "SELECT id_produtor, ds_razao_social FROM mw_produtor WHERE in_ativo = 1 ORDER BY ds_razao_social";
-                    $stmtProdutor = executeSQL($mainConnection, $query);
+                    $query = "
+                    SELECT id_produtor
+                    ,ds_razao_social
+                    ,HasPermission
+                    FROM (
+                    SELECT p.id_produtor
+                    ,p.ds_razao_social
+                    ,ISNULL((SELECT 1 FROM mw_permissao_split sub WHERE sub.id_usuario=? AND (sub.id_produtor=p.id_produtor OR sub.id_produtor IS NULL)),0) HasPermission
+                    FROM mw_produtor p
+                    WHERE p.in_ativo = 1 ) as produtor
+                    WHERE HasPermission=1
+                    ORDER BY ds_razao_social";
+                    $stmtProdutor = executeSQL($mainConnection, $query, array($_SESSION["admin"]));
                     while($rs = fetchResult($stmtProdutor)) {
                         $selected = $rs["id_produtor"] == $_GET["produtor"] ? "selected" : "";
                 ?>

@@ -95,15 +95,28 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 	} else if ($_GET['action'] == 'load_saldo'){
 		$retorno = consultarSaldoRecebedorPagarme($_POST["recebedor"]);
 	} else if ($_GET["action"] == 'load_recebedor') {
-		$query = "SELECT 
-					id_recebedor,
-					ds_razao_social,
-					cd_cpf_cnpj,
-					recipient_id
-				  FROM mw_recebedor 
-				  WHERE id_produtor = ?
-				  ORDER BY ds_razao_social";
-		$params = array($_POST["produtor"]);
+		$query = "
+	SELECT 
+		id_recebedor
+		,ds_razao_social
+		,cd_cpf_cnpj
+		,recipient_id
+		,HasPermission
+	FROM (
+	SELECT 
+		id_recebedor
+		,ds_razao_social
+		,cd_cpf_cnpj
+		,recipient_id
+		,ISNULL((SELECT 1 FROM mw_permissao_split sub WHERE sub.id_usuario=?
+			AND (sub.id_produtor=r.id_produtor OR sub.id_recebedor IS NULL)
+			AND (sub.id_recebedor=r.id_recebedor OR sub.id_recebedor IS NULL)),0) HasPermission
+	FROM mw_recebedor r
+	WHERE r.id_produtor = ?) AS recebedor
+	WHERE HasPermission=1
+	ORDER BY ds_razao_social
+		";
+		$params = array($_SESSION["admin"], $_POST["produtor"]);
 		$result = executeSQL($mainConnection, $query, $params);
 		$json = array();
 		while ($rs = fetchResult($result)) {

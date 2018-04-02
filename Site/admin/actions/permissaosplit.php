@@ -17,7 +17,36 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 662, true)) {
 		else {
 			$retorno = "OK";
 		}
-	} else if ($_GET['action'] == 'update' and isset($_GET['id'])) {
+	}  else if ($_GET['action'] == 'check'){
+		if ($_GET["id_produtor"] == null || $_GET["id_produtor"] == "0") {
+			$query = "SELECT TOP 1 1 
+			FROM mw_permissao_split WHERE id_usuario = ? AND id_produtor IS NULL";
+			$param = array($_GET["id_usuario"]);
+		}
+		else {
+			if ($_GET["id_recebedor"] == null || $_GET["id_recebedor"] == "0") {
+				$query = "SELECT TOP 1 1 
+				FROM mw_permissao_split WHERE id_usuario = ? AND id_produtor = ? AND id_recebedor IS NULL";
+				$param = array($_GET["id_usuario"], $_GET["id_produtor"]);				
+			}
+			else {
+				$query = "SELECT TOP 1 1 
+				FROM mw_permissao_split WHERE id_usuario = ? AND id_produtor = ? AND id_recebedor = ?";
+				$param = array($_GET["id_usuario"], $_GET["id_produtor"], $_GET["id_recebedor"]);				
+			}
+		}		
+
+		$stmt  = executeSQL($mainConnection, $query, $param);		
+		$retorno = array(
+			"ok" => true);
+
+		while($rs = fetchResult($stmt)){
+        	$retorno = array("ok" => false);
+		}
+		
+		$retorno = json_encode($retorno);
+
+    } else if ($_GET['action'] == 'update' and isset($_GET['id'])) {
 
 		$query = "UPDATE mw_permissao_split
 				  SET id_usuario = ?,

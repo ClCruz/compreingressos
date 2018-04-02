@@ -45,4 +45,6 @@ require(dirname(__FILE__) . '/lib/Pagarme/Recipient.php');
 require(dirname(__FILE__) . '/lib/Pagarme/Customer.php');
 require(dirname(__FILE__) . '/lib/Pagarme/Payable.php');
 
+require(dirname(__FILE__) . '/lib/Pagarme/PagarMeCalls.php');
+
 ?>

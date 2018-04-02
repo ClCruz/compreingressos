@@ -130,7 +130,7 @@ function pagarPedidoPagarme($id_pedido, $dados_extra) {
 	executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . basename($_SERVER['PHP_SELF']) . " - 1" ));
 	$split = consultarSplitPagarme($id_pedido, "web", $payment_method);
 	executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . print_r($split, true) . " - SPLIT" ));
-	error_log(print_r($split, true));
+	//error_log(print_r($split, true));
 	if (is_array($split)) {
 		$transaction_data = array_merge($transaction_data, array(
 			"split_rules" => $split
@@ -426,15 +426,28 @@ function consultarExtratoRecebedorPagarme($recipient_id, $status, $start_date, $
 
 function consultarSaldoRecebedorPagarme($recipient_id) {
 	$balance_operations = PagarMe_Recipient::findSaldoByRecipientId($recipient_id);
-	return $balance_operations->__toJSON(true);
+	return $balance_operations;
+}
+
+function consultarTaxaSaque() {
+	$response = PagarMe_Calls::getCompany();
+
+	$ret = array("credito_em_conta"=> $response["pricing"]["transfers"]["credito_em_conta"]
+	,"ted" => $response["pricing"]["transfers"]["ted"]
+	,"doc" => $response["pricing"]["transfers"]["doc"]);
+
+//	error_log(print_r($ret, true));
+
+	return $ret;
 }
 
 function efetuarSaquePagarme($recipient_id, $amount) {
 	try {
+		$amount = getAmountPagarMe($amount);
 		$request = new PagarMe_Request("/transfers", "POST");
 		$request->setParameters(array("amount" => $amount, "recipient_id" => $recipient_id));
 		$response = $request->run();
-		return array("status" => "success", "msg" => "A Transação de Saque foi efetuada com sucesso!");
+		return array("status" => "success", "msg" => "A Transação de Saque foi efetuada com sucesso!", "response"=> $response);
 	} catch (Exception $e) {
 		return array("status" => "error", "msg" => $e->getMessage());
 	}

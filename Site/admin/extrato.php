@@ -23,6 +23,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
     #app form, .appExtension form {text-align: left;}
     #dialog-form label, #dialog-form input { display:block; }
     #dialog-form input.text, #dialog-form select { margin-bottom:12px; width:95%; padding: .4em; }
+    #dialog-form-saque label, #dialog-form-saque input { display:block; }
+    #dialog-form-saque input.text, #dialog-form-saque select { margin-bottom:12px; width:95%; padding: .4em; }
     /**fieldset { padding:0; border:0; margin-top:25px; }**/
     .td-action {text-align: center; width: 50px;}
     .th-action {text-align: center; width: 100px;}
@@ -51,7 +53,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 <script>
 $(function() {
 	var pagina = '<?php echo $pagina; ?>';
-	var dialog, 
+	var dialog,
+        dialogSaque, 
 		form,
 		emailRegex   = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
         id           = $( "#id" ),
@@ -183,6 +186,22 @@ $(function() {
             id.val("");
             tips.text("");
             allFields.removeClass( "ui-state-error" );
+        }
+    });
+    dialogSaque = $( "#dialog-form-saque" ).dialog({
+        autoOpen: false,
+        height: 600,
+        width: 600,
+        modal: true,
+        buttons: {
+            "Efetuar Saque": sacar,
+            Cancelar: function() {
+                destroySliderSaque();
+                dialogSaque.dialog( "close" );
+            }
+        },
+        close: function() {
+            destroySliderSaque();
         }
     });
     function movement_objectTypeToString(value) {
@@ -375,25 +394,48 @@ $(function() {
 
     $("#btn-saque").click(function(event){
         event.preventDefault();
+        destroySlider();
+        dialogSaque.dialog( "open" );
+        loadSaldoToSaque();
+    });    
+
+    function loadSaldoToSaque() {
+        loading(".ui-dialog:visible");
         $.ajax({
-            url: pagina + '?action=saque',
+            url: pagina + '?action=taxasaque',
             type: 'post',
             data: $('#dados').serialize(),
             success: function(data) {
                 data = $.parseJSON(data);
-                $.dialog({text: data.msg.split("\n").join("<br />")});
-                if (data.status == 'success') {
-                    dialog.dialog( "close" );
+                console.log(data);
+                var minimum = 1;
+                var available = data.available.amount;
+                //available = 1000;
+                if ((available - data.taxa.ted) <=0) {
+                    $.dialog({text: 'Valor disponível inferior com a cobrança da taxa.'});
                 }
+                else {
+                    createSliderSaque({
+                        minimum: {
+                            amount: data.taxa.ted,
+                        },
+                        maximum: {
+                            amount: available,
+                        },
+                        ted: {
+                            amount: data.taxa.ted,
+                        }
+                    });
+                }
+                $(".ui-dialog").loading("stop");            
             },
-            error: function(data){
-                $.dialog({text: data});
+            error: function(){
+                $(".ui-dialog").loading("stop");            
+                $.dialog({text: 'Erro na chamada dos dados !!!'});
                 return false;
             }
         });
-    });
-
-    
+    }
 
     $("#btn-antecipacao").click(function(event){
         event.preventDefault();
@@ -406,11 +448,32 @@ $(function() {
     });
 
     function antecipar() {
-        loading(".ui-dialog");
+        loading(".ui-dialog:visible");
         $.ajax({
             url: pagina + '?action=antecipacao&recebedor='+ recebedor.val(),
             type: 'post',
             data: $('#antecipacao').serialize(),
+            success: function(data) {
+                $(".ui-dialog").loading("stop");
+                data = $.parseJSON(data);
+                $.dialog({text: data.msg.split("\n").join("<br />")});
+                if(data.status == 'success') {                    
+                    dialog.dialog( "close" );
+                }
+            },
+            error: function(data){
+                $(".ui-dialog").loading("stop");
+                $.dialog({text: data});
+                return false;
+            }
+        });
+    }
+    function sacar() {
+        loading(".ui-dialog:visible");
+        $.ajax({
+            url: pagina + '?action=sacar&recebedor='+ recebedor.val(),
+            type: 'post',
+            data: $('#saque').serialize(),
             success: function(data) {
                 $(".ui-dialog").loading("stop");
                 data = $.parseJSON(data);
@@ -431,7 +494,7 @@ $(function() {
         if ($("#data").val() == "") {
             return;
         }
-        loading(".ui-dialog");
+        loading(".ui-dialog:visible");
         $.ajax({
             url: pagina + '?action=antecipacaomaxmin&recebedor='+ recebedor.val(),
             type: 'post',
@@ -525,7 +588,7 @@ $(function() {
     });
 
     function verificaantecipacao() {
-        loading(".ui-dialog");
+        loading(".ui-dialog:visible");
         $.ajax({
             url: pagina + '?action=verificaantecipacao&recebedor='+ recebedor.val(),
             type: 'post',
@@ -585,7 +648,14 @@ $(function() {
         $("#fsResumo").hide();
         $("#fsValor").hide();
     }
+    function destroySliderSaque() {
+        if ($( "#slider-amount-saque" ).hasClass("ui-slider"))
+            $( "#slider-amount-saque" ).slider( "destroy" );
+
+        $("#fsValorSaque").hide();
+    }
     var sliderHelper = null;
+    var sliderHelperSaque = null;
     function createSlider(obj) {
         destroySlider();
         $("#fsResumo").show();
@@ -623,6 +693,56 @@ $(function() {
             }
         });
         $( "#valor" ).val( $( "#slider-amount" ).slider( "value" ) );
+    }
+    function createSliderSaque(obj) {
+        destroySliderSaque();
+        $("#fsValorSaque").show();
+        sliderHelperSaque = obj;
+
+        var minAmount = obj.minimum.amount;
+        var maxAmount = obj.maximum.amount;
+
+        if (maxAmount == 0) {
+            $.dialog({text: "Não é possivel realizar um saque, por favor verificar se já existem saques a serem realizados."});
+            destroySlider();
+            return;
+        }
+
+        if (maxAmount == minAmount && maxAmount!=0) {
+            $.dialog({text: "Só existe um valor para realizar o saque."});
+        }
+
+        $( "#valor-saque" ).val( (minAmount/100) );
+        $( "#valorShow-saque" ).val("R$ " + (minAmount/100).toFixed(2).toString().replace(',','').replace('.',','));
+
+        var aux = (minAmount/100)-(sliderHelperSaque.ted.amount/100);
+        if (aux<0) {
+            $("#valorSaque").val("R$ 0,00");    
+        }
+        else {
+            $("#valorSaque").val("R$ " + (minAmount/100).toFixed(2).toString().replace(',','').replace('.',',') + " - R$ " + (sliderHelperSaque.ted.amount/100).toFixed(2).toString().replace(',','').replace('.',',') + " = R$ " + aux.toFixed(2).toString().replace(',','').replace('.',',')) ;
+        }
+
+        $( "#slider-amount-saque" ).slider({
+            range: "max",
+            min: minAmount/100,
+            max: maxAmount/100,
+            step: 0.01,
+            value: 0.01,
+            slide: function( event, ui ) {
+                $( "#valor-saque" ).val( ui.value );
+                $( "#valorShow-saque" ).val("R$ " + ui.value.toFixed(2).toString().replace(',','').replace('.',','));
+                var aux = ui.value-(sliderHelperSaque.ted.amount/100);
+                if (aux<0) {
+                    $("#valorSaque").val("R$ 0,00");    
+                }
+                else {
+                    $("#valorSaque").val("R$ " + ui.value.toFixed(2).toString().replace(',','').replace('.',',') + " - R$ " + (sliderHelperSaque.ted.amount/100).toFixed(2).toString().replace(',','').replace('.',',') + " = R$ " + aux.toFixed(2).toString().replace(',','').replace('.',',')) ;
+                }
+                
+            }
+        });
+        $( "#valor-saque" ).val( $( "#slider-amount-saque" ).slider( "value" ) );
     }
 
 });
@@ -662,6 +782,24 @@ $(function() {
                     <label for="valorAntecipacao">Valor Antecipação</label>
                     <input type="text" id="valorAntecipacao" readonly placeholder="R$ 0,00">
                 </div>
+        </fieldset>
+	</form>
+</div>
+
+<div id="dialog-form-saque" title="Saque">
+	<p class="validateTips"></p>
+	<form id="saque" name="saque" action="?p=extrato" method="POST">
+        <fieldset id="fsValorSaque">
+            <legend>Escolha o valor </legend>
+            <div id="slider-amount-saque"></div>
+            <input type="text" name="valor-saque" style="display:none" readonly id="valor-saque" class="text ui-widget-content ui-corner-all" />
+            <input type="text" name="valorShow-saque" readonly id="valorShow-saque" class="text ui-widget-content ui-corner-all" />
+        </fieldset>
+        <fieldset>
+            <div class="myInput" id="valoresSaque">
+                <label for="valorSaque">Valor a ser sacado menos a taxa para saque: </label>
+                <input type="text" id="valorSaque" readonly placeholder="R$ 0,00">
+            </div>
         </fieldset>
 	</form>
 </div>
@@ -728,7 +866,7 @@ $(function() {
         </div> 
 
         <div class="produtor">
-            <input type="button" style="display:none" id="btn-saque" class="button" value="Realizar Saque">
+            <input type="button" id="btn-saque" class="button" value="Realizar Saque">
             <input type="button" id="btn-antecipacao" class="button" value="Criar Antecipação">
         </div>
     </div>

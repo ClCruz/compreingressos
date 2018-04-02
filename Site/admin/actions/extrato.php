@@ -93,7 +93,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 		//error_log("aqui..." . $retorno);
 		//consultarExtratoRecebedorPagarme2($_POST["recebedor"]);
 	} else if ($_GET['action'] == 'load_saldo'){
-		$retorno = consultarSaldoRecebedorPagarme($_POST["recebedor"]);
+		$aux = consultarSaldoRecebedorPagarme($_POST["recebedor"]);
+		$retorno = $aux->__toJSON(true);
 	} else if ($_GET["action"] == 'load_recebedor') {
 		$query = "
 	SELECT 
@@ -127,7 +128,19 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 		}
 		$retorno = json_encode($json);
 	} else if ($_GET['action'] == 'saque') {
-		$ret = efetuarSaquePagarme($_POST["recebedor"], 100);
+		$ret = efetuarSaquePagarme($_POST["recebedor"], $_POST["valor-saque"]);
+		$retorno = json_encode($ret);
+	} else if ($_GET['action'] == 'taxasaque') {
+		$retAux = consultarSaldoRecebedorPagarme($_POST["recebedor"]);
+		$waiting_funds = $retAux["waiting_funds"]["amount"];
+		$transferred = $retAux["transferred"]["amount"];
+		$available = $retAux["available"]["amount"];
+		$retTaxa = consultarTaxaSaque();
+
+		$ret = array("waiting_funds"=> $waiting_funds
+		,"transferred"=> $transferred
+		,"available"=> $available
+		,"taxa"=> $retTaxa);
 		$retorno = json_encode($ret);
 	} else if ($_GET['action'] == 'antecipacao') {
 		$ret = efetuarAntecipacaoPagarme($_GET["recebedor"], $_POST["valor"], $_POST["data"], $_POST["periodo"]);

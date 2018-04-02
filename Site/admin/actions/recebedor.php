@@ -56,6 +56,40 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
 		if(sqlErrors()) {
 			$retorno = sqlErrors();
 		}
+	} else if ($_GET['action'] == 'addtp') {
+		$exist = false;
+		$query = 'SELECT TOP 1 1
+				  FROM mw_recebedor
+				  WHERE in_ativo=1 AND id_produtor=? AND recipient_id=?';
+		
+		$params = array($_GET['produtor'], "re_cjfac43dq039c445ymjsxw9x4");
+
+		$result = executeSQL($mainConnection, $query, $params);
+		
+		$json = array();
+
+        while ($rs = fetchResult($result)) {            
+            $exist = true;
+        }
+
+		if ($exist)
+		{
+			$retorno ="false";
+		}
+		else {
+
+			$query = "EXEC SP_RECEBEDOR_TICKETPAY ?";
+
+			$params = array($_GET["produtor"]);
+
+			$rs = executeSQL($mainConnection, $query, $params, true);
+
+			$retorno = 'true?id=' . $rs["id"];
+
+			if(sqlErrors()) {
+				$retorno = sqlErrors();
+			}
+		}
 	} else if ($_GET['action'] == 'update' and isset($_GET['id'])) {
 
 		$query = "UPDATE mw_recebedor

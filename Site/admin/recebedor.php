@@ -42,6 +42,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
     .ui-dialog{ padding: .3em; }
     .validateTips { border: 1px solid transparent; padding: 0.3em; }
     #app #new {margin: 0px;}
+    #app #newTICKETSPAY {margin: 0px;}
+    
     .text-left{text-align: left;}
     .text-right{text-align: right;}
     .text-center{text-align: center;}
@@ -289,6 +291,37 @@ $(function() {
             dialog.dialog( "open" );    
         }        
     });
+    $('#newTICKETSPAY').button().click(function(event) {
+    	event.preventDefault();
+        if($("#produtor").val() == -1) {
+            $.dialog({
+                title: 'Alerta...',
+                text: 'Selecione o Organizador!'
+            });
+        } else {
+            var p = 'recebedor.php?action=addtp&produtor='+ produtor.val();
+            
+            $.ajax({
+				url: p,
+				type: 'post',
+				data: "",
+				success: function(data) {
+					if (trim(data).substr(0, 4) == 'true') {
+                        location.reload();
+                    } else {
+                        $.dialog({text: "Recebedor TICKETSPAY já existente."});
+                    }
+				},
+				error: function(){
+                    $.dialog({
+                        title: 'Erro...',
+                        text: 'Erro na chamada dos dados !!!'
+                    });
+                    return false;
+                }
+			});
+        }        
+    });
 
     form = dialog.find( "form" ).on( "submit", function( event ) {
         event.preventDefault();
@@ -382,6 +415,7 @@ $(function() {
             ?>
         </select>
 		<a id="new" href="#new">Novo</a>	
+		<a id="newTICKETSPAY" href="#newTICKETSPAY">Cadastrar TICKETSPAY.COM LTDA - EPP</a>	
 	</div>
 </form>
 

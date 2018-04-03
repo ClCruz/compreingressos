@@ -397,7 +397,7 @@ function consultarSplitPagarme($pedido, $where, $payment_method, $amount) {
 		$split[] = array(
 			"recipient_id" => $rs["recipient_id"],
 			// "percentage" => $perToUse,
-			"amount" => str_replace(",", "", (string) $amoutToUse),
+			"amount" => $amoutToUse*100,
 	    	"liable" => $rs["liable"],
 	    	"charge_processing_fee" => $rs["charge_processing_fee"]);
 	}

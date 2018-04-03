@@ -4,14 +4,20 @@ require_once('../settings/settings.php');
 require_once('../settings/Log.class.php');
 
 require_once('../settings/antiFraude.php');
+
 // verifica se o acesso via operador/pdv esta vendendo apenas aquilo que tem permissao
 require('acessoPermitido.php');
 
 require('../settings/pagseguro_functions.php');
+
 require_once('../settings/pagarme_functions.php');
+
 require_once('../settings/paypal_functions.php');
+
 require('../settings/tipagos_functions.php');
+
 require('../settings/cielo_functions.php');
+
 
 $isPaypal = false;
 

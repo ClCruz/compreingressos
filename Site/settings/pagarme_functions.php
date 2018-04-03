@@ -77,10 +77,12 @@ function pagarPedidoPagarme($id_pedido, $dados_extra) {
 		$rs[$key] = utf8_encode($val);
 	}
 
+	$amount = number_format($rs['VL_TOTAL_PEDIDO_VENDA'] * 100, 0, '', '');
+
 	$transaction_data = array(
 		"metadata" => array("id_pedido_venda" => $id_pedido),
 
-		"amount" => number_format($rs['VL_TOTAL_PEDIDO_VENDA'] * 100, 0, '', ''),
+		"amount" => $amount,
 
 		"customer" => array(
 			"name" => $rs['DS_NOME'].' '.$rs['DS_SOBRENOME'],
@@ -127,24 +129,16 @@ function pagarPedidoPagarme($id_pedido, $dados_extra) {
 	}
 	// erro
 	else return false;
-	executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . basename($_SERVER['PHP_SELF']) . " - 1" ));
-	$split = consultarSplitPagarme($id_pedido, "web", $payment_method);
-	executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . print_r($split, true) . " - SPLIT" ));
-	//error_log(print_r($split, true));
+	$split = consultarSplitPagarme($id_pedido, "web", $payment_method, $amount);
+
 	if (is_array($split)) {
 		$transaction_data = array_merge($transaction_data, array(
 			"split_rules" => $split
 		));
 	}
-	executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . basename($_SERVER['PHP_SELF']) . " - 2" ));
-
 	try {
-		//error_log("Executando o pagar.me");
-		executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . basename($_SERVER['PHP_SELF']) . " - 3" ));
 		$transaction = new PagarMe_Transaction($transaction_data);
 		$transaction->charge();
-		executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . basename($_SERVER['PHP_SELF']) . " - 4" ));
-
 		$response = array('success' => true, 'transaction' => $transaction);
 	} catch (Exception $e) {
 		executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . basename($_SERVER['PHP_SELF']) . " - 5" ));
@@ -152,13 +146,10 @@ function pagarPedidoPagarme($id_pedido, $dados_extra) {
 		error_log("Erro no pagar.me: " . $e->getMessage());
 		$response = array('success' => false, 'error' => tratarErroPagarme($e, $id_pedido));
 	}
-	executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . basename($_SERVER['PHP_SELF']) . " - 6" ));
-	//error_log("Salvado dados que veio do pagar.me");
+
 	$query = 'INSERT INTO MW_PEDIDO_PAGSEGURO (ID_PEDIDO_VENDA, DT_STATUS, CD_STATUS, OBJ_PAGSEGURO) VALUES (?, GETDATE(), ?, ?)';
 	$params = array($id_pedido, $transaction->status, base64_encode(serialize($transaction)));
 	executeSQL($mainConnection, $query, $params);
-	executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . basename($_SERVER['PHP_SELF']) . " - 7" ));
-
 	return $response;
 }
 
@@ -312,7 +303,7 @@ function atualizarRecebedorPagarme($data, $id) {
     $recipient->save();
 }
 
-function consultarSplitPagarme($pedido, $where, $payment_method) {
+function consultarSplitPagarme($pedido, $where, $payment_method, $amount) {
 	$mainConnection = mainConnection();
 
 	$query = "select distinct e.CodPeca, e.id_base
@@ -333,12 +324,14 @@ function consultarSplitPagarme($pedido, $where, $payment_method) {
 	,rs.percentage_boleto_web
 	,rs.percentage_credit_box_office
 	,rs.percentage_debit_box_office
+	,(CASE r.cd_cpf_cnpj WHEN '11665394000113' THEN 1 ELSE 0 END) IsTicketPay
 	FROM tabPeca tb
 	INNER JOIN CI_MIDDLEWAY..mw_evento e ON tb.CodPeca=e.CodPeca
 	INNER JOIN CI_MIDDLEWAY..mw_produtor p ON p.id_produtor = tb.id_produtor and p.in_ativo=1
 	INNER JOIN CI_MIDDLEWAY..mw_regra_split rs ON rs.id_produtor = p.id_produtor and rs.id_evento=e.id_evento
 	INNER JOIN CI_MIDDLEWAY..mw_recebedor r ON rs.id_recebedor = r.id_recebedor and r.in_ativo=1
-	WHERE tb.CodPeca = ? and rs.in_ativo = 1";
+	WHERE tb.CodPeca = ? and rs.in_ativo = 1
+	ORDER BY (CASE r.cd_cpf_cnpj WHEN '11665394000113' THEN 1 ELSE 0 END)";
 
 	$conn = getConnection($stmt["id_base"]);
 	$param = array($stmt["CodPeca"]);
@@ -347,9 +340,18 @@ function consultarSplitPagarme($pedido, $where, $payment_method) {
 	if(!hasRows($result))
 		return null;
 
+
+	$count = hasRows($result, true);
+	$i = 0;
+	$amountUsed = 0;
+	$amount = $amount/100;
+
 	$split = array();
 	while($rs = fetchResult($result)) {
+		$i = $i+1;
 		$perToUse = 0;
+		$amountToUse = 0;
+
 		switch ($where) {
 			case "web":
 				switch ($payment_method) {
@@ -379,13 +381,27 @@ function consultarSplitPagarme($pedido, $where, $payment_method) {
 				}
 				break;
 		}
+
+		if ($count==$i) {
+			$amoutToUse = round($amount-$amountUsed, 2);
+		}
+		else {
+			$amoutToUse = round($amount*($perToUse/100), 2);
+		}
+
+		$amountUsed = $amountUsed + $amoutToUse;
+
+		error_log("perToUse: " . $perToUse);
+		error_log("amoutToUse: " . $amoutToUse);
+
 		$split[] = array(
 			"recipient_id" => $rs["recipient_id"],
-	    	"percentage" => $perToUse,
+			// "percentage" => $perToUse,
+			"amount" => str_replace(",", "", (string) $amoutToUse),
 	    	"liable" => $rs["liable"],
 	    	"charge_processing_fee" => $rs["charge_processing_fee"]);
 	}
-
+	error_log("Split: " . print_r($split, true));
 	return $split;
 }
 
@@ -510,3 +526,4 @@ function efetuarAntecipacaoPagarme($recipient_id, $amount, $payment_date, $timef
 		return array("status" => "error", "msg" => $e->getMessage());
 	}
 }
+?>

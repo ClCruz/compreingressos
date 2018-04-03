@@ -80,8 +80,8 @@ $(function() {
         numeral: true,
         numeralPositiveOnly: true,
         numeralThousandsGroupStyle: "none",
-        numeralDecimalScale: 0,
-
+        numeralDecimalMark: ',',
+        numeralDecimalScale: 2,
     });
 
     function numberToBR(value) {
@@ -103,9 +103,9 @@ $(function() {
         tr = $this.closest('tr');
 
         if (href.indexOf('?action=edit') != -1) {
-            atualizarRecebedor();
         	$.get('regraSplit.php?action=load&' + id, function(data) {
                 data = $.parseJSON(data);
+                console.log(data);
 
             	$("#id").val(data.id);            	
                 $("#percentage_credit_web").val(numberToBR(numeral(data.percentage_credit_web)._value));
@@ -116,8 +116,9 @@ $(function() {
                 //$('#liable').prop('checked', data.liable);
                 $('#charge_processing_fee').prop('checked', data.charge_processing_fee);
                 $("#status").val(data.status);
-                $("#recebedor").val(data.recebedor);
-                $("#recebedor").attr("disabled", true);             
+                //$("#recebedor").val(data.recebedor);
+                // $("#recebedor").attr("disabled", true);             
+                atualizarRecebedor(data.recebedor, true);
 
             	dialog.dialog( "open" );
             });
@@ -280,7 +281,7 @@ $(function() {
         var checkResult = check(vl_percentage_credit_web, vl_percentage_debit_web, vl_percentage_boleto_web, 
         vl_percentage_credit_box_office,vl_percentage_debit_box_office, recebedor.val());
         if(checkResult!= "") {
-            $.dialog({text: checkResult});
+            $.dialog({text: "Por favor verificar os seguintes valores: <br />" + checkResult});
             valid = false;
         }        
 
@@ -457,7 +458,9 @@ $(function() {
         return ret;
     }
 
-    function atualizarRecebedor() {
+    function atualizarRecebedor(id_recebedor, disable) {
+        id_recebedor = id_recebedor == undefined ? null : id_recebedor;
+        disable = disable == undefined ? false : disable;
         $.ajax({
             url: pagina + '?action=load_recebedor',
             type: 'post',
@@ -468,6 +471,13 @@ $(function() {
                 $.each(data, function(key, value) {
                     $("#recebedor").append('<option value='+ value.id_recebedor + '>' + value.ds_razao_social + '</option>');
                 });
+
+                if (id_recebedor!=null) {
+                    $("#recebedor").val(id_recebedor);
+                    if (disable)
+                        $("#recebedor").attr("disabled", true); 
+                }
+
             },
             error: function(){
                 $("#evento").html('<option value="-1">Selecione...</option>');
@@ -501,18 +511,18 @@ $(function() {
             <fieldset>
                 <legend style="padding-bottom:13px">Percentual Web:</legend>
                     <label for="percentage_credit_web">Crédito:</label>
-                    <input type="text" id="percentage_credit_web" name="percentage_credit_web" maxlength="3" style="width: 49px;" class="per text" />		    
+                    <input type="text" id="percentage_credit_web" name="percentage_credit_web" maxlength="6" style="width: 49px;" class="per text" />		    
                     <label for="split">Debito:</label>
-                    <input type="text" id="percentage_debit_web" name="percentage_debit_web" maxlength="3" style="width: 49px;" class="per text" />		    
+                    <input type="text" id="percentage_debit_web" name="percentage_debit_web" maxlength="6" style="width: 49px;" class="per text" />		    
                     <label for="split">Boleto:</label>
-                    <input type="text" id="percentage_boleto_web" name="percentage_boleto_web" maxlength="3" style="width: 49px;" class="per text" />		    
+                    <input type="text" id="percentage_boleto_web" name="percentage_boleto_web" maxlength="6" style="width: 49px;" class="per text" />		    
             </fieldset>
             <fieldset>
                 <legend style="padding-bottom:13px">Percentual Bilheteria:</legend>
                 <label for="split">Crédito:</label>
-                <input type="text" id="percentage_credit_box_office" name="percentage_credit_box_office" maxlength="3" style="width: 49px;" class="per text" />		    
+                <input type="text" id="percentage_credit_box_office" name="percentage_credit_box_office" maxlength="6" style="width: 49px;" class="per text" />		    
                 <label for="split">Debito:</label>
-                <input type="text" id="percentage_debit_box_office" name="percentage_debit_box_office" maxlength="3" style="width: 49px;" class="per text" />		    
+                <input type="text" id="percentage_debit_box_office" name="percentage_debit_box_office" maxlength="6" style="width: 49px;" class="per text" />		    
             </fieldset>
             <fieldset>
                 <label for="charge_processing_fee">MDR:</label>

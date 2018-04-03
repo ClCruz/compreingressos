@@ -114,7 +114,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 			AND (sub.id_recebedor=r.id_recebedor OR sub.id_recebedor IS NULL)),0) HasPermission
 	FROM mw_recebedor r
 	WHERE r.id_produtor = ?) AS recebedor
-	WHERE HasPermission=1
+	WHERE HasPermission=1 AND in_ativo=1
 	ORDER BY ds_razao_social
 		";
 		$params = array($_SESSION["admin"], $_POST["produtor"]);

@@ -409,10 +409,11 @@ $(function() {
                 data = $.parseJSON(data);
                 console.log(data);
                 var minimum = 1;
-                var available = data.available.amount;
+                var available = data.available;
                 //available = 1000;
                 if ((available - data.taxa.ted) <=0) {
                     $.dialog({text: 'Valor disponível inferior com a cobrança da taxa.'});
+                    dialogSaque.dialog( "close" );
                 }
                 else {
                     createSliderSaque({
@@ -479,7 +480,7 @@ $(function() {
                 data = $.parseJSON(data);
                 $.dialog({text: data.msg.split("\n").join("<br />")});
                 if(data.status == 'success') {                    
-                    dialog.dialog( "close" );
+                    dialogSaque.dialog( "close" );
                 }
             },
             error: function(data){
@@ -704,7 +705,8 @@ $(function() {
 
         if (maxAmount == 0) {
             $.dialog({text: "Não é possivel realizar um saque, por favor verificar se já existem saques a serem realizados."});
-            destroySlider();
+            destroySliderSaque();
+            dialogSaque.dialog( "close" );
             return;
         }
 

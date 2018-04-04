@@ -460,12 +460,12 @@ function consultarTaxaSaque() {
 function efetuarSaquePagarme($recipient_id, $amount) {
 	try {
 		$amount = getAmountPagarMe($amount);
-		error_log("amount".$amount);
-		error_log("recipient_id".$recipient_id);
+		// error_log("amount".$amount);
+		// error_log("recipient_id".$recipient_id);
 		$request = new PagarMe_Request("/transfers", "POST");
 		$request->setParameters(array("amount" => $amount, "recipient_id" => $recipient_id));
 		$response = $request->run();
-		error_log("Saque..".print_r($response, true));
+		// error_log("Saque..".print_r($response, true));
 		return array("status" => "success", "msg" => "A Transação de Saque foi efetuada com sucesso!", "response"=> $response);
 	} catch (Exception $e) {
 		return array("status" => "error", "msg" => $e->getMessage());

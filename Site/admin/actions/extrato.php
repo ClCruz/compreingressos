@@ -127,8 +127,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 							"recipient_id" => $rs["recipient_id"]);
 		}
 		$retorno = json_encode($json);
-	} else if ($_GET['action'] == 'saque') {
-		$ret = efetuarSaquePagarme($_POST["recebedor"], $_POST["valor-saque"]);
+	} else if ($_GET['action'] == 'sacar') {
+		$ret = efetuarSaquePagarme($_GET["recebedor"], $_POST["valor-saque"]);
 		$retorno = json_encode($ret);
 	} else if ($_GET['action'] == 'taxasaque') {
 		$retAux = consultarSaldoRecebedorPagarme($_POST["recebedor"]);

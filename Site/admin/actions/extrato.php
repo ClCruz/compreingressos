@@ -158,6 +158,16 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 		$ret = getTransaction($_GET["transaction_id"]);
 		// error_log($ret);
 		$retorno = $ret;
+	}
+	else if ($_GET['action'] == 'listantecipations') {
+		$ret = consultarAntecipaveis($_GET["recebedor"]);
+		// error_log($ret);
+		$retorno = $ret;
+	}
+	else if ($_GET['action'] == 'listtransfers') {
+		$ret = consultarTransferencias($_GET["recebedor"]);
+		// error_log($ret);
+		$retorno = $ret;
 	} else {
 		$retorno = "Nenhuma ação executada.";
 	}

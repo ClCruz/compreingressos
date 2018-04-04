@@ -457,6 +457,40 @@ function consultarTaxaSaque() {
 	return $ret;
 }
 
+function consultarTransferencias($recipient_id) {
+	$response = PagarMe_Calls::listTransfers($recipient_id);
+
+	$ret = array("amount"=> $response["amount"]
+	,"type" => $response["type"]
+	,"status" => $response["status"]
+	,"fee" => $response["fee"]
+	,"funding_date" => $response["funding_date"]
+	,"funding_estimated_date" => $response["funding_estimated_date"]
+	,"date_created" => $response["date_created"]
+	);
+
+	error_log(print_r($ret, true));
+
+	return $ret;
+}
+function consultarAntecipaveis($recipient_id) {
+	$response = PagarMe_Calls::listAnticipations($recipient_id);
+
+	$ret = array("amount"=> $response["amount"]
+	,"anticipation_fee" => $response["anticipation_fee"]
+	,"date_created" => $response["date_created"]
+	,"fee" => $response["fee"]
+	,"payment_date" => $response["payment_date"]
+	,"status" => $response["status"]
+	,"timeframe" => $response["timeframe"]
+	,"type" => $response["type"]
+	);
+
+	error_log(print_r($ret, true));
+
+	return $ret;
+}
+
 function efetuarSaquePagarme($recipient_id, $amount) {
 	try {
 		$amount = getAmountPagarMe($amount);

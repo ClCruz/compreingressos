@@ -46,6 +46,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 
 </style>
 <link rel="stylesheet" href="../stylesheets/loading.css" >
+<script type="text/javascript" src="../javascripts/moment.js"></script>
 <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
 <script type="text/javascript" src="../javascripts/loading.js"></script>
 <script src="../javascripts/jquery.maskedinput.min.js" type="text/javascript"></script>
@@ -347,49 +348,187 @@ $(function() {
     
     $("#btnBuscarExtrato").click(function(event) {
         $("#table-extrato tbody").html("");
-        $.ajax({
-            url: pagina + '?action=load',
-            type: 'post',
-            data: $('#dados').serialize(),
-            success: function(data) {	
-                data = $.parseJSON(data);
-                $("#table-extrato tbody").html("");
-				if (data.length == 0)
-					$("#table-extrato tbody").html("<tr><td colspan='5'>Nenhum dado encontrado.</td></tr>");
+        $("#table-antecipavel tbody").html("");
+        $("#table-transfer tbody").html("");
+        
+        $("#table-extrato").hide();
+        $("#table-antecipavel").hide();
+        $("#table-transfer").hide();
 
-                var total = 0;
-                $.each(data, function(key, value) {
-                    total += value.amount-value.fee;
-                    
-                    //console.log(value);
-                    var toAppend = "<tr style='cursor: pointer;' id='" + value.movement_object.transaction_id + "' class='toClick trline' data='" + value.movement_object.transaction_id + "'><td>" + new Date(value.date_created).toJSON().slice(0, 10).split("-").reverse().join("/") +"</td>";
-                    toAppend += "<td>"+ new Date(value.movement_object.payment_date).toJSON().slice(0, 10).split("-").reverse().join("/") +"</td>";
-                    toAppend += "<td>"+ movement_objectTypeToString(value.movement_object.type) +"</td>";
-                    toAppend += "<td class='text-right'>R$ "+ (value.amount/100).toFixed(2).toString().replace(',','').replace('.',',') + " - R$ " + (value.fee/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
-                    toAppend += "<td class='text-right'>R$ "+ ((value.amount-value.fee)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
-                    toAppend += "</tr>";
-                    $("#table-extrato tbody").append(toAppend);
-                });
-                $("#table-extrato tfoot").html("");
+        switch ($("#status").val()) {
+            case "transfers":
+                $.ajax({
+                    url: pagina + '?action=listtransfers?recebedor='+ recebedor.val(),
+                    type: 'post',
+                    data: { },
+                    success: function(data) {	
+                        $("#table-transfer").show();
+                        data = $.parseJSON(data);
+                        $("#table-transfer tbody").html("");
+                        if (data.length == 0)
+                            $("#table-transfer tbody").html("<tr><td colspan='6'>Nenhum dado encontrado.</td></tr>");
 
-                var toAppend = "<tr class=ui-widget-header'>"
-                toAppend += "<td colspan='5' class='text-right ui-widget-header'>Total R$ "+ ((total)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
-                toAppend += "</tr>";
-                $("#table-extrato tfoot").append(toAppend);
+                        var total = 0;
+                        $.each(data, function(key, value) {
+                            var statusAux = "-";
+                            switch (value.status) {
+                                case "pending_transfer":
+                                    statusAux = "Pendente";
+                                break;
+                                case "transferred":
+                                    statusAux = "Transferido";
+                                break;
+                                case "failed":
+                                    statusAux = "Falha";
+                                break;
+                                case "processing":
+                                    statusAux = "Processando";
+                                break;
+                                case "canceled":
+                                    statusAux = "Cancelado";
+                                break;
+                            }
 
-                $(".toClick").click(function(obj) {
-                    lineClick($(this).attr("data"));
+                            var toAppend = "<tr style='cursor: pointer;' class='trline'><td>" + moment(value.date_created).format("DD/MM/YYYY") +"</td>";
+                            toAppend += "<td>"+ statusAux +"</td>";
+                            toAppend += "<td>R$ "+ (value.amount/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                            toAppend += "<td>R$ "+ (value.fee/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                            toAppend += "<td>"+ (value.funding_estimated_date == null ? "-" : moment(value.funding_estimated_date).format("DD/MM/YYYY")) +"</td>";
+                            toAppend += "<td>"+ (value.funding_date == null ? "-" : moment(value.funding_date).format("DD/MM/YYYY")) +"</td>";
+                            toAppend += "</tr>";
+                            $("#table-transfer tbody").append(toAppend);
+                        });
+                        $("#table-transfer tfoot").html("");
+
+                        // var toAppend = "<tr class=ui-widget-header'>"
+                        // toAppend += "<td colspan='5' class='text-right ui-widget-header'>Total R$ "+ ((total)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                        // toAppend += "</tr>";
+                        // $("#table-extrato tfoot").append(toAppend);
+
+                        // $(".toClick").click(function(obj) {
+                        //     lineClick($(this).attr("data"));
+                        // });
+                    },
+                    error: function(){
+                        $("#table-transfer tbody").html("");
+                        $.dialog({
+                            title: 'Erro...',
+                            text: 'Erro na chamada dos dados !!!'
+                        });
+                        return false;
+                    }
                 });
-            },
-            error: function(){
-                $("#table-extrato tbody").html("");
-                $.dialog({
-                    title: 'Erro...',
-                    text: 'Erro na chamada dos dados !!!'
+            break;
+            case "antecipations":
+                $.ajax({
+                    url: pagina + '?action=listantecipations?recebedor='+ recebedor.val(),
+                    type: 'post',
+                    data: { },
+                    success: function(data) {	
+                        $("#table-antecipavel").show();
+                        data = $.parseJSON(data);
+                        $("#table-antecipavel tbody").html("");
+                        if (data.length == 0)
+                            $("#table-antecipavel tbody").html("<tr><td colspan='5'>Nenhum dado encontrado.</td></tr>");
+
+                        var total = 0;
+                        $.each(data, function(key, value) {
+                            var statusAux = "-";
+                            switch (value.status) {
+                                case "building":
+                                    statusAux = "Criando";
+                                break;
+                                case "pending":
+                                    statusAux = "Pendente";
+                                break;
+                                case "approved":
+                                    statusAux = "Aprovado";
+                                break;
+                                case "refused":
+                                    statusAux = "Recusado";
+                                break;
+                                case "canceled":
+                                    statusAux = "Cancelado";
+                                break;
+                            }
+
+                            var toAppend = "<tr style='cursor: pointer;' class='trline'><td>" + moment(value.date_created).format("DD/MM/YYYY") +"</td>";
+                            toAppend += "<td>"+ statusAux +"</td>";
+                            toAppend += "<td>R$ "+ (value.amount/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                            toAppend += "<td>R$ "+ ((value.fee+value.anticipation_fee)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                            toAppend += "<td>"+ (value.payment_date == null ? "-" : moment(value.payment_date).format("DD/MM/YYYY")) +"</td>";
+                            toAppend += "</tr>";
+                            $("#table-antecipavel tbody").append(toAppend);
+                        });
+                        $("#table-antecipavel tfoot").html("");
+
+                        // var toAppend = "<tr class=ui-widget-header'>"
+                        // toAppend += "<td colspan='5' class='text-right ui-widget-header'>Total R$ "+ ((total)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                        // toAppend += "</tr>";
+                        // $("#table-extrato tfoot").append(toAppend);
+
+                        // $(".toClick").click(function(obj) {
+                        //     lineClick($(this).attr("data"));
+                        // });
+                    },
+                    error: function(){
+                        $("#table-antecipavel tbody").html("");
+                        $.dialog({
+                            title: 'Erro...',
+                            text: 'Erro na chamada dos dados !!!'
+                        });
+                        return false;
+                    }
                 });
-                return false;
-            }
-        });
+            break;
+            default:
+                $.ajax({
+                    url: pagina + '?action=load',
+                    type: 'post',
+                    data: $('#dados').serialize(),
+                    success: function(data) {	
+                        $("#table-extrato").show();
+                        data = $.parseJSON(data);
+                        $("#table-extrato tbody").html("");
+                        if (data.length == 0)
+                            $("#table-extrato tbody").html("<tr><td colspan='5'>Nenhum dado encontrado.</td></tr>");
+
+                        var total = 0;
+                        $.each(data, function(key, value) {
+                            total += value.amount-value.fee;
+                            
+                            //console.log(value);
+                            var toAppend = "<tr style='cursor: pointer;' id='" + value.movement_object.transaction_id + "' class='toClick trline' data='" + value.movement_object.transaction_id + "'><td>" + new Date(value.date_created).toJSON().slice(0, 10).split("-").reverse().join("/") +"</td>";
+                            toAppend += "<td>"+ new Date(value.movement_object.payment_date).toJSON().slice(0, 10).split("-").reverse().join("/") +"</td>";
+                            toAppend += "<td>"+ movement_objectTypeToString(value.movement_object.type) +"</td>";
+                            toAppend += "<td class='text-right'>R$ "+ (value.amount/100).toFixed(2).toString().replace(',','').replace('.',',') + " - R$ " + (value.fee/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                            toAppend += "<td class='text-right'>R$ "+ ((value.amount-value.fee)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                            toAppend += "</tr>";
+                            $("#table-extrato tbody").append(toAppend);
+                        });
+                        $("#table-extrato tfoot").html("");
+
+                        var toAppend = "<tr class=ui-widget-header'>"
+                        toAppend += "<td colspan='5' class='text-right ui-widget-header'>Total R$ "+ ((total)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                        toAppend += "</tr>";
+                        $("#table-extrato tfoot").append(toAppend);
+
+                        $(".toClick").click(function(obj) {
+                            lineClick($(this).attr("data"));
+                        });
+                    },
+                    error: function(){
+                        $("#table-extrato tbody").html("");
+                        $.dialog({
+                            title: 'Erro...',
+                            text: 'Erro na chamada dos dados !!!'
+                        });
+                        return false;
+                    }
+                });
+        }
+        
+        
     });
 
     $("#btn-saque").click(function(event){
@@ -845,6 +984,8 @@ $(function() {
             <option value="waiting_funds">Saldo a Receber</option>
             <option value="available">Saldo Disponível</option>
             <option value="transferred">Saldo transferido</option>
+            <option value="transfers">Transferências</option>
+            <option value="antecipations">Antecipações</option>
         </select>
 
         <label>Periodo:</label>
@@ -875,7 +1016,7 @@ $(function() {
     </div>
 </form>
 
-<table id="table-extrato" class="ui-widget ui-widget-content">
+<table id="table-extrato" class="ui-widget ui-widget-content" style="display:none">
 	<thead>
 		<tr class="ui-widget-header">
             <th width="100">Data da venda</th>
@@ -883,6 +1024,43 @@ $(function() {
             <th width="100">Tipo</th>
             <th width="100">Composição do valor</th>
 			<th class="text-right">Valor</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td colspan="5">Nenhum registro no momento.</td>
+		</tr>
+    </tbody>
+    <tfoot>
+    </tfoot>
+</table>
+<table id="table-transfer" class="ui-widget ui-widget-content" style="display:none">
+	<thead>
+		<tr class="ui-widget-header">
+            <th width="100">Data de requisição</th>
+            <th width="100">Status</th>
+            <th width="100">Valor</th>
+            <th width="100">Taxa</th>
+			<th width="100">Dt Estimada da Transf.</th>
+			<th width="100">Dt da Transf.</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td colspan="6">Nenhum registro no momento.</td>
+		</tr>
+    </tbody>
+    <tfoot>
+    </tfoot>
+</table>
+<table id="table-antecipavel" class="ui-widget ui-widget-content" style="display:none">
+	<thead>
+		<tr class="ui-widget-header">
+            <th width="100">Data de requisição</th>
+            <th width="100">Status</th>
+            <th width="100">Valor</th>
+            <th width="100">Taxa</th>
+			<th width="100">Dt Pagamento</th>
 		</tr>
 	</thead>
 	<tbody>

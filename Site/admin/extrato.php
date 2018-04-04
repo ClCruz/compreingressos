@@ -482,6 +482,7 @@ $(function() {
                 if(data.status == 'success') {                    
                     dialogSaque.dialog( "close" );
                 }
+                load_saldo();
             },
             error: function(data){
                 $(".ui-dialog").loading("stop");

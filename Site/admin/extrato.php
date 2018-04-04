@@ -347,6 +347,7 @@ $(function() {
     });
     
     $("#btnBuscarExtrato").click(function(event) {
+        $("#table-first").show();
         $("#table-extrato tbody").html("");
         $("#table-antecipavel tbody").html("");
         $("#table-transfer tbody").html("");
@@ -354,14 +355,15 @@ $(function() {
         $("#table-extrato").hide();
         $("#table-antecipavel").hide();
         $("#table-transfer").hide();
-
+        
         switch ($("#status").val()) {
             case "transfers":
                 $.ajax({
-                    url: pagina + '?action=listtransfers?recebedor='+ recebedor.val(),
+                    url: pagina + '?action=listtransfer&recebedor='+ recebedor.val(),
                     type: 'post',
                     data: { },
                     success: function(data) {	
+                        $("#table-first").hide();
                         $("#table-transfer").show();
                         data = $.parseJSON(data);
                         $("#table-transfer tbody").html("");
@@ -389,7 +391,7 @@ $(function() {
                                 break;
                             }
 
-                            var toAppend = "<tr style='cursor: pointer;' class='trline'><td>" + moment(value.date_created).format("DD/MM/YYYY") +"</td>";
+                            var toAppend = "<tr class='trline'><td>" + moment(value.date_created).format("DD/MM/YYYY") +"</td>";
                             toAppend += "<td>"+ statusAux +"</td>";
                             toAppend += "<td>R$ "+ (value.amount/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
                             toAppend += "<td>R$ "+ (value.fee/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
@@ -421,10 +423,11 @@ $(function() {
             break;
             case "antecipations":
                 $.ajax({
-                    url: pagina + '?action=listantecipations?recebedor='+ recebedor.val(),
+                    url: pagina + '?action=listantecipations&recebedor='+ recebedor.val(),
                     type: 'post',
                     data: { },
                     success: function(data) {	
+                        $("#table-first").hide();
                         $("#table-antecipavel").show();
                         data = $.parseJSON(data);
                         $("#table-antecipavel tbody").html("");
@@ -452,7 +455,7 @@ $(function() {
                                 break;
                             }
 
-                            var toAppend = "<tr style='cursor: pointer;' class='trline'><td>" + moment(value.date_created).format("DD/MM/YYYY") +"</td>";
+                            var toAppend = "<tr class='trline'><td>" + moment(value.date_created).format("DD/MM/YYYY") +"</td>";
                             toAppend += "<td>"+ statusAux +"</td>";
                             toAppend += "<td>R$ "+ (value.amount/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
                             toAppend += "<td>R$ "+ ((value.fee+value.anticipation_fee)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
@@ -487,6 +490,7 @@ $(function() {
                     type: 'post',
                     data: $('#dados').serialize(),
                     success: function(data) {	
+                        $("#table-first").hide();
                         $("#table-extrato").show();
                         data = $.parseJSON(data);
                         $("#table-extrato tbody").html("");
@@ -1015,6 +1019,25 @@ $(function() {
         </div>
     </div>
 </form>
+
+<table id="table-first" class="ui-widget ui-widget-content">
+	<thead>
+		<tr class="ui-widget-header">
+            <th width="100">Data da venda</th>
+            <th width="100">Data de pagamento</th>
+            <th width="100">Tipo</th>
+            <th width="100">Composição do valor</th>
+			<th class="text-right">Valor</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td colspan="5">Nenhum registro no momento.</td>
+		</tr>
+    </tbody>
+    <tfoot>
+    </tfoot>
+</table>
 
 <table id="table-extrato" class="ui-widget ui-widget-content" style="display:none">
 	<thead>

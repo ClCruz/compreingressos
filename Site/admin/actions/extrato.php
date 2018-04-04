@@ -145,30 +145,27 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 	} else if ($_GET['action'] == 'antecipacao') {
 		$ret = efetuarAntecipacaoPagarme($_GET["recebedor"], $_POST["valor"], $_POST["data"], $_POST["periodo"]);
 		$retorno = json_encode($ret);
-	}
-	else if ($_GET['action'] == 'verificaantecipacao') {
+	} else if ($_GET['action'] == 'verificaantecipacao') {
 		$ret = verificarAntecipacao($_GET["recebedor"], $_POST["valor"], $_POST["data"], $_POST["periodo"]);
 		$retorno = $ret;
-	}
-	else if ($_GET['action'] == 'antecipacaomaxmin') {
+	} else if ($_GET['action'] == 'antecipacaomaxmin') {
 		$ret = verificaMinimoMaximoAntecipacao($_GET["recebedor"], $_POST["data"], $_POST["periodo"]);
 		$retorno = $ret;
-	}
-	else if ($_GET['action'] == 'gettransaction') {
+	} else if ($_GET['action'] == 'gettransaction') {
 		$ret = getTransaction($_GET["transaction_id"]);
 		// error_log($ret);
 		$retorno = $ret;
-	}
-	else if ($_GET['action'] == 'listantecipations') {
+	} else if ($_GET['action'] == 'listantecipations') {
 		$ret = consultarAntecipaveis($_GET["recebedor"]);
+		$retorno = json_encode($ret);
 		// error_log($ret);
-		$retorno = $ret;
-	}
-	else if ($_GET['action'] == 'listtransfers') {
+	} else if ($_GET['action'] == 'listtransfer') {
 		$ret = consultarTransferencias($_GET["recebedor"]);
 		// error_log($ret);
-		$retorno = $ret;
-	} else {
+		$retorno = json_encode($ret);
+	} 
+	else {
+		error_log("Action: ".$_GET['action']);
 		$retorno = "Nenhuma ação executada.";
 	}
 

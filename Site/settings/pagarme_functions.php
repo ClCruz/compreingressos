@@ -460,35 +460,38 @@ function consultarTaxaSaque() {
 function consultarTransferencias($recipient_id) {
 	$response = PagarMe_Calls::listTransfers($recipient_id);
 
-	$ret = array("amount"=> $response["amount"]
-	,"type" => $response["type"]
-	,"status" => $response["status"]
-	,"fee" => $response["fee"]
-	,"funding_date" => $response["funding_date"]
-	,"funding_estimated_date" => $response["funding_estimated_date"]
-	,"date_created" => $response["date_created"]
-	);
+	$json = array();
+	
+	foreach ($response as $value) {
+		$json[] = array("amount"=> $value["amount"]
+		,"type" => $value["type"]
+		,"status" => $value["status"]
+		,"fee" => $value["fee"]
+		,"funding_date" => $value["funding_date"]
+		,"funding_estimated_date" => $value["funding_estimated_date"]
+		,"date_created" => $value["date_created"]
+		);
+	}
 
-	error_log(print_r($ret, true));
-
-	return $ret;
+	return $json;
 }
 function consultarAntecipaveis($recipient_id) {
 	$response = PagarMe_Calls::listAnticipations($recipient_id);
+	$json = array();
+	
+	foreach ($response as $value) {
+		$json[] = array("amount"=> $value["amount"]
+		,"anticipation_fee" => $value["anticipation_fee"]
+		,"date_created" => $value["date_created"]
+		,"fee" => $value["fee"]
+		,"payment_date" => $value["payment_date"]
+		,"status" => $value["status"]
+		,"timeframe" => $value["timeframe"]
+		,"type" => $value["type"]
+		);
+	}
 
-	$ret = array("amount"=> $response["amount"]
-	,"anticipation_fee" => $response["anticipation_fee"]
-	,"date_created" => $response["date_created"]
-	,"fee" => $response["fee"]
-	,"payment_date" => $response["payment_date"]
-	,"status" => $response["status"]
-	,"timeframe" => $response["timeframe"]
-	,"type" => $response["type"]
-	);
-
-	error_log(print_r($ret, true));
-
-	return $ret;
+	return $json;
 }
 
 function efetuarSaquePagarme($recipient_id, $amount) {

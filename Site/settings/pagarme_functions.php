@@ -391,8 +391,8 @@ function consultarSplitPagarme($pedido, $where, $payment_method, $amount) {
 
 		$amountUsed = $amountUsed + $amoutToUse;
 
-		error_log("perToUse: " . $perToUse);
-		error_log("amoutToUse: " . $amoutToUse);
+		//error_log("perToUse: " . $perToUse);
+		//error_log("amoutToUse: " . $amoutToUse);
 
 		$split[] = array(
 			"recipient_id" => $rs["recipient_id"],
@@ -401,7 +401,7 @@ function consultarSplitPagarme($pedido, $where, $payment_method, $amount) {
 	    	"liable" => $rs["liable"],
 	    	"charge_processing_fee" => $rs["charge_processing_fee"]);
 	}
-	error_log("Split: " . print_r($split, true));
+	//error_log("Split: " . print_r($split, true));
 	return $split;
 }
 
@@ -435,9 +435,51 @@ function consultarExtratoRecebedorPagarme($recipient_id, $status, $start_date, $
 	}
 
 	$balance_operations = PagarMe_Recipient::getOperationHistory($recipient_id, $status, $count, getDatePagarMe($start_date_modified), getDatePagarMe($end_date_modified));
+	$json = array();
+	foreach ($balance_operations as $value) {
+		$query = "SELECT DISTINCT e.id_evento, e.ds_evento
+		FROM mw_pedido_venda pv 
+		INNER JOIN mw_item_pedido_venda ipv ON pv.id_pedido_venda=ipv.id_pedido_venda
+		INNER JOIN mw_apresentacao ipva ON ipv.id_apresentacao=ipva.id_apresentacao
+		INNER JOIN mw_evento e ON ipva.id_evento=e.id_evento
+		WHERE pv.id_pedido_ipagare='Pagar.me' AND cd_numero_autorizacao=?";
+	
+		$param = array($value["movement_object"]["transaction_id"]);
+		$result = executeSQL(mainConnection(), $query, $param,true);
+
+		$split = array();
+		$id_evento = $result["id_evento"];
+		$ds_evento = $result["ds_evento"];
+
+		if ($result["id_evento"] == 0 || $result["ds_evento"] == null) {
+			$query = "SELECT DISTINCT e.id_evento, e.ds_evento
+			FROM mw_pedido_venda_gateway pvg
+			INNER JOIN mw_evento e ON e.CodPeca=pvg.CodPeca AND e.id_base=pvg.id_base
+			WHERE TransacaoGateway=?";
+		
+			$param = array($value["movement_object"]["transaction_id"]);
+			$result2 = executeSQL(mainConnection(), $query, $param,true);
+
+			$id_evento = $result2["id_evento"];
+			$ds_evento = $result2["ds_evento"] == null ? "Bilheteria" : $result2["ds_evento"];
+		}
+
+		$json[] = array("amount"=> $value["amount"]
+			,"fee" => $value["fee"]
+			,"transaction_id" => $value["movement_object"]["transaction_id"]
+			,"payment_date" => $value["movement_object"]["payment_date"]
+			,"type" => $value["movement_object"]["type"]
+			,"payment_method" => $value["movement_object"]["payment_method"]
+			,"date_created" => $value["date_created"]
+			,"id_evento" => $id_evento
+			,"ds_evento" => $ds_evento
+		);		
+	}
+	//error_log("json.. ".print_r($json,true));
 	// error_log("result is....");
 	// error_log($balance_operations->__toJSON(true));
-	return $balance_operations->__toJSON(true);
+	//return $balance_operations->__toJSON(true);
+	return $json;
 }
 
 function consultarSaldoRecebedorPagarme($recipient_id) {
@@ -523,6 +565,9 @@ function verificaMinimoMaximoAntecipacao($recipient_id,  $payment_date, $timefra
 	try {
 		$dateSplit = explode("/", $payment_date);
 		$date_modified = getDatePagarMe($dateSplit[2] . "-" . $dateSplit[1] . "-" . $dateSplit[0]);
+		//error_log("recipient_id ". $recipient_id );
+		//error_log("date_modified ". $date_modified );
+		//error_log("timeframe ". $timeframe );
 		$ret = PagarMe_Recipient::getLimits($recipient_id, $date_modified, $timeframe);
 		return $ret;
 	} catch (Exception $e) {
@@ -538,7 +583,7 @@ function verificarAntecipacao($recipient_id, $amount, $payment_date, $timeframe)
 		$stringAux = $stringAux . " amount = ".getAmountPagarMe($amount);
 		$stringAux = $stringAux . " payment_date = ".$date_modified;
 		$stringAux = $stringAux . " timeframe = ".$timeframe;
-//		error_log( $stringAux );
+		
 		$ret = PagarMe_Recipient::getResumo($recipient_id, getAmountPagarMe($amount), $date_modified, $timeframe);
 
 //		error_log( print_r( $ret, true ) );

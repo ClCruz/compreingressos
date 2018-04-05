@@ -85,11 +85,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
         }
 
 	} else if ($_GET['action'] == 'load'){
-		$retorno = consultarExtratoRecebedorPagarme($_POST["recebedor"]
+		$aux = consultarExtratoRecebedorPagarme($_POST["recebedor"]
 		, $_POST["status"]
 		, $_POST["start_date"]
 		, $_POST["end_date"]
 		, $_POST["count"]);
+		$retorno = json_encode($aux);
 		//error_log("aqui..." . $retorno);
 		//consultarExtratoRecebedorPagarme2($_POST["recebedor"]);
 	} else if ($_GET['action'] == 'load_saldo'){

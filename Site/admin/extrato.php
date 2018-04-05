@@ -87,6 +87,9 @@ $(function() {
     $("#start_date").mask("99/99/9999");
     $("#end_date").mask("99/99/9999");
 
+    $("#start_date").val(moment().add(-30, 'days').format("DD/MM/YYYY"));
+    $("#end_date").val(moment().format("DD/MM/YYYY"));
+
     $('.extratoSearch').datepicker({
             changeMonth: true,
             changeYear: true,
@@ -205,19 +208,27 @@ $(function() {
             destroySliderSaque();
         }
     });
+    function movement_objectPayment_MethodToString(value) {
+        var ret = value;
+        switch (ret) {
+            case "credit_card":
+                ret = "Cartão de Crédito";
+            break;
+            case "debit_card":
+                ret = "Cartão de Débito";
+            break;
+        }
+        return ret;
+    }
     function movement_objectTypeToString(value) {
         var ret = value;
         switch (ret) {
             case "debit":
-                ret = "Débito";
+                ret = "D";
             break;
             case "credit":
-                ret = "Crédito";
+                ret = "C";
             break;
-            case "boleto":
-                ret = "Boleto";
-            break;
-
         }
         return ret;
     }
@@ -347,6 +358,7 @@ $(function() {
     });
     
     $("#btnBuscarExtrato").click(function(event) {
+
         $("#table-first").show();
         $("#table-extrato tbody").html("");
         $("#table-antecipavel tbody").html("");
@@ -358,11 +370,13 @@ $(function() {
         
         switch ($("#status").val()) {
             case "transfers":
+                loading("body");
                 $.ajax({
                     url: pagina + '?action=listtransfer&recebedor='+ recebedor.val(),
                     type: 'post',
                     data: { },
                     success: function(data) {	
+                        $("body").loading("stop");
                         $("#table-first").hide();
                         $("#table-transfer").show();
                         data = $.parseJSON(data);
@@ -412,6 +426,7 @@ $(function() {
                         // });
                     },
                     error: function(){
+                        $("body").loading("stop");
                         $("#table-transfer tbody").html("");
                         $.dialog({
                             title: 'Erro...',
@@ -422,11 +437,13 @@ $(function() {
                 });
             break;
             case "antecipations":
+                loading("body");
                 $.ajax({
                     url: pagina + '?action=listantecipations&recebedor='+ recebedor.val(),
                     type: 'post',
                     data: { },
                     success: function(data) {	
+                        $("body").loading("stop");
                         $("#table-first").hide();
                         $("#table-antecipavel").show();
                         data = $.parseJSON(data);
@@ -475,6 +492,7 @@ $(function() {
                         // });
                     },
                     error: function(){
+                        $("body").loading("stop");
                         $("#table-antecipavel tbody").html("");
                         $.dialog({
                             title: 'Erro...',
@@ -485,27 +503,39 @@ $(function() {
                 });
             break;
             default:
+                if ($("#end_date").val() == "" && $("#start_date").val() == "") {
+                    $.dialog({
+                        title: 'Erro...',
+                        text: 'Preencha os campos de data!'
+                    });
+                    return;
+                }
+
+                loading("body");
                 $.ajax({
                     url: pagina + '?action=load',
                     type: 'post',
                     data: $('#dados').serialize(),
                     success: function(data) {	
+                        $("body").loading("stop");
                         $("#table-first").hide();
                         $("#table-extrato").show();
                         data = $.parseJSON(data);
                         $("#table-extrato tbody").html("");
                         if (data.length == 0)
-                            $("#table-extrato tbody").html("<tr><td colspan='5'>Nenhum dado encontrado.</td></tr>");
+                            $("#table-extrato tbody").html("<tr><td colspan='7'>Nenhum dado encontrado.</td></tr>");
 
                         var total = 0;
                         $.each(data, function(key, value) {
                             total += value.amount-value.fee;
                             
                             //console.log(value);
-                            var toAppend = "<tr style='cursor: pointer;' id='" + value.movement_object.transaction_id + "' class='toClick trline' data='" + value.movement_object.transaction_id + "'><td>" + new Date(value.date_created).toJSON().slice(0, 10).split("-").reverse().join("/") +"</td>";
-                            toAppend += "<td>"+ new Date(value.movement_object.payment_date).toJSON().slice(0, 10).split("-").reverse().join("/") +"</td>";
-                            toAppend += "<td>"+ movement_objectTypeToString(value.movement_object.type) +"</td>";
-                            toAppend += "<td class='text-right'>R$ "+ (value.amount/100).toFixed(2).toString().replace(',','').replace('.',',') + " - R$ " + (value.fee/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                            var toAppend = "<tr style='cursor: pointer;' id='" + value.transaction_id + "' class='toClick trline' data='" + value.transaction_id + "'><td>" + new Date(value.date_created).toJSON().slice(0, 10).split("-").reverse().join("/") +"</td>";
+                            toAppend += "<td>"+ value.ds_evento +"</td>";
+                            toAppend += "<td>"+ new Date(value.payment_date).toJSON().slice(0, 10).split("-").reverse().join("/") +"</td>";
+                            toAppend += "<td>"+ movement_objectTypeToString(value.type) +"</td>";
+                            toAppend += "<td>"+ movement_objectPayment_MethodToString(value.payment_method) +"</td>";
+                            toAppend += "<td>R$ "+ (value.amount/100).toFixed(2).toString().replace(',','').replace('.',',') + " - R$ " + (value.fee/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
                             toAppend += "<td class='text-right'>R$ "+ ((value.amount-value.fee)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
                             toAppend += "</tr>";
                             $("#table-extrato tbody").append(toAppend);
@@ -513,7 +543,7 @@ $(function() {
                         $("#table-extrato tfoot").html("");
 
                         var toAppend = "<tr class=ui-widget-header'>"
-                        toAppend += "<td colspan='5' class='text-right ui-widget-header'>Total R$ "+ ((total)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                        toAppend += "<td colspan='7' class='text-right ui-widget-header'>Total R$ "+ ((total)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
                         toAppend += "</tr>";
                         $("#table-extrato tfoot").append(toAppend);
 
@@ -522,6 +552,7 @@ $(function() {
                         });
                     },
                     error: function(){
+                        $("body").loading("stop");
                         $("#table-extrato tbody").html("");
                         $.dialog({
                             title: 'Erro...',
@@ -710,9 +741,20 @@ $(function() {
                     }
                     message+="<br />"; 
                     message+="<p>" + value.name + " - " + document + "</p>";
-                    message+="<p>Valor sem taxas: R$ " + amount + "</p>";
-                    message+="<p>Taxas: R$ " + fee + "</p>";
-                    message+="<p>Valor a receber: R$" + total + "</p>";
+
+                    if (value.documentNumber == "11665394000113") {
+                        message+="<p>Valor a receber: R$ " + amount + "</p>";
+                    }
+                    else {
+                        if (value.fee>0) {
+                            message+="<p>Valor sem taxas: R$ " + amount + "</p>";
+                            message+="<p>Taxas: R$ " + fee + "</p>";
+                        }
+                        message+="<p>Valor a receber: R$ " + total + "</p>";
+                    }
+                    // message+="<p>Valor sem taxas: R$ " + amount + "</p>";
+                    // message+="<p>Taxas: R$ " + fee + "</p>";
+                    // message+="<p>Valor a receber: R$" + total + "</p>";
                 });
                 message+="<br />";
                 //console.log(obj);
@@ -900,13 +942,13 @@ $(function() {
 	<form id="antecipacao" name="antecipacao" action="?p=extrato" method="POST">
         <fieldset>
             <legend>Como deseja antecipar? </legend>
-            <label for="radio-1" style="display:inline"><input type="radio" name="periodo" checked id="periodo-1" class="radio" style="display:inline" value="start"> Do Início</label>
-            <label for="radio-2" style="display:inline"><input type="radio" name="periodo" id="periodo-2" class="radio" style="display:inline" value="end">Do Final</label>
+            <label for="radio-1" style="display:inline"><input type="radio" name="periodo" checked id="periodo-1" class="radio" style="display:inline" value="start"> Do início do saldo</label>
+            <label for="radio-2" style="display:inline"><input type="radio" name="periodo" id="periodo-2" class="radio" style="display:inline" value="end">Do final do saldo</label>
         </fieldset>
         <br />
         <fieldset>
             <legend>Quando deseja receber? </legend>
-            <input type="text" name="data" id="data" class="text ui-widget-content ui-corner-all" />
+            <input type="text" name="data" id="data" placeholder="ESCOLHA UMA DATA" class="text ui-widget-content ui-corner-all" />
         </fieldset>
         <br />
         <fieldset id="fsValor" style="display:none">
@@ -1004,11 +1046,11 @@ $(function() {
     <div class="actions">
         <div class="saldo">
             <div class="disponivel">
-                <label>Saldo Disponível</label>
+                <label>Saldo total disponível</label>
                 <span>R$ 0,00</span>
             </div>
             <div class="receber">
-                <label>Saldo a Receber</label>
+                <label>Saldo total a receber</label>
                 <span>R$ 0,00</span>
             </div>
         </div> 
@@ -1043,15 +1085,17 @@ $(function() {
 	<thead>
 		<tr class="ui-widget-header">
             <th width="100">Data da venda</th>
+            <th width="100">Evento</th>
             <th width="100">Data de pagamento</th>
-            <th width="100">Tipo</th>
+            <th width="100">Entrada/Saída</th>
+            <th width="100">Tipo da Transação</th>
             <th width="100">Composição do valor</th>
 			<th class="text-right">Valor</th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
-			<td colspan="5">Nenhum registro no momento.</td>
+			<td colspan="7">Nenhum registro no momento.</td>
 		</tr>
     </tbody>
     <tfoot>

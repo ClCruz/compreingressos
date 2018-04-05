@@ -189,11 +189,11 @@ class PagarMe_Recipient extends PagarMe_Model {
 
         $maximum = array("amount"=> $limits["maximum"]["amount"]
         ,"anticipation_fee"=> $limits["maximum"]["anticipation_fee"]
-        ,"fee"=> $limits["maximum"]["anticipation_fee"]);
+        ,"fee"=> $limits["maximum"]["fee"]);
 
         $minimum = array("amount"=> $limits["minimum"]["amount"]
         ,"anticipation_fee"=> $limits["minimum"]["anticipation_fee"]
-        ,"fee"=> $limits["minimum"]["anticipation_fee"]);
+        ,"fee"=> $limits["minimum"]["fee"]);
 
         $play = array();
 

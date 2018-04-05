@@ -45,7 +45,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
     .trline:hover { background-color: #ffa;}
 
 </style>
+<link rel="stylesheet" href="../stylesheets/introjs.css" >
 <link rel="stylesheet" href="../stylesheets/loading.css" >
+<script type="text/javascript" src="../javascripts/intro.js"></script>
 <script type="text/javascript" src="../javascripts/moment.js"></script>
 <script type="text/javascript" src="../javascripts/simpleFunctions.js"></script>
 <script type="text/javascript" src="../javascripts/loading.js"></script>

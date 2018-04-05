@@ -4,11 +4,13 @@ require_once('../settings/functions.php');
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 661, true)) {
 	if ($_GET['action'] == 'add') {
 
-		$query = "SET NOCOUNT ON;INSERT INTO mw_permissao_split (id_usuario, id_produtor, id_recebedor, dt_criado, dt_alterado) VALUES (?, ?, ?, GETDATE(), GETDATE()); SELECT @@IDENTITY id_permissao_split;SET NOCOUNT OFF;";
+		$query = "SET NOCOUNT ON;INSERT INTO mw_permissao_split (id_usuario, id_produtor, id_recebedor, dt_criado, dt_alterado, bit_saque, bit_antecipacao) VALUES (?, ?, ?, GETDATE(), GETDATE(), ?, ?); SELECT @@IDENTITY id_permissao_split;SET NOCOUNT OFF;";
 		
 		$params = array($_POST["id_usuario"], 
 						$_POST["id_produtor"] == 0 ? NULL : $_POST["id_produtor"],
-						$_POST["id_recebedor"] == 0 ? NULL : $_POST["id_recebedor"]);
+						$_POST["id_recebedor"] == 0 ? NULL : $_POST["id_recebedor"],
+						($_POST["bit_saque"] == null ? 0 : $_POST["bit_saque"]),
+						($_POST["bit_antecipacao"] == null ? 0 : $_POST["bit_antecipacao"]));
 
 		$rs = executeSQL($mainConnection, $query, $params, true);
 		if(sqlErrors()) {
@@ -52,12 +54,16 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 661, true)) {
 				  SET id_usuario = ?,
 				  id_produtor = ?,
 				  id_recebedor = ?,
+				  bit_saque = ?,
+				  bit_antecipacao = ?,
 				  dt_alterado = GETDATE()
 				  WHERE id_permissaosplit = ?";
 
 		$params = array($_POST["id_usuario"], 
 		$_POST["id_produtor"] == 0 ? NULL : $_POST["id_produtor"],
 		$_POST["id_recebedor"] == 0 ? NULL : $_POST["id_recebedor"],
+		($_POST["bit_saque"] == null ? 0 : $_POST["bit_saque"]),
+		($_POST["bit_antecipacao"] == null ? 0 : $_POST["bit_antecipacao"]),
 		$_POST['id_permissaosplit']);
 
 		$rs = executeSQL($mainConnection, $query, $params);
@@ -86,6 +92,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 661, true)) {
 				   ,ISNULL(r.ds_razao_social, 'Todos') RazaoSocialRecebedor
 				   ,r.cd_cpf_cnpj DocumentoRecebedor
 				   ,u.ds_nome NomeUsuario
+				   ,ps.bit_saque
+				   ,ps.bit_antecipacao
                   FROM mw_permissao_split ps
 				  INNER JOIN mw_usuario u ON ps.id_usuario=u.id_usuario
 				  LEFT JOIN mw_produtor p ON ps.id_produtor=p.id_produtor
@@ -108,6 +116,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 661, true)) {
             	"id_recebedor" => $rs["id_recebedor"],
             	"dt_criado" => $rs["dt_criado"],
             	"dt_alterado" => $rs["dt_alterado"],
+            	"bit_saque" => $rs["bit_saque"],
+            	"bit_antecipacao" => $rs["bit_antecipacao"],
             	"DocumentoProdutor" => $rs["DocumentoProdutor"],
             	"DocumentoRecebedor" => $rs["DocumentoRecebedor"],
             	"RazaoSocialProdutor" => utf8_encode($rs["RazaoSocialProdutor"]),

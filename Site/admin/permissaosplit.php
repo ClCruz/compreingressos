@@ -334,7 +334,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 661, true)) {
                             data = $.parseJSON(data);
                             $("#table-grid tbody").html("");
                             if (data.length == 0)
-                                $("#table-grid tbody").html("<tr><td colspan='5'>Nenhum dado encontrado.</td></tr>");
+                                $("#table-grid tbody").html("<tr><td colspan='7'>Nenhum dado encontrado.</td></tr>");
 
                             var total = 0;
                             $.each(data, function(key, value) {
@@ -360,6 +360,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 661, true)) {
                                 toAppend += "<td>"+ value.NomeUsuario +"</td>";
                                 toAppend += "<td>"+ value.RazaoSocialProdutor + documentoProdutor +"</td>";
                                 toAppend += "<td>"+ value.RazaoSocialRecebedor + documentoRecebedor +"</td>";
+                                toAppend += "<td>"+ (value.bit_saque ? "Sim" : "Não") +"</td>";
+                                toAppend += "<td>"+ (value.bit_antecipacao ? "Sim" : "Não") +"</td>";
                                 // toAppend += "<td><a href='" + pagina + "?action=edit&id=" + value.id_permissaosplit + "'>" +"Editar</a></td>";
                                 toAppend += "<td><a href='" + pagina + "?action=delete&id=" + value.id_permissaosplit + "'>" +"Apagar</a></td>";
                                 
@@ -390,10 +392,14 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 661, true)) {
                         <th width="20%">Usuário</th>
                         <th width="20%">Organizador</th>
                         <th width="20%">Recebedor</th>
+                        <th width="20%">Permite Saque?</th>
+                        <th width="20%">Permite Antecipação?</th>
                         <th style="text-align: center;" colspan="2" width="10%">Ações</th>
                     </tr>
                 </thead>
                 <tr>
+                    <td></td>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -419,6 +425,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 661, true)) {
             </select>
             <label for="id_recebedor">Recebedor:</label>
             <select id="id_recebedor" name="id_recebedor" class="ui-widget-content ui-corner-all">
+            </select>
+            <label for="bit_saque">Permite Saque:</label>
+            <input type="checkbox" id="bit_saque" value="1" name="bit_saque" />		    
+            <label for="bit_antecipacao">Permite antecipação:</label>
+            <input type="checkbox" id="bit_antecipacao" value="1" name="bit_antecipacao" />		    
             </select>
         </fieldset>
 	</form>

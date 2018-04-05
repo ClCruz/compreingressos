@@ -141,7 +141,7 @@ function pagarPedidoPagarme($id_pedido, $dados_extra) {
 		$transaction->charge();
 		$response = array('success' => true, 'transaction' => $transaction);
 	} catch (Exception $e) {
-		executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . basename($_SERVER['PHP_SELF']) . " - 5" ));
+		executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . " - " . "SPLIT: " . print_r($split, true) ));
 
 		error_log("Erro no pagar.me: " . $e->getMessage());
 		$response = array('success' => false, 'error' => tratarErroPagarme($e, $id_pedido));
@@ -315,7 +315,7 @@ function consultarSplitPagarme($pedido, $where, $payment_method, $amount) {
 	$param = array($pedido);
 	$stmt = executeSQL($mainConnection, $query, $param, true);
 
-	$query = "SELECT r.recipient_id
+	$query = "SELECT DISTINCT r.recipient_id
 	,rs.nr_percentual_split
 	,rs.liable
 	,rs.charge_processing_fee

@@ -960,7 +960,44 @@ $(function() {
 });
 </script>
 <h2>Extrato</h2>
+<?php
 
+                $query = "SELECT
+                   ps.id_permissaosplit
+                   ,ps.id_usuario
+                   ,ISNULL(ps.id_produtor,0)
+                   ,ISNULL(ps.id_recebedor,0)
+                   ,ps.dt_criado
+                   ,ps.dt_alterado
+				   ,ISNULL(p.ds_razao_social, 'Todos') RazaoSocialProdutor
+				   ,p.cd_cpf_cnpj DocumentoProdutor
+				   ,ISNULL(r.ds_razao_social, 'Todos') RazaoSocialRecebedor
+				   ,r.cd_cpf_cnpj DocumentoRecebedor
+				   ,u.ds_nome NomeUsuario
+				   ,ps.bit_saque
+				   ,ps.bit_antecipacao
+                  FROM mw_permissao_split ps
+				  INNER JOIN mw_usuario u ON ps.id_usuario=u.id_usuario
+				  LEFT JOIN mw_produtor p ON ps.id_produtor=p.id_produtor
+                  LEFT JOIN mw_recebedor r ON ps.id_recebedor=r.id_recebedor
+                  WHERE ps.id_usuario=?";
+
+        $params = array($_SESSION['admin']);
+        
+        $bit_saque = false;
+        $bit_antecipacao = false;
+		
+		$result = executeSQL($mainConnection, $query, $params);
+		$json = array();
+
+        while ($rs = fetchResult($result)) {            
+            $bit_saque = $rs["bit_saque"] == null || $rs["bit_saque"] == 0 ? false : true;
+            $bit_antecipacao = $rs["bit_antecipacao"] == null || $rs["bit_antecipacao"] == 0 ? false : true;
+        }
+?>
+
+
+<?php if ($bit_antecipacao) { ?>
 <div id="dialog-form" title="Nova Antecipação">
 	<p class="validateTips"></p>
 	<form id="antecipacao" name="antecipacao" action="?p=extrato" method="POST">
@@ -996,8 +1033,10 @@ $(function() {
                 </div>
         </fieldset>
 	</form>
-</div>
+</div> 
+<?php } ?>
 
+<?php if ($bit_saque) { ?>
 <div id="dialog-form-saque" title="Saque">
 	<p class="validateTips"></p>
 	<form id="saque" name="saque" action="?p=extrato" method="POST">
@@ -1015,6 +1054,7 @@ $(function() {
         </fieldset>
 	</form>
 </div>
+<?php } ?>
 
 <form id="dados" name="dados" method="post">
     <div class="fields">
@@ -1085,8 +1125,12 @@ $(function() {
         </div> 
 
         <div class="produtor">
+            <?php if ($bit_saque) { ?>
             <input type="button" id="btn-saque" class="button" value="Realizar Saque">
+            <?php } ?> 
+            <?php if ($bit_antecipacao) { ?>
             <input type="button" id="btn-antecipacao" class="button" value="Criar Antecipação">
+            <?php } ?>
         </div>
     </div>
 </form>

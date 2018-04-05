@@ -291,6 +291,8 @@ $(function() {
 
     $("#produtor").change(function() {
         $("#recebedor").html('<option value="-1">Aguarde...</option>');
+        $("#evento").html('<option value="-1">Aguarde...</option>');
+        
         $.ajax({
             url: pagina + '?action=load_recebedor',
             type: 'post',
@@ -305,6 +307,28 @@ $(function() {
             },
             error: function(){
                 $("#recebedor").html('<option value="-1">Selecione...</option>');
+                $.dialog({
+                    title: 'Erro...',
+                    text: 'Erro na chamada dos dados !!!'
+                });
+                return false;
+            }
+        });
+        $.ajax({
+            url: pagina + '?action=load_evento&produtor=' + $("#produtor").val(),
+            type: 'post',
+            data: {},
+            success: function(data) {
+                valor_areceber = 0;
+                data = $.parseJSON(data);
+                $("#evento").html('<option value="-1">Todos</option>');
+                $("#evento").append('<option value="0">Bilheteria</option>');
+                $.each(data, function(key, value) {
+                    $("#evento").append('<option value='+ value.id_evento + '>' + value.ds_evento + '</option>');
+                });
+            },
+            error: function(){
+                $("#evento").html('<option value="-1">Erro...</option>');
                 $.dialog({
                     title: 'Erro...',
                     text: 'Erro na chamada dos dados !!!'
@@ -1023,6 +1047,11 @@ $(function() {
         <label>Recebedor:</label>
         <select id="recebedor" name="recebedor">
             <option value="-1">Selecione</option>
+        </select>
+
+        <label>Evento:</label>
+        <select id="evento" name="evento">
+            <option value="-1">Escolha um organizador</option>
         </select>
 
         <label>Status:</label>

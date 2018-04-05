@@ -418,7 +418,7 @@ function getAmountPagarMe($value) {
 	return $ret;
 }
 
-function consultarExtratoRecebedorPagarme($recipient_id, $status, $start_date, $end_date, $count) {
+function consultarExtratoRecebedorPagarme($recipient_id, $status, $start_date, $end_date, $count, $evento) {
 	$start_date_modified = "";
 	$end_date_modified = "";
 
@@ -465,17 +465,33 @@ function consultarExtratoRecebedorPagarme($recipient_id, $status, $start_date, $
 		}
 		
 		$ds_evento = $ds_evento == null || $ds_evento == "" ? "Bilheteria" : $ds_evento;
+		$id_evento = $ds_evento == "Bilheteria" ? "0" : (string)$id_evento;
+		$letMePass = false;
 
-		$json[] = array("amount"=> $value["amount"]
-			,"fee" => $value["fee"]
-			,"transaction_id" => $value["movement_object"]["transaction_id"]
-			,"payment_date" => $value["movement_object"]["payment_date"]
-			,"type" => $value["movement_object"]["type"]
-			,"payment_method" => $value["movement_object"]["payment_method"]
-			,"date_created" => $value["date_created"]
-			,"id_evento" => $id_evento
-			,"ds_evento" => $ds_evento
-		);		
+		// error_log("evento: " . $evento);
+		// error_log("id_evento: " . $id_evento);
+		// error_log("ds_evento: " . $ds_evento);
+		
+		if ($evento == "-1") {
+			$letMePass = true;
+		}
+		else {
+			if ($evento == ((string)$id_evento)) {
+				$letMePass = true;
+			}
+		}
+		if ($letMePass) {
+			$json[] = array("amount"=> $value["amount"]
+				,"fee" => $value["fee"]
+				,"transaction_id" => $value["movement_object"]["transaction_id"]
+				,"payment_date" => $value["movement_object"]["payment_date"]
+				,"type" => $value["movement_object"]["type"]
+				,"payment_method" => $value["movement_object"]["payment_method"]
+				,"date_created" => $value["date_created"]
+				,"id_evento" => $id_evento
+				,"ds_evento" => $ds_evento
+			);		
+		}
 	}
 	//error_log("json.. ".print_r($json,true));
 	// error_log("result is....");

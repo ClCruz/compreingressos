@@ -85,12 +85,16 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
         }
 
 	} else if ($_GET['action'] == 'load'){
+		// error_log("aqui.... " . $_POST["evento"]);
 		$aux = consultarExtratoRecebedorPagarme($_POST["recebedor"]
 		, $_POST["status"]
 		, $_POST["start_date"]
 		, $_POST["end_date"]
-		, $_POST["count"]);
-		$retorno = json_encode($aux);
+		, $_POST["count"]
+		, $_POST["evento"]);
+
+		$retorno = json_encode($aux);;
+		//$retorno = json_encode(usort($aux, array($this, "cmp")));
 		//error_log("aqui..." . $retorno);
 		//consultarExtratoRecebedorPagarme2($_POST["recebedor"]);
 	} else if ($_GET['action'] == 'load_saldo'){
@@ -128,6 +132,35 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 							"recipient_id" => $rs["recipient_id"]);
 		}
 		$retorno = json_encode($json);
+	}  else if ($_GET["action"] == 'load_evento') {
+		$query = "SELECT id_base FROM mw_base b WHERE in_ativo = 1";
+    	$stmt = executeSQL($mainConnection, $query, array());
+		
+		$pecas = array();
+    	while ($rs = fetchResult($stmt)) {
+    		$id_base = $rs["id_base"];
+
+    		$conn = getConnection($id_base);
+
+    		$query = "SELECT CodPeca FROM tabPeca tp WHERE tp.id_produtor = ?";
+    		$stmt2 = executeSQL($conn, $query, array($_GET["produtor"]));
+    		
+    		while ($rs2 = fetchResult($stmt2)) {
+    			$pecas[] = array("CodPeca" => $rs2["CodPeca"], "id_base" => $id_base);
+    		}
+    	}
+
+    	$eventos = array();
+    	for($i = 0; $i <= count($pecas); $i++) {
+    		$query = "SELECT id_evento, ds_evento FROM mw_evento e WHERE e.CodPeca = ? AND e.id_base = ? AND in_ativo = 1 ORDER BY ds_evento";
+    		$param = array($pecas[$i]["CodPeca"], $pecas[$i]["id_base"]);
+    		$stmt = executeSQL($mainConnection, $query, $param);
+    		while ($rs = fetchResult($stmt)) {
+    			$eventos[] = array("id_evento" => $rs["id_evento"], "ds_evento" => utf8_encode($rs["ds_evento"]));
+    		}
+    	}
+
+    	$retorno = json_encode($eventos);
 	} else if ($_GET['action'] == 'sacar') {
 		$ret = efetuarSaquePagarme($_GET["recebedor"], $_POST["valor-saque"]);
 		$retorno = json_encode($ret);

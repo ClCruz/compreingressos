@@ -463,6 +463,8 @@ function consultarExtratoRecebedorPagarme($recipient_id, $status, $start_date, $
 			$id_evento = $result2["id_evento"];
 			$ds_evento = $result2["ds_evento"] == null ? "Bilheteria" : $result2["ds_evento"];
 		}
+		
+		$ds_evento = $ds_evento == null || $ds_evento == "" ? "Bilheteria" : $ds_evento;
 
 		$json[] = array("amount"=> $value["amount"]
 			,"fee" => $value["fee"]

@@ -531,7 +531,7 @@ $(function() {
                             
                             //console.log(value);
                             var toAppend = "<tr style='cursor: pointer;' id='" + value.transaction_id + "' class='toClick trline' data='" + value.transaction_id + "'><td>" + new Date(value.date_created).toJSON().slice(0, 10).split("-").reverse().join("/") +"</td>";
-                            toAppend += "<td>"+ value.ds_evento +"</td>";
+                            toAppend += "<td>"+ (value.ds_evento == null ? "Bilheteria" : value.ds_evento ) +"</td>";
                             toAppend += "<td>"+ new Date(value.payment_date).toJSON().slice(0, 10).split("-").reverse().join("/") +"</td>";
                             toAppend += "<td>"+ movement_objectTypeToString(value.type) +"</td>";
                             toAppend += "<td>"+ movement_objectPayment_MethodToString(value.payment_method) +"</td>";
@@ -1085,11 +1085,11 @@ $(function() {
 	<thead>
 		<tr class="ui-widget-header">
             <th width="100">Data da venda</th>
-            <th width="100">Evento</th>
+            <th width="300">Evento</th>
             <th width="100">Data de pagamento</th>
             <th width="100">Entrada/Saída</th>
             <th width="100">Tipo da Transação</th>
-            <th width="100">Composição do valor</th>
+            <th width="200">Composição do valor</th>
 			<th class="text-right">Valor</th>
 		</tr>
 	</thead>

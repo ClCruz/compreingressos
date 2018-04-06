@@ -728,7 +728,7 @@ $(function() {
                 console.log(data);
                 var minimum = 1;
                 var available = data.available;
-                available = 145000;
+                // available = 145000;
                 if ((available - data.taxa.ted) <=0) {
                     $.dialog({text: 'Valor disponível inferior com a cobrança da taxa.'});
                     dialogSaque.dialog( "close" );

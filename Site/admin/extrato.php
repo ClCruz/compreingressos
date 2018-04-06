@@ -43,6 +43,15 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
     .fields select {width: 70%; margin-bottom: 10px;}
     .actions{width: 50%; float: right;}
     .trline:hover { background-color: #ffa;}
+    #iconhelp{
+        cursor: pointer;
+        float: right;
+        margin-right: 18px;
+        margin-top: 0px;
+        background-color: white;
+        color:red !important;
+        background-image:url(/stylesheets/customred/images/ui-icons_cc0000_256x240.png) !important;
+    }   
 
 </style>
 <link rel="stylesheet" href="../stylesheets/introjs.css" >
@@ -54,6 +63,106 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 <script src="../javascripts/jquery.maskedinput.min.js" type="text/javascript"></script>
 <script type='text/javascript' src='../javascripts/jquery.numeric.js'></script>
 <script>
+    function introSaque(){
+        var intro = introJs();
+          intro.setOptions({
+            nextLabel: "Próximo",
+            prevLabel: "Voltar",
+            skipLabel: "Pular",
+            doneLabel: "Finalizar",
+            steps: [
+              {
+                element: '#dialog-form-saque',
+                intro: "<h3>Como realizar um saque?</h3> <br /><br /> "
+              },
+              {
+                  element: '#fsValorSaque',
+                  intro: "<h4>É preciso selecionar o valor que você deseja sacar.</h4>"
+              },
+              {
+                  element: '#valoresSaque',
+                  intro: "<h4>Validar a taxa e quanto ficará o valor final.</h4>"
+              },
+              {
+                  element: ".btnEfetuarSaque",
+                  intro: "<h4>E aperte o botão efetuar saque.</h4>"
+              },
+              {
+                element: '#dialog-form-saque',
+                intro: "<h2><b>Quanto tempo demora para o dinheiro ficar disponível para saque?</b></h2><br /><p>Seus valores estarão disponíveis para saque na data de recebimento normal das parcelas.</p><p>Isso significa 31 dias após a transação de cartão de crédito ter sido criada (29 dias corridos + 2  dias úteis) no caso de transações com uma parcela e 2 dias úteis após o pagamento do boleto bancário. Caso a transação tenha de 2 a 12 parcelas, o recebimento normal será da seguinte forma: primeira parcela em 31 dias, segunda em 61, terceira em 91, e assim por diante.</p>"
+              },
+              {
+                element: '#dialog-form-saque',
+                intro: "<p><small><b>Atenção:</b></small></p><p><small>Os saques realizados em dias úteis até às 15h caem na sua conta bancária no mesmo dia. Já aqueles realizados após esse horário ou mesmo em finais de semana e feriados caem no próximo dia útil.</small></p><p><small>Em relação à taxa para saque, é importante lembrar que se sua conta cadastrada for Bradesco, a tarifa é isenta. Caso não seja Bradesco, pedimos para verificar a taxa que foi acordada. </small></p>"
+              }
+            ]
+          });
+
+          intro.start();
+      }
+      function introAntecipacao(){
+        $("#trueForm").hide();
+        $("#fakeForm").show();
+        $("button > span:contains('Efetuar Antecipação')").parent().show();
+        
+        var intro = introJs();
+          intro.setOptions({
+            nextLabel: "Próximo",
+            prevLabel: "Voltar",
+            skipLabel: "Pular",
+            doneLabel: "Finalizar",
+            steps: [
+              {
+                element: '#dialog-form',
+                intro: "<h3>Como realizar um antecipação manual?</h3> <br /><br /> "
+              },
+              {
+                  element: '#fsComoDesejaAnteciparFake',
+                  intro: "<h3>Parcelas do início ou do final</h3><br /><p>Ao antecipar do começo, o valor cobrado em taxas será menor, mas você pode ficar com um intervalo próximo do presente sem valores a receber.</p><br /><p>Se você antecipar do final, o valor cobrado em taxas será maior, mas você tem mais tempo fazer mais vendas e deixar o seu 'caixa' mais equilibrado.</p>"
+              },
+              {
+                  element: '#fsQuandoDesejaReceberFake',
+                  intro: "<h3>Selecione a data que deseja receber.</h3>"
+              },
+              {
+                  element: "#fsValorFake",
+                  intro: "<h3>Selecionar na régua o valor que deseja antecipar</h3><br /><p>Note que não é possível escolher um valor exato para antecipar. Isso acontece pois, nós não quebramos uma parcela para antecipar. Assim, se você tem uma venda de R$300,00 e outra de R$600,00, não conseguirá antecipar R$500,00. Poderá antecipar R$300,00 ou R$600,00.</p>"
+              },
+              {
+                element: '#fsResumoFake',
+                intro: "<h3>Clique no botão avançar para ele mostrar os valores reais e as taxas.</h3>"
+              },
+              {
+                element: '#custoAntecipacaoFullFake',
+                intro: "<h3>Aqui aparece quanto vai custar essa antecipação"
+              },
+              {
+                element: '#valorAntecipacaoFullFake',
+                intro: "<h3>Aqui aparece o quanto será o valor real  da antecipação</h3>"
+              },
+              {
+                  element: ".btnEfetuarAntecipacao",
+                  intro: "<h4>E aperte o botão efetuar a antecipação.</h4>"
+              },
+              {
+                element: '#dialog-form',
+                intro: "<h2><b>Essa demanda passará então pela análise da nossa equipe responsável e, caso aprovada, cairá na data escolhida por você na conta configurada para você.</p>"
+              },
+            ]
+          });
+          intro.oncomplete(function() {
+            $("#trueForm").show();
+            $("#fakeForm").hide();
+            $("button > span:contains('Efetuar Antecipação')").parent().hide();
+        });
+        intro.onexit(function() {
+            $("#trueForm").show();
+            $("#fakeForm").hide();
+            $("button > span:contains('Efetuar Antecipação')").parent().hide();
+        });
+        intro.start();
+      }
+
 $(function() {
 	var pagina = '<?php echo $pagina; ?>';
 	var dialog,
@@ -597,6 +706,15 @@ $(function() {
         destroySlider();
         dialogSaque.dialog( "open" );
         loadSaldoToSaque();
+
+      if($("#dialog-form-saque").parents(".ui-dialog").children(".ui-dialog-titlebar").children("#iconhelp").length==0) {
+        $("#dialog-form-saque").children(".ui-dialog-titlebar").append("<span id='iconhelp' class='ui-icon ui-icon-help'></span>");
+        $("#dialog-form-saque").parents(".ui-dialog").children(".ui-dialog-titlebar").append("<span id='iconhelp' title='Ajuda' class='ui-icon ui-icon-help'></span>");
+        $("#dialog-form-saque").parents(".ui-dialog").children(".ui-dialog-titlebar").children("#iconhelp").click(function(){
+            introSaque();
+        });
+        $("span:contains('Efetuar Saque')").addClass("btnEfetuarSaque");
+      }
     });    
 
     function loadSaldoToSaque() {
@@ -610,7 +728,7 @@ $(function() {
                 console.log(data);
                 var minimum = 1;
                 var available = data.available;
-                //available = 1000;
+                available = 145000;
                 if ((available - data.taxa.ted) <=0) {
                     $.dialog({text: 'Valor disponível inferior com a cobrança da taxa.'});
                     dialogSaque.dialog( "close" );
@@ -642,6 +760,28 @@ $(function() {
         event.preventDefault();
         destroySlider();
         dialog.dialog( "open" );
+
+      if($("#dialog-form").parents(".ui-dialog").children(".ui-dialog-titlebar").children("#iconhelp").length==0) {
+        $("#dialog-form").children(".ui-dialog-titlebar").append("<span id='iconhelp' class='ui-icon ui-icon-help'></span>");
+        
+        $("#dialog-form").parents(".ui-dialog").children(".ui-dialog-titlebar").append("<span id='iconhelp' title='Ajuda' class='ui-icon ui-icon-help'></span>");
+        $("#dialog-form").parents(".ui-dialog").children(".ui-dialog-titlebar").children("#iconhelp").click(function(){
+            introAntecipacao();
+        });
+        $("span:contains('Efetuar Antecipação')").addClass("btnEfetuarAntecipacao");
+        $( "#slider-amountFake" ).slider({
+            range: "max",
+            min: 0,
+            max: 1000,
+            step: 0.01,
+            value: 0.01,
+            slide: function( event, ui ) {                
+            }
+        });
+        $("#slider-amountFake").slider('value',300);
+        $("#valorShowFake").val("R$ 300,00");
+      }
+
     });
 
     $("#btnResumoAntecipacao").click(function(event){
@@ -1001,40 +1141,77 @@ $(function() {
 
 <?php if ($bit_antecipacao) { ?>
 <div id="dialog-form" title="Nova Antecipação">
-	<p class="validateTips"></p>
-	<form id="antecipacao" name="antecipacao" action="?p=extrato" method="POST">
-        <fieldset>
-            <legend>Como deseja antecipar? </legend>
-            <label for="radio-1" style="display:inline"><input type="radio" name="periodo" checked id="periodo-1" class="radio" style="display:inline" value="start"> Do início do saldo</label>
-            <label for="radio-2" style="display:inline"><input type="radio" name="periodo" id="periodo-2" class="radio" style="display:inline" value="end">Do final do saldo</label>
-        </fieldset>
-        <br />
-        <fieldset>
-            <legend>Quando deseja receber? </legend>
-            <input type="text" name="data" id="data" placeholder="ESCOLHA UMA DATA" class="text ui-widget-content ui-corner-all" />
-        </fieldset>
-        <br />
-        <fieldset id="fsValor" style="display:none">
-            <legend>Escolha o valor </legend>
-            <div id="slider-amount"></div>
-            <input type="text" name="valor" style="display:none" readonly id="valor" class="text ui-widget-content ui-corner-all" />
-            <input type="text" name="valorShow" readonly id="valorShow" class="text ui-widget-content ui-corner-all" />
-        </fieldset>
-
-        <fieldset id="fsResumo" style="display:none">
-            <legend>Resumo da antecipação</legend>
-            <input type="button" class="button" id="btnResumoAntecipacao" value="Avançar" />&nbsp;
-                <div class="myInput" id="custoAntecipacaoFull" style="display:none">
-                    <label for="custoAntecipacao">Custo Antecipação</label>
-                    <input type="text" id="custoAntecipacao" readonly placeholder="R$ 0,00">
-                </div>
+    <div id="trueForm">
+        <p class="validateTips"></p>
+        <form id="antecipacao" name="antecipacao" action="?p=extrato" method="POST">
+            <fieldset>
+                <legend>Como deseja antecipar? </legend>
+                <label for="radio-1" style="display:inline"><input type="radio" name="periodo" checked id="periodo-1" class="radio" style="display:inline" value="start"> Do início do saldo</label>
+                <label for="radio-2" style="display:inline"><input type="radio" name="periodo" id="periodo-2" class="radio" style="display:inline" value="end">Do final do saldo</label>
+            </fieldset>
             <br />
-                <div class="myInput" id="valorAntecipacaoFull" style="display:none">
-                    <label for="valorAntecipacao">Valor Antecipação</label>
-                    <input type="text" id="valorAntecipacao" readonly placeholder="R$ 0,00">
-                </div>
-        </fieldset>
-	</form>
+            <fieldset>
+                <legend>Quando deseja receber? </legend>
+                <input type="text" name="data" id="data" placeholder="ESCOLHA UMA DATA" class="text ui-widget-content ui-corner-all" />
+            </fieldset>
+            <br />
+            <fieldset id="fsValor" style="display:none">
+                <legend>Escolha o valor </legend>
+                <div id="slider-amount"></div>
+                <input type="text" name="valor" style="display:none" readonly id="valor" class="text ui-widget-content ui-corner-all" />
+                <input type="text" name="valorShow" readonly id="valorShow" class="text ui-widget-content ui-corner-all" />
+            </fieldset>
+
+            <fieldset id="fsResumo" style="display:none">
+                <legend>Resumo da antecipação</legend>
+                <input type="button" class="button" id="btnResumoAntecipacao" value="Avançar" />&nbsp;
+                    <div class="myInput" id="custoAntecipacaoFull" style="display:none">
+                        <label for="custoAntecipacao">Custo Antecipação</label>
+                        <input type="text" id="custoAntecipacao" readonly placeholder="R$ 0,00">
+                    </div>
+                <br />
+                    <div class="myInput" id="valorAntecipacaoFull" style="display:none">
+                        <label for="valorAntecipacao">Valor Antecipação</label>
+                        <input type="text" id="valorAntecipacao" readonly placeholder="R$ 0,00">
+                    </div>
+            </fieldset>
+        </form>
+    </div>
+    <div id="fakeForm" style="display:none">
+        <p class="validateTips"></p>
+        <form id="antecipacaoFake" name="antecipacaoFake" action="" method="POST">
+            <fieldset id="fsComoDesejaAnteciparFake">
+                <legend>Como deseja antecipar? </legend>
+                <label for="radio-1" style="display:inline"><input type="radio" name="periodoFake" checked id="periodo-1Fake" class="radio" style="display:inline" value="start"> Do início do saldo</label>
+                <label for="radio-2" style="display:inline"><input type="radio" name="periodoFake" id="periodo-2Fake" class="radio" style="display:inline" value="end">Do final do saldo</label>
+            </fieldset>
+            <br />
+            <fieldset id="fsQuandoDesejaReceberFake">
+                <legend>Quando deseja receber? </legend>
+                <input type="text" name="dataFake" id="dataFake" placeholder="25/05/2018" class="text ui-widget-content ui-corner-all" />
+            </fieldset>
+            <br />
+            <fieldset id="fsValorFake">
+                <legend>Escolha o valor </legend>
+                <div id="slider-amountFake"></div>
+                <input type="text" name="valorShowFake" readonly id="valorShowFake" class="text ui-widget-content ui-corner-all" />
+            </fieldset>
+
+            <fieldset id="fsResumoFake">
+                <legend>Resumo da antecipação</legend>
+                <input type="button" class="button" id="btnResumoAntecipacaoFake" value="Avançar" />&nbsp;
+                    <div class="myInput" id="custoAntecipacaoFullFake">
+                        <label for="custoAntecipacaoFake">Custo Antecipação</label>
+                        <input type="text" id="custoAntecipacaoFake" readonly placeholder="R$ 2,00">
+                    </div>
+                <br />
+                    <div class="myInput" id="valorAntecipacaoFullFake">
+                        <label for="valorAntecipacaoFake">Valor Antecipação</label>
+                        <input type="text" id="valorAntecipacaoFake" readonly placeholder="R$ 300,00">
+                    </div>
+            </fieldset>
+        </form>
+    </div>
 </div> 
 <?php } ?>
 
@@ -1051,7 +1228,7 @@ $(function() {
         <fieldset>
             <div class="myInput" id="valoresSaque">
                 <label for="valorSaque">Valor a ser sacado menos a taxa para saque: </label>
-                <input type="text" id="valorSaque" readonly placeholder="R$ 0,00">
+                <input type="text" id="valorSaque" class="text ui-widget-content ui-corner-all" readonly placeholder="R$ 0,00">
             </div>
         </fieldset>
 	</form>

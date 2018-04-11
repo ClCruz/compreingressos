@@ -154,7 +154,7 @@ $rows = numRows($mainConnection, "SELECT 1 FROM MW_RESERVA WHERE ID_SESSION = ?"
 				</script>
 				<div class="bottom">
 					<div class="search">
-						<form method="get" action="http://compreingressos.com/espetaculos">
+						<form method="get" action="https://compreingressos.com/espetaculos">
 							<span class="flaticon-magnifier" onclick="buscaEspetaculos();"></span>
 							<input type="submit" id="busca-espetaculos" class="hidden" />
 							<span><input name="busca" type="text" placeholder="Espetáculo, diretor, teatro, elenco"></span>

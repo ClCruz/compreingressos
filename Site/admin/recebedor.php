@@ -88,7 +88,7 @@ $(function() {
     $("#dv_conta_bancaria").keypress(verificaNumero);
     $("#split").keypress(verificaNumero);
     $("#cpf_cnpj").keypress(verificaNumero);
-    $("#transfer_day").keypress(verificaNumero);    
+    $("#transfer_day").keypress(verificaNumero);   
 
     $('#app table').delegate('a', 'click', function(event) {
         event.preventDefault();
@@ -243,6 +243,11 @@ $(function() {
                 updateTips ("Dia da transferência precisa ser entre 1 e 31!");
                 transfer_day.addClass('ui-state-error');
             }
+        }
+        else {
+            valid = false;
+                updateTips ("Dia da transferência precisa ser entre 1 e 31!");
+                transfer_day.addClass('ui-state-error');
         }
 
         valid = valid && checkRegexp( email, emailRegex, "E-mail inválido!" );        

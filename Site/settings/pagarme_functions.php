@@ -433,53 +433,51 @@ function consultarExtratoRecebedorPagarme($recipient_id, $status, $start_date, $
 		$end_dateSplit = explode("/", $end_date);
 		$end_date_modified = $end_dateSplit[2] . "-" . $end_dateSplit[1] . "-" . $end_dateSplit[0];
 	}
-
 	$balance_operations = PagarMe_Recipient::getOperationHistory($recipient_id, $status, $count, getDatePagarMe($start_date_modified), getDatePagarMe($end_date_modified));
+
+	$query = "SELECT DISTINCT e.id_evento, e.ds_evento, pv.cd_numero_autorizacao as codeTran
+	FROM mw_pedido_venda pv 
+	INNER JOIN mw_item_pedido_venda ipv ON pv.id_pedido_venda=ipv.id_pedido_venda
+	INNER JOIN mw_apresentacao ipva ON ipv.id_apresentacao=ipva.id_apresentacao
+	INNER JOIN mw_evento e ON ipva.id_evento=e.id_evento
+	INNER JOIN mw_regra_split rs ON rs.id_evento=e.id_evento
+	INNER JOIN mw_recebedor re ON rs.id_recebedor=re.id_recebedor
+	WHERE pv.id_pedido_ipagare='Pagar.me' AND re.recipient_id=? AND dt_pedido_venda BETWEEN ? AND ?
+	UNION ALL
+	SELECT DISTINCT e.id_evento, e.ds_evento, pvg.TransacaoGateway as codeTran
+	FROM mw_pedido_venda_gateway pvg
+	INNER JOIN mw_evento e ON pvg.CodPeca=e.CodPeca AND pvg.id_base=e.id_base
+	INNER JOIN mw_regra_split rs ON rs.id_evento=e.id_evento
+	INNER JOIN mw_recebedor re ON rs.id_recebedor=re.id_recebedor
+	WHERE re.recipient_id=? AND pvg.Created BETWEEN ? AND ?";
+
+	$param = array($recipient_id, $start_date_modified, $end_date_modified,$recipient_id, $start_date_modified, $end_date_modified);
+	$connection = mainConnection();
+	$resulttran = executeSQL($connection, $query, $param);
+	$aux = array();
+
+	while ($rs = fetchResult($resulttran)) {            
+		$aux[] = array(
+			"id_evento" => $rs["id_evento"],
+			"ds_evento" => utf8_encode($rs["ds_evento"]),
+			"transaction" => $rs["codeTran"]
+		);
+	}
+
 	$json = array();
+
 	foreach ($balance_operations as $value) {
-		$query = "SELECT DISTINCT e.id_evento, e.ds_evento
-		FROM mw_pedido_venda pv 
-		INNER JOIN mw_item_pedido_venda ipv ON pv.id_pedido_venda=ipv.id_pedido_venda
-		INNER JOIN mw_apresentacao ipva ON ipv.id_apresentacao=ipva.id_apresentacao
-		INNER JOIN mw_evento e ON ipva.id_evento=e.id_evento
-		WHERE pv.id_pedido_ipagare='Pagar.me' AND cd_numero_autorizacao=?";
-	
-		$param = array($value["movement_object"]["transaction_id"]);
-		$result = executeSQL(mainConnection(), $query, $param,true);
+		$id_evento = -1;
+		$ds_evento = "Bilheteria";
 
-		$split = array();
-		$id_evento = $result["id_evento"];
-		$ds_evento = $result["ds_evento"];
-
-		if ($result["id_evento"] == 0 || $result["ds_evento"] == null) {
-			$query = "SELECT DISTINCT e.id_evento, e.ds_evento
-			FROM mw_pedido_venda_gateway pvg
-			INNER JOIN mw_evento e ON e.CodPeca=pvg.CodPeca AND e.id_base=pvg.id_base
-			WHERE TransacaoGateway=?";
-		
-			$param = array($value["movement_object"]["transaction_id"]);
-			$result2 = executeSQL(mainConnection(), $query, $param,true);
-
-			$id_evento = $result2["id_evento"];
-			$ds_evento = $result2["ds_evento"] == null ? "Bilheteria" : $result2["ds_evento"];
-		}
-		
-		$ds_evento = $ds_evento == null || $ds_evento == "" ? "Bilheteria" : $ds_evento;
-		$id_evento = $ds_evento == "Bilheteria" ? "0" : (string)$id_evento;
-		$letMePass = false;
-
-		// error_log("evento: " . $evento);
-		// error_log("id_evento: " . $id_evento);
-		// error_log("ds_evento: " . $ds_evento);
-		
-		if ($evento == "-1") {
-			$letMePass = true;
-		}
-		else {
-			if ($evento == ((string)$id_evento)) {
-				$letMePass = true;
+		foreach ($aux as $value2) {
+			if ($value2["transaction"] == $value["movement_object"]["transaction_id"]) {
+				$id_evento = $value2["id_evento"];
+				$ds_evento = $value2["ds_evento"];
 			}
 		}
+
+		$letMePass = true;
 		if ($letMePass) {
 			$json[] = array("amount"=> $value["amount"]
 				,"fee" => $value["fee"]
@@ -493,10 +491,7 @@ function consultarExtratoRecebedorPagarme($recipient_id, $status, $start_date, $
 			);		
 		}
 	}
-	//error_log("json.. ".print_r($json,true));
-	// error_log("result is....");
-	// error_log($balance_operations->__toJSON(true));
-	//return $balance_operations->__toJSON(true);
+
 	return $json;
 }
 

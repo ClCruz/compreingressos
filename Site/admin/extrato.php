@@ -505,7 +505,7 @@ $(function() {
         
         switch ($("#status").val()) {
             case "transfers":
-                loading("body");
+                loading("body", null, false);
                 $.ajax({
                     url: pagina + '?action=listtransfer&recebedor='+ recebedor.val(),
                     type: 'post',
@@ -573,7 +573,7 @@ $(function() {
                 });
             break;
             case "antecipations":
-                loading("body");
+                loading("body", null, false);
                 $.ajax({
                     url: pagina + '?action=listantecipations&recebedor='+ recebedor.val(),
                     type: 'post',
@@ -647,7 +647,7 @@ $(function() {
                     return;
                 }
 
-                loading("body");
+                loading("body", null, false);
                 $.ajax({
                     url: pagina + '?action=load',
                     type: 'post',
@@ -866,12 +866,13 @@ $(function() {
         });
     }
 
-    function loading(id, message) {
+    function loading(id, message, stoppable) {
         message = message == undefined || message == null ? "Carregando" : message;
+        stoppable = stoppable == undefined || stoppable == null ? true : stoppable;
         $(id).loading(
             { 
                 theme: 'dark',
-                stoppable: true, 
+                stoppable: stoppable, 
                 message: message,
                 onStart: function(loading) {
                     loading.overlay.slideDown(400);

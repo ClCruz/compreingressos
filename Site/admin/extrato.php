@@ -517,7 +517,7 @@ $(function() {
                         data = $.parseJSON(data);
                         $("#table-transfer tbody").html("");
                         if (data.length == 0)
-                            $("#table-transfer tbody").html("<tr><td colspan='6'>Nenhum dado encontrado.</td></tr>");
+                            $("#table-transfer tbody").html("<tr><td colspan='7'>Nenhum dado encontrado.</td></tr>");
 
                         var total = 0;
                         $.each(data, function(key, value) {
@@ -540,8 +540,9 @@ $(function() {
                                 break;
                             }
 
-                            var toAppend = "<tr class='trline'><td>" + moment(value.date_created).format("DD/MM/YYYY") +"</td>";
+                            var toAppend = "<tr class='trline'><td>" + moment(value.date_created).format("DD/MM/YYYY HH:mm") +"</td>";
                             toAppend += "<td>"+ statusAux +"</td>";
+                            toAppend += "<td>"+ value.type +"</td>";
                             toAppend += "<td>R$ "+ (value.amount/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
                             toAppend += "<td>R$ "+ (value.fee/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
                             toAppend += "<td>"+ (value.funding_estimated_date == null ? "-" : moment(value.funding_estimated_date).format("DD/MM/YYYY")) +"</td>";
@@ -607,7 +608,7 @@ $(function() {
                                 break;
                             }
 
-                            var toAppend = "<tr class='trline'><td>" + moment(value.date_created).format("DD/MM/YYYY") +"</td>";
+                            var toAppend = "<tr class='trline'><td>" + moment(value.date_created).format("DD/MM/YYYY HH:mm") +"</td>";
                             toAppend += "<td>"+ statusAux +"</td>";
                             toAppend += "<td>R$ "+ (value.amount/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
                             toAppend += "<td>R$ "+ ((value.fee+value.anticipation_fee)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
@@ -665,11 +666,11 @@ $(function() {
                             total += value.amount-value.fee;
                             
                             //console.log(value);
-                            var toAppend = "<tr style='cursor: pointer;' id='" + value.transaction_id + "' class='toClick trline' data='" + value.transaction_id + "'><td>" + new Date(value.date_created).toJSON().slice(0, 10).split("-").reverse().join("/") +"</td>";
-                            toAppend += "<td>"+ (value.ds_evento == null ? "Bilheteria" : value.ds_evento ) +"</td>";
-                            toAppend += "<td>"+ new Date(value.payment_date).toJSON().slice(0, 10).split("-").reverse().join("/") +"</td>";
+                            var toAppend = "<tr style='cursor: pointer;' id='" + value.transaction_id + "' class='toClick trline' data='" + value.transaction_id + "'><td>" + moment(value.date_created).format("DD/MM/YYYY HH:mm") +"</td>";
+                            toAppend += "<td>"+ (movement_objectTypeToString(value.type) == "ted" ? "Transferência" : (value.ds_evento == null ? "Bilheteria" : value.ds_evento )) +"</td>";
+                            toAppend += "<td>"+ (movement_objectTypeToString(value.type) == "ted" ? "-" : moment(value.payment_date).format("DD/MM/YYYY")) +"</td>";
                             toAppend += "<td>"+ movement_objectTypeToString(value.type) +"</td>";
-                            toAppend += "<td>"+ movement_objectPayment_MethodToString(value.payment_method) +"</td>";
+                            toAppend += "<td>"+ (movement_objectTypeToString(value.type) == "ted" ? "-" : movement_objectPayment_MethodToString(value.payment_method)) +"</td>";
                             toAppend += "<td>R$ "+ (value.amount/100).toFixed(2).toString().replace(',','').replace('.',',') + " - R$ " + (value.fee/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
                             toAppend += "<td class='text-right'>R$ "+ ((value.amount-value.fee)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
                             toAppend += "</tr>";
@@ -1277,7 +1278,7 @@ $(function() {
         <select id="status" name="status">
             <option value="waiting_funds">Saldo a Receber</option>
             <option value="available">Saldo Disponível</option>
-            <option value="transferred">Saldo transferido</option>
+            <!--option value="transferred">Saldo transferido</option-->
             <option value="transfers">Transferências</option>
             <option value="antecipations">Antecipações</option>
         </select>
@@ -1357,6 +1358,7 @@ $(function() {
 	<thead>
 		<tr class="ui-widget-header">
             <th width="100">Data de requisição</th>
+            <th width="100">Tipo</th>
             <th width="100">Status</th>
             <th width="100">Valor</th>
             <th width="100">Taxa</th>
@@ -1366,7 +1368,7 @@ $(function() {
 	</thead>
 	<tbody>
 		<tr>
-			<td colspan="6">Nenhum registro no momento.</td>
+			<td colspan="7">Nenhum registro no momento.</td>
 		</tr>
     </tbody>
     <tfoot>

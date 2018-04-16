@@ -659,7 +659,7 @@ $(function() {
                         data = $.parseJSON(data);
                         $("#table-extrato tbody").html("");
                         if (data.length == 0)
-                            $("#table-extrato tbody").html("<tr><td colspan='7'>Nenhum dado encontrado.</td></tr>");
+                            $("#table-extrato tbody").html("<tr><td colspan='8'>Nenhum dado encontrado.</td></tr>");
 
                         var total = 0;
                         $.each(data, function(key, value) {
@@ -667,6 +667,7 @@ $(function() {
                             
                             //console.log(value);
                             var toAppend = "<tr style='cursor: pointer;' id='" + value.transaction_id + "' class='toClick trline' data='" + value.transaction_id + "'><td>" + moment(value.date_created).format("DD/MM/YYYY HH:mm") +"</td>";
+                            toAppend += "<td>"+ value.transaction_id +"</td>";
                             toAppend += "<td>"+ (movement_objectTypeToString(value.type) == "ted" ? "Transferência" : (value.ds_evento == null ? "Bilheteria" : value.ds_evento )) +"</td>";
                             toAppend += "<td>"+ (movement_objectTypeToString(value.type) == "ted" ? "-" : moment(value.payment_date).format("DD/MM/YYYY")) +"</td>";
                             toAppend += "<td>"+ movement_objectTypeToString(value.type) +"</td>";
@@ -1339,6 +1340,7 @@ $(function() {
 	<thead>
 		<tr class="ui-widget-header">
             <th width="100">Data da venda</th>
+            <th width="300">ID Transação do Gateway</th>
             <th width="300">Evento</th>
             <th width="100">Data de pagamento</th>
             <th width="100">Entrada/Saída</th>
@@ -1349,7 +1351,7 @@ $(function() {
 	</thead>
 	<tbody>
 		<tr>
-			<td colspan="7">Nenhum registro no momento.</td>
+			<td colspan="8">Nenhum registro no momento.</td>
 		</tr>
     </tbody>
     <tfoot>

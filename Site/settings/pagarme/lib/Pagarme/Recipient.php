@@ -62,6 +62,8 @@ class PagarMe_Recipient extends PagarMe_Model {
         ,"end_date" => $end_date
         );
 
+        error_log("params " . print_r($params, true));
+
         $response = $request->runWithParameter($params);
         $class = get_called_class();
         return new $class($response);

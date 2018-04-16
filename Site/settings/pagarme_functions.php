@@ -486,6 +486,8 @@ function consultarExtratoRecebedorPagarme($recipient_id, $status, $start_date, $
 				,"type" => $value["movement_object"]["type"]
 				,"payment_method" => $value["movement_object"]["payment_method"]
 				,"date_created" => $value["date_created"]
+				,"accrual_date" => $value["movement_object"]["accrual_date"]
+				,"original_payment_date" => $value["movement_object"]["original_payment_date"]
 				,"id_evento" => $id_evento
 				,"ds_evento" => $ds_evento
 			);		

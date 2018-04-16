@@ -496,10 +496,12 @@ $(function() {
 
         $("#table-first").show();
         $("#table-extrato tbody").html("");
+        $("#table-extrato-available tbody").html("");
         $("#table-antecipavel tbody").html("");
         $("#table-transfer tbody").html("");
         
         $("#table-extrato").hide();
+        $("#table-extrato-available").hide();
         $("#table-antecipavel").hide();
         $("#table-transfer").hide();
         
@@ -653,36 +655,62 @@ $(function() {
                     type: 'post',
                     data: $('#dados').serialize(),
                     success: function(data) {	
+                        var nameTable = "#table-extrato";
+                        var colspan = "8";
+
+                        if ($("#status").val() == "available") {
+                            nameTable = "#table-extrato-available";
+                            colspan = "10";
+                        }
+
                         $("body").loading("stop");
                         $("#table-first").hide();
-                        $("#table-extrato").show();
+                        $(nameTable).show();
                         data = $.parseJSON(data);
-                        $("#table-extrato tbody").html("");
+                        $(nameTable + " tbody").html("");
                         if (data.length == 0)
-                            $("#table-extrato tbody").html("<tr><td colspan='8'>Nenhum dado encontrado.</td></tr>");
+                            $(nameTable + " tbody").html("<tr><td colspan='" + colspan + "'>Nenhum dado encontrado.</td></tr>");
 
                         var total = 0;
                         $.each(data, function(key, value) {
                             total += value.amount-value.fee;
                             
                             //console.log(value);
-                            var toAppend = "<tr style='cursor: pointer;' id='" + value.transaction_id + "' class='toClick trline' data='" + value.transaction_id + "'><td>" + moment(value.date_created).format("DD/MM/YYYY HH:mm") +"</td>";
-                            toAppend += "<td>"+ value.transaction_id +"</td>";
-                            toAppend += "<td>"+ (movement_objectTypeToString(value.type) == "ted" ? "Transferência" : (value.ds_evento == null ? "Bilheteria" : value.ds_evento )) +"</td>";
-                            toAppend += "<td>"+ (movement_objectTypeToString(value.type) == "ted" ? "-" : moment(value.payment_date).format("DD/MM/YYYY")) +"</td>";
-                            toAppend += "<td>"+ movement_objectTypeToString(value.type) +"</td>";
-                            toAppend += "<td>"+ (movement_objectTypeToString(value.type) == "ted" ? "-" : movement_objectPayment_MethodToString(value.payment_method)) +"</td>";
-                            toAppend += "<td>R$ "+ (value.amount/100).toFixed(2).toString().replace(',','').replace('.',',') + " - R$ " + (value.fee/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
-                            toAppend += "<td class='text-right'>R$ "+ ((value.amount-value.fee)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                            var toAppend = "";
+
+                            if ($("#status").val() == "available") {
+                                toAppend = "<tr style='cursor: pointer;' id='" + value.transaction_id + "' class='toClick trline' data='" + value.transaction_id + "'><td>" + moment(value.date_created).format("DD/MM/YYYY") +"</td>";
+                                //toAppend += "<td>"+ moment(value.accrual_date).format("DD/MM/YYYY") +"</td>";
+                                toAppend += "<td>"+ (value.type == "ted" || value.type == "refund" ? "-" : moment(value.accrual_date).format("DD/MM/YYYY HH:mm")) +"</td>";
+                                toAppend += "<td>"+ (value.type == "ted" || value.type == "refund" ? "-" : (value.payment_method == "debit_card" ? "-" : (moment(value.original_payment_date).diff(moment(value.payment_date), 'days')+1))) +"</td>";
+                                toAppend += "<td>"+ (value.type == "ted" ? "-" : value.transaction_id) +"</td>";
+                                toAppend += "<td>"+ (value.type == "ted" ? "Transferência" : (value.ds_evento == null ? "Bilheteria" : value.ds_evento )) +"</td>";
+                                toAppend += "<td>"+ movement_objectTypeToString(value.type) +"</td>";
+                                toAppend += "<td>"+ (value.type == "ted" ? "-" : movement_objectPayment_MethodToString(value.payment_method)) +"</td>";
+                                toAppend += "<td>R$ "+ (value.amount/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                                toAppend += "<td>R$ "+ ((value.fee*-1)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                                toAppend += "<td class='text-right'>R$ "+ ((value.amount-value.fee)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                            }
+                            else {
+                                toAppend = "<tr style='cursor: pointer;' id='" + value.transaction_id + "' class='toClick trline' data='" + value.transaction_id + "'><td>" + moment(value.date_created).format("DD/MM/YYYY HH:mm") +"</td>";
+                                toAppend += "<td>"+ value.transaction_id +"</td>";
+                                toAppend += "<td>"+ (movement_objectTypeToString(value.type) == "ted" ? "Transferência" : (value.ds_evento == null ? "Bilheteria" : value.ds_evento )) +"</td>";
+                                toAppend += "<td>"+ (movement_objectTypeToString(value.type) == "ted" ? "-" : moment(value.payment_date).format("DD/MM/YYYY")) +"</td>";
+                                toAppend += "<td>"+ movement_objectTypeToString(value.type) +"</td>";
+                                toAppend += "<td>"+ (movement_objectTypeToString(value.type) == "ted" ? "-" : movement_objectPayment_MethodToString(value.payment_method)) +"</td>";
+                                toAppend += "<td>R$ "+ (value.amount/100).toFixed(2).toString().replace(',','').replace('.',',') + " - R$ " + (value.fee/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                                toAppend += "<td class='text-right'>R$ "+ ((value.amount-value.fee)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                            }
+
                             toAppend += "</tr>";
-                            $("#table-extrato tbody").append(toAppend);
+                            $(nameTable + " tbody").append(toAppend);
                         });
-                        $("#table-extrato tfoot").html("");
+                        $(nameTable + " tfoot").html("");
 
                         var toAppend = "<tr class=ui-widget-header'>"
-                        toAppend += "<td colspan='7' class='text-right ui-widget-header'>Total R$ "+ ((total)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                        toAppend += "<td colspan='" + colspan + "' class='text-right ui-widget-header'>Total R$ "+ ((total)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
                         toAppend += "</tr>";
-                        $("#table-extrato tfoot").append(toAppend);
+                        $(nameTable + " tfoot").append(toAppend);
 
                         $(".toClick").click(function(obj) {
                             lineClick($(this).attr("data"));
@@ -690,7 +718,12 @@ $(function() {
                     },
                     error: function(){
                         $("body").loading("stop");
-                        $("#table-extrato tbody").html("");
+                        var nameTable = "#table-extrato";
+
+                        if ($("#status").val() == "available") {
+                            nameTable = "#table-extrato-available";
+                        }
+                        $(nameTable + " tbody").html("");
                         $.dialog({
                             title: 'Erro...',
                             text: 'Erro na chamada dos dados !!!'
@@ -885,8 +918,13 @@ $(function() {
     }
 
     function getTransaction(id) {
-        loading("#table-extrato");
-        $().loading({ stoppable: true, message: "Carregando..." });
+        var nameTable = "#table-extrato";
+
+        if ($("#status").val() == "available") {
+            nameTable = "#table-extrato-available";
+        }
+        loading(nameTable);
+        //$().loading({ stoppable: true, message: "Carregando..." });
         $.ajax({
             url: pagina + '?action=gettransaction&transaction_id='+ id,
             type: 'post',
@@ -927,12 +965,12 @@ $(function() {
                 });
                 message+="<br />";
                 //console.log(obj);
-                $("#table-extrato").loading("stop");
+                $(nameTable).loading("stop");
                 $.dialog({text: message});
             },
             error: function(data){
                 $.dialog({text: data});
-                $("#table-extrato").loading("stop");
+                $(nameTable).loading("stop");
                 
                 return false;
             }
@@ -1340,7 +1378,7 @@ $(function() {
 	<thead>
 		<tr class="ui-widget-header">
             <th width="100">Data da venda</th>
-            <th width="300">ID Transação do Gateway</th>
+            <th width="100">ID Transação do Gateway</th>
             <th width="300">Evento</th>
             <th width="100">Data de pagamento</th>
             <th width="100">Entrada/Saída</th>
@@ -1352,6 +1390,29 @@ $(function() {
 	<tbody>
 		<tr>
 			<td colspan="8">Nenhum registro no momento.</td>
+		</tr>
+    </tbody>
+    <tfoot>
+    </tfoot>
+</table>
+<table id="table-extrato-available" class="ui-widget ui-widget-content" style="display:none">
+	<thead>
+		<tr class="ui-widget-header">
+            <th width="100">Data da disponibilização</th> <!--date_create-->
+            <th width="100">Data da venda</th><!-- accrual_date-->
+            <th width="100">Dias antecipados</th>
+            <th width="100">ID Transação do Gateway</th>
+            <th width="300">Evento</th>
+            <th width="50">Entrada / Saída</th>
+            <th width="100">Tipo da Transação</th>
+            <th width="100">Valor venda Split</th>
+            <th width="100">Desconto Tarifa</th>
+			<th class="text-right">Valor</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td colspan="10">Nenhum registro no momento.</td>
 		</tr>
     </tbody>
     <tfoot>

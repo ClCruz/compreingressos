@@ -44,11 +44,32 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
 						0);
 
 		$rs = executeSQL($mainConnection, $query, $params, true);
+
+		$queryProdutor = 'SELECT id_gateway
+				  FROM mw_produtor
+				  WHERE id_produtor=?';
 		
-		$recipient = salvarRecebedorPagarme($_POST);
+		$paramsProdutor = array($_GET['produtor']);
+
+		$resultProdutor = executeSQL($mainConnection, $queryProdutor, $paramsProdutor, true);
+
+		$recipient_id = $_POST["recipient_id"];
+		
+		switch ($resultProdutor["id_gateway"]){
+			case 6:
+			case "6":
+				//pagarme
+				$recipient = salvarRecebedorPagarme($_POST);
+				$recipient_id = $recipient["id"];
+			break;
+			case 7:
+			case "7":
+				//tipagos
+			break;
+		}
 
 		$query = "UPDATE mw_recebedor SET recipient_id = ? WHERE id_recebedor = ?";
-		$param = array($recipient["id"], $rs["id"]);
+		$param = array($recipient_id, $rs["id"]);
 		executeSQL($mainConnection, $query, $param);
 
 		$retorno = 'true?id=' . $rs["id"];
@@ -111,7 +132,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
 					  in_ativo = ?,
 					  transfer_enabled = ?,
 					  transfer_interval = ?,
-					  transfer_day = ?
+					  transfer_day = ?,
+					  recipient_id = ?,
 				  WHERE id_recebedor = ?";
 
 		$params = array(strtoupper(utf8_decode(trim($_POST["razao_social"]))), 
@@ -133,6 +155,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
 						0,
 						"monthly",
 						$_POST["transfer_day"],
+						$_POST["recipient_id"],
 						$_GET['id']);
 
 		if (executeSQL($mainConnection, $query, $params)) {
@@ -179,7 +202,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
                    in_ativo,
 				   transfer_day,
 				   transfer_interval,
-				   transfer_enabled
+				   transfer_enabled,
+				   recipient_id
                   FROM mw_recebedor WHERE id_recebedor = ?';
         $params = array($_GET['id']);
         $result = executeSQL($mainConnection, $query, $params);
@@ -202,7 +226,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
 				"status" => $rs["in_ativo"],
 				"transfer_day" => $rs["transfer_day"],
 				"transfer_interval" => $rs["transfer_interval"],
-				"transfer_enabled" => $rs["transfer_enabled"]
+				"transfer_enabled" => $rs["transfer_enabled"],
+				"recipient_id" => $rs["recipient_id"]
             );
         }
         $retorno = json_encode($ret);

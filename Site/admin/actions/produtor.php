@@ -26,7 +26,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 620, true)) {
 			die();
 		}
 
-		$query = "INSERT INTO mw_produtor VALUES(?, ?, ?, ?, ?, ?, ?, ?, 1);";
+		$query = "INSERT INTO mw_produtor VALUES(?, ?, ?, ?, ?, ?, ?, ?, 1, ?);";
 		$params = array(strtoupper(utf8_decode(trim($_POST["razao_social"]))), 
 						trim($_POST["cpf_cnpj"]), 
 						ucwords(utf8_decode(trim($_POST["nome"]))), 
@@ -34,7 +34,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 620, true)) {
 						trim($ddd_telefone),
 						trim($telefone), 
 						$ddd_celular, 
-						$celular);
+						$celular,
+						$_POST["id_gateway"]);
 
 		$rs = executeSQL($mainConnection, $query, $params);
 		$retorno = 'true?id=' . $rs["ID"];
@@ -52,7 +53,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 620, true)) {
 					  ds_telefone = ?,
 					  ds_ddd_celular = ?,
 					  ds_celular = ?,
-					  in_ativo = 1
+					  in_ativo = 1,
+					  id_gateway = ?
 				 WHERE id_produtor = ?";
 
 		$params = array(strtoupper(utf8_decode(trim($_POST["razao_social"]))), 						
@@ -63,6 +65,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 620, true)) {
 						trim($telefone), 
 						trim($ddd_celular), 
 						trim($celular),
+						$_POST["id_gateway"],
 						$_GET['id']);
 
 		if (executeSQL($mainConnection, $query, $params)) {
@@ -84,16 +87,20 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 620, true)) {
 
 	 } else if ($_GET['action'] == 'load' and isset($_GET['id'])){
 		$query = 'SELECT
-                   id_produtor,
-                   ds_razao_social,
-                   ds_nome_contato,
-                   cd_cpf_cnpj,
-                   cd_email,
-                   ds_ddd_telefone,
-                   ds_telefone,
-                   ds_ddd_celular,
-                   ds_celular
-                  FROM mw_produtor WHERE id_produtor = ?';
+                   p.id_produtor,
+                   p.ds_razao_social,
+                   p.ds_nome_contato,
+                   p.cd_cpf_cnpj,
+                   p.cd_email,
+                   p.ds_ddd_telefone,
+                   p.ds_telefone,
+                   p.ds_ddd_celular,
+                   p.ds_celular,
+				   p.id_gateway,
+				   g.ds_gateway
+                  FROM mw_produtor p
+				  LEFT JOIN mw_gateway g ON p.id_gateway=g.id_gateway 
+				  WHERE id_produtor = ?';
         $params = array($_GET['id']);
         $result = executeSQL($mainConnection, $query, $params);
 

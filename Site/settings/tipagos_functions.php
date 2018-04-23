@@ -1,24 +1,28 @@
 <?php
 require_once('../settings/functions.php');
+require_once('../settings/split/split_config.php');
+require_once('../settings/split/split_functions.php');
 
-if ($_ENV['IS_TEST']) {
-	$url_ws  = "https://www.ti-pagos.com/bridgeservices/";
-	$idLoja = "7309"; 
-	$keyLoja = "49994822278418282883";
-	$codProduto = "47";
+configureSplit("tipagos");
 
-} else {
-	$url_ws  = "https://www.ti-pagos.com/bridgeservices/";
-	$idLoja = "7922"; 
-	$keyLoja = "88281288497982783035";
-	$codProduto = "55";
-}
+// if ($_ENV['IS_TEST']) {
+// 	$url_ws  = "https://www.ti-pagos.com/bridgeservices/";
+// 	$idLoja = "7309"; 
+// 	$keyLoja = "49994822278418282883";
+// 	$codProduto = "47";
+
+// } else {
+// 	$url_ws  = "https://www.ti-pagos.com/bridgeservices/";
+// 	$idLoja = "7922"; 
+// 	$keyLoja = "88281288497982783035";
+// 	$codProduto = "55";
+// }
 
 function pagarPedidoTiPagos($id_pedido, $dados_extra) {
-	global $url_ws;
-	global $idLoja;
-	global $keyLoja;
-	global $codProduto;
+	$url_ws = $gw_tipagos["url_ws"];
+	$idLoja = $gw_tipagos["idLoja"];
+	$keyLoja = $gw_tipagos["keyLoja"];
+	$codProduto = $gw_tipagos["codProduto"];
 
 
 	$mainConnection = mainConnection();
@@ -90,19 +94,36 @@ function pagarPedidoTiPagos($id_pedido, $dados_extra) {
 				$formaPagamento = "1";
 			}
 
+			$split = getSplit("tipagos", $id_pedido, "web", "credit_card", $valorTotal);
 
-			$dados = array("header" => array("idLoja"=>$idLoja, 
-									 "keyLoja"=>$keyLoja,
-									 "codProduto"=>$codProduto),
-				   "tipoCapturaCliente"=>"3",
-				   "dadosCliente"=>$dadosCartao,
-				   "codSeguranca"=>$dados_extra['codSeguranca'],
-				   "valor"=>$valorTotal,
-				   "formaPagamento"=>$formaPagamento,
-				   "qtdeParcelas"=>$dados_extra['parcelas'],
-				   "transacaoCapturada"=>true,
-				   "descricaoPedido"=>$id_pedido, "nsuTransacao"=>preg_replace('/\{|\}|\-/', "", com_create_guid()));
-
+			if ($split == null) {
+				$dados = array("header" => array("idLoja"=>$idLoja, 
+										"keyLoja"=>$keyLoja,
+										"codProduto"=>$codProduto),
+					"tipoCapturaCliente"=>"3",
+					"dadosCliente"=>$dadosCartao,
+					"codSeguranca"=>$dados_extra['codSeguranca'],
+					"valor"=>$valorTotal,
+					"formaPagamento"=>$formaPagamento,
+					"qtdeParcelas"=>$dados_extra['parcelas'],
+					"transacaoCapturada"=>true,
+					"descricaoPedido"=>$id_pedido, "nsuTransacao"=>preg_replace('/\{|\}|\-/', "", com_create_guid()));
+			}
+			else {
+				$dados = array("header" => array("idLoja"=>$idLoja, 
+										"keyLoja"=>$keyLoja,
+										"codProduto"=>$codProduto),
+					"tipoCapturaCliente"=>"3",
+					"dadosCliente"=>$dadosCartao,
+					"codSeguranca"=>$dados_extra['codSeguranca'],
+					"valor"=>$valorTotal,
+					"formaPagamento"=>$formaPagamento,
+					"qtdeParcelas"=>$dados_extra['parcelas'],
+					"transacaoCapturada"=>true,
+					"descricaoPedido"=>$id_pedido, "nsuTransacao"=>preg_replace('/\{|\}|\-/', "", com_create_guid()),
+					"dadosSplit" = $split
+				);
+			}
 			$post_data = json_encode($dados);
 
 			$ch = curl_init();
@@ -170,10 +191,10 @@ function tratarErroTiPagos($id) {
 }
 
 function estonarPedidoTiPagos($id_pedido, $bank_data = array()) {
-	global $url_ws;
-	global $idLoja;
-	global $keyLoja;
-	global $codProduto;
+	$url_ws = $gw_tipagos["url_ws"];
+	$idLoja = $gw_tipagos["idLoja"];
+	$keyLoja = $gw_tipagos["keyLoja"];
+	$codProduto = $gw_tipagos["codProduto"];
 
 	$mainConnection = mainConnection();
 

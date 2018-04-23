@@ -3,22 +3,28 @@ require_once('../settings/functions.php');
 
 require '../settings/pagarme/Pagarme.php';
 
-if ($_ENV['IS_TEST']) {
-	//ticketpay : ak_test_183DNskQiE3q7uBAA8UQjkSvENOEdY
-	//compreingressos: ak_test_rh88QdkXXKpFQhTkVlCm63zrw3kQgJ
-	Pagarme::setApiKey("ak_test_183DNskQiE3q7uBAA8UQjkSvENOEdY");
-	$postback_url = 'http://homolog.compreingressos.com/comprar/pagarme_receiver.php';
-} else {
-	//ticketpay: ak_live_pcYp3eGXxpOBHqViOLfBQ61NQ4433y
-	//compreingressos: ak_live_5aYKGG3AyIb8cvv7Tq44q7ZasJzPl8
-	Pagarme::setApiKey("ak_live_pcYp3eGXxpOBHqViOLfBQ61NQ4433y");
-	$postback_url = 'https://compra.compreingressos.com/comprar/pagarme_receiver.php';
-}
+require_once('../settings/split/split_config.php');
+require_once('../settings/split/split_functions.php');
+
+
+// if ($_ENV['IS_TEST']) {
+// 	//ticketpay : ak_test_183DNskQiE3q7uBAA8UQjkSvENOEdY
+// 	//compreingressos: ak_test_rh88QdkXXKpFQhTkVlCm63zrw3kQgJ
+// 	Pagarme::setApiKey("ak_test_183DNskQiE3q7uBAA8UQjkSvENOEdY");
+// 	$postback_url = 'http://homolog.compreingressos.com/comprar/pagarme_receiver.php';
+// } else {
+// 	//ticketpay: ak_live_pcYp3eGXxpOBHqViOLfBQ61NQ4433y
+// 	//compreingressos: ak_live_5aYKGG3AyIb8cvv7Tq44q7ZasJzPl8
+// 	Pagarme::setApiKey("ak_live_pcYp3eGXxpOBHqViOLfBQ61NQ4433y");
+// 	$postback_url = 'https://compra.compreingressos.com/comprar/pagarme_receiver.php';
+// }
+
+configureSplit("pagarme");
 
 function pagarPedidoPagarme($id_pedido, $dados_extra) {
 	global $postback_url;
 	global $transaction;
-	global $response;
+	global $response;	
 
 	$mainConnection = mainConnection();
 
@@ -129,7 +135,10 @@ function pagarPedidoPagarme($id_pedido, $dados_extra) {
 	}
 	// erro
 	else return false;
-	$split = consultarSplitPagarme($id_pedido, "web", $payment_method, $amount);
+	
+	
+	// $split = consultarSplitPagarme($id_pedido, "web", $payment_method, $amount);
+	$split = getSplit("pagarme", $id_pedido, "web", $payment_method, $amount);
 
 	if (is_array($split)) {
 		$transaction_data = array_merge($transaction_data, array(

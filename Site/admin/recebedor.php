@@ -117,7 +117,8 @@ $(function() {
             	$("#tipo").val(data.tipo);
             	$("#split").val(data.split);
             	$("#status").val(data.status);
-                $("#transfer_day").val(data.transfer_day);                
+                $("#transfer_day").val(data.transfer_day);              
+                $("#recipient_id").val(data.recipient_id);  
 
                 $("#razao_social").attr("readonly", true);
                 $("#cpf_cnpj").attr("readonly", true);
@@ -361,8 +362,10 @@ $(function() {
             <input type="text" id="telefone" name="telefone" maxlength="10" class="text ui-widget-content ui-corner-all" />
             <label for="celular">Celular:</label>
             <input type="text" id="celular" name="celular" maxlength="10" class="text ui-widget-content ui-corner-all" />
-            <label for="celular">Dia do mês para o repasse:</label>
+            <label for="transfer_day">Dia do mês para o repasse:</label>
             <input type="text" id="transfer_day" name="transfer_day" maxlength="2" class="text ui-widget-content ui-corner-all" />
+            <label for="recipient_id">Código no gateway:</label>
+            <input type="text" id="recipient_id" name="recipient_id" maxlength="250" class="text ui-widget-content ui-corner-all" />
         </fieldset>
 
         <fieldset>

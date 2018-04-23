@@ -73,6 +73,8 @@ $(function() {
             	$("#telefone").val(data.telefone);
             	$("#celular").val(data.celular);
 
+                $("#id_gateway").val(data.id_gateway);
+
             	dialog.dialog( "open" );
             });
         }  else if (href.indexOf('?action=delete') != -1) {
@@ -217,6 +219,11 @@ $(function() {
 		    <input type="text" id="telefone" name="telefone" maxlength="10" class="text ui-widget-content ui-corner-all" />
 		    <label for="celular">Celular:</label>
 		    <input type="text" id="celular" name="celular" maxlength="10" class="text ui-widget-content ui-corner-all" />
+		    <label for="id_gateway">Gateway:</label>
+            <select id="id_gateway" name="id_gateway" class="ui-widget-content ui-corner-all">
+                <option value="6">Pagarme</option>
+                <option value="7">Pinbank (Ti Pagos)</option>
+            </select>
 		</fieldset>
 	</form>
 </div>
@@ -236,6 +243,7 @@ $(function() {
 				<th>E-mail</th>
 				<th>Telefone</th>
 				<th>Celular</th>
+                <th>Gateway</th>
 				<th colspan="2" class="th-action">Ações</th>
 			</tr>
 		</thead>
@@ -250,6 +258,7 @@ $(function() {
 				<td><?php echo $rs["cd_email"]; ?></td>
 				<td><?php echo $rs["ds_ddd_telefone"] ." ". $rs["ds_telefone"]; ?></td>
 				<td><?php echo $rs["ds_ddd_celular"] ." ". $rs["ds_celular"]; ?></td>
+                <td><?php echo $rs["ds_gateway"]; ?></td>
 				<td class="td-action"><a href="<?php echo $pagina; ?>?action=edit&id=<?php echo $id; ?>" class="button">Editar</a></td>
                 <td class="td-action"><a href="<?php echo $pagina; ?>?action=delete&id=<?php echo $id; ?>" class="button">Apagar</a></td>
 			</tr>

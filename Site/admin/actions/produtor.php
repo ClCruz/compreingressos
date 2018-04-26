@@ -112,7 +112,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 620, true)) {
             	"cpf_cnpj" => $rs["cd_cpf_cnpj"],
             	"email" => $rs["cd_email"],
             	"telefone" => $rs["ds_ddd_telefone"] ." ". substr($rs["ds_telefone"], 0, 4) ."-". substr($rs["ds_telefone"], 4, 5),
-            	"celular" => $rs["ds_ddd_celular"] ." ". substr($rs["ds_celular"], 0, 4) ."-". substr($rs["ds_celular"], 4, 5)
+				"celular" => $rs["ds_ddd_celular"] ." ". substr($rs["ds_celular"], 0, 4) ."-". substr($rs["ds_celular"], 4, 5),
+				"id_gateway" => $rs["id_gateway"],
+				"ds_gateway" => $rs["ds_gateway"]
             );
         }
         $retorno = json_encode($ret);

@@ -3,8 +3,6 @@ require_once('../settings/functions.php');
 require_once('../settings/split/split_config.php');
 require_once('../settings/split/split_functions.php');
 
-configureSplit("tipagos");
-
 // if ($_ENV['IS_TEST']) {
 // 	$url_ws  = "https://www.ti-pagos.com/bridgeservices/";
 // 	$idLoja = "7309"; 
@@ -19,10 +17,16 @@ configureSplit("tipagos");
 // }
 
 function pagarPedidoTiPagos($id_pedido, $dados_extra) {
+	global $gw_tipagos;
+
+	$gw_tipagos = configureSplit("tipagos");
+
 	$url_ws = $gw_tipagos["url_ws"];
 	$idLoja = $gw_tipagos["idLoja"];
 	$keyLoja = $gw_tipagos["keyLoja"];
 	$codProduto = $gw_tipagos["codProduto"];
+
+	error_log("gerando venda no TIPAGOS. " . $id_pedido);
 
 
 	$mainConnection = mainConnection();
@@ -94,6 +98,8 @@ function pagarPedidoTiPagos($id_pedido, $dados_extra) {
 				$formaPagamento = "1";
 			}
 
+			$dados = array();
+
 			$split = getSplit("tipagos", $id_pedido, "web", "credit_card", $valorTotal);
 
 			if ($split == null) {
@@ -107,7 +113,9 @@ function pagarPedidoTiPagos($id_pedido, $dados_extra) {
 					"formaPagamento"=>$formaPagamento,
 					"qtdeParcelas"=>$dados_extra['parcelas'],
 					"transacaoCapturada"=>true,
-					"descricaoPedido"=>$id_pedido, "nsuTransacao"=>preg_replace('/\{|\}|\-/', "", com_create_guid()));
+					"descricaoPedido"=>$id_pedido, 
+					"nsuTransacao"=>preg_replace('/\{|\}|\-/', "", com_create_guid())
+				);
 			}
 			else {
 				$dados = array("header" => array("idLoja"=>$idLoja, 
@@ -120,11 +128,17 @@ function pagarPedidoTiPagos($id_pedido, $dados_extra) {
 					"formaPagamento"=>$formaPagamento,
 					"qtdeParcelas"=>$dados_extra['parcelas'],
 					"transacaoCapturada"=>true,
-					"descricaoPedido"=>$id_pedido, "nsuTransacao"=>preg_replace('/\{|\}|\-/', "", com_create_guid()),
-					"dadosSplit" = $split
+					"descricaoPedido"=>$id_pedido, 
+					"nsuTransacao"=>preg_replace('/\{|\}|\-/', "", com_create_guid()),
+					"dadosSplit" => $split
 				);
 			}
+
+			error_log("Dados: " . print_r($dados, true));
+
 			$post_data = json_encode($dados);
+
+			error_log("post_data: " . $post_data);
 
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json')); 
@@ -137,6 +151,8 @@ function pagarPedidoTiPagos($id_pedido, $dados_extra) {
 			curl_close($ch);
 
 			$resp = json_decode($server_output, true);
+
+			error_log("resposta TIPAGOS: " . print_r($resp, true));
 
 			if($resp['retorno']['rc'] == '0'){
 				$response = array('success' => true, 'transaction' => $resp);
@@ -191,6 +207,10 @@ function tratarErroTiPagos($id) {
 }
 
 function estonarPedidoTiPagos($id_pedido, $bank_data = array()) {
+	global $gw_tipagos;
+
+	$gw_tipagos = configureSplit("tipagos");
+
 	$url_ws = $gw_tipagos["url_ws"];
 	$idLoja = $gw_tipagos["idLoja"];
 	$keyLoja = $gw_tipagos["keyLoja"];
@@ -210,7 +230,10 @@ function estonarPedidoTiPagos($id_pedido, $bank_data = array()) {
 									 "codProduto"=>$codProduto),
 				   "nsuTipagos"=>$transaction['nsuTipagos']);
 
-    $post_data = json_encode($dados);
+	$post_data = json_encode($dados);
+	
+	error_log("realizando estorno no tipagos para o pedido " . $id_pedido);
+	error_log("realizando estorno no tipagos: " . print_r($dados, true));
 
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json')); 
@@ -223,6 +246,8 @@ function estonarPedidoTiPagos($id_pedido, $bank_data = array()) {
 	curl_close($ch);
 
 	$resp = json_decode($server_output, true);
+
+	error_log("resposta para o estorno no tipagos: " . print_r($resp, true));
 
 	// print_r($resp);
 

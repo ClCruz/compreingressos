@@ -26,6 +26,8 @@ function pagarPedidoPagarme($id_pedido, $dados_extra) {
 	global $transaction;
 	global $response;	
 
+	error_log("gerando venda no pagarme. " . $id_pedido);
+
 	$mainConnection = mainConnection();
 
 	$query = "SELECT
@@ -145,10 +147,16 @@ function pagarPedidoPagarme($id_pedido, $dados_extra) {
 			"split_rules" => $split
 		));
 	}
+
+	error_log("Dados: " . print_r($transaction_data, true));
+
 	try {
 		$transaction = new PagarMe_Transaction($transaction_data);
 		$transaction->charge();
+
 		$response = array('success' => true, 'transaction' => $transaction);
+
+		error_log("resposta pagarme: " . print_r($response, true));
 	} catch (Exception $e) {
 		executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . " - " . "SPLIT: " . print_r($split, true) ));
 
@@ -431,6 +439,8 @@ function consultarExtratoRecebedorPagarme($recipient_id, $status, $start_date, $
 	$start_date_modified = "";
 	$end_date_modified = "";
 
+	error_log("evento: " . $evento);
+
 	if ($start_date!="")
 	{
 		$start_dateSplit = explode("/", $start_date);
@@ -440,7 +450,7 @@ function consultarExtratoRecebedorPagarme($recipient_id, $status, $start_date, $
 	if ($end_date!="")
 	{
 		$end_dateSplit = explode("/", $end_date);
-		$end_date_modified = $end_dateSplit[2] . "-" . $end_dateSplit[1] . "-" . $end_dateSplit[0];
+		$end_date_modified = $end_dateSplit[2] . "-" . $end_dateSplit[1] . "-" . $end_dateSplit[0] . " 23:59:59.888";
 	}
 	$balance_operations = PagarMe_Recipient::getOperationHistory($recipient_id, $status, $count, getDatePagarMe($start_date_modified), getDatePagarMe($end_date_modified));
 
@@ -486,7 +496,14 @@ function consultarExtratoRecebedorPagarme($recipient_id, $status, $start_date, $
 			}
 		}
 
-		$letMePass = true;
+		$letMePass = $id_evento == $evento;
+		if ($evento == -1) {
+			$letMePass = true;
+		}
+		if ($evento == 0 && $id_evento == -1) {
+			$letMePass = true;
+		}
+
 		if ($letMePass) {
 			$json[] = array("amount"=> $value["amount"]
 				,"fee" => $value["fee"]

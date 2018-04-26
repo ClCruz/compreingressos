@@ -96,7 +96,7 @@ function getSplit($type, $pedido, $where, $payment_method, $amount) {
 		$amountUsed = $amountUsed + $amoutToUse;
 
 		//error_log("perToUse: " . $perToUse);
-        //error_log("amoutToUse: " . $amoutToUse);
+		//error_log("amoutToUse: " . $amoutToUse);
         
         switch ($type) {
             case "pagarme":
@@ -114,7 +114,9 @@ function getSplit($type, $pedido, $where, $payment_method, $amount) {
                     "valor" => $amoutToUse*100);
 
             break;
-        }
+		}
+		
+		error_log("split: " . print_r($split, true));
 
 	}
 	//error_log("Split: " . print_r($split, true));

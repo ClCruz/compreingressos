@@ -108,16 +108,19 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 		,cd_cpf_cnpj
 		,recipient_id
 		,HasPermission
+		,id_gateway
 	FROM (
 	SELECT 
-		id_recebedor
-		,ds_razao_social
-		,cd_cpf_cnpj
-		,recipient_id
+		r.id_recebedor
+		,r.ds_razao_social
+		,r.cd_cpf_cnpj
+		,r.recipient_id
 		,ISNULL((SELECT 1 FROM mw_permissao_split sub WHERE sub.id_usuario=?
 			AND (sub.id_produtor=r.id_produtor OR sub.id_recebedor IS NULL)
 			AND (sub.id_recebedor=r.id_recebedor OR sub.id_recebedor IS NULL)),0) HasPermission
+		,p.id_gateway
 	FROM mw_recebedor r
+	INNER JOIN mw_produtor p ON r.id_produtor=p.id_produtor
 	WHERE r.id_produtor = ? AND r.in_ativo=1) AS recebedor
 	WHERE HasPermission=1
 	ORDER BY ds_razao_social
@@ -129,6 +132,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 			$json[] = array("id_recebedor" => $rs["id_recebedor"],
 							"ds_razao_social" => utf8_encode($rs["ds_razao_social"]),
 							"cd_cpf_cnpj" => $rs["cd_cpf_cnpj"],
+							"id_gateway" => $rs["id_gateway"],
 							"recipient_id" => $rs["recipient_id"]);
 		}
 		$retorno = json_encode($json);

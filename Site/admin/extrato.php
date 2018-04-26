@@ -400,6 +400,23 @@ $(function() {
         add();
     });
 
+    $("#status").change(function() {
+        $("#spanPeriodo").hide();
+
+        switch ($("#status").val()) {
+            case "waiting_funds":
+                $("#spanPeriodo").show();
+            break;
+            case "available":
+                $("#spanPeriodo").show();
+            break;
+            case "transfers":
+            break;
+            case "antecipations":
+            break;
+        }
+    });
+
     $("#produtor").change(function() {
         $("#recebedor").html('<option value="-1">Aguarde...</option>');
         $("#evento").html('<option value="-1">Aguarde...</option>');
@@ -412,6 +429,12 @@ $(function() {
                 valor_areceber = 0;
                 data = $.parseJSON(data);
                 $("#recebedor").html('<option value="-1">Selecione...</option>');
+                if (data.length >0 ) {
+                    if (data[0].id_gateway == "7" || data[0].id_gateway == 7) {
+                        $("#recebedor").html('<option value="-1">Não é possível realizar operações de extrato com esse organizador.</option>');
+                        return;
+                    }
+                }
                 $.each(data, function(key, value) {
                     $("#recebedor").append('<option value='+ value.recipient_id + '>' + value.ds_razao_social +' - '+ value.cd_cpf_cnpj + '</option>');
                 });
@@ -677,12 +700,15 @@ $(function() {
                             
                             //console.log(value);
                             var toAppend = "";
+                            var aux = (value.fee/100)*100/(value.amount/100);
+                            var final = Math.trunc((aux*30)/1.87);
+
 
                             if ($("#status").val() == "available") {
                                 toAppend = "<tr style='cursor: pointer;' id='" + value.transaction_id + "' class='toClick trline' data='" + value.transaction_id + "'><td>" + moment(value.date_created).format("DD/MM/YYYY") +"</td>";
                                 //toAppend += "<td>"+ moment(value.accrual_date).format("DD/MM/YYYY") +"</td>";
                                 toAppend += "<td>"+ (value.type == "ted" || value.type == "refund" ? "-" : moment(value.accrual_date).format("DD/MM/YYYY HH:mm")) +"</td>";
-                                toAppend += "<td>"+ (value.type == "ted" || value.type == "refund" ? "-" : (value.payment_method == "debit_card" ? "-" : (moment(value.original_payment_date).diff(moment(value.payment_date), 'days')+1))) +"</td>";
+                                toAppend += "<td>"+ (value.type == "ted" || value.type == "refund" ? "-" : (value.payment_method == "debit_card" ? "-" : final )) +"</td>";
                                 toAppend += "<td>"+ (value.type == "ted" ? "-" : value.transaction_id) +"</td>";
                                 toAppend += "<td>"+ (value.type == "ted" ? "Transferência" : (value.ds_evento == null ? "Bilheteria" : value.ds_evento )) +"</td>";
                                 toAppend += "<td>"+ movement_objectTypeToString(value.type) +"</td>";
@@ -1322,14 +1348,13 @@ $(function() {
             <option value="transfers">Transferências</option>
             <option value="antecipations">Antecipações</option>
         </select>
-
+        <span id="spanPeriodo">
         <label>Periodo:</label>
         <input type="text" id="start_date" name="start_date" class="datepicker extratoSearch" />
         <input type="text" id="end_date" name="end_date" class="datepicker extratoSearch" />
-
+        </span>
         <input type="hidden" id="count" name="count" value="1000" />
         <input type="button" class="button" id="btnBuscarExtrato" value="Buscar historico" />&nbsp;
-
     </div>
 
     <div class="actions">

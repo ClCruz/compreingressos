@@ -14,6 +14,11 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
         require('actions/'.$pagina);
         
     } else {
+    	$query = "SELECT id_gateway FROM mw_produtor WHERE id_produtor = ?";
+    	$stmtgateway = executeSQL($mainConnection, $query, array($_GET["produtor"]), true);
+
+        $id_gateway = $stmtgateway["id_gateway"];
+
 
         $query = "SELECT cd_banco, ds_banco FROM mw_banco ORDER BY ds_banco";
         $stmtBanco = executeSQL($mainConnection, $query);
@@ -124,6 +129,15 @@ $(function() {
                 $("#cpf_cnpj").attr("readonly", true);
 
             	dialog.dialog( "open" );
+                
+                $("#recipient_id").hide();
+                $("#recipient_id_label").hide();
+                
+
+                if ($("#id_gateway").val() == "7") {
+                    $("#recipient_id").show();
+                    $("#recipient_id_label").show();
+                }
             });
         }  else if (href.indexOf('?action=delete') != -1) {
         	$.confirmDialog({
@@ -296,6 +310,14 @@ $(function() {
             $("#cpf_cnpj").attr("readonly", false);
             dialog.dialog( "open" );    
         }        
+
+        $("#recipient_id").hide();
+        $("#recipient_id_label").hide();
+
+        if ($("#id_gateway").val() == "7") {
+            $("#recipient_id").show();
+            $("#recipient_id_label").show();
+        }
     });
     $('#newTICKETSPAY').button().click(function(event) {
     	event.preventDefault();
@@ -336,6 +358,22 @@ $(function() {
 
     $("#produtor").change(function() {
         location.href = "?p=recebedor&produtor=" + $(this).val();
+
+        // $.ajax({
+		// 		url: 'recebedor.php?action=getgateway&produtor='+ produtor.val(),
+		// 		type: 'post',
+		// 		data: {},
+		// 		success: function(data) {
+		// 			$("#id_gateway").val(data);
+		// 		},
+		// 		error: function(){
+        //             $.dialog({
+        //                 title: 'Erro...',
+        //                 text: 'Erro na chamada dos dados !!!'
+        //             });
+        //             return false;
+        //         }
+		// 	});
     })
 
 });
@@ -364,7 +402,7 @@ $(function() {
             <input type="text" id="celular" name="celular" maxlength="10" class="text ui-widget-content ui-corner-all" />
             <label for="transfer_day">Dia do mês para o repasse:</label>
             <input type="text" id="transfer_day" name="transfer_day" maxlength="2" class="text ui-widget-content ui-corner-all" />
-            <label for="recipient_id">Código no gateway:</label>
+            <label for="recipient_id" id="recipient_id_label" >Código no gateway:</label>
             <input type="text" id="recipient_id" name="recipient_id" maxlength="250" class="text ui-widget-content ui-corner-all" />
         </fieldset>
 
@@ -398,6 +436,7 @@ $(function() {
 
 <form id="dados" name="dados" method="post">	
 	<div class="add-conta">
+        <input type="hidden" name="id_gateway" id="id_gateway" value="<?php echo $id_gateway ?>" />
         <label>Organizador: </label>
         <select id="produtor" name="produtor">
             <option value="-1">Selecione</option>

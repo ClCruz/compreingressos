@@ -631,7 +631,9 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
                         WHERE P.ID_PEDIDO_VENDA = ? AND M.CD_MEIO_PAGAMENTO = ?";
             $params = array($parametros['OrderData']['OrderId'], $_POST['codCartao']);
             $result = executeSQL($mainConnection, $query, $params);
+
             $response = pagarPedidoPagarme($parametros['OrderData']['OrderId'], $_POST);
+
             executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
                 array($_SESSION['user'], json_encode(array('descricao' => '4. retorno do pedido pagarme=' . $parametros['OrderData']['OrderId'], 'pagseguro_obj' => base64_encode(serialize($response['transaction'])))))
             );

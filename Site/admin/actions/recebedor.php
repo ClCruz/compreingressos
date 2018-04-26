@@ -232,7 +232,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
         }
         $retorno = json_encode($ret);
 
-    } else if ($_GET['action'] == 'check' and isset($_GET['produtor'])){
+    } else if ($_GET['action'] == 'getgateway'){
+    	$query = "SELECT id_gateway FROM mw_produtor WHERE id_produtor = ?";
+    	$param = array($_GET["produtor"]);
+    	$stmt  = executeSQL($mainConnection, $query, $param, true);
+    	$retorno = $stmt["id_gateway"];
+	} else if ($_GET['action'] == 'check' and isset($_GET['produtor'])){
     	$query = "SELECT SUM(nr_percentual_split) AS split FROM mw_conta_bancaria WHERE id_produtor = ? AND in_ativo = 1 AND (id_conta_bancaria != ? OR ? = -1)";
     	$param = array($_GET["produtor"], $_GET["conta"], $_GET["conta"]);
     	$stmt  = executeSQL($mainConnection, $query, $param, true);

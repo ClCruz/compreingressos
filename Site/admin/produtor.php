@@ -15,7 +15,21 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 620, true)) {
         
     } else {
 
-    	$query = "SELECT * FROM mw_produtor WHERE in_ativo = 1 ORDER BY ds_razao_social";
+    	$query = "SELECT p.id_produtor
+        ,p.ds_razao_social
+        ,p.cd_cpf_cnpj
+        ,p.ds_nome_contato
+        ,p.cd_email
+        ,p.ds_ddd_telefone
+        ,p.ds_telefone
+        ,p.ds_ddd_celular
+        ,p.ds_celular
+        ,p.in_ativo
+        ,p.id_gateway 
+        ,g.ds_gateway
+        FROM mw_produtor p
+        LEFT JOIN mw_gateway g ON p.id_gateway=g.id_gateway
+        WHERE in_ativo = 1 ORDER BY ds_razao_social";
     	$stmt = executeSQL($mainConnection, $query, array());
 ?>
 <style type="text/css">

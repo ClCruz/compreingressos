@@ -85,7 +85,6 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
         }
 
 	} else if ($_GET['action'] == 'load'){
-		// error_log("aqui.... " . $_POST["evento"]);
 		$aux = consultarExtratoRecebedorPagarme($_POST["recebedor"]
 		, $_POST["status"]
 		, $_POST["start_date"]
@@ -94,9 +93,14 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 		, $_POST["evento"]);
 
 		$retorno = json_encode($aux);;
-		//$retorno = json_encode(usort($aux, array($this, "cmp")));
-		//error_log("aqui..." . $retorno);
-		//consultarExtratoRecebedorPagarme2($_POST["recebedor"]);
+	} else if ($_GET['action'] == 'listpayables'){
+		$aux = listPayables($_POST["recebedor"]
+		, "waiting_funds"
+		, $_POST["evento"]
+		, $_POST["count"]
+		, 1);
+
+		$retorno = json_encode($aux);;
 	} else if ($_GET['action'] == 'load_saldo'){
 		$aux = consultarSaldoRecebedorPagarme($_POST["recebedor"]);
 		$retorno = $aux->__toJSON(true);

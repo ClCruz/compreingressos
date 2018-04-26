@@ -523,6 +523,110 @@ function consultarExtratoRecebedorPagarme($recipient_id, $status, $start_date, $
 	return $json;
 }
 
+function listPayables($recipient_id, $status, $evento, $count, $page) {
+	$start_date_modified = "";
+	$end_date_modified = "";
+
+	$playables = PagarMe_Recipient::getListPayables($recipient_id, $status, $count, $page);
+
+	//error_log("playables: " . print_r($playables, true));
+
+	$firstDate = null;
+	$lastDate = null;
+
+	foreach ($playables as $value) {
+		// $aux = explode("-", $value["accrual_date"]);
+		
+		// $aqui = $aux[0] . "-" + $aux[1] . "-" . $aux[2];
+		// error_log("accrual_date : " . $value["accrual_date"]);
+		// $current = date_create_from_format("YYYY-mm-DD", $aqui);
+
+		$current = new Datetime($value["accrual_date"]);
+		
+		if ($firstDate == null || $current<$firstDate) {
+			$firstDate = $current;
+		}
+		if ($lastDate == null || $current>$lastDate) {
+			$lastDate = $current;
+		}
+	}
+
+	$start_date_modified = $firstDate->format('Y-m-d');
+	$end_date_modified = $lastDate->format('Y-m-d');
+
+	$query = "SELECT DISTINCT e.id_evento, e.ds_evento, pv.cd_numero_autorizacao as codeTran
+	FROM mw_pedido_venda pv 
+	INNER JOIN mw_item_pedido_venda ipv ON pv.id_pedido_venda=ipv.id_pedido_venda
+	INNER JOIN mw_apresentacao ipva ON ipv.id_apresentacao=ipva.id_apresentacao
+	INNER JOIN mw_evento e ON ipva.id_evento=e.id_evento
+	INNER JOIN mw_regra_split rs ON rs.id_evento=e.id_evento
+	INNER JOIN mw_recebedor re ON rs.id_recebedor=re.id_recebedor
+	WHERE pv.id_pedido_ipagare='Pagar.me' AND re.recipient_id=? AND dt_pedido_venda BETWEEN ? AND ?
+	UNION ALL
+	SELECT DISTINCT e.id_evento, e.ds_evento, pvg.TransacaoGateway as codeTran
+	FROM mw_pedido_venda_gateway pvg
+	INNER JOIN mw_evento e ON pvg.CodPeca=e.CodPeca AND pvg.id_base=e.id_base
+	INNER JOIN mw_regra_split rs ON rs.id_evento=e.id_evento
+	INNER JOIN mw_recebedor re ON rs.id_recebedor=re.id_recebedor
+	WHERE re.recipient_id=? AND pvg.Created BETWEEN ? AND ?";
+
+	$param = array($recipient_id, $start_date_modified, $end_date_modified,$recipient_id, $start_date_modified, $end_date_modified);
+	$connection = mainConnection();
+	$resulttran = executeSQL($connection, $query, $param);
+	$aux = array();
+
+	while ($rs = fetchResult($resulttran)) {            
+		$aux[] = array(
+			"id_evento" => $rs["id_evento"],
+			"ds_evento" => utf8_encode($rs["ds_evento"]),
+			"transaction" => $rs["codeTran"]
+		);
+	}
+
+	$json = array();
+
+	foreach ($playables as $value) {
+		$id_evento = -1;
+		$ds_evento = "Bilheteria";
+
+		foreach ($aux as $value2) {
+			if ($value2["transaction"] == $value["transaction_id"]) {
+				$id_evento = $value2["id_evento"];
+				$ds_evento = $value2["ds_evento"];
+			}
+		}
+
+		error_log("id_evento/evento " . $id_evento . "/" . $evento);
+
+		$letMePass = $id_evento == $evento;
+		if ($evento == -1) {
+			$letMePass = true;
+		}
+		if ($evento == 0 && $id_evento == -1) {
+			$letMePass = true;
+		}
+
+		if ($letMePass) {
+			error_log("letMePass: sim");
+			$json[] = array("amount"=> $value["amount"]
+				,"fee" => $value["fee"]
+				,"transaction_id" => $value["transaction_id"]
+				,"payment_date" => $value["payment_date"]
+				,"type" => $value["type"]
+				,"payment_method" => $value["payment_method"]
+				,"date_created" => $value["date_created"]
+				,"accrual_date" => $value["accrual_date"]
+				,"id_evento" => $id_evento
+				,"ds_evento" => $ds_evento
+			);		
+		}
+	}
+
+	error_log("json: " . print_r($json, true));
+
+	return $json;
+}
+
 function consultarSaldoRecebedorPagarme($recipient_id) {
 	$balance_operations = PagarMe_Recipient::findSaldoByRecipientId($recipient_id);
 	return $balance_operations;

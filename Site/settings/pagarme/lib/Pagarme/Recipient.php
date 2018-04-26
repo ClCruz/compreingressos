@@ -67,7 +67,44 @@ class PagarMe_Recipient extends PagarMe_Model {
         $response = $request->runWithParameter($params);
         $class = get_called_class();
         return new $class($response);
-	}
+    }
+
+    public static function getListPayables($recipientId, $status, $count, $page)
+	{
+        //status: paid
+        //status: waiting_funds
+
+        if ($status == "" || $status == null) {
+            $status = "waiting_funds";
+        }
+
+        if ($count == "" || $count == null) {
+            $count = 10000;
+        }
+
+        if ($page == "" || $page == null) {
+            $page = 1;
+        }
+
+        //error_log("start_date_timestamp " . $start_date_timestamp);
+        //error_log("end_date_timestamp " . $end_date_timestamp);
+
+		$request = new PagarMe_Request(
+            '/payables', 'GET'
+        );
+        $params = array("recipient_id"=> $recipientId
+        ,"status" => $status
+        ,"count"=> $count
+        ,"page" => $page);
+
+        // error_log("params " . print_r($params, true));
+
+        $response = $request->runWithParameter($params);
+        $class = get_called_class();
+        return new $class($response);
+    }
+    
+    
 
 	public static function findSaldoByRecipientId($recipientId)
 	{

@@ -404,8 +404,7 @@ $(function() {
         $("#spanPeriodo").hide();
 
         switch ($("#status").val()) {
-            case "waiting_funds":
-                $("#spanPeriodo").show();
+            case "playables":
             break;
             case "available":
                 $("#spanPeriodo").show();
@@ -417,7 +416,22 @@ $(function() {
         }
     });
 
+    function zerar_grid() {
+        $("#table-extrato tbody").html("");
+        $("#table-extrato-available tbody").html("");
+        $("#table-antecipavel tbody").html("");
+        $("#table-transfer tbody").html("");
+
+        $("#table-antecipavel").hide();
+        $("#table-transfer").hide();
+        $("#table-extrato-available").hide();
+        $("#table-extrato").hide();
+        $("#table-first").show();
+    }
+
     $("#produtor").change(function() {
+        zerar_saldo();
+        zerar_grid();
         $("#recebedor").html('<option value="-1">Aguarde...</option>');
         $("#evento").html('<option value="-1">Aguarde...</option>');
         
@@ -478,11 +492,15 @@ $(function() {
         getTransaction(id);
     }
 
+    function zerar_saldo() {
+        $(".disponivel span").html("R$ 0,00");
+        $(".receber span").html("R$ 0,00");
+    }
+
     function load_saldo() {
         loading(".saldo");
         valor_areceber = 0;
-        $(".disponivel span").html("R$ 0,00");
-        $(".receber span").html("R$ 0,00");
+        zerar_saldo();
         $.ajax({
             url: pagina + '?action=load_saldo',
             type: 'post',
@@ -503,8 +521,7 @@ $(function() {
                 $(".saldo").loading("stop");            
             },
             error: function(){
-                $(".disponivel span").html("R$ 0,00");
-                $(".receber span").html("R$ 0,00");
+                zerar_saldo();
                 $.dialog({text: 'Erro na chamada dos dados !!!'});
                 return false;
             }
@@ -663,7 +680,7 @@ $(function() {
                     }
                 });
             break;
-            default:
+            case "playables":
                 if ($("#end_date").val() == "" && $("#start_date").val() == "") {
                     $.dialog({
                         title: 'Erro...',
@@ -674,17 +691,12 @@ $(function() {
 
                 loading("body", null, false);
                 $.ajax({
-                    url: pagina + '?action=load',
+                    url: pagina + '?action=listpayables',
                     type: 'post',
                     data: $('#dados').serialize(),
                     success: function(data) {	
                         var nameTable = "#table-extrato";
                         var colspan = "8";
-
-                        if ($("#status").val() == "available") {
-                            nameTable = "#table-extrato-available";
-                            colspan = "10";
-                        }
 
                         $("body").loading("stop");
                         $("#table-first").hide();
@@ -702,31 +714,15 @@ $(function() {
                             var toAppend = "";
                             var aux = (value.fee/100)*100/(value.amount/100);
                             var final = Math.trunc((aux*30)/1.87);
-
-
-                            if ($("#status").val() == "available") {
-                                toAppend = "<tr style='cursor: pointer;' id='" + value.transaction_id + "' class='toClick trline' data='" + value.transaction_id + "'><td>" + moment(value.date_created).format("DD/MM/YYYY") +"</td>";
-                                //toAppend += "<td>"+ moment(value.accrual_date).format("DD/MM/YYYY") +"</td>";
-                                toAppend += "<td>"+ (value.type == "ted" || value.type == "refund" ? "-" : moment(value.accrual_date).format("DD/MM/YYYY HH:mm")) +"</td>";
-                                toAppend += "<td>"+ (value.type == "ted" || value.type == "refund" ? "-" : (value.payment_method == "debit_card" ? "-" : final )) +"</td>";
-                                toAppend += "<td>"+ (value.type == "ted" ? "-" : value.transaction_id) +"</td>";
-                                toAppend += "<td>"+ (value.type == "ted" ? "Transferência" : (value.ds_evento == null ? "Bilheteria" : value.ds_evento )) +"</td>";
-                                toAppend += "<td>"+ movement_objectTypeToString(value.type) +"</td>";
-                                toAppend += "<td>"+ (value.type == "ted" ? "-" : movement_objectPayment_MethodToString(value.payment_method)) +"</td>";
-                                toAppend += "<td>R$ "+ (value.amount/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
-                                toAppend += "<td>R$ "+ ((value.fee*-1)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
-                                toAppend += "<td class='text-right'>R$ "+ ((value.amount-value.fee)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
-                            }
-                            else {
-                                toAppend = "<tr style='cursor: pointer;' id='" + value.transaction_id + "' class='toClick trline' data='" + value.transaction_id + "'><td>" + moment(value.date_created).format("DD/MM/YYYY HH:mm") +"</td>";
-                                toAppend += "<td>"+ value.transaction_id +"</td>";
-                                toAppend += "<td>"+ (movement_objectTypeToString(value.type) == "ted" ? "Transferência" : (value.ds_evento == null ? "Bilheteria" : value.ds_evento )) +"</td>";
-                                toAppend += "<td>"+ (movement_objectTypeToString(value.type) == "ted" ? "-" : moment(value.payment_date).format("DD/MM/YYYY")) +"</td>";
-                                toAppend += "<td>"+ movement_objectTypeToString(value.type) +"</td>";
-                                toAppend += "<td>"+ (movement_objectTypeToString(value.type) == "ted" ? "-" : movement_objectPayment_MethodToString(value.payment_method)) +"</td>";
-                                toAppend += "<td>R$ "+ (value.amount/100).toFixed(2).toString().replace(',','').replace('.',',') + " - R$ " + (value.fee/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
-                                toAppend += "<td class='text-right'>R$ "+ ((value.amount-value.fee)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
-                            }
+                            
+                            toAppend = "<tr style='cursor: pointer;' id='" + value.transaction_id + "' class='toClick trline' data='" + value.transaction_id + "'><td>" + moment(value.date_created).format("DD/MM/YYYY HH:mm") +"</td>";
+                            toAppend += "<td>"+ value.transaction_id +"</td>";
+                            toAppend += "<td>"+ (movement_objectTypeToString(value.type) == "ted" ? "Transferência" : (value.ds_evento == null ? "Bilheteria" : value.ds_evento )) +"</td>";
+                            toAppend += "<td>"+ (movement_objectTypeToString(value.type) == "ted" ? "-" : moment(value.payment_date).format("DD/MM/YYYY")) +"</td>";
+                            toAppend += "<td>"+ movement_objectTypeToString(value.type) +"</td>";
+                            toAppend += "<td>"+ (movement_objectTypeToString(value.type) == "ted" ? "-" : movement_objectPayment_MethodToString(value.payment_method)) +"</td>";
+                            toAppend += "<td>R$ "+ (value.amount/100).toFixed(2).toString().replace(',','').replace('.',',') + " - R$ " + (value.fee/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                            toAppend += "<td class='text-right'>R$ "+ ((value.amount-value.fee)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
 
                             toAppend += "</tr>";
                             $(nameTable + " tbody").append(toAppend);
@@ -746,9 +742,6 @@ $(function() {
                         $("body").loading("stop");
                         var nameTable = "#table-extrato";
 
-                        if ($("#status").val() == "available") {
-                            nameTable = "#table-extrato-available";
-                        }
                         $(nameTable + " tbody").html("");
                         $.dialog({
                             title: 'Erro...',
@@ -757,6 +750,81 @@ $(function() {
                         return false;
                     }
                 });
+            break;
+            case "available":
+                if ($("#end_date").val() == "" && $("#start_date").val() == "") {
+                    $.dialog({
+                        title: 'Erro...',
+                        text: 'Preencha os campos de data!'
+                    });
+                    return;
+                }
+
+                loading("body", null, false);
+                $.ajax({
+                    url: pagina + '?action=load',
+                    type: 'post',
+                    data: $('#dados').serialize(),
+                    success: function(data) {	
+                        var nameTable = "#table-extrato-available";
+                        colspan = "10";
+
+                        $("body").loading("stop");
+                        $("#table-first").hide();
+                        $(nameTable).show();
+                        data = $.parseJSON(data);
+                        $(nameTable + " tbody").html("");
+                        if (data.length == 0)
+                            $(nameTable + " tbody").html("<tr><td colspan='" + colspan + "'>Nenhum dado encontrado.</td></tr>");
+
+                        var total = 0;
+                        $.each(data, function(key, value) {
+                            total += value.amount-value.fee;
+                            
+                            //console.log(value);
+                            var toAppend = "";
+                            var aux = (value.fee/100)*100/(value.amount/100);
+                            var final = Math.trunc((aux*30)/1.87);
+
+
+                            toAppend = "<tr style='cursor: pointer;' id='" + value.transaction_id + "' class='toClick trline' data='" + value.transaction_id + "'><td>" + moment(value.date_created).format("DD/MM/YYYY") +"</td>";
+                            //toAppend += "<td>"+ moment(value.accrual_date).format("DD/MM/YYYY") +"</td>";
+                            toAppend += "<td>"+ (value.type == "ted" || value.type == "refund" ? "-" : moment(value.accrual_date).format("DD/MM/YYYY HH:mm")) +"</td>";
+                            toAppend += "<td>"+ (value.type == "ted" || value.type == "refund" ? "-" : (value.payment_method == "debit_card" ? "-" : final )) +"</td>";
+                            toAppend += "<td>"+ (value.type == "ted" ? "-" : value.transaction_id) +"</td>";
+                            toAppend += "<td>"+ (value.type == "ted" ? "Transferência" : (value.ds_evento == null ? "Bilheteria" : value.ds_evento )) +"</td>";
+                            toAppend += "<td>"+ movement_objectTypeToString(value.type) +"</td>";
+                            toAppend += "<td>"+ (value.type == "ted" ? "-" : movement_objectPayment_MethodToString(value.payment_method)) +"</td>";
+                            toAppend += "<td>R$ "+ (value.amount/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                            toAppend += "<td>R$ "+ ((value.fee*-1)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                            toAppend += "<td class='text-right'>R$ "+ ((value.amount-value.fee)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+
+                            toAppend += "</tr>";
+                            $(nameTable + " tbody").append(toAppend);
+                        });
+                        $(nameTable + " tfoot").html("");
+
+                        var toAppend = "<tr class=ui-widget-header'>"
+                        toAppend += "<td colspan='" + colspan + "' class='text-right ui-widget-header'>Total R$ "+ ((total)/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
+                        toAppend += "</tr>";
+                        $(nameTable + " tfoot").append(toAppend);
+
+                        $(".toClick").click(function(obj) {
+                            lineClick($(this).attr("data"));
+                        });
+                    },
+                    error: function(){
+                        $("body").loading("stop");
+                        var nameTable = "#table-extrato-available";
+                        $(nameTable + " tbody").html("");
+                        $.dialog({
+                            title: 'Erro...',
+                            text: 'Erro na chamada dos dados !!!'
+                        });
+                        return false;
+                    }
+                });
+            break;
         }
         
         
@@ -1342,16 +1410,16 @@ $(function() {
 
         <label>Status:</label>
         <select id="status" name="status">
-            <option value="waiting_funds">Saldo a Receber</option>
+            <option value="playables">Saldo a Receber</option>
             <option value="available">Saldo Disponível</option>
             <!--option value="transferred">Saldo transferido</option-->
             <option value="transfers">Transferências</option>
             <option value="antecipations">Antecipações</option>
         </select>
-        <span id="spanPeriodo">
-        <label>Periodo:</label>
-        <input type="text" id="start_date" name="start_date" class="datepicker extratoSearch" />
-        <input type="text" id="end_date" name="end_date" class="datepicker extratoSearch" />
+        <span id="spanPeriodo" style="display:none">
+            <label>Periodo:</label>
+            <input type="text" id="start_date" name="start_date" class="datepicker extratoSearch" />
+            <input type="text" id="end_date" name="end_date" class="datepicker extratoSearch" />
         </span>
         <input type="hidden" id="count" name="count" value="1000" />
         <input type="button" class="button" id="btnBuscarExtrato" value="Buscar historico" />&nbsp;

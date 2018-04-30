@@ -535,13 +535,14 @@ function listPayables($recipient_id, $status, $evento, $count, $page) {
 	$lastDate = null;
 
 	foreach ($playables as $value) {
-		// $aux = explode("-", $value["accrual_date"]);
-		
-		// $aqui = $aux[0] . "-" + $aux[1] . "-" . $aux[2];
-		// error_log("accrual_date : " . $value["accrual_date"]);
-		// $current = date_create_from_format("YYYY-mm-DD", $aqui);
+		$aux = explode("T", (string)$value["accrual_date"]);
+		$aux = explode("-", $aux[0]);
+		$date = $aux[0] . "-" . $aux[1] . "-" . $aux[2];
+		$current = date_create_from_format("Y-m-d", $date);
 
-		$current = new Datetime($value["accrual_date"]);
+		//error_log("current: ". $current->format('Y-m-d'));
+
+		//$current = new Datetime($value["accrual_date"]);
 		
 		if ($firstDate == null || $current<$firstDate) {
 			$firstDate = $current;
@@ -551,8 +552,16 @@ function listPayables($recipient_id, $status, $evento, $count, $page) {
 		}
 	}
 
+	date_add($firstDate, date_interval_create_from_date_string('-50 days'));
+	date_add($lastDate, date_interval_create_from_date_string('50 days'));
+	// $firstDate->modify('-50 days');
+	// $lastDate->modify('+50 days');
+
 	$start_date_modified = $firstDate->format('Y-m-d');
 	$end_date_modified = $lastDate->format('Y-m-d');
+
+	error_log("firstDate" .$start_date_modified);
+	error_log("lastDate" .$end_date_modified);
 
 	$query = "SELECT DISTINCT e.id_evento, e.ds_evento, pv.cd_numero_autorizacao as codeTran
 	FROM mw_pedido_venda pv 
@@ -596,8 +605,6 @@ function listPayables($recipient_id, $status, $evento, $count, $page) {
 			}
 		}
 
-		error_log("id_evento/evento " . $id_evento . "/" . $evento);
-
 		$letMePass = $id_evento == $evento;
 		if ($evento == -1) {
 			$letMePass = true;
@@ -607,7 +614,6 @@ function listPayables($recipient_id, $status, $evento, $count, $page) {
 		}
 
 		if ($letMePass) {
-			error_log("letMePass: sim");
 			$json[] = array("amount"=> $value["amount"]
 				,"fee" => $value["fee"]
 				,"transaction_id" => $value["transaction_id"]
@@ -621,8 +627,6 @@ function listPayables($recipient_id, $status, $evento, $count, $page) {
 			);		
 		}
 	}
-
-	error_log("json: " . print_r($json, true));
 
 	return $json;
 }

@@ -41,11 +41,21 @@ function getSplit($type, $pedido, $where, $payment_method, $amount) {
 	$param = array($stmt["CodPeca"]);
 	$result = executeSQL($conn, $query, $param);
 
+	$queryCount = "SELECT DISTINCT COUNT(*) Total
+	FROM tabPeca tb
+	INNER JOIN CI_MIDDLEWAY..mw_evento e ON tb.CodPeca=e.CodPeca
+	INNER JOIN CI_MIDDLEWAY..mw_produtor p ON p.id_produtor = tb.id_produtor and p.in_ativo=1
+	INNER JOIN CI_MIDDLEWAY..mw_regra_split rs ON rs.id_produtor = p.id_produtor and rs.id_evento=e.id_evento
+	INNER JOIN CI_MIDDLEWAY..mw_recebedor r ON rs.id_recebedor = r.id_recebedor and r.in_ativo=1
+	WHERE tb.CodPeca = ? and rs.in_ativo = 1";
+
+	$resultCount = executeSQL($conn, $queryCount, $param,true);
+
 	if(!hasRows($result))
 		return null;
 
+	$count = $resultCount["Total"];
 
-	$count = hasRows($result, true);
 	$i = 0;
 	$amountUsed = 0;
 	$amount = $amount/100;
@@ -116,7 +126,7 @@ function getSplit($type, $pedido, $where, $payment_method, $amount) {
             break;
 		}
 		
-		error_log("split: " . print_r($split, true));
+		//error_log("split: " . print_r($split, true));
 
 	}
 	//error_log("Split: " . print_r($split, true));

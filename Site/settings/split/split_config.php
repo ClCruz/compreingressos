@@ -5,11 +5,12 @@ require_once('../settings/pagarme/Pagarme.php');
 
 $gw_pagarme = array("apikey" => "", "postbackURI"=> "");
 $gw_tipagos = array("idLoja" => "", "keyLoja"=> "", "codProduto"=> "", "url_ws"=> "");
+$postback_url = "";
 
 
 //$type: pagarme, tipagos
 function configureSplit($type) {
-    global $gw_pagarme, $gw_tipagos;
+    global $gw_pagarme, $gw_tipagos, $postback_url;
     error_log("split_config.php - 1");
 
     error_log("Configurando split para: " . $type);

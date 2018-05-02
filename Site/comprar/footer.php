@@ -30,7 +30,32 @@ if (isset($_SESSION['operador']) and in_array($etapa_atual, $etapas_para_exibir)
 <?php
 }
 ?>
-    
+
+
+<style type="text/css">
+    #comTomTicketChatWidget{bottom: 99px !important;}
+    @media screen and (max-width: 600px) {
+  #comTomTicketChatWidget {
+    display: none;
+  }
+}
+</style>
+
+<script type="text/javascript">
+// <![CDATA[
+var ttChatLoaderS = document.createElement('script');
+document.tomticketChatLoaderScriptVersion = 2;
+ttChatLoaderS.src = 'https://compreingressos.tomticket.com/scripts-chat/chat.min.js'
++ '?id=EP19881'
++ '&account=1272384P05012018052746'
++ '&autoOpen=0'
++ '&hideWhenOffline=0'
++ '&d=compreingressos'
++ '&ts=' + new Date().getTime()
++ '&ref=' + encodeURIComponent(document.URL);
+document.body.appendChild(ttChatLoaderS);
+//]]>
+</script>
 <div id="footer">
     <div class="centraliza">
         <ul>

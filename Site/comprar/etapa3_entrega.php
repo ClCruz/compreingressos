@@ -96,7 +96,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 							</p>
 						</div>
 						<p class="descricao endereco">
-							Olá <b><?php echo utf8_encode($rs['DS_NOME']); ?>,</b> você escolheu receber seus ingressos em um endereço<br>
+							Olá <b><?php echo utf8_encode2($rs['DS_NOME']); ?>,</b> você escolheu receber seus ingressos em um endereço<br>
 							cadastrado. Selecione o endereço desejado ou inclua um novo
 						</p>
 					</div>

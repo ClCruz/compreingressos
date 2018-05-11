@@ -5,8 +5,8 @@ session_start();
 
 $mainConnection = mainConnection();
 
+sale_trace($_SESSION['user'],NULL,NULL,NULL,NULL,NULL,session_id(),'validarBin.php','Iniciando validação do bin',$_GET['carrinho'],0);
 if ($_GET['carrinho']) {
-
     if ($_POST['tipoBin'] == 'itau') {
 
         $query = "SELECT E.ID_BASE
@@ -179,7 +179,8 @@ if ($_GET['carrinho']) {
     $numBinsUtilizados = numRows($mainConnection, $query, $params);
 
     if ($numBinsUtilizados > 1) {
-        echo "Não é possível utilizar dois ou mais códigos promocionais de cartões diferentes.<br/><br/>Por favor, retorne e selecione outro tipo de ingresso.";
+        sale_trace($_SESSION['user'],NULL,NULL,NULL,NULL,NULL,session_id(),'validarBin.php','Iniciando validação do bin','Não é possível utilizar dois ou mais códigos promocionais de cartões diferentes.<br/><br/>Por favor, retorne e selecione outro tpo de ingresso.',0);
+        echo "Não é possível utilizar dois ou mais códigos promocionais de cartões diferentes.<br/><br/>Por favor, retorne e selecione outro tpo de ingresso.";
         die();
     }
 
@@ -310,7 +311,6 @@ if ($_GET['carrinho']) {
         }
     }
 
-
     // verifica limite promocoes
 
     // lista reserva por evento
@@ -404,6 +404,7 @@ if ($_GET['carrinho']) {
 
 
     if ($erro != '') {
+        sale_trace($_SESSION['user'],NULL,NULL,NULL,NULL,NULL,session_id(),'validarBin.php','Validando bin',$erro,0);
         echo $erro;
         if (!isset($_POST['pos']))
             die();

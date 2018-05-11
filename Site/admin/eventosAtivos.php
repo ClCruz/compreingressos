@@ -140,7 +140,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 19, true)) {
               <td><?php echo $rs['ID_APRESENTACAO']; ?></td>
         <td><?php echo $rs['DT_APRESENTACAO']; ?></td>
         <td><?php echo $rs['HR_APRESENTACAO']; ?></td>
-        <td><?php echo utf8_encode($rs['DS_PISO']); ?></td>
+        <td><?php echo utf8_encode2($rs['DS_PISO']); ?></td>
         <td><?php echo ($rs['IN_ATIVO'] ? 'Ativo' : 'Inativo'); ?></td>
         <td class="button center"><a href="<?php echo $pagina; ?>?action=edit&codevento=<?php echo $rs['ID_APRESENTACAO']; ?>">Editar</a></td>
       </tr>

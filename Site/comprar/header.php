@@ -171,7 +171,7 @@ $rows = numRows($mainConnection, "SELECT 1 FROM MW_RESERVA WHERE ID_SESSION = ?"
 		<div class="centraliza">
 			<a href="http://compreingressos.com/espetaculos" class="ativo">Todas as cidades</a>
 			<?php foreach ($dados_cidade as $cidade) {
-				$cidade['nome'] = utf8_encode($cidade['nome']);
+				$cidade['nome'] = utf8_encode2($cidade['nome']);
 				?><a href="http://compreingressos.com/espetaculos?cidade=<?php echo $cidade['nome']; ?>"><?php echo $cidade['nome']; ?> <span>(<?php echo $cidade['total']; ?>)</span></a><?php
 			}?>
 		</div>
@@ -180,7 +180,7 @@ $rows = numRows($mainConnection, "SELECT 1 FROM MW_RESERVA WHERE ID_SESSION = ?"
 		<div class="centraliza">
 			<a href="http://compreingressos.com/espetaculos?cidade=" class="ativo">Todos os gêneros</a>
 			<?php foreach ($dados_genero as $genero) {
-				$genero['nome'] = utf8_encode($genero['nome']);
+				$genero['nome'] = utf8_encode2($genero['nome']);
 				?><a href="http://compreingressos.com/espetaculos?cidade=&amp;genero=<?php echo $genero['nome']; ?>"><?php echo $genero['nome']; ?> <span>(<?php echo $genero['total']; ?>)</span></a><?php
 			}?>
 		</div>

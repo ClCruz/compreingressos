@@ -1,10 +1,10 @@
 <?php
 function mainConnection() {
-	$host = 'localhost\\sql2008';
+	$host = '192.168.91.14';
 	$port = '1433';
 	$dbname = 'CI_MIDDLEWAY';
-	$user = 'tsp';
-	$pass = 'tsp';
+	$user = 'web';
+	$pass = 'web';
 	
 	return sqlsrv_connect($host.','.$port, array("UID" => $user, "PWD" => $pass, "Database" => $dbname));
 }
@@ -13,20 +13,20 @@ function getConnection($teatroID) {
 	$mainConnection = mainConnection();
 	$rs = executeSQL($mainConnection, 'SELECT DS_NOME_BASE_SQL FROM MW_BASE WHERE ID_BASE = ?', array($teatroID), true);
 	
-	$host = 'localhost\\sql2008';
+	$host = '192.168.91.14';
 	$port = '1433';
-	$user = 'tsp';
-	$pass = 'tsp';
+	$user = 'web';
+	$pass = 'web';
 	
 	return sqlsrv_connect($host.','.$port, array("UID" => $user, "PWD" => $pass, "Database" => $rs['DS_NOME_BASE_SQL']));
 }
 
 function getConnectionTsp() {
-	$host = 'localhost\\sql2008';
+	$host = '192.168.91.14';
 	$port = '1433';
 	$dbname = 'tspweb';
-	$user = 'tsp';
-	$pass = 'tsp';
+	$user = 'web';
+	$pass = 'web';
 	
 	return sqlsrv_connect($host.','.$port, array("UID" => $user, "PWD" => $pass, "Database" => $dbname));
 }

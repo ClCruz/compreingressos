@@ -101,11 +101,11 @@ function buscarRegistros(){
 
 
 			 $html .= '<tr>
-	              <td style="text-align: center;"><label id="tokenTx_'.$i.'" data-codsala="'.$rs['token'].'" >'.utf8_encode($rs['token']).'</label>
-	                <input type="text" name="token" class="inputhidden" id="tokenIn_'.$i.'"  value="'.utf8_encode($rs['token']).'">
+	              <td style="text-align: center;"><label id="tokenTx_'.$i.'" data-codsala="'.$rs['token'].'" >'.utf8_encode2($rs['token']).'</label>
+	                <input type="text" name="token" class="inputhidden" id="tokenIn_'.$i.'"  value="'.utf8_encode2($rs['token']).'">
 	              </td>
 
-	             <td style="text-align: center;"><label id="ambienteTx_'.$i.'" >'.utf8_encode($rs['ambiente']).'</label>
+	             <td style="text-align: center;"><label id="ambienteTx_'.$i.'" >'.utf8_encode2($rs['ambiente']).'</label>
 	                '.$ambienteSelect.'
 	              </td>
 	

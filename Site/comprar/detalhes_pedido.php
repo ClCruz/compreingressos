@@ -120,14 +120,14 @@ while ($rs = fetchResult($result)) {
 <div class="espetaculo_img"><?php if (file_exists('../images/evento/'.$rs['ID_EVENTO'].'.jpg')) { ?><img src="../images/evento/<?php echo $rs['ID_EVENTO']; ?>.jpg"><?php } ?></div>
 <div class="resumo_espetaculo" data-evento="<?php echo $rs['ID_EVENTO']; ?>">
 	<div class="data<?php echo $is_pacote ? ' hidden' : ''; ?>">
-		<p class="nome_dia"><?php echo utf8_encode(strftime("%a", strtotime($rs['DT_APRESENTACAO']->format('Ymd')))); ?></p>
+		<p class="nome_dia"><?php echo utf8_encode2(strftime("%a", strtotime($rs['DT_APRESENTACAO']->format('Ymd')))); ?></p>
 		<p class="numero_dia"><?php echo $rs['DT_APRESENTACAO']->format('d'); ?></p>
-		<p class="mes"><?php echo utf8_encode(strftime("%b", strtotime($rs['DT_APRESENTACAO']->format('Ymd')))); ?></p>
+		<p class="mes"><?php echo utf8_encode2(strftime("%b", strtotime($rs['DT_APRESENTACAO']->format('Ymd')))); ?></p>
 	</div>
 	<div class="resumo">
-		<p class="nome"><?php echo utf8_encode($rs['DS_EVENTO']); ?></p>
-		<p class="endereco<?php echo $is_pacote ? ' hidden' : ''; ?>"><?php echo utf8_encode($evento_info['endereco'] . ' - ' . $evento_info['bairro'] . ' - ' . $evento_info['cidade'] . ', ' . $evento_info['sigla_estado']); ?></p>
-		<p class="teatro<?php echo $is_pacote ? ' hidden' : ''; ?>"><?php echo utf8_encode($evento_info['nome_teatro']); ?></p>
+		<p class="nome"><?php echo utf8_encode2($rs['DS_EVENTO']); ?></p>
+		<p class="endereco<?php echo $is_pacote ? ' hidden' : ''; ?>"><?php echo utf8_encode2($evento_info['endereco'] . ' - ' . $evento_info['bairro'] . ' - ' . $evento_info['cidade'] . ', ' . $evento_info['sigla_estado']); ?></p>
+		<p class="teatro<?php echo $is_pacote ? ' hidden' : ''; ?>"><?php echo utf8_encode2($evento_info['nome_teatro']); ?></p>
 		<p class="horario<?php echo $is_pacote ? ' hidden' : ''; ?>"><?php echo $rs['HR_APRESENTACAO']; ?></p>
 	</div>
 	<table id="pedido_resumo">
@@ -165,14 +165,14 @@ while ($rs = fetchResult($result)) {
 						<table>
 							<tbody><tr>
 								<td>
-									<?php echo utf8_encode($rs['DS_SETOR']); ?><br>
+									<?php echo utf8_encode2($rs['DS_SETOR']); ?><br>
 									<?php echo $rs['DS_LOCALIZACAO']; ?>
 								</td>
 							</tr>
 						</tbody></table>
 					</div>
 				</td>
-				<td class="tipo"><?php echo utf8_encode($rs['DS_TIPO_BILHETE']); ?></td>
+				<td class="tipo"><?php echo utf8_encode2($rs['DS_TIPO_BILHETE']); ?></td>
 				<td>R$ <span class="valorIngresso"><?php echo number_format($rs['VL_UNITARIO'], 2, ',', ''); ?></span></td>
 				<td>R$ <?php echo number_format($rs['VL_TAXA_CONVENIENCIA'], 2, ',', ''); ?></td>
 				<td>R$ <span><?php echo number_format($rs['VL_UNITARIO'] + $rs['VL_TAXA_CONVENIENCIA'], 2, ',', ''); ?></span></td>

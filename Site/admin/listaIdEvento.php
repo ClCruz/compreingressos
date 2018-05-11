@@ -150,7 +150,7 @@ $(function() {
 		<?php foreach ($newResult as $resp): ?>
 			<tr>
 				<td><?php echo $resp['id_evento']; ?></td>
-				<td><?php echo utf8_encode($resp['ds_evento']); ?></td>
+				<td><?php echo utf8_encode2($resp['ds_evento']); ?></td>
 				<td><?php echo $resp['data_inicial']; ?></td>
 				<td><?php echo $resp['data_final'] ?></td>
 				<td><?php echo ($resp['in_ativo'] ? 'Ativo' : 'Inativo'); ?></td>

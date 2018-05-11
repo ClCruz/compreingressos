@@ -381,8 +381,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                 $id = $rs['ID_BASE'];
             ?>
                 <tr>
-                    <td><?php echo utf8_encode($rs['DS_NOME_TEATRO']); ?></td>
-                    <td><?php echo utf8_encode($rs['DS_NOME_BASE_SQL']); ?></td>
+                    <td><?php echo utf8_encode2($rs['DS_NOME_TEATRO']); ?></td>
+                    <td><?php echo utf8_encode2($rs['DS_NOME_BASE_SQL']); ?></td>
                     <td><?php echo $rs['IN_ATIVO'] ? 'Sim' : 'N&atilde;o'; ?></td>
                     <td class="button"><a href="<?php echo $pagina; ?>?action=edit&id=<?php echo $id; ?>">Editar</a></td>
                     <td class="button"><a href="<?php echo $pagina; ?>?action=delete&id=<?php echo $id; ?>">Apagar</a></td>

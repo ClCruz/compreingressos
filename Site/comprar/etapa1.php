@@ -43,7 +43,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
   $hora = explode('h', $rs['HR_APRESENTACAO']);
   $data = explode('/', $rs['DT_APRESENTACAO']);
   $tempo = mktime($hora[0], $hora[1], 0, $data[1], $data[0], $data[2]);
-  $setor_atual = utf8_encode($rs['DS_PISO']);
+  $setor_atual = utf8_encode2($rs['DS_PISO']);
 
   if (count($rs) < 2 and !isset($_GET['teste'])) {
     header("Location: http://www.compreingressos.com");
@@ -355,14 +355,14 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
           <div class="resumo_espetaculo">
             <a id="info" name="info"></a>
             <div class="data<?php echo $is_pacote ? ' hidden' : ''; ?>">
-              <p class="nome_dia"><?php echo utf8_encode(strftime("%a", $tempo)); ?></p>
+              <p class="nome_dia"><?php echo utf8_encode2(strftime("%a", $tempo)); ?></p>
               <p class="numero_dia"><?php echo strftime("%d", $tempo); ?></p>
               <p class="mes"><?php echo strftime("%b", $tempo); ?></p>
             </div>
             <div class="resumo">
-              <p class="nome"><?php echo utf8_encode($rs['DS_EVENTO']); ?></p>
-              <p class="endereco<?php echo $is_pacote ? ' hidden' : ''; ?>"><?php echo utf8_encode($evento_info['endereco'] . ' - ' . $evento_info['bairro'] . ' - ' . $evento_info['cidade'] . ', ' . $evento_info['sigla_estado']); ?></p>
-              <p class="teatro<?php echo $is_pacote ? ' hidden' : ''; ?>"><?php echo utf8_encode($evento_info['nome_teatro']); ?></p>
+              <p class="nome"><?php echo utf8_encode2($rs['DS_EVENTO']); ?></p>
+              <p class="endereco<?php echo $is_pacote ? ' hidden' : ''; ?>"><?php echo utf8_encode2($evento_info['endereco'] . ' - ' . $evento_info['bairro'] . ' - ' . $evento_info['cidade'] . ', ' . $evento_info['sigla_estado']); ?></p>
+              <p class="teatro<?php echo $is_pacote ? ' hidden' : ''; ?>"><?php echo utf8_encode2($evento_info['nome_teatro']); ?></p>
               <p class="horario<?php echo $is_pacote ? ' hidden' : ''; ?>"><?php echo $rs['HR_APRESENTACAO']; ?></p>
             </div>
             <div class="outras_datas<?php echo $is_pacote ? ' hidden' : ''; ?>">
@@ -386,9 +386,9 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
                     ?>
                       <div class="container_setor<?php echo ($_GET['apresentacao'] == $rs['ID_APRESENTACAO']) ? ' ativo' : ''; ?>">
                         <div class="nome_setor">
-                          <?php echo utf8_encode($rs['DS_PISO']); ?>
+                          <?php echo utf8_encode2($rs['DS_PISO']); ?>
                         </div>
-                        <a href="etapa1.php?apresentacao=<?php echo $rs['ID_APRESENTACAO']; ?>&eventoDS=<?php echo urlencode(utf8_encode($rs['DS_EVENTO'])); ?>"><span>selecionar</span></a>
+                        <a href="etapa1.php?apresentacao=<?php echo $rs['ID_APRESENTACAO']; ?>&eventoDS=<?php echo urlencode(utf8_encode2($rs['DS_EVENTO'])); ?>"><span>selecionar</span></a>
                       </div>
                     <?php
                   }

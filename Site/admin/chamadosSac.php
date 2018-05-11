@@ -226,9 +226,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 213, true)) {
 ?>
     	    <tr>
     		<td><input name="diatemp[]" type="hidden" class="dia" id="diatemp<?php echo $cont;?>" maxlength="10" size="10" value="<?php echo $dia; ?>" /><?php echo $dia; ?></td>
-    		<td><?php echo utf8_encode($rs["DS_ORIGEM_CHAMADO"]); ?></td>
-    		<td><?php echo utf8_encode($rs["DS_TIPO_CHAMADO"]); ?></td>
-    		<td><?php echo utf8_encode($rs["DS_TIPO_RESOLUCAO"]); ?></td>
+    		<td><?php echo utf8_encode2($rs["DS_ORIGEM_CHAMADO"]); ?></td>
+    		<td><?php echo utf8_encode2($rs["DS_TIPO_CHAMADO"]); ?></td>
+    		<td><?php echo utf8_encode2($rs["DS_TIPO_RESOLUCAO"]); ?></td>
     		<td><?php echo $diaRes; ?></td>
     		<td><?php echo $rs["DS_OBSERVACAO"]; ?></td>
     		<td class="button"><a href="<?php echo $pagina; ?>?action=edit&<?php echo $id; ?>">Editar</a></td>

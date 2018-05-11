@@ -82,9 +82,9 @@ elseif (isset($_GET['teatro']) and isset($_GET['codapresentacao'])) {
 		
 		$cadeira = array( 
 			"id" => $rs['INDICE'],
-			"name" => utf8_encode($rs['NOMOBJETO']),
-			"classeObj" => utf8_encode($rs['CLASSEOBJ']),
-			"setor" => utf8_encode($rs['NOMSETOR']),
+			"name" => utf8_encode2($rs['NOMOBJETO']),
+			"classeObj" => utf8_encode2($rs['CLASSEOBJ']),
+			"setor" => utf8_encode2($rs['NOMSETOR']),
 			"codSetor" => $rs['CODSETOR'],
 			"x" => number_format($rs['POSXSITE'], 3),
 			"y" => number_format($rs['POSYSITE'], 3),

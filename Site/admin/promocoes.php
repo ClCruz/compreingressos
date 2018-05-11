@@ -96,8 +96,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                             $id = $rs['ID_PROMOCAO_CONTROLE'];
                     ?>
                     <tr>
-                        <td><?php echo utf8_encode($rs['DS_PROMOCAO']); ?></td>
-                        <td><?php echo utf8_encode($rs['ABRANGENCIA']); ?></td>
+                        <td><?php echo utf8_encode2($rs['DS_PROMOCAO']); ?></td>
+                        <td><?php echo utf8_encode2($rs['ABRANGENCIA']); ?></td>
                         <td><?php echo $rs['DT_INICIO_PROMOCAO']->format('d/m/Y'); ?></td>
                         <td><?php echo $rs['DT_FIM_PROMOCAO']->format('d/m/Y');; ?></td>
 

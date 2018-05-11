@@ -134,7 +134,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 		$json = array();
 		while ($rs = fetchResult($result)) {
 			$json[] = array("id_recebedor" => $rs["id_recebedor"],
-							"ds_razao_social" => utf8_encode($rs["ds_razao_social"]),
+							"ds_razao_social" => utf8_encode2($rs["ds_razao_social"]),
 							"cd_cpf_cnpj" => $rs["cd_cpf_cnpj"],
 							"id_gateway" => $rs["id_gateway"],
 							"recipient_id" => $rs["recipient_id"]);
@@ -164,7 +164,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
     		$param = array($pecas[$i]["CodPeca"], $pecas[$i]["id_base"]);
     		$stmt = executeSQL($mainConnection, $query, $param);
     		while ($rs = fetchResult($stmt)) {
-    			$eventos[] = array("id_evento" => $rs["id_evento"], "ds_evento" => utf8_encode($rs["ds_evento"]));
+    			$eventos[] = array("id_evento" => $rs["id_evento"], "ds_evento" => utf8_encode2($rs["ds_evento"]));
     		}
     	}
 

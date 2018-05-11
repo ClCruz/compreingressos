@@ -11,7 +11,7 @@ if($_POST['action'] == "consulta"){
 
     $combo = array();
     while ($rs = fetchResult($result)) {
-        $combo[] = array("id" => $rs['ID_ASSINATURA'], "value" => utf8_encode($rs['DS_ASSINATURA']));
+        $combo[] = array("id" => $rs['ID_ASSINATURA'], "value" => utf8_encode2($rs['DS_ASSINATURA']));
     }        
     echo json_encode($combo);
     die();

@@ -73,7 +73,7 @@ function buscarSala(){
 			$html .= "<option value=''>Selecione...</option>
 				    <option value='TODOS'>&lt; TODOS &gt;</option>";
 			while($rs = fetchResult($rsGeral)){
-				$html .= "<option value=\"". $rs["codsala"] ."\">". utf8_encode($rs["nomSala"]) ."</option>\n";
+				$html .= "<option value=\"". $rs["codsala"] ."\">". utf8_encode2($rs["nomSala"]) ."</option>\n";
 			}
 			echo $html;
 		}
@@ -111,7 +111,7 @@ if($_POST["NomeBase"] != "" && $_POST["Proc"] != "" && !isset($_REQUEST["Acao"])
 			$html .= "<option value=\"null\">Selecione...</option>";
 			if(hasRows($result)){
 				while($rs = fetchResult($result)){
-					$html .= "<option value=\"". $rs["CodPeca"] ."\">". utf8_encode($rs["nomPeca"]) ."</option>\n";	
+					$html .= "<option value=\"". $rs["CodPeca"] ."\">". utf8_encode2($rs["nomPeca"]) ."</option>\n";	
 				}
 			}
 			$html .= '</select>';

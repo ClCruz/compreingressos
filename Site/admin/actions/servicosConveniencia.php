@@ -144,7 +144,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                     echo $e->getMessage();                    
                 }
 
-                $retorno = 'true?idEvento=' . urlencode(utf8_encode($rs['DS_EVENTO'])) . '&data=' . $_POST['data'];
+                $retorno = 'true?idEvento=' . urlencode(utf8_encode2($rs['DS_EVENTO'])) . '&data=' . $_POST['data'];
             } else {
                 $retorno = sqlErrors();
             }

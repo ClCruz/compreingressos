@@ -49,7 +49,7 @@ if(hasRows($result)){
         while ($rs = fetchResult($result)) {
         ?>
             <tr>
-                <td><?php echo utf8_encode($rs['DS_EVENTO']); ?></td>
+                <td><?php echo utf8_encode2($rs['DS_EVENTO']); ?></td>
                 <td><?php echo $rs['DT_APRESENTACAO']; ?></td>
             </tr>
         <?php

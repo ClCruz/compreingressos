@@ -92,7 +92,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 310, true)) {
                 <td><?php echo $dados["ID_PEDIDO_VENDA"]; ?></td>
                 <td><?php echo $dados["DT_PEDIDO_VENDA"]->format("d/m/Y"); ?></td>
                 <td><?php echo $dados["CD_CPF"]; ?></td>
-                <td><?php echo utf8_encode($dados["DS_NOME"] . ' ' . $dados["DS_SOBRENOME"]) . '<br/>' . $dados["DS_DDD_TELEFONE"] . ' ' . $dados["DS_TELEFONE"]; ?></td>
+                <td><?php echo utf8_encode2($dados["DS_NOME"] . ' ' . $dados["DS_SOBRENOME"]) . '<br/>' . $dados["DS_DDD_TELEFONE"] . ' ' . $dados["DS_TELEFONE"]; ?></td>
                 <td><?php echo $dados["VL_TOTAL_PEDIDO_VENDA"]; ?></td>
                 <td><?php echo $dados["QTD"]; ?></td>
                 <td><?php echo comboSituacao('situacao', $dados["IN_SITUACAO"], false); ?></td>

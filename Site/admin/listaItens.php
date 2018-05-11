@@ -54,8 +54,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
  ?>
             <tr>
                 <td colspan="2"><?php echo $rs['APRESENTACAO']; ?></td>
-                <td colspan="2"><?php echo utf8_encode($rs['DS_EVENTO']); ?></td>
-                <td colspan="2"><?php echo utf8_encode($rs['DS_SETOR']) ?></td>
+                <td colspan="2"><?php echo utf8_encode2($rs['DS_EVENTO']); ?></td>
+                <td colspan="2"><?php echo utf8_encode2($rs['DS_SETOR']) ?></td>
                 <td colspan="2"><?php echo $rs['DS_LOCALIZACAO']; ?></td>
                 <td><?php echo $rs['QT_INGRESSOS']; ?></td>
                 <td><?php echo str_replace(".", ",", $rs['VL_UNITARIO']); ?></td>

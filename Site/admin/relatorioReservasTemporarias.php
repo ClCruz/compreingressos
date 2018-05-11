@@ -24,7 +24,7 @@ if ($_GET['action']) {
 	    while ($rs = fetchResult($result)) {
 		$combo .= '<option value="' . $rs['ID_EVENTO'] . '"' .
 			(($_GET["evento"] == $rs['ID_EVENTO']) ? ' selected' : '') .
-			'>' . str_replace("'", "\'", utf8_encode($rs['DS_EVENTO'])) . '</option>';
+			'>' . str_replace("'", "\'", utf8_encode2($rs['DS_EVENTO'])) . '</option>';
 	    }
 
 	    echo $combo;
@@ -46,7 +46,7 @@ if ($_GET['action']) {
 	    while ($rs = fetchResult($result)) {
 		$combo .= '<option value="' . $rs['DS_SETOR'] . '"' .
 			(($_GET["setor"] == $rs['DS_SETOR']) ? ' selected' : '') .
-			'>' . str_replace("'", "\'", utf8_encode($rs['DS_SETOR'])) . '</option>';
+			'>' . str_replace("'", "\'", utf8_encode2($rs['DS_SETOR'])) . '</option>';
 	    }
 
 	    echo $combo;

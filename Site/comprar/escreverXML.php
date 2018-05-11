@@ -40,7 +40,7 @@ if (is_dir($dir)) {
                         $xml .= "\t<item>\n";
                         $xml .= "\t\t<id>" . $rs["ID_EVENTO"] . "</id>\n";
                         $xml .= "\t\t<idcampanha>" . $idcampanha . "</idcampanha>\n";
-                        $xml .= "\t\t<tag>" . utf8_encode($tag_modificado) . "</tag>\n";
+                        $xml .= "\t\t<tag>" . utf8_encode2($tag_modificado) . "</tag>\n";
                         $xml .= "\t</item>\n";
                     }
                 } else {

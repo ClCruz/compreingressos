@@ -138,7 +138,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 29, true)) {
                 $id = $rs["ID_LOCAL_EVENTO"];
             ?>
                 <tr>
-                    <td><?php echo utf8_encode($rs["DS_LOCAL_EVENTO"]); ?></td>
+                    <td><?php echo utf8_encode2($rs["DS_LOCAL_EVENTO"]); ?></td>
                     <td><?php echo comboTipoLocal("tipolocal", $rs["ID_TIPO_LOCAL"], false); ?></td>
                     <td><?php echo comboEstado("idestado", $rs["ID_ESTADO"], true, false); ?></td>
                     <td><?php echo comboMunicipio("idmunicipio", $rs["ID_MUNICIPIO"], $rs["ID_ESTADO"], false); ?></td>

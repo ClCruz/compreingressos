@@ -187,9 +187,9 @@ $(function() {
 					$id = $rs['ID_USUARIO'];
 			?>
 			<tr>
-				<td><?php echo utf8_encode($rs['DS_NOME']); ?></td>
-				<td><?php echo utf8_encode($rs['DS_EMAIL']); ?></td>
-				<td><?php echo utf8_encode($rs['CD_LOGIN']); ?></td>
+				<td><?php echo utf8_encode2($rs['DS_NOME']); ?></td>
+				<td><?php echo utf8_encode2($rs['DS_EMAIL']); ?></td>
+				<td><?php echo utf8_encode2($rs['CD_LOGIN']); ?></td>
 				<td><?php echo $rs['CD_CPF']; ?></td>
 				<td><?php echo $rs['DS_DDD_CELULAR']; ?></td>
 				<td><?php echo $rs['DS_CELULAR']; ?></td>

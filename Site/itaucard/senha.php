@@ -6,9 +6,9 @@ require_once('../settings/functions.php');
 require 'logado.php';
 
 if ($_POST) {
-	if (strlen($_POST['senha1']) < 6) exit(json_encode(array('error'=>utf8_encode('Sua nova senha deve ter, no mínimo, 6 caracteres.'))));
-	if ($_POST['senha1'] == '123456') exit(json_encode(array('error'=>utf8_encode('Sua nova senha deve ser difirente da atual.'))));
-	if ($_POST['senha1'] != $_POST['senha2']) exit(json_encode(array('error'=>utf8_encode('A nova senha não confere com a confirmação.'))));
+	if (strlen($_POST['senha1']) < 6) exit(json_encode(array('error'=>utf8_encode2('Sua nova senha deve ter, no mï¿½nimo, 6 caracteres.'))));
+	if ($_POST['senha1'] == '123456') exit(json_encode(array('error'=>utf8_encode2('Sua nova senha deve ser difirente da atual.'))));
+	if ($_POST['senha1'] != $_POST['senha2']) exit(json_encode(array('error'=>utf8_encode2('A nova senha nï¿½o confere com a confirmaï¿½ï¿½o.'))));
 	
 	$mainConnection = mainConnection();
 	executeSQL($mainConnection, 'UPDATE MW_USUARIO_ITAU SET CD_PWW = ? WHERE ID_USUARIO = ?', array(md5($_POST['senha1']), $_SESSION['userItau']));

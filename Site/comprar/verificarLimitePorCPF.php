@@ -41,7 +41,7 @@ if (isset($_SESSION['user'])) {
 		$result2 = executeSQL($conn, $query, array($rs['CODAPRESENTACAO'], $cpf, $rs['CODAPRESENTACAO']));
 		
 		if (hasRows($result2)) {
-			$evento = utf8_encode($rs['DS_EVENTO']);
+			$evento = utf8_encode2($rs['DS_EVENTO']);
 			$comprando = $rs['TOTAL'];
 			$rs = fetchResult($result2);
 			if ($rs['QT_INGRESSOS_POR_CPF'] != 0 and $rs['QT_INGRESSOS_POR_CPF'] < $rs['QTDVENDIDO'] + $comprando) {

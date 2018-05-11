@@ -92,7 +92,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 382, true)) {
             $cadeiras .= "{" .
                     "id:'" . $rs['INDICE'] . "'" .
                     ",name:'" . $rs['NOMOBJETO'] . "'" .
-                    ",setor:'" . utf8_encode($rs['NOMSETOR']) . "'" .
+                    ",setor:'" . utf8_encode2($rs['NOMSETOR']) . "'" .
                     ",codSetor:'" . $rs['CODSETOR'] . "'" .
                     ",x:" . $rs['POSXSITE'] .
                     ",y:" . $rs['POSYSITE'] .
@@ -124,7 +124,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 382, true)) {
             $result = executeSQL($mainConnection, $query, $params);
             $combo = '<option value="">Selecione...</option>';
             while ($rs = fetchResult($result)) {
-                $combo .= '<option value="' . $rs['ID_APRESENTACAO'] . '">' . utf8_encode($rs['DS_PISO']) . '</option>';
+                $combo .= '<option value="' . $rs['ID_APRESENTACAO'] . '">' . utf8_encode2($rs['DS_PISO']) . '</option>';
             }
             $retorno = $combo;
         } else {

@@ -184,7 +184,7 @@ $(function() {
 					$bin = $rs['CD_BIN'];
 			?>
 			<tr>
-				<td><?php echo utf8_encode($nome); ?></td>
+				<td><?php echo utf8_encode2($nome); ?></td>
 				<td><?php echo $bin; ?></td>
 				<td class="button"><a href="<?php echo $pagina; ?>?action=edit&idCartaoPatrocinado=<?php echo $idCartaoPatrocinado; ?>">Editar</a></td>
 				<td class="button"><a href="<?php echo $pagina; ?>?action=delete&idCartaoPatrocinado=<?php echo $idCartaoPatrocinado; ?>">Apagar</a></td>

@@ -19,7 +19,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 356, true)) {
         $rsLocal = executeSQL($mainConnection, 'SELECT DISTINCT B.ID_BASE, B.DS_NOME_TEATRO FROM MW_BASE B INNER JOIN MW_ACESSO_CONCEDIDO AC ON AC.ID_BASE = B.ID_BASE WHERE AC.ID_USUARIO =' . $_SESSION['admin'] . '  AND B.IN_ATIVO = \'1\' ORDER BY B.DS_NOME_TEATRO');
         while ($locais = fetchResult($rsLocal)) {
             $tpl->idLocal = $locais["ID_BASE"];
-            $tpl->dsLocal = strtoupper(utf8_encode($locais['DS_NOME_TEATRO']));
+            $tpl->dsLocal = strtoupper(utf8_encode2($locais['DS_NOME_TEATRO']));
             $tpl->parseBlock("BLOCK_LOCAL", true);
         }
         

@@ -1,8 +1,6 @@
 <?php
 require_once('../settings/functions.php');
-
 require '../settings/pagarme/Pagarme.php';
-
 require_once('../settings/split/split_config.php');
 require_once('../settings/split/split_functions.php');
 
@@ -26,7 +24,7 @@ function pagarPedidoPagarme($id_pedido, $dados_extra) {
 	global $transaction;
 	global $response;	
 
-	error_log("gerando venda no pagarme. " . $id_pedido);
+	sale_trace($_SESSION['user'],$id_pedido,NULL,NULL,NULL,NULL,session_id(),'pagarme_functions.php','Gerando pedido no pagarme.','',0);
 
 	$mainConnection = mainConnection();
 
@@ -82,7 +80,7 @@ function pagarPedidoPagarme($id_pedido, $dados_extra) {
 	$rs = executeSQL($mainConnection, $query, array($id_pedido), true);
 
 	foreach($rs as $key => $val) {
-		$rs[$key] = utf8_encode($val);
+		$rs[$key] = utf8_encode2($val);
 	}
 
 	$amount = number_format($rs['VL_TOTAL_PEDIDO_VENDA'] * 100, 0, '', '');
@@ -139,7 +137,9 @@ function pagarPedidoPagarme($id_pedido, $dados_extra) {
 	else return false;
 	
 	
+	sale_trace($_SESSION['user'],$id_pedido,NULL,NULL,NULL,NULL,session_id(),'pagarme_functions.php','Modo de pagamento é' . $payment_method,'',0);
 	// $split = consultarSplitPagarme($id_pedido, "web", $payment_method, $amount);
+
 	$split = getSplit("pagarme", $id_pedido, "web", $payment_method, $amount);
 
 	if (is_array($split)) {
@@ -148,7 +148,7 @@ function pagarPedidoPagarme($id_pedido, $dados_extra) {
 		));
 	}
 
-	error_log("Dados: " . print_r($transaction_data, true));
+	sale_trace($_SESSION['user'],$id_pedido,NULL,NULL,NULL,NULL,session_id(),'pagarme_functions.php','Split.',print_r($split,true),0);
 
 	try {
 		$transaction = new PagarMe_Transaction($transaction_data);
@@ -156,11 +156,11 @@ function pagarPedidoPagarme($id_pedido, $dados_extra) {
 
 		$response = array('success' => true, 'transaction' => $transaction);
 
-		error_log("resposta pagarme: " . print_r($response, true));
+		sale_trace($_SESSION['user'],$id_pedido,NULL,NULL,NULL,NULL,session_id(),'pagarme_functions.php','Resposta do gateway.',print_r($response, true),0);
 	} catch (Exception $e) {
 		executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . " - " . "SPLIT: " . print_r($split, true) ));
 
-		error_log("Erro no pagar.me: " . $e->getMessage());
+		sale_trace($_SESSION['user'],$id_pedido,NULL,NULL,NULL,NULL,session_id(),'pagarme_functions.php','Erro no gateway.',$e->getMessage(),1);
 		$response = array('success' => false, 'error' => tratarErroPagarme($e, $id_pedido));
 	}
 
@@ -478,7 +478,7 @@ function consultarExtratoRecebedorPagarme($recipient_id, $status, $start_date, $
 	while ($rs = fetchResult($resulttran)) {            
 		$aux[] = array(
 			"id_evento" => $rs["id_evento"],
-			"ds_evento" => utf8_encode($rs["ds_evento"]),
+			"ds_evento" => utf8_encode2($rs["ds_evento"]),
 			"transaction" => $rs["codeTran"]
 		);
 	}
@@ -587,7 +587,7 @@ function listPayables($recipient_id, $status, $evento, $count, $page) {
 	while ($rs = fetchResult($resulttran)) {            
 		$aux[] = array(
 			"id_evento" => $rs["id_evento"],
-			"ds_evento" => utf8_encode($rs["ds_evento"]),
+			"ds_evento" => utf8_encode2($rs["ds_evento"]),
 			"transaction" => $rs["codeTran"]
 		);
 	}

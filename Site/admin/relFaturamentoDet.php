@@ -122,7 +122,7 @@ $pagina = basename(__FILE__);
 	    ?>
 		    <table width="900" border="<?php echo (!isset($_GET["exportar"])) ? 0 : 1; ?>" bgcolor="<?php echo (!isset($_GET["exportar"])) ? "LightGrey" : ""; ?>" class="tabela">
 			<tr>
-			    <td	align="left" width="900" colspan="13" class="label"><STRONG>Forma de Pagamento</STRONG>:   <?php echo utf8_encode($var_forPagto); ?></td>
+			    <td	align="left" width="900" colspan="13" class="label"><STRONG>Forma de Pagamento</STRONG>:   <?php echo utf8_encode2($var_forPagto); ?></td>
 			</tr>
 		<?php $nLin = $nLin + 1; ?>
     		<tr>
@@ -165,8 +165,8 @@ $pagina = basename(__FILE__);
 			    }
 		?>
 	    		<tr>
-	    		    <td	align="left" width="210" class="texto"><?php echo utf8_encode($pRs["tipbilhete"]); ?></td>
-	    		    <td	align="left" width="" class="texto"><?php echo utf8_encode($pRs["nomsetor"]); ?></td>
+	    		    <td	align="left" width="210" class="texto"><?php echo utf8_encode2($pRs["tipbilhete"]); ?></td>
+	    		    <td	align="left" width="" class="texto"><?php echo utf8_encode2($pRs["nomsetor"]); ?></td>
 	    		    <td	align="right" width="" class="texto moeda"><?php echo number_format(round($pRs["totfat"], 2), 2, ",", "."); ?></td>
 	    		    <td	align="right" width="" class="texto"><?php echo $pRs["qtdBilh"]; ?></td>
 	    		    <td	align="right" width="" class="texto moeda"><?php echo (($pRs["vlCms"]) ? number_format(round($pRs["vlCms"], 2), 2, ",", ".") : "0.00"); ?></td>

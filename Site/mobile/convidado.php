@@ -73,11 +73,11 @@ if ($_POST['action'] == 'add') {
           $param = array($rs["id_apresentacao"]);
           $dados = executeSQL($mainConnection, $query, $param, true);
 
-          $tpl->item_evento = utf8_encode($dados['ds_evento']);
-          $tpl->item_nome_teatro = utf8_encode($dados['ds_nome_teatro']);
-          $tpl->item_teatro_cidade = utf8_encode($dados['ds_municipio']);
+          $tpl->item_evento = utf8_encode2($dados['ds_evento']);
+          $tpl->item_nome_teatro = utf8_encode2($dados['ds_nome_teatro']);
+          $tpl->item_teatro_cidade = utf8_encode2($dados['ds_municipio']);
           $tpl->item_teatro_estado = $dados['sg_estado'];
-          $tpl->item_tipo_bilhete = utf8_encode($_POST['tipoConvite']);
+          $tpl->item_tipo_bilhete = utf8_encode2($_POST['tipoConvite']);
           $tpl->item_data = $dados['dt_apresentacao']->format('d/M/y');
           $tpl->item_hora = $dados['hr_apresentacao'];
           $tpl->item_qtde = "Ingressos: ". $_POST['qtdeIngresso'];

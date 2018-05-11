@@ -69,8 +69,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 480, true)) {
 
             <input type="hidden" name="codEvento[]" value="<?php echo $rs['ID_EVENTO'] ?>" >
             <tr class="rs">
-                <td><?php echo utf8_encode($rs['DS_EVENTO']); ?></td>
-                <td><?php echo utf8_encode($rs['DS_NOME_TEATRO']); ?></td>
+                <td><?php echo utf8_encode2($rs['DS_EVENTO']); ?></td>
+                <td><?php echo utf8_encode2($rs['DS_NOME_TEATRO']); ?></td>
                 <td><?php echo $rs['DT_INICIO']->format('d/m/Y'); ?></td>
                 <td><?php echo $rs['DT_FIM']->format('d/m/Y'); ?></td>
                 <td class="combo_pagamento"><?php echo comboGateway('cbPagamento', pega_gateway($mainConnection, $rs['ID_EVENTO'])); ?></td>

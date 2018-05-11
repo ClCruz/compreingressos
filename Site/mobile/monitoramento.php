@@ -107,7 +107,7 @@ if (acessoPermitido($mainConnection, $_POST['admin'], 330, true)) {
         $totalValor = 0;
         while ($rs = fetchResult($result)) {
             $json[] = array(
-                "TIPBILHETE" => utf8_encode($rs['TIPBILHETE']),
+                "TIPBILHETE" => utf8_encode2($rs['TIPBILHETE']),
                 "QTDE" => $rs['QTDE'],
                 "VALORUNITARIO" => number_format($rs['VALORUNITARIO'], 2, ',', '.'),
                 "TOTAL" => number_format($rs['TOTAL'], 2, ',', '.')

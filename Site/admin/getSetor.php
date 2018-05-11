@@ -18,7 +18,7 @@ if (!sqlErrors()) {
   if (hasRows($rsSetores)) {
     $retorno .= "<option value='TODOS'>&lt; TODOS &gt;</option>";
     while ($setor = fetchResult($rsSetores)) {
-      $retorno .= "<option value=\"" . $setor["CODSALA"] . "\">" . utf8_encode($setor["NOMSALA"]) . "</option>\n";
+      $retorno .= "<option value=\"" . $setor["CODSALA"] . "\">" . utf8_encode2($setor["NOMSALA"]) . "</option>\n";
     }
   } else {
     $retorno = "<option value=\"-1\">NENHUM SETOR DISPONÍVEL</option>";

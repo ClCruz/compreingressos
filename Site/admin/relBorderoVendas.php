@@ -114,19 +114,19 @@ if (isset($err) && $err != "") {
           <table class="tabela" width="648">
             <tr>
               <td align="right" width="70"><font size=1 face="tahoma,verdana,arial"><b>Local:</b></font></td>
-              <td align="left" width="370" style="font-size: 14px;"><?php echo utf8_encode($nomeBase["DS_NOME_TEATRO"]); ?></td>
+              <td align="left" width="370" style="font-size: 14px;"><?php echo utf8_encode2($nomeBase["DS_NOME_TEATRO"]); ?></td>
               <td align="right" width="120"><font size=1 face="tahoma,verdana,arial"><b>Borderô nº</b></font></td>
               <td align="left" width="220"><?php echo $pRSGeral["NumBordero"]; ?></td>
             </tr>
             <tr>
               <td align="right" width="70"><font size=1 face="tahoma,verdana,arial"><b>Evento:</b></font></td>
-              <td align="left" width="370"><?php echo utf8_encode($pRSGeral["NomPeca"]); ?></td>
+              <td align="left" width="370"><?php echo utf8_encode2($pRSGeral["NomPeca"]); ?></td>
               <td align="right" width="120"><font size=1 face="tahoma,verdana,arial"><b>Apresentação nº</b></font></td>
               <td align="left" width="220"><?php echo $pRSGeral["NumBordero"]; ?></td>
             </tr>
             <tr>
               <td align="right"><font size=1 face="tahoma,verdana,arial"><b>Responsável:</b></font></td>
-              <td align="left"><?php echo utf8_encode($PPArray); ?></td>
+              <td align="left"><?php echo utf8_encode2($PPArray); ?></td>
               <?php
               $DataIni2 = substr($DataIni, -2, 2) . '/' . substr($DataIni, -4, 2) . '/' . substr($DataIni, 0, 4);
               $DataFim2 = substr($DataFim, -2, 2) . '/' . substr($DataFim, -4, 2) . '/' . substr($DataFim, 0, 4);
@@ -148,12 +148,12 @@ if (isset($err) && $err != "") {
             </tr>
             <tr>
               <td align="right" rowspan="3" valign="top"><font size=1 face="tahoma,verdana,arial"><b>Endereço:</b></font></td>
-              <td align="left" rowspan="3" valign="top"><?php echo utf8_encode($TPArray); ?></td>
+              <td align="left" rowspan="3" valign="top"><?php echo utf8_encode2($TPArray); ?></td>
 
             </tr>
             <tr>
               <td align="right"><font size=1 face="tahoma,verdana,arial"><b>Local:</b></font></td>
-              <td align="left"><?php echo utf8_encode($pRSGeral["NomSala"]); ?></td>
+              <td align="left"><?php echo utf8_encode2($pRSGeral["NomSala"]); ?></td>
             </tr>
             <tr>
               <td align="right"><font size=1 face="tahoma,verdana,arial"><b>Lotação/Capacidade:</b></font></td>
@@ -237,9 +237,9 @@ if (isset($err) && $err != "") {
                     if ($Resumido == "0") {
       ?>
                       <tr>
-                        <td align=left  class=texto><?php echo utf8_encode($pRSBilhete["TipBilhete"]); ?></td>
+                        <td align=left  class=texto><?php echo utf8_encode2($pRSBilhete["TipBilhete"]); ?></td>
                         <td align=right  class=texto><?php echo $pRSBilhete["Qtde"]; ?></td>
-                        <td align=left class=texto><?php echo utf8_encode($pRSBilhete["NomSetor"]); ?></td>
+                        <td align=left class=texto><?php echo utf8_encode2($pRSBilhete["NomSetor"]); ?></td>
                         <td align=right class=texto>R$&nbsp;<?php echo number_format($pRSBilhete["Preco"], 2, ",", "."); ?></td>
                         <td align=right class=texto >R$&nbsp;<?php echo number_format($pRSBilhete["Total"], 2, ",", "."); ?></td>
                       </tr>
@@ -290,7 +290,7 @@ if (isset($err) && $err != "") {
                       while ($pRSDetalhamento = fetchResult($queryDet)) {
       ?>
                         <tr>
-                          <td align=left  class=texto><?php echo utf8_encode($pRSDetalhamento["forpagto"]); ?></td>
+                          <td align=left  class=texto><?php echo utf8_encode2($pRSDetalhamento["forpagto"]); ?></td>
                           <td align=right class=texto><?php echo $pRSDetalhamento["qtdBilh"]; ?></td>
                           <td align=right class=texto>R$&nbsp;<?php echo number_format($pRSDetalhamento["totfat"], 2, ",", "."); ?></td>
                           <td align=right class=texto>R$&nbsp;<?php echo number_format($pRSDetalhamento["liquido"], 2, ",", "."); ?></td>
@@ -464,7 +464,7 @@ if (isset($err) && $err != "") {
                     if ($Resumido == "0") {
       ?>    
                       <tr>
-                        <td align=left  class=texto><?php echo utf8_encode($desp["nome"]); ?></td>
+                        <td align=left  class=texto><?php echo utf8_encode2($desp["nome"]); ?></td>
                         <td align=right class=texto><?php echo ($desp["tipoValor"] == 0 && $desp["valor"] == 0) ? "" : $desp["tipoValor"]; ?></td>
                         <td align=right class=texto><?php echo ($desp["valor"] == 0) ? "" : number_format($desp["valor"], 2, ",", "."); ?></td>
                       </tr>
@@ -543,7 +543,7 @@ if (isset($err) && $err != "") {
                     while ($pRSDet = fetchResult($queryDet2)) {
       ?>
                       <tr>
-                        <td align=left  class=texto><?php echo utf8_encode($pRSDet["Venda"]); ?></td>
+                        <td align=left  class=texto><?php echo utf8_encode2($pRSDet["Venda"]); ?></td>
                         <td align=right  class=texto><?php echo $pRSDet["Quant"]; ?></td>
                         <td align=right class=texto>R$&nbsp;<?php echo number_format($pRSDet["Total"], 2, ",", "."); ?></td>
                         <td align=right class=texto><?php echo number_format(($pRSDet["Quant"] / $totTransacoes) * 100, 2, ",", "."); ?>%</td>
@@ -587,7 +587,7 @@ if (isset($err) && $err != "") {
                       while ($pRSDet = fetchResult($queryDet2)) {
                       ?>
                       <tr>
-                      <td align=left  class=texto><?php echo utf8_encode($pRSDet["Venda"]); ?></td>
+                      <td align=left  class=texto><?php echo utf8_encode2($pRSDet["Venda"]); ?></td>
                       <td align=right  class=texto><?php echo $pRSDet["Quant"]; ?></td>
                       <td align=right class=texto>R$&nbsp;<?php echo number_format($pRSDet["Total"], 2, ",", "."); ?></td>
                       <td align=right class=texto><?php echo number_format(($pRSDet["Quant"] / $totPagantes) * 100, 2, ",", "."); ?>%</td>

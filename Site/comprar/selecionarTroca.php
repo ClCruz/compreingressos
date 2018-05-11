@@ -150,8 +150,8 @@ $mainConnection = mainConnection();
 	                            while ($rs = fetchResult($result)) {
 	                                ?>
 	                                <tr>
-	                                    <td class="pacote titulo"><a href="<?php echo "detalhes_historico.php?origem=PACOTE&historico=" . $rs['ID_PACOTE']; ?>"><?php echo utf8_encode($rs['DS_EVENTO']); ?></a></td>
-	                                    <td class="selecionar"><a href="<?php echo 'etapa1.php?apresentacao=' . $rs['ID_APRESENTACAO'] . '&eventoDS=' . utf8_encode($rs['DS_EVENTO']); ?>">Selecionar lugares para troca</a></td>
+	                                    <td class="pacote titulo"><a href="<?php echo "detalhes_historico.php?origem=PACOTE&historico=" . $rs['ID_PACOTE']; ?>"><?php echo utf8_encode2($rs['DS_EVENTO']); ?></a></td>
+	                                    <td class="selecionar"><a href="<?php echo 'etapa1.php?apresentacao=' . $rs['ID_APRESENTACAO'] . '&eventoDS=' . utf8_encode2($rs['DS_EVENTO']); ?>">Selecionar lugares para troca</a></td>
 	                                </tr>
 	                                <tr><td colspan="2" class="hidden"></td></tr>
 	                                <?php

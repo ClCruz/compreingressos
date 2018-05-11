@@ -101,7 +101,7 @@ function autorizarPedidoCielo($id_pedido, $dados_extra) {
 	$rs = executeSQL($mainConnection, $query, array($id_pedido), true);
 
 	foreach($rs as $key => $val) {
-		$rs[$key] = utf8_encode($val);
+		$rs[$key] = utf8_encode2($val);
 	}
 
 	$transaction_data = array(

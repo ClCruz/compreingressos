@@ -176,7 +176,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 215, true)) {
                 $id = $rs['ID_GATEWAY_PAGAMENTO'];
             ?>
                 <tr>
-                    <td><?php echo utf8_encode($rs['DS_GATEWAY_PAGAMENTO']); ?></td>
+                    <td><?php echo utf8_encode2($rs['DS_GATEWAY_PAGAMENTO']); ?></td>
                     <td class="params" style="display: none"> - </td>
                     <td class="params"><?php echo$rs['DS_URL']; ?></td>
                     <td class="params"><?php echo$rs['DS_URL_CONSULTA']; ?></td>

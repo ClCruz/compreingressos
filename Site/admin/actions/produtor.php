@@ -107,8 +107,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 620, true)) {
         while ($rs = fetchResult($result)) {            
             $ret = array(
             	"id" => $rs["id_produtor"],
-            	"razao_social" => utf8_encode($rs["ds_razao_social"]),
-            	"nome" => utf8_encode($rs["ds_nome_contato"]),
+            	"razao_social" => utf8_encode2($rs["ds_razao_social"]),
+            	"nome" => utf8_encode2($rs["ds_nome_contato"]),
             	"cpf_cnpj" => $rs["cd_cpf_cnpj"],
             	"email" => $rs["cd_email"],
             	"telefone" => $rs["ds_ddd_telefone"] ." ". substr($rs["ds_telefone"], 0, 4) ."-". substr($rs["ds_telefone"], 4, 5),
@@ -137,7 +137,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 620, true)) {
         while ($rs = fetchResult($result)) {            
             $json[] = array(
             	"id_produtor" => $rs["id_produtor"],
-            	"ds_razao_social" => utf8_encode($rs["ds_razao_social"]),
+            	"ds_razao_social" => utf8_encode2($rs["ds_razao_social"]),
             	"cd_cpf_cnpj" => $rs["cd_cpf_cnpj"]
             );
         }

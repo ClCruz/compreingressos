@@ -113,8 +113,8 @@ if(hasRows($pRSGeral)){
             <td class="tabela" align="center" bgcolor="LightGrey"><font size=4 face="tahoma,verdana,arial"><b>Controle de Acesso</b></font></td>
         </tr>
         <tr><td colspan="2"></td></tr>
-        <tr><td colspan="2"><b>Local:</b> <?php echo utf8_encode($pRSIdEVento["DS_NOME_TEATRO"]); ?></td></tr>
-        <tr><td colspan="2"><b>Evento:</b> <?php echo utf8_encode($pRSIdEVento["DS_EVENTO"]); ?></td></tr>        
+        <tr><td colspan="2"><b>Local:</b> <?php echo utf8_encode2($pRSIdEVento["DS_NOME_TEATRO"]); ?></td></tr>
+        <tr><td colspan="2"><b>Evento:</b> <?php echo utf8_encode2($pRSIdEVento["DS_EVENTO"]); ?></td></tr>        
         <tr><td colspan="2"><b>Período:</b> <?php echo $_GET["dt_inicial"] ." à ". $_GET["dt_final"];?></td></tr>
         <tr><td colspan="2"></td></tr>
     </table><br><br>
@@ -142,8 +142,8 @@ if(hasRows($pRSGeral)){
         <tr>
             <td	align="left"  class="texto"><?php echo $dados["DATAPRESENTACAO"]; ?></td>
             <td	align="center"  class="texto"><?php echo $dados["HORSESSAO"];  ?></td>
-            <td	align="center" class="texto"><?php echo utf8_encode($dados["NOMSETOR"]); ?></td>
-            <td	align="center" class="texto"><?php echo utf8_encode($dados["TIPBILHETE"]); ?></td>
+            <td	align="center" class="texto"><?php echo utf8_encode2($dados["NOMSETOR"]); ?></td>
+            <td	align="center" class="texto"><?php echo utf8_encode2($dados["TIPBILHETE"]); ?></td>
             <td	align="center" class="texto"><?php echo $dados["QTD"]; ?></td>
         </tr>
         <?php

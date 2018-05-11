@@ -69,13 +69,13 @@ if (isset($err) && $err != "") {
   print_r(sqlErrors());
 }
 
-$tpl->evento = utf8_encode($pRSGeral["NomPeca"]);
+$tpl->evento = utf8_encode2($pRSGeral["NomPeca"]);
 $tpl->numBordero = $pRSGeral["NumBordero"];
-$tpl->responsavel = utf8_encode($PPArray);
+$tpl->responsavel = utf8_encode2($PPArray);
 $tpl->cpfCnpj = $SPArray;
 $tpl->dtInicio = $dataIni;
 $tpl->dtFim = $dataFim;
-$tpl->endereco = utf8_encode($TPArray);
+$tpl->endereco = utf8_encode2($TPArray);
 
 // Obtem o nome da sala
 if ($codSala != "TODOS") {
@@ -86,7 +86,7 @@ if ($codSala != "TODOS") {
   $nome_sala = "TODOS";
 }
 
-$tpl->local = utf8_encode($nome_sala);
+$tpl->local = utf8_encode2($nome_sala);
 $tpl->lugares = $pRSGeral["Lugares"];
 
 // Obtem os dados dos canais de vendas
@@ -110,7 +110,7 @@ $canais = array_unique($canais);
 sort($canais);
 
 foreach ($canais as $key => $value) {
-  $tpl->canal = utf8_encode($value);
+  $tpl->canal = utf8_encode2($value);
   $tpl->parseBlock("BLOCK_CANAL", true);
   $tpl->parseBlock("BLOCK_HEADER_CANAL", true);
 }

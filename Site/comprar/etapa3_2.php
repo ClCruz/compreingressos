@@ -59,8 +59,8 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 		$('#limpar').click();
 		
 		<?php if ($userSelected) { ?>
-		$('#nomeBusca').val('<?php echo utf8_encode($rs['DS_NOME']); ?>');
-		$('#sobrenomeBusca').val('<?php echo utf8_encode($rs['DS_SOBRENOME']); ?>');
+		$('#nomeBusca').val('<?php echo utf8_encode2($rs['DS_NOME']); ?>');
+		$('#sobrenomeBusca').val('<?php echo utf8_encode2($rs['DS_SOBRENOME']); ?>');
 		$('#telefoneBusca').val('<?php echo $rs['DS_TELEFONE']; ?>');
 		$('#cpfBusca').val('<?php echo $rs['CD_CPF']; ?>');
 		

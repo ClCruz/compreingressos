@@ -80,13 +80,13 @@ if (!sqlErrors()) {
         while ($comprovante = fetchResult($result)) {
             for ($i = 1; $i <= $copias; $i++) {
                 
-                $tpl->nome = utf8_encode($comprovante["nome"]);
+                $tpl->nome = utf8_encode2($comprovante["nome"]);
                 $tpl->telefone = $comprovante["telefone"];
                 $tpl->endereco = $comprovante["endereco"];
                 $tpl->complemento = $comprovante["complemento"];
                 $tpl->cep = $comprovante["cd_cep_entrega"];
                 $tpl->cidade = $comprovante["ds_cidade_entrega"];
-                $tpl->estado = utf8_encode($comprovante["ds_estado"]);
+                $tpl->estado = utf8_encode2($comprovante["ds_estado"]);
                 $tpl->dtVenda = date_format($comprovante["dt_pedido_venda"], 'd/m/Y H:i:s');
                 $tpl->dtImpressao = date('d/m/Y H:i:s');
                 $tpl->login = (is_null($comprovante["cd_login"])) ? 'Internet' : $comprovante["cd_login"];
@@ -108,11 +108,11 @@ if (!sqlErrors()) {
                 $resultInterno = executeSQL($mainConnection, $strQuery, $paramsInterno);
                 while ($ingressos = fetchResult($resultInterno)) {
                     $lugares .= $ingressos["DS_LOCALIZACAO"] . ", ";
-                    $tpl->setor = utf8_encode($ingressos["ds_setor"]);
-                    $tpl->evento = utf8_encode($ingressos["ds_evento"]);
+                    $tpl->setor = utf8_encode2($ingressos["ds_setor"]);
+                    $tpl->evento = utf8_encode2($ingressos["ds_evento"]);
                     $tpl->dataApresentacao = substr($ingressos["apresentacao"], 0, -6);
                     $tpl->horaApresentacao = $ingressos["hr_apresentacao"];
-                    $tpl->teatro = utf8_encode($ingressos["ds_local_evento"]);
+                    $tpl->teatro = utf8_encode2($ingressos["ds_local_evento"]);
                     //$tpl->formaPagto =  $ingressos["ds_forpagto"];
                 }
                 $tpl->lugares = $lugares;

@@ -50,8 +50,8 @@ $rs = executeSQL($mainConnection, $query, $params, true);
 $valorPagamento = $rs['VL_TOTAL_PEDIDO_VENDA'];
 $valorServico = $rs['VL_TOTAL_TAXA_CONVENIENCIA'];
 $valorFrete = $rs['VL_FRETE'];
-$cidade = utf8_encode($rs['DS_CIDADE']);
-$estado = utf8_encode($rs['DS_ESTADO']);
+$cidade = utf8_encode2($rs['DS_CIDADE']);
+$estado = utf8_encode2($rs['DS_ESTADO']);
 $nome = $rs['DS_NOME'];
 
 $json = json_encode(array('descricao' => '9. fim da chamada do pagamento_ok - codigo_pedido=' . $_GET['pedido'], 'Post='=>$_GET ));
@@ -103,8 +103,8 @@ while ($rs = fetchResult($result)) {
 	$evento_info = getEvento($rs['ID_EVENTO']);
 
 	$id_item = $rs['ID_EVENTO'] . '_' . $rs['ID_APRESENTACAO_BILHETE'];
-	$ds_item = utf8_encode($rs['DS_EVENTO'] . ' - ' . $evento_info['nome_teatro']);
-	$tipo = utf8_encode($rs['DS_TIPO_BILHETE']);
+	$ds_item = utf8_encode2($rs['DS_EVENTO'] . ' - ' . $evento_info['nome_teatro']);
+	$tipo = utf8_encode2($rs['DS_TIPO_BILHETE']);
 	$valor = $rs['VL_LIQUIDO_INGRESSO'];
 	$quantidade = $rs['QUANTIDADE'];
 	$id_evento = $rs['ID_EVENTO'];
@@ -307,7 +307,7 @@ unset($_SESSION['origem']);
 			?>
 			$.confirmDialog({
 				text: '',
-				detail: '<?php echo $msg_pos_venda; ?>',
+				detail: '<?php echo utf8_encode2($msg_pos_venda); ?>',
 				uiOptions: {
 					buttons: {
 						'Ok, entendi': ['', fecharOverlay]
@@ -319,7 +319,7 @@ unset($_SESSION['origem']);
 			?>
 			$.confirmDialog({
 				text: '',
-				detail: '<?php echo str_replace("'", '"', $msg_pos_venda); ?>',
+				detail: '<?php echo str_replace("'", '"', utf8_encode2($msg_pos_venda)); ?>',
 				uiOptions: {
 					buttons: {
 						'Não, obrigado': ['', fecharOverlay],

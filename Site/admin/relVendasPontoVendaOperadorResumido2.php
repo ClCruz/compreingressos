@@ -619,7 +619,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 350, true)) {
 		    	<?php } ?>
 
 				<tr><th colspan="6">&nbsp;</td></th>
-				<tr><th colspan="6">Evento: <?php echo utf8_encode($rs['ds_evento']); ?></td></th>
+				<tr><th colspan="6">Evento: <?php echo utf8_encode2($rs['ds_evento']); ?></td></th>
 				<tr><th colspan="6">&nbsp;</td></tr>
 				<?php
 			    $somaTotalEvento = 0;
@@ -632,10 +632,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 350, true)) {
 			// linhas
 		?>
 			<tr>
-				<td><?php echo ($rs['ds_canal_venda'] == $lastCanal ? '&nbsp;' : utf8_encode($rs['ds_canal_venda'])); ?></td>
-				<td><?php echo ($rs['descrcaixa'] == $lastPonto ? '&nbsp;' : utf8_encode($rs['descrcaixa'])); ?></td>
-				<td><?php echo ($rs['nomusuario'] == $lastOperador ? '&nbsp;' : utf8_encode($rs['nomusuario'])); ?></td>
-				<td><?php echo utf8_encode($rs['ForPagto']) ?></td>
+				<td><?php echo ($rs['ds_canal_venda'] == $lastCanal ? '&nbsp;' : utf8_encode2($rs['ds_canal_venda'])); ?></td>
+				<td><?php echo ($rs['descrcaixa'] == $lastPonto ? '&nbsp;' : utf8_encode2($rs['descrcaixa'])); ?></td>
+				<td><?php echo ($rs['nomusuario'] == $lastOperador ? '&nbsp;' : utf8_encode2($rs['nomusuario'])); ?></td>
+				<td><?php echo utf8_encode2($rs['ForPagto']) ?></td>
 				<td class="number"><?php echo $rs['qtd']; ?></td>
 				<td class="number"><?php echo number_format($rs['val'], 2, ',', '.'); ?></td>
 			</tr>

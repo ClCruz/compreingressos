@@ -64,8 +64,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 11, true)) {
         
         $cadeira = array( 
           "id" => $rs['INDICE'],
-          "name" => utf8_encode($rs['NOMOBJETO']),
-          "setor" => utf8_encode($rs['NOMSETOR']),
+          "name" => utf8_encode2($rs['NOMOBJETO']),
+          "setor" => utf8_encode2($rs['NOMSETOR']),
           "codSetor" => $rs['CODSETOR'],
           "x" => $rs['POSXSITE'],
           "y" => $rs['POSYSITE'],

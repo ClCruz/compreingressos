@@ -52,10 +52,10 @@ while ($rs = fetchResult($result)) {
 				</td>
 				<td>
 					<div class="container_endereco">
-					<p class="titulo"><?php echo utf8_encode($rs['NM_ENDERECO']); ?></p>
+					<p class="titulo"><?php echo utf8_encode2($rs['NM_ENDERECO']); ?></p>
 						<p class="endereco"> 
-							<?php echo utf8_encode($rs['DS_ENDERECO']).', '.$rs['NR_ENDERECO']; ?><?php echo $rs['DS_COMPL_ENDERECO'] ? ' - '.$rs['DS_COMPL_ENDERECO'] : ''; ?><br>
-							<?php echo utf8_encode($rs['DS_BAIRRO']); ?>, <?php echo utf8_encode($rs['DS_CIDADE']); ?> - <?php echo comboEstado('estado', $rs['ID_ESTADO'], false, false); ?><br>
+							<?php echo utf8_encode2($rs['DS_ENDERECO']).', '.$rs['NR_ENDERECO']; ?><?php echo $rs['DS_COMPL_ENDERECO'] ? ' - '.$rs['DS_COMPL_ENDERECO'] : ''; ?><br>
+							<?php echo utf8_encode2($rs['DS_BAIRRO']); ?>, <?php echo utf8_encode2($rs['DS_CIDADE']); ?> - <?php echo comboEstado('estado', $rs['ID_ESTADO'], false, false); ?><br>
 							<?php echo $rs['ID_ESTADO'] != 28 ? substr($rs['CD_CEP'], 0, 5).'-'.substr($rs['CD_CEP'], -3) : $rs['CD_CEP']; ?>
 						</p>
 					</div>

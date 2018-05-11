@@ -558,7 +558,7 @@ $(function() {
                     while($rs = fetchResult($stmtProdutor)) {
                         $selected = $rs["id_produtor"] == $_GET["produtor"] ? "selected" : "";
                 ?>
-                <option <?php echo $selected; ?> value="<?php echo $rs['id_produtor']; ?>"><?php echo utf8_encode($rs['ds_razao_social']); ?></option>
+                <option <?php echo $selected; ?> value="<?php echo $rs['id_produtor']; ?>"><?php echo utf8_encode2($rs['ds_razao_social']); ?></option>
                 <?php
                     }
                 ?>

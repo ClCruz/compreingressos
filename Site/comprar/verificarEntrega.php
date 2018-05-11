@@ -34,7 +34,7 @@ if (isset($_COOKIE['entrega'])) {
 	    } else {
 		$scriptEntrega = '<script type="text/javascript">
 				    $(function(){
-					$.dialog({title:"Aviso...", text:"' . utf8_encode($entregaTable) . '", uiOptions:{width:500}});
+					$.dialog({title:"Aviso...", text:"' . utf8_encode2($entregaTable) . '", uiOptions:{width:500}});
 				    });
 				</script>';
 	    }

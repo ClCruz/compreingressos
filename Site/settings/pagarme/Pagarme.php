@@ -1,12 +1,14 @@
 <?php
+require_once('../settings/functions.php');
 
 if (!function_exists('curl_init')) {
+	sale_trace($_SESSION['user'],NULL,NULL,NULL,NULL,NULL,session_id(),'pagarme/pagarme.php','Erro na configuração do pagarme','curl_init não definida',1);
 	throw new Exception('PagarMe needs the CURL PHP extension.');
 }
 if (!function_exists('json_decode')) {
+	sale_trace($_SESSION['user'],NULL,NULL,NULL,NULL,NULL,session_id(),'pagarme/pagarme.php','Erro na configuração do pagarme','json_decode não definida',1);
 	throw new Exception('PagarMe needs the JSON PHP extension.');
 }
-
 
 // function __autoload($class){
 // 
@@ -21,8 +23,6 @@ if (!function_exists('json_decode')) {
 // 		throw new Exception("Unable to load" .$class);
 // 	}
 // }
-
-
 require(dirname(__FILE__) . '/lib/Pagarme/PagarMe.php');
 require(dirname(__FILE__) . '/lib/Pagarme/Set.php');
 require(dirname(__FILE__) . '/lib/Pagarme/Object.php');
@@ -44,7 +44,6 @@ require(dirname(__FILE__) . '/lib/Pagarme/Bank_Account.php');
 require(dirname(__FILE__) . '/lib/Pagarme/Recipient.php');
 require(dirname(__FILE__) . '/lib/Pagarme/Customer.php');
 require(dirname(__FILE__) . '/lib/Pagarme/Payable.php');
-
 require(dirname(__FILE__) . '/lib/Pagarme/PagarMeCalls.php');
 
 ?>

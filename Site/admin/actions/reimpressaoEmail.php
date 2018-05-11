@@ -40,7 +40,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 310, true)) {
 
 		foreach ($rsDados as $key => $value) {
 			if (gettype($value) == 'string') {
-				$rsDados[$key] = utf8_encode($value);
+				$rsDados[$key] = utf8_encode2($value);
 			}
 		}
 
@@ -126,14 +126,14 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 310, true)) {
 			
 			$itensPedido[$i]['descricao_item']['idevento'] = $itens['ID_EVENTO'];
 			$itensPedido[$i]['descricao_item']['workaround'] = "ASSOCIAÇÃO BR-116 - CNPJ/MF 13.196.419/0001-02 - CCM 4.217.703-0";
-		    $itensPedido[$i]['descricao_item']['evento'] = utf8_encode($itens['DS_EVENTO']);
+		    $itensPedido[$i]['descricao_item']['evento'] = utf8_encode2($itens['DS_EVENTO']);
 		    $itensPedido[$i]['descricao_item']['data'] = $itens['DT_APRESENTACAO'];
 		    $itensPedido[$i]['descricao_item']['hora'] = $itens['HR_APRESENTACAO'];
-		    $itensPedido[$i]['descricao_item']['teatro'] = utf8_encode($itens['DS_NOME_TEATRO']);
-		    $itensPedido[$i]['descricao_item']['setor'] = utf8_encode($itens['DS_SETOR']);
-		    $itensPedido[$i]['descricao_item']['cadeira'] = utf8_encode($itens['DS_CADEIRA']);
-		    $itensPedido[$i]['descricao_item']['bilhete'] = utf8_encode($itens['DS_TIPO_BILHETE']);
-	    	$itensPedido[$i]['descricao_item']['codvenda'] = utf8_encode($itens['CodVenda']);
+		    $itensPedido[$i]['descricao_item']['teatro'] = utf8_encode2($itens['DS_NOME_TEATRO']);
+		    $itensPedido[$i]['descricao_item']['setor'] = utf8_encode2($itens['DS_SETOR']);
+		    $itensPedido[$i]['descricao_item']['cadeira'] = utf8_encode2($itens['DS_CADEIRA']);
+		    $itensPedido[$i]['descricao_item']['bilhete'] = utf8_encode2($itens['DS_TIPO_BILHETE']);
+	    	$itensPedido[$i]['descricao_item']['codvenda'] = utf8_encode2($itens['CodVenda']);
 
 		    $itensPedido[$i]['valor_item'] = ($itens['VL_LIQUIDO_INGRESSO'] + $valorConveniencia);
 		    $itensPedido[$i]['id_base'] = $itens['ID_BASE'];

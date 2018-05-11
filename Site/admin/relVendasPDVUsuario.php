@@ -219,10 +219,10 @@ $(function() {
 					}
 					?>
 					<tr>
-						<td><?php echo ($rs['DS_LOCAL_EVENTO'] == $lastLocal ? '&nbsp;' : utf8_encode($rs['DS_LOCAL_EVENTO'])); ?></td>
+						<td><?php echo ($rs['DS_LOCAL_EVENTO'] == $lastLocal ? '&nbsp;' : utf8_encode2($rs['DS_LOCAL_EVENTO'])); ?></td>
 						<td><?php echo ($rs['DS_NOME'] == $lastUsuario ? '&nbsp;' : $rs['DS_NOME']); ?></td>
-						<td><?php echo ($rs['DS_EVENTO'] == $lastEvento ? '&nbsp;' : utf8_encode($rs['DS_EVENTO'])); ?></td>
-						<td><?php echo utf8_encode($rs['DS_MEIO_PAGAMENTO']) ?></td>
+						<td><?php echo ($rs['DS_EVENTO'] == $lastEvento ? '&nbsp;' : utf8_encode2($rs['DS_EVENTO'])); ?></td>
+						<td><?php echo utf8_encode2($rs['DS_MEIO_PAGAMENTO']) ?></td>
 						<td class="number"><?php echo $rs['QT_INGRESSOS']; ?></td>
 						<td class="number"><?php echo number_format($rs['TOTAL_VENDA'], 2, ',', '.'); ?></td>
 						<td class="number"><?php echo number_format($rs['TOTAL_CONVENIENCIA'], 2, ',', '.'); ?></td>

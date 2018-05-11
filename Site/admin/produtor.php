@@ -266,9 +266,9 @@ $(function() {
 				$id = $rs["id_produtor"];
 			?>
 			<tr>
-				<td><?php echo utf8_encode($rs["ds_razao_social"]); ?></td>
+				<td><?php echo utf8_encode2($rs["ds_razao_social"]); ?></td>
 				<td><?php echo $rs["cd_cpf_cnpj"]; ?></td>
-				<td><?php echo utf8_encode($rs["ds_nome_contato"]); ?></td>
+				<td><?php echo utf8_encode2($rs["ds_nome_contato"]); ?></td>
 				<td><?php echo $rs["cd_email"]; ?></td>
 				<td><?php echo $rs["ds_ddd_telefone"] ." ". $rs["ds_telefone"]; ?></td>
 				<td><?php echo $rs["ds_ddd_celular"] ." ". $rs["ds_celular"]; ?></td>

@@ -149,7 +149,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 9, true)) {
             ?>
                 <tr>
                     <td><?php echo $rs['CD_ESTABELECIMENTO']; ?></td>
-                    <td><?php echo utf8_encode($rs['NM_CONTA_ESTABELECIMENTO']); ?></td>
+                    <td><?php echo utf8_encode2($rs['NM_CONTA_ESTABELECIMENTO']); ?></td>
                     <td><?php echo$rs['CD_SEGURANCA']; ?></td>
                     <td><?php echo $rs['IN_ATIVO'] ? 'sim' : 'n&atilde;o'; ?></td>
                     <td class="button"><a href="<?php echo $pagina; ?>?action=edit&codestabelecimento=<?php echo $id; ?>">Editar</a></td>

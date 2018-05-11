@@ -38,8 +38,8 @@ function buscarRegistros(){
 			while($rs = fetchResult($rsGeral)){
 
 			 $html .= '<tr>
-	              <td style="text-align: center;"><label id="nomeSalaTx_'.$i.'" data-codsala="'.$rs['CodSala'].'" >'.utf8_encode($rs['NomSala']).'</label>
-	                <input type="text" name="nomeSala" class="inputhidden" data-codsala="'.$rs['CodSala'].'" id="nomeSalaIn_'.$i.'"  value="'.utf8_encode($rs['NomSala']).'">
+	              <td style="text-align: center;"><label id="nomeSalaTx_'.$i.'" data-codsala="'.$rs['CodSala'].'" >'.utf8_encode2($rs['NomSala']).'</label>
+	                <input type="text" name="nomeSala" class="inputhidden" data-codsala="'.$rs['CodSala'].'" id="nomeSalaIn_'.$i.'"  value="'.utf8_encode2($rs['NomSala']).'">
 	              </td>
 	              <td style="text-align: center;"><label id="nrRegExibTx_'.$i.'" data-codsala="'.$rs['CodSala'].'" >'.$rs['nr_registro_ancine_exibidor'].'</label> 
 	                <input type="text" name="nrRegExib" class="inputhidden" data-codsala="'.$rs['CodSala'].'" id="nrRegExibIn_'.$i.'" value="'.$rs['nr_registro_ancine_exibidor'].'">

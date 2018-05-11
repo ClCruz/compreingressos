@@ -211,8 +211,8 @@ $(function() {
 					$dtFim = $rs['DT_FIM'];
 			?>
 			<tr>
-				<td><?php echo utf8_encode($nomePatrocinador); ?></td>
-				<td><?php echo utf8_encode($nomeCartao); ?></td>
+				<td><?php echo utf8_encode2($nomePatrocinador); ?></td>
+				<td><?php echo utf8_encode2($nomeCartao); ?></td>
 				<td><?php echo $dtInicio; ?></td>
 				<td><?php echo $dtFim; ?></td>
 				<td class="button"><a href="<?php echo $pagina; ?>?action=edit&idCartaoPatrocinado=<?php echo $idCartaoPatrocinado; ?>&teatro=<?php echo $_GET['teatro']; ?>&codpeca=<?php echo $_GET['codpeca']; ?>&idPatrocinador=<?php echo $idPatrocinador; ?>">Editar</a></td>

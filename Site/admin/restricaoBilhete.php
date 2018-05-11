@@ -154,10 +154,10 @@ $(function() {
 		<tbody>
 			<?php
 				while($rs = fetchResult($result)) {
-					$id = 'evento=' . $_GET['evento'] . '&codtipbilhete=' . $rs['CODTIPBILHETE'] . '&ds_piso=' . urlencode(utf8_encode($rs['DS_PISO']));
+					$id = 'evento=' . $_GET['evento'] . '&codtipbilhete=' . $rs['CODTIPBILHETE'] . '&ds_piso=' . urlencode(utf8_encode2($rs['DS_PISO']));
 			?>
 			<tr>
-				<td><?php echo utf8_encode($rs['DS_PISO']); ?></td>
+				<td><?php echo utf8_encode2($rs['DS_PISO']); ?></td>
 				<td><?php echo comboBilhetes2('codtipbilhete', $_GET['teatro'], $rs['CODTIPBILHETE'], false); ?></td>
 				<?php if ($rs['EDICAO']) { ?>
 				<td class="button"><a href="<?php echo $pagina; ?>?action=delete&=<?php echo $id; ?>">Apagar</a></td>

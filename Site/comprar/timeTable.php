@@ -114,9 +114,9 @@ if (isset($_GET['evento']) and is_numeric($_GET['evento'])) {
 						$horarios[] = array(
 							"nDia" => date('d', $tempo),
 							"nMes" => date('m', $tempo),
-							"tMes" => utf8_encode(strtoupper(strftime("%b", $tempo))),
+							"tMes" => utf8_encode2(strtoupper(strftime("%b", $tempo))),
 							"nAno" => date('Y', $tempo),
-							"tSemana" => utf8_encode(strtoupper(strftime("%a", $tempo))),
+							"tSemana" => utf8_encode2(strtoupper(strftime("%a", $tempo))),
 							"nHora" => $hora[0],
 							"nMinuto" => $hora[1],
 							"idApresentacao" => $rs['ID_APRESENTACAO']
@@ -127,15 +127,15 @@ if (isset($_GET['evento']) and is_numeric($_GET['evento'])) {
 				echo json_encode(
 					array(
 						'evento' => array(
-							'nome' => utf8_encode($nomeEvento),
-							'local' => utf8_encode($nomeTeatro),
-							'endereco' => utf8_encode($evento_info['endereco']),
-							'bairro' => utf8_encode($evento_info['bairro']),
-							'cidade' => utf8_encode($evento_info['cidade']),
-							'sigla_estado' => utf8_encode($evento_info['sigla_estado']),
+							'nome' => utf8_encode2($nomeEvento),
+							'local' => utf8_encode2($nomeTeatro),
+							'endereco' => utf8_encode2($evento_info['endereco']),
+							'bairro' => utf8_encode2($evento_info['bairro']),
+							'cidade' => utf8_encode2($evento_info['cidade']),
+							'sigla_estado' => utf8_encode2($evento_info['sigla_estado']),
 							'duracao' => $evento_info['duracao'],
-							'genero' => utf8_encode($evento_info['genero']),
-							'classificacao' => utf8_encode($evento_info['classificacao'])
+							'genero' => utf8_encode2($evento_info['genero']),
+							'classificacao' => utf8_encode2($evento_info['classificacao'])
 						),
 						'horarios' => $horarios
 					)

@@ -33,7 +33,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
 	    while ($rs = fetchResult($resultEventos)) {
 	        $options .= '<option value="' . $rs['ID_EVENTO'] . '"' .
 	                (($_GET["nm_evento"] == $rs['ID_EVENTO']) ? ' selected' : '' ) .
-	                '>' . utf8_encode($rs['DS_EVENTO']) . '</option>';
+	                '>' . utf8_encode2($rs['DS_EVENTO']) . '</option>';
 	    }
 
 	    echo $options;

@@ -175,7 +175,7 @@ $(function() {
         while ($rs = fetchResult($resultEventos)) {
                 $combo .= '<option value="'.$rs['ID_EVENTO'].'"' .
                             (($selected == $rs['ID_EVENTO']) ? ' selected' : '') .
-                            '>'.utf8_encode($rs['DS_EVENTO']).'</option>';
+                            '>'.utf8_encode2($rs['DS_EVENTO']).'</option>';
         }
         $combo .= '</select>';
     ?>
@@ -209,8 +209,8 @@ $(function() {
     <tr>
         <td align="left"  class="texto"><?php echo $dados["DATAPRESENTACAO"]; ?></td>
         <td align="center"  class="texto"><?php echo $dados["HORSESSAO"];  ?></td>
-        <td align="center" class="texto"><?php echo utf8_encode($dados["NOMSETOR"]); ?></td>
-        <td align="center" class="texto"><?php echo utf8_encode($dados["TIPBILHETE"]); ?></td>
+        <td align="center" class="texto"><?php echo utf8_encode2($dados["NOMSETOR"]); ?></td>
+        <td align="center" class="texto"><?php echo utf8_encode2($dados["TIPBILHETE"]); ?></td>
         <td align="center" class="texto"><?php echo $dados["QTD"]; ?></td>
     </tr>
     <?php

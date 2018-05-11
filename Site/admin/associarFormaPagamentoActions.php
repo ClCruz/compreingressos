@@ -81,7 +81,7 @@ function createSelect($optionsArray,$keySelected,$idSelect,$nameSelect,$class='i
 				if($key == $keySelected)
 					$isSelected = 'selected="selected"';
 
-				$options .= '<option '.$isSelected.' value="'.$key.'">'.utf8_encode($option).'</option>';
+				$options .= '<option '.$isSelected.' value="'.$key.'">'.utf8_encode2($option).'</option>';
 		}
 
 		$selectHtml = '<select id="'.$idSelect.'" name="'.$nameSelect.'" class="'.$class.'">
@@ -137,11 +137,11 @@ function buscarRegistros(){
 
 
 			 $html .= '<tr>
-	              <td style="text-align: center;"><label id="modalidadePagamentoTx_'.$i.'" >'.utf8_encode($rs['ds_forma_pagamento']).'</label>
+	              <td style="text-align: center;"><label id="modalidadePagamentoTx_'.$i.'" >'.utf8_encode2($rs['ds_forma_pagamento']).'</label>
 	                '.$modalidadePagamento.'
 	              </td>
 
-	             <td style="text-align: center;"><label id="formaPagamentoTx_'.$i.'" >'.utf8_encode($rs['TipForPagto']).'</label>
+	             <td style="text-align: center;"><label id="formaPagamentoTx_'.$i.'" >'.utf8_encode2($rs['TipForPagto']).'</label>
 	                '.$formaPagamento.'
 	              </td>
 	

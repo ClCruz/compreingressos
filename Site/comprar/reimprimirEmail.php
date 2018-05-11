@@ -154,14 +154,14 @@ if (!empty($rsDados)) {
 
 	    $evento_info = getEvento($itens['ID_EVENTO']);
 
-	    $itensPedido[$i]['descricao_item']['evento'] = utf8_encode($itens['DS_EVENTO']);
+	    $itensPedido[$i]['descricao_item']['evento'] = utf8_encode2($itens['DS_EVENTO']);
 	    $itensPedido[$i]['descricao_item']['data'] = $itens['DT_APRESENTACAO'];
 	    $itensPedido[$i]['descricao_item']['hora'] = $itens['HR_APRESENTACAO'];
-	    $itensPedido[$i]['descricao_item']['teatro'] = utf8_encode($evento_info['nome_teatro']);
-	    $itensPedido[$i]['descricao_item']['setor'] = utf8_encode($itens['DS_SETOR']);
-	    $itensPedido[$i]['descricao_item']['cadeira'] = utf8_encode($itens['DS_CADEIRA']);
-	    $itensPedido[$i]['descricao_item']['bilhete'] = utf8_encode($itens['DS_TIPO_BILHETE']);
-	    $itensPedido[$i]['descricao_item']['codvenda'] = utf8_encode($itens['CodVenda']);
+	    $itensPedido[$i]['descricao_item']['teatro'] = utf8_encode2($evento_info['nome_teatro']);
+	    $itensPedido[$i]['descricao_item']['setor'] = utf8_encode2($itens['DS_SETOR']);
+	    $itensPedido[$i]['descricao_item']['cadeira'] = utf8_encode2($itens['DS_CADEIRA']);
+	    $itensPedido[$i]['descricao_item']['bilhete'] = utf8_encode2($itens['DS_TIPO_BILHETE']);
+	    $itensPedido[$i]['descricao_item']['codvenda'] = utf8_encode2($itens['CodVenda']);
 
 	    $itensPedido[$i]['valor_item'] = ($itens['VL_LIQUIDO_INGRESSO'] + $valorConveniencia);
 	    $itensPedido[$i]['id_base'] = $itens['ID_BASE'];

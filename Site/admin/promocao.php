@@ -574,7 +574,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                 <tr>
                     <td>
                         <b>Descrição da Promoção:</b><br/>
-                        <input type="text" name="ds_promo" size="60" maxlength="60" value="<?php echo utf8_encode($rs['DS_PROMOCAO']); ?>" />
+                        <input type="text" name="ds_promo" size="60" maxlength="60" value="<?php echo utf8_encode2($rs['DS_PROMOCAO']); ?>" />
                     </td>
                     <td>
                         <b>% Desconto:</b><br/>
@@ -592,7 +592,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                     </td>
                     <td>
                         <b>Descrição do Bilhete para o Site:</b><br/>
-                        <input type="text" name="ds_site" size="30" maxlength="20" value="<?php echo utf8_encode($rs['DS_NOME_SITE']); ?>" />
+                        <input type="text" name="ds_site" size="30" maxlength="20" value="<?php echo utf8_encode2($rs['DS_NOME_SITE']); ?>" />
                     </td>
                     <td>
                         <input type="checkbox" name="in_hotsite" <?php echo $rs['IN_HOT_SITE'] ? 'checked' : ''; ?> />
@@ -639,7 +639,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                     <td>
                         <div class="promo_fixo promo_convite">
                             <b>Código Fixo:</b><br/>
-                            <input type="text" name="ds_codigo" size="30" maxlength="30" value="<?php echo utf8_encode($rs['CD_PROMOCIONAL']); ?>" />
+                            <input type="text" name="ds_codigo" size="30" maxlength="30" value="<?php echo utf8_encode2($rs['CD_PROMOCIONAL']); ?>" />
                             <a class="promo_convite button ui-icon ui-icon-help" href="#"
                                 title="Quando o código fixo for igual à 'CONVITE' o cliente não terá que efetuar a validação no momento da compra. Qualquer outro código fixo será necessário a digitação no momento da compra."></a>
                         </div>
@@ -733,7 +733,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
                                 $eventos_atuais[] = $rs['ID_EVENTO'];
                         ?>
                         <tr>
-                            <td><?php echo utf8_encode($rs['DS_EVENTO']); ?></td>
+                            <td><?php echo utf8_encode2($rs['DS_EVENTO']); ?></td>
                             <td class="limite_cpf"><input type="text" name="limite_cpf[]" value="<?php echo $rs['QT_PROMO_POR_CPF']; ?>" /></td>
                             <td class="chk_evento"><input type="checkbox" name="evento[]" value="<?php echo $rs['ID_EVENTO']; ?>" checked="true" /></td>
                         </tr>

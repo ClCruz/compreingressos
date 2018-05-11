@@ -84,7 +84,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 217, true)) {
                 $id = $rs['ID_EVENTO'];
             ?>
                 <tr>
-                    <td><?php echo utf8_encode($rs['DS_EVENTO']); ?></td>
+                    <td><?php echo utf8_encode2($rs['DS_EVENTO']); ?></td>
                     <td><?php echo ($rs['IN_ENTREGA_INGRESSO'] != 1 || is_null($rs['IN_ENTREGA_INGRESSO']))  ? 'N&atilde;o' : 'Sim'; ?></td>
                     <td class="button"><a href="<?php echo $pagina; ?>?action=edit&codevento=<?php echo $id; ?>">Editar</a></td>
                 </tr>

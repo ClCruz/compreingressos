@@ -186,7 +186,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 32, true)) {
             <tbody>
                 <tr>
                     <td><?php echo $dia; ?></td>
-                    <td><?php echo utf8_encode($rs["DS_PAGINA"]); ?></td>
+                    <td><?php echo utf8_encode2($rs["DS_PAGINA"]); ?></td>
                     <td align="right"><?php echo number_format($rs["QT_ACESSO"], 0, ',', '.'); ?></td>
                     <td class="button"><a href="<?php echo $pagina; ?>?action=edit&<?php echo $id; ?>">Editar</a></td>
                     <td class="button"><a href="<?php echo $pagina; ?>?action=delete&<?php echo $id; ?>">Apagar</a></td>

@@ -117,8 +117,8 @@ $(function() {
 					$id = $rs['ID_ESTADO'];
 			?>
 			<tr>
-				<td><?php echo utf8_encode($rs['DS_ESTADO']); ?></td>
-				<td class="center"><?php echo utf8_encode($rs['QT_HORAS_LIMITE']); ?></td>
+				<td><?php echo utf8_encode2($rs['DS_ESTADO']); ?></td>
+				<td class="center"><?php echo utf8_encode2($rs['QT_HORAS_LIMITE']); ?></td>
 				<td class="button center"><a href="<?php echo $pagina; ?>?action=edit&codestado=<?php echo $id; ?>">Editar</a></td>
 			</tr>
 			<?php

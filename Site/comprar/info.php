@@ -85,15 +85,15 @@ function getItems($order_id) {
 		$evento_info = getEvento($rs['ID_EVENTO']);
 		
 		$return_data[] = array(
-			'evento' => utf8_encode($rs['DS_EVENTO']),
+			'evento' => utf8_encode2($rs['DS_EVENTO']),
 			'evento_id' => $rs['ID_EVENTO'],
 			'endereco' => $evento_info['endereco'],
 			'nome_teatro' => $evento_info['nome_teatro'],
 			'data' => $rs['DT_APRESENTACAO']->format('d/m/Y'),
 			'hora' => $rs['HR_APRESENTACAO'],
-			'setor' => utf8_encode($rs['DS_SETOR']),
+			'setor' => utf8_encode2($rs['DS_SETOR']),
 			'localizacao' => $rs['DS_LOCALIZACAO'],
-			'tipo' => utf8_encode($rs['DS_TIPO_BILHETE']),
+			'tipo' => utf8_encode2($rs['DS_TIPO_BILHETE']),
 			'codigo' => $codigo[0],
 			'valor_ingresso' => number_format($rs['VL_UNITARIO'], 2, ',', '')
 		);
@@ -125,7 +125,7 @@ function getHistory($client_id) {
 			'number' => $rs['ID_PEDIDO_VENDA'],
 			'assinatura' => $rs['ASSINATURA'] ? TRUE : FALSE,
 			'pedido_pai' => $rs['ID_PEDIDO_PAI'],
-			'date' => utf8_encode(strftime("%a %#d %b", $rs['DT_PEDIDO_VENDA']->format('U'))),
+			'date' => utf8_encode2(strftime("%a %#d %b", $rs['DT_PEDIDO_VENDA']->format('U'))),
 			'total' => number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, ',', ''),
 			'items' => getItems($rs['ID_PEDIDO_VENDA'])
 		);

@@ -13,35 +13,35 @@ $mainConnection = mainConnection();
 
 
 //--------------------------------------------------
-//verificar se os dados enviados são válidos
+//verificar se os dados enviados sï¿½o vï¿½lidos
 //--------------------------------------------------
 if ($_POST['evento'] == '' or $_POST['apresentacao'] == '') {
-	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('Favor informar o evento e a apresentação.'))));
+	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode2('Favor informar o evento e a apresentaï¿½ï¿½o.'))));
 }
 if (!is_numeric($_POST['cpf'])) {
-	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('Favor informar apenas números no campo CPF.'))));
+	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode2('Favor informar apenas nï¿½meros no campo CPF.'))));
 }
 if (!verificaCPF($_POST['cpf'])) {
-	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('CPF inválido.'))));
+	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode2('CPF invï¿½lido.'))));
 }
 /*if (!is_numeric($_POST['ddd']) or !is_numeric($_POST['telefone'])) {
-	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('Favor informar apenas números nos campos DDD e telefone.'))));
+	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode2('Favor informar apenas nï¿½meros nos campos DDD e telefone.'))));
 }*/
 $nome_completo = explode(' ', $_POST['nome'], 2);
 if (count($nome_completo) > 1) {
 	$nome = $nome_completo[0];
 	$sobrenome = $nome_completo[1];
 } else {
-	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('Favor informar o nome completo.'))));
+	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode2('Favor informar o nome completo.'))));
 }
 /*if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
-	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('Favor informar um e-mail válido.'))));
+	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode2('Favor informar um e-mail vï¿½lido.'))));
 }*/
 if (!is_numeric($_POST['ncartao'])) {
-	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('Favor informar apenas números no campo Nº do Cartão.'))));
+	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode2('Favor informar apenas nï¿½meros no campo Nï¿½ do Cartï¿½o.'))));
 }
 if (strlen($_POST['ncartao']) != 16) {
-	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('Favor informar os 16 números no campo Nº do Cartão.'))));
+	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode2('Favor informar os 16 nï¿½meros no campo Nï¿½ do Cartï¿½o.'))));
 }
 
 $rs = executeSQL($mainConnection, 'SELECT ID_BASE FROM MW_EVENTO WHERE ID_EVENTO = ?', array($_POST['evento']), true);
@@ -52,7 +52,7 @@ $conn = getConnection($id_base);
 
 
 //--------------------------------------------------
-//o cartão participa da promoção neste evento?
+//o cartï¿½o participa da promoï¿½ï¿½o neste evento?
 //--------------------------------------------------
 $query = 'SELECT TOP 1 1
 			FROM 
@@ -72,14 +72,14 @@ $query = 'SELECT TOP 1 1
 $params = array(substr($_POST['ncartao'], 0, 6), $_POST['apresentacao']);
 $result = executeSQL($conn, $query, $params);
 if (!hasRows($result)) {
-	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('Este Nº de Cartão não é participante da promoção.'))));
+	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode2('Este Nï¿½ de Cartï¿½o nï¿½o ï¿½ participante da promoï¿½ï¿½o.'))));
 }
 
 
 
 
 //--------------------------------------------------
-//usuário já cadastrado no sistema? se não, incluir
+//usuï¿½rio jï¿½ cadastrado no sistema? se nï¿½o, incluir
 //--------------------------------------------------
 $result = executeSQL($mainConnection, 'SELECT ID_CLIENTE FROM MW_CLIENTE WHERE CD_CPF = ?', array($_POST['cpf']));
 if (hasRows($result)) {
@@ -88,7 +88,7 @@ if (hasRows($result)) {
 } else {
 	$result = executeSQL($mainConnection, 'SELECT ID_CLIENTE FROM MW_CLIENTE WHERE CD_EMAIL_LOGIN = ?', array($_POST['email']));
 	if (hasRows($result)) {
-		exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('Não foi possível cadastrar o cliente.<br><br>Este e-mail já existe no sistema.'))));
+		exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode2('Nï¿½o foi possï¿½vel cadastrar o cliente.<br><br>Este e-mail jï¿½ existe no sistema.'))));
 	}
 	
 	$query = "INSERT INTO MW_CLIENTE (DS_NOME,DS_SOBRENOME,DS_DDD_TELEFONE,DS_TELEFONE,CD_RG,CD_CPF,
@@ -101,7 +101,7 @@ if (hasRows($result)) {
 		$rs = fetchResult($result);
 		$id_cliente = $rs['ID_CLIENTE'];
 	} else {
-		exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('Não foi possível cadastrar o cliente.<br><br>Houve um erro no sistema, favor procurar o suporte técnico.'))));
+		exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode2('Nï¿½o foi possï¿½vel cadastrar o cliente.<br><br>Houve um erro no sistema, favor procurar o suporte tï¿½cnico.'))));
 	}
 }
 
@@ -198,13 +198,13 @@ if ($num_ingressos <= $limite) {
 		} else {
 			rollbackTransaction($mainConnection);
 			rollbackTransaction($conn);
-			exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('Não foi possível selecionar o(s) ingresso(s) desejado(s).<br><br>Por favor, tente novamente.<br><br>Se o erro persistir, favor informar o suporte.'))));
+			exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode2('Nï¿½o foi possï¿½vel selecionar o(s) ingresso(s) desejado(s).<br><br>Por favor, tente novamente.<br><br>Se o erro persistir, favor informar o suporte.'))));
 		}
 	} else {
-		exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('Neste momento esta(ão) disponível(is) apenas ' . $ingressosDisponiveis . ' ingresso(s)!'))));
+		exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode2('Neste momento esta(ï¿½o) disponï¿½vel(is) apenas ' . $ingressosDisponiveis . ' ingresso(s)!'))));
 	}
 } else {
-	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('Você selecionou o máximo de ingressos permitidos para compras pelo site.<br><br>Para selecionar mais ingressos finalize essa compra.'))));
+	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode2('Vocï¿½ selecionou o mï¿½ximo de ingressos permitidos para compras pelo site.<br><br>Para selecionar mais ingressos finalize essa compra.'))));
 }
 
 
@@ -224,7 +224,7 @@ $query = 'SELECT P.QT_BIN_POR_CPF, COUNT(R.ID_RESERVA) AS COMPRANDO
 $params = array($_POST['apresentacao'], session_id());
 $result = executeSQL($conn, $query, $params);
 if (!hasRows($result)) {
-	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('Pelo menos 1 ingresso promocional deve ser selecionado para participar da promoção.'))));
+	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode2('Pelo menos 1 ingresso promocional deve ser selecionado para participar da promoï¿½ï¿½o.'))));
 } else {
 	$rs = fetchResult($result);
 	$limite = $rs['QT_BIN_POR_CPF'];
@@ -246,16 +246,16 @@ $query = 'SELECT ISNULL(SUM(CASE H.CODTIPLANCAMENTO WHEN 1 THEN 1 ELSE -1 END), 
 $params = array($_POST['cpf'], $cod_apresentacao, substr($_POST['ncartao'], 0, 6));
 $result = executeSQL($conn, $query, $params);
 if (!hasRows($result)) {
-	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('Este Nº de Cartão não é participante da promoção.'))));
+	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode2('Este Nï¿½ de Cartï¿½o nï¿½o ï¿½ participante da promoï¿½ï¿½o.'))));
 } else {
 	$rs = fetchResult($result);
 	$total_comprado = $rs['TOTAL'];
 }
 
 if ($total_comprado >= $limite) {
-	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('Este Nº de Cartão já atingiu o limite de '.$limite.' ingresso(s) promocional(is) para esta apresentação.'))));
+	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode2('Este Nï¿½ de Cartï¿½o jï¿½ atingiu o limite de '.$limite.' ingresso(s) promocional(is) para esta apresentaï¿½ï¿½o.'))));
 } else if ($total_comprado + $compra_atual > $limite) {
-	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('Este Nº de Cartão pode comprar apenas '.($limite - $total_comprado).' ingresso(s) promocional(is) para esta apresentação.'))));
+	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode2('Este Nï¿½ de Cartï¿½o pode comprar apenas '.($limite - $total_comprado).' ingresso(s) promocional(is) para esta apresentaï¿½ï¿½o.'))));
 }
 
 
@@ -306,7 +306,7 @@ $errors = sqlErrors();
 if (!empty($errors)) {
 	exit(json_encode(array(
 		'id'=>session_id(),
-		'error'=>utf8_encode('Não foi possível cadastrar o pedido.<br><br>Houve um erro no sistema, favor procurar o suporte técnico.'),
+		'error'=>utf8_encode2('Nï¿½o foi possï¿½vel cadastrar o pedido.<br><br>Houve um erro no sistema, favor procurar o suporte tï¿½cnico.'),
 		'db'=>$errors[0][2]
 	)));
 }
@@ -326,7 +326,7 @@ executeSQL($mainConnection, $query, array(session_id()));
 
 $errors = sqlErrors();
 if (!empty($errors)) {
-	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('Não foi possível cadastrar os itens do pedido.<br><br>Houve um erro no sistema, favor procurar o suporte técnico.'))));
+	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode2('Nï¿½o foi possï¿½vel cadastrar os itens do pedido.<br><br>Houve um erro no sistema, favor procurar o suporte tï¿½cnico.'))));
 }
 
 $query = 'EXEC SP_VEN_INS001_WEB ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?';
@@ -338,7 +338,7 @@ $retornoProcedure = executeSQL($conn, $query, $params, true);
 
 $errors = sqlErrors();
 if (!empty($errors) or $retornoProcedure[0] != 1) {
-	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode('Não foi possível efetivar a venda.<br><br>Houve um erro no sistema, favor procurar o suporte técnico.'))));
+	exit(json_encode(array('id'=>session_id(), 'error'=>utf8_encode2('Nï¿½o foi possï¿½vel efetivar a venda.<br><br>Houve um erro no sistema, favor procurar o suporte tï¿½cnico.'))));
 }
 
 exit(json_encode(array('id'=>session_id(), 'success'=>true)));

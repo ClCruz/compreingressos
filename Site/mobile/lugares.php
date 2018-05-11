@@ -64,7 +64,7 @@ $result = executeSQL($conn, $query, $params);
 if (hasRows($result)) {
     while ($rs = fetchResult($result)) {        
         $json[] = array(
-            "DSNOME" => utf8_encode($rs['Nome']),
+            "DSNOME" => utf8_encode2($rs['Nome']),
             "DSLUGAR" => $rs['NomObjeto'],
             "DSSETOR" => $rs['NomSetor'],
             "DSSALA" => $rs['NomSala'],

@@ -51,8 +51,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 410, true)) {
             $total['valor_total'] += $rs['valor_assinatura'] + $rs['valor_avulso'];
         ?>
             <tr>
-                <td><?php echo utf8_encode($rs['NOMSETOR']); ?></td>
-                <td><?php echo utf8_encode($rs['TIPBILHETE']); ?></td>
+                <td><?php echo utf8_encode2($rs['NOMSETOR']); ?></td>
+                <td><?php echo utf8_encode2($rs['TIPBILHETE']); ?></td>
 
                 <td align="right"><?php echo $rs['qtd_assinatura'] ? $rs['qtd_assinatura'] : 0; ?></td>
                 <td align="right"><?php echo number_format($rs['valor_assinatura'], 2, ",", "."); ?></td>
@@ -93,9 +93,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 410, true)) {
 
         $combo = '<option value="">Selecione...</option>';
         while ($rs = fetchResult($result)) {
-            $combo .= '<option value="' . $rs['ID_BASE'] . '"' . (($_GET['cboTeatro'] == $rs['ID_BASE']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_NOME_TEATRO']) . '</option>';
+            $combo .= '<option value="' . $rs['ID_BASE'] . '"' . (($_GET['cboTeatro'] == $rs['ID_BASE']) ? ' selected' : '') . '>' . utf8_encode2($rs['DS_NOME_TEATRO']) . '</option>';
             if ($_GET['excel'] and $_GET['cboTeatro'] == $rs['ID_BASE']) {
-                $text = utf8_encode($rs['DS_NOME_TEATRO']);
+                $text = utf8_encode2($rs['DS_NOME_TEATRO']);
                 break;
             }
         }
@@ -136,9 +136,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 410, true)) {
         $combo = '<option value="">Selecione...</option>';
 
         while($rs = fetchResult($result)){
-            $combo .= '<option value="'. $rs["CODPECA"] .'"' . (($_GET['cboPeca'] == $rs['CODPECA']) ? ' selected' : '') . '>'. utf8_encode($rs["NOMPECA"]) .'</option>'; 
+            $combo .= '<option value="'. $rs["CODPECA"] .'"' . (($_GET['cboPeca'] == $rs['CODPECA']) ? ' selected' : '') . '>'. utf8_encode2($rs["NOMPECA"]) .'</option>'; 
             if ($_GET['excel'] and $_GET['cboPeca'] == $rs['CODPECA']) {
-                $text = utf8_encode($rs['NOMPECA']);
+                $text = utf8_encode2($rs['NOMPECA']);
                 break;
             }
         }
@@ -279,9 +279,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 410, true)) {
         $combo = "<option value=''>Selecione...</option><option value='TODOS'".(($_GET['cboSetor'] == 'TODOS') ? ' selected' : '').">&lt; TODOS &gt;</option>";
 
         while($rs = fetchResult($result)){
-            $combo .= '<option value="'. $rs["codsala"] .'"' . (($_GET['cboSetor'] == $rs['codsala']) ? ' selected' : '') . '>'. utf8_encode($rs['nomSala']) .'</option>';
+            $combo .= '<option value="'. $rs["codsala"] .'"' . (($_GET['cboSetor'] == $rs['codsala']) ? ' selected' : '') . '>'. utf8_encode2($rs['nomSala']) .'</option>';
             if ($_GET['excel'] and $_GET['cboSetor'] == $rs['codsala']) {
-                $text = utf8_encode($rs['nomSala']);
+                $text = utf8_encode2($rs['nomSala']);
                 break;
             }
         }

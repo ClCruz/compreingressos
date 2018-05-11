@@ -44,7 +44,7 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador']) and isset
 	<select id="evento">
 	<option />
 	<?php while ($rs = fetchResult($result)) { ?>
-		<option value="etapa1.php?apresentacao=<?php echo $rs['ID_APRESENTACAO']; ?>&eventoDS=<?php echo utf8_encode($rs['DS_EVENTO']); ?>"><?php echo utf8_encode($rs['DS_EVENTO']); ?></option>
+		<option value="etapa1.php?apresentacao=<?php echo $rs['ID_APRESENTACAO']; ?>&eventoDS=<?php echo utf8_encode2($rs['DS_EVENTO']); ?>"><?php echo utf8_encode2($rs['DS_EVENTO']); ?></option>
 	<?php } ?>
 	</select>
 	<?php

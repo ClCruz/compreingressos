@@ -53,12 +53,12 @@ session_start();
 				<div class="icone"></div>
 				<div class="inputs">
 					<p class="titulo">Qual o seu nome?</p>
-					<input type="text" name="nome" id="nome" maxlength="50" placeholder="nome/name/nombre<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>" pattern=".{1,50}" value="<?php echo utf8_encode($rs['DS_NOME']); ?>">
+					<input type="text" name="nome" id="nome" maxlength="50" placeholder="nome/name/nombre<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>" pattern=".{1,50}" value="<?php echo utf8_encode2($rs['DS_NOME']); ?>">
 					<div class="erro_help">
 						<p class="erro">informe seu nome</p>
 						<p class="help"></p>
 					</div>
-					<input type="text" name="sobrenome" id="sobrenome" maxlength="50" placeholder="sobrenome/last name/apellido<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>" pattern=".{1,50}" value="<?php echo utf8_encode($rs['DS_SOBRENOME']); ?>">
+					<input type="text" name="sobrenome" id="sobrenome" maxlength="50" placeholder="sobrenome/last name/apellido<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>" pattern=".{1,50}" value="<?php echo utf8_encode2($rs['DS_SOBRENOME']); ?>">
 					<div class="erro_help">
 						<p class="erro">informe seu sobrenome</p>
 						<p class="help"></p>
@@ -137,7 +137,7 @@ session_start();
 						<p class="help"></p>
 					</div>
 
-					<input type="text" name="rg" id="rg" placeholder="R.G./Document/Documento" maxlength="11" pattern=".{1,11}" value="<?php echo utf8_encode($rs['CD_RG']); ?>"/>
+					<input type="text" name="rg" id="rg" placeholder="R.G./Document/Documento" maxlength="11" pattern=".{1,11}" value="<?php echo utf8_encode2($rs['CD_RG']); ?>"/>
 					<div class="erro_help" style="height: 32px;">
 						<p class="erro">
 							Type your document<br/>
@@ -145,7 +145,7 @@ session_start();
 						</p>
 						<p class="help"></p>
 					</div>
-					<input type="text" name="cpf" id="cpf" placeholder="C.P.F<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>" maxlength="14" autocomplete="off" maxlength="11" pattern=".{14}" value="<?php echo utf8_encode($rs['CD_CPF']); ?>">
+					<input type="text" name="cpf" id="cpf" placeholder="C.P.F<?php echo ($exibir_msg_obrigatorio ? ' (*)' : '')?>" maxlength="14" autocomplete="off" maxlength="11" pattern=".{14}" value="<?php echo utf8_encode2($rs['CD_CPF']); ?>">
 					<div class="erro_help">
 						<p class="erro">informe seu CPF</p>
 						<p class="help"></p>
@@ -174,7 +174,7 @@ session_start();
 				<div class="icone"></div>
 				<div class="inputs">
 					<p class="titulo">Endereço</p>
-					<input type="text" name="cep" id="cep" class="number" placeholder="CEP/ZipCode" maxlength="8" autocomplete="off" value="<?php echo utf8_encode($rs['CD_CEP']); ?>">
+					<input type="text" name="cep" id="cep" class="number" placeholder="CEP/ZipCode" maxlength="8" autocomplete="off" value="<?php echo utf8_encode2($rs['CD_CEP']); ?>">
 					<div class="erro_help">
 						<p class="erro">informe seu CEP</p>
 						<p class="help"><a href="http://www.buscacep.correios.com.br/" target="_blank">não sabe seu CEP?</a></p>
@@ -186,27 +186,27 @@ session_start();
 						<p class="erro">selecione o estado</p>
 						<p class="help"></p>
 					</div>
-					<input type="text" name="cidade" id="cidade" placeholder="cidade/city/ciudad" maxlength="50" pattern=".{1,50}" value="<?php echo utf8_encode($rs['DS_CIDADE']); ?>">
+					<input type="text" name="cidade" id="cidade" placeholder="cidade/city/ciudad" maxlength="50" pattern=".{1,50}" value="<?php echo utf8_encode2($rs['DS_CIDADE']); ?>">
 					<div class="erro_help">
 						<p class="erro">informe sua cidade</p>
 						<p class="help"></p>
 					</div>
-					<input type="text" name="bairro" id="bairro" placeholder="bairro/district/barrio" maxlength="70" pattern=".{1,70}" value="<?php echo utf8_encode($rs['DS_BAIRRO']); ?>">
+					<input type="text" name="bairro" id="bairro" placeholder="bairro/district/barrio" maxlength="70" pattern=".{1,70}" value="<?php echo utf8_encode2($rs['DS_BAIRRO']); ?>">
 					<div class="erro_help">
 						<p class="erro">informe seu bairro</p>
 						<p class="help"></p>
 					</div>
-					<input type="text" name="endereco" id="endereco" placeholder="logradouro/address/calle" maxlength="150" pattern=".{1,150}" value="<?php echo utf8_encode($rs['DS_ENDERECO']); ?>">
+					<input type="text" name="endereco" id="endereco" placeholder="logradouro/address/calle" maxlength="150" pattern=".{1,150}" value="<?php echo utf8_encode2($rs['DS_ENDERECO']); ?>">
 					<div class="erro_help">
 						<p class="erro">informe seu logradouro</p>
 						<p class="help"></p>
 					</div>
-					<input type="text" name="numero_endereco" id="numero_endereco" placeholder="Número do Endereço/Address Number" maxlength="15" pattern=".{1,150}" value="<?php echo utf8_encode($rs['NR_ENDERECO']); ?>">
+					<input type="text" name="numero_endereco" id="numero_endereco" placeholder="Número do Endereço/Address Number" maxlength="15" pattern=".{1,150}" value="<?php echo utf8_encode2($rs['NR_ENDERECO']); ?>">
 					<div class="erro_help">
 						<p class="erro">Número</p>
 						<p class="help"></p>
 					</div>
-					<input type="text" name="complemento" id="complemento" placeholder="complemento/complement" maxlength="50" value="<?php echo utf8_encode($rs['DS_COMPL_ENDERECO']); ?>">
+					<input type="text" name="complemento" id="complemento" placeholder="complemento/complement" maxlength="50" value="<?php echo utf8_encode2($rs['DS_COMPL_ENDERECO']); ?>">
 					<div class="erro_help">
 						<p class="erro"></p>
 						<p class="help"></p>
@@ -255,7 +255,7 @@ session_start();
 				<div class="icone"></div>
 				<div class="inputs">
 					<p class="titulo">Login</p>
-					<input type="text" name="email" id="email" value="<?php echo utf8_encode($rs['CD_EMAIL_LOGIN']); ?>" <?php echo (!(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) ? 'disabled' : ''; ?>/>
+					<input type="text" name="email" id="email" value="<?php echo utf8_encode2($rs['CD_EMAIL_LOGIN']); ?>" <?php echo (!(isset($_SESSION['operador']) and is_numeric($_SESSION['operador']))) ? 'disabled' : ''; ?>/>
 					<div class="erro_help">
 						<p class="erro"></p>
 						<p class="help"></p>

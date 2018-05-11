@@ -267,7 +267,7 @@ function validar(){
     	if ($hasRows) {
 			while ($rsEventos = fetchResult($resultEventos)) {
 				echo '<tr>
-						  <td>'.$nbsp.'&nbsp;'.utf8_encode($rsEventos['DS_EVENTO']).'</td>
+						  <td>'.$nbsp.'&nbsp;'.utf8_encode2($rsEventos['DS_EVENTO']).'</td>
 						  <td style="text-align: center;">
 							  <input type="checkbox" class="chm" name="eventos[]" '.$rsEventos["CHECKED"].' value="'.$rsEventos["ID_EVENTO"].'" />
 						  </td>

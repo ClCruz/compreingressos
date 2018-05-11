@@ -231,7 +231,7 @@ Class Mensagem{
 
 // Fim Entidades da Consulta de Protocolo
 
-// Entidades de Consulta a Situação de Adimplencia
+// Entidades de Consulta a Situaï¿½ï¿½o de Adimplencia
 
 //NOVO
 Class AdimplenciaExibidor{
@@ -284,7 +284,7 @@ Class AdimplenciaSala{
 // 	}
 // }
 
-// Fim Entidades de Consulta a Situação de Adimplencia 
+// Fim Entidades de Consulta a Situaï¿½ï¿½o de Adimplencia 
 
 
 
@@ -315,7 +315,7 @@ if(isset($_POST['NomeBase']) && $_POST["NomeBase"] != "" && $_POST["Proc"] != ""
 			$html .= "<option value=\"todos\">Todos</option>";
 			if(hasRows($result)){
 				while($rs = fetchResult($result)){
-					$html .= "<option value=\"". $rs["CodSala"] ."\">". utf8_encode($rs["NomSala"]) ."</option>\n";	
+					$html .= "<option value=\"". $rs["CodSala"] ."\">". utf8_encode2($rs["NomSala"]) ."</option>\n";	
 				}
 			}
 			$html .= '</select>';
@@ -385,8 +385,8 @@ function buscarSalasDiasCinematograficos(){
 	if(hasRows($rsGeral)){
 			$html = "";
 			$i = 1;
-			$statusProtocolo = array('N'=>'Não acatado',
-									 'A'=>'Em Análise',
+			$statusProtocolo = array('N'=>'Nï¿½o acatado',
+									 'A'=>'Em Anï¿½lise',
 									 'E'=>'Com Erro',
 									 'V'=>'Validado',
 									 'R'=>'Recusado');
@@ -449,7 +449,7 @@ function buscarSalasDiasCinematograficos(){
 	  						data-codsala="'.$rs['CodSala'].'" 
 	  						data-item="'.$i.'"  '.$dataProtocolo.'    
 	  			 			data-dt-apresentacao="'.$rs['dt_apresentacao_value'].'" 
-	  			 			value="'.utf8_encode('Consultar Situação').'" 
+	  			 			value="'.utf8_encode2('Consultar Situaï¿½ï¿½o').'" 
 	  			 			onclick="consultarProtocolo(this);"
 
 	  			 />';
@@ -470,13 +470,13 @@ function buscarSalasDiasCinematograficos(){
 			 $html .= '
 			 <tr>
 	              <td style="text-align: center;">
-	                <label>'.utf8_encode($rs['NomSala']).'</label>
+	                <label>'.utf8_encode2($rs['NomSala']).'</label>
 	              </td>
 	              <td style="text-align: center;">
 	                <label>'.$rs['dt_apresentacao'].'</label> 
 	              </td>
 	              <td style="text-align: center;">
-	              		'.utf8_encode($situacao).'
+	              		'.utf8_encode2($situacao).'
 	              </td>
 	              <td style="text-align: center;">
 	                '.$button.'
@@ -853,20 +853,20 @@ function confirmEnviar(){
 	$html .= '<button class="button" onclick="showDiv(\'#divBilheteria\');">Bilheteria</button>';			
 	$html .= '<button class="button" onclick="showDiv(\'#divSessao\');">Sessoes</button>';			
 	$html .= '<button class="button" onclick="showDiv(\'#divObras\');">Obras</button>';			
-	$html .= '<button class="button" onclick="showDiv(\'#divTotalizacao\');">'.utf8_encode('Totalizações').'</button>';	
+	$html .= '<button class="button" onclick="showDiv(\'#divTotalizacao\');">'.utf8_encode2('Totalizaï¿½ï¿½es').'</button>';	
 
 
 $contBilheteria = '<table>
 						<tbody>
 							<tr>
-								<td style="text-align:right;"><strong>'.utf8_encode('Código Registro Exibidor: ').'</strong></td>
+								<td style="text-align:right;"><strong>'.utf8_encode2('Cï¿½digo Registro Exibidor: ').'</strong></td>
 								<td class="space"> '.$bilheteria->registroANCINEExibidor.'</td>
 							
-								<td style="text-align:right;"><strong>'.utf8_encode('Houve Sessões: ').'</strong></td>
+								<td style="text-align:right;"><strong>'.utf8_encode2('Houve Sessï¿½es: ').'</strong></td>
 								<td> '.$bilheteria->houveSessoes.'</td>
 							</tr>
 							<tr>
-								<td style="text-align:right;"><strong>'.utf8_encode('Código Registro Sala: ').'</strong></td>
+								<td style="text-align:right;"><strong>'.utf8_encode2('Cï¿½digo Registro Sala: ').'</strong></td>
 								<td class="space"> '.$bilheteria->registroANCINESala.'</td>
 								
 								<td style="text-align:right;"><strong>Retificador: </strong></td>
@@ -884,9 +884,9 @@ $contBilheteria = '<table>
 		
 		foreach ($bilheteria->sessoes as $sessao) {
 					$contSessao	.= '<tr>
-										<td style="text-align:right;">   <strong>'.utf8_encode('Data Sessão: ').'</strong></td>
+										<td style="text-align:right;">   <strong>'.utf8_encode2('Data Sessï¿½o: ').'</strong></td>
 										<td class="space">  '.$sessao->dataHoraInicio.'</td>
-										<td style="text-align:right;"><strong>   '.utf8_encode('Modalidade: ').'</strong></td>
+										<td style="text-align:right;"><strong>   '.utf8_encode2('Modalidade: ').'</strong></td>
 										<td> '.$sessao->modalidade.'</td>
 									</tr>
 								';
@@ -902,55 +902,55 @@ $contBilheteria = '<table>
 				}
 				$contObra .= '<table id="obra_'.$i.'" style="display: '.$styleDisplay.';"><tbody>';
 				$contObra .= '<tr>
-								<td style="text-align:right;">   <strong>'.utf8_encode('Numero Obra: ').'</strong></td>
+								<td style="text-align:right;">   <strong>'.utf8_encode2('Numero Obra: ').'</strong></td>
 								<td>  '.$obra->numeroObra.'</td>
 							 </tr>
 							<tr>
-								<td style="text-align:right;"><strong>   '.utf8_encode('Titulo Obra: ').'</strong></td>
+								<td style="text-align:right;"><strong>   '.utf8_encode2('Titulo Obra: ').'</strong></td>
 								<td> '.$obra->tituloObra.'</td>
 							</tr>
 							<tr>
-								<td style="text-align:right;"><strong>   '.utf8_encode('Tipo Tela: ').'</strong></td>
+								<td style="text-align:right;"><strong>   '.utf8_encode2('Tipo Tela: ').'</strong></td>
 								<td> '.$obra->tipoTela.'</td>
 							</tr>
 							<tr>
-								<td style="text-align:right;"><strong>   '.utf8_encode('Digital: ').'</strong></td>
+								<td style="text-align:right;"><strong>   '.utf8_encode2('Digital: ').'</strong></td>
 								<td> '.$obra->digital.'</td>
 							</tr>
 							<tr>
-								<td style="text-align:right;"><strong>   '.utf8_encode('Tipo Projeção: ').'</strong></td>
+								<td style="text-align:right;"><strong>   '.utf8_encode2('Tipo Projeï¿½ï¿½o: ').'</strong></td>
 								<td> '.$obra->tipoProjecao.'</td>
 							</tr>
 							<tr>
-								<td style="text-align:right;"><strong>   '.utf8_encode('Áudio: ').'</strong></td>
+								<td style="text-align:right;"><strong>   '.utf8_encode2('ï¿½udio: ').'</strong></td>
 								<td> '.$obra->audio.'</td>
 							</tr>
 							<tr>
-								<td style="text-align:right;"><strong>   '.utf8_encode('Legenda: ').'</strong></td>
+								<td style="text-align:right;"><strong>   '.utf8_encode2('Legenda: ').'</strong></td>
 								<td> '.$obra->legenda.'</td>
 							</tr>
 							<tr>
-								<td style="text-align:right;"><strong>   '.utf8_encode('Libras: ').'</strong></td>
+								<td style="text-align:right;"><strong>   '.utf8_encode2('Libras: ').'</strong></td>
 								<td> '.$obra->libras.'</td>
 							</tr>
 							<tr>
-								<td style="text-align:right;"><strong>   '.utf8_encode('legendagem Descritiva: ').'</strong></td>
+								<td style="text-align:right;"><strong>   '.utf8_encode2('legendagem Descritiva: ').'</strong></td>
 								<td> '.$obra->legendagemDescritiva.'</td>
 							</tr>
 							<tr>
-								<td style="text-align:right;"><strong>   '.utf8_encode('Áudio descrição: ').'</strong></td>
+								<td style="text-align:right;"><strong>   '.utf8_encode2('ï¿½udio descriï¿½ï¿½o: ').'</strong></td>
 								<td> '.$obra->audioDescricao.'</td>
 							</tr>
 							<br>
 							<tr>
-								<td><br><h3 class="title">   '.utf8_encode('Distribuidor ').'</h3>
+								<td><br><h3 class="title">   '.utf8_encode2('Distribuidor ').'</h3>
 								 
 									<tr>
-										<td style="text-align:right;"><strong>'.utf8_encode('CNPJ: ').'</strong></td>
+										<td style="text-align:right;"><strong>'.utf8_encode2('CNPJ: ').'</strong></td>
 										<td>'.$obra->distribuidor->cnpj.'</td>
 									</tr>
 									<tr>	
-										<td style="text-align:right;"><strong>'.utf8_encode('Razão Social: ').'</strong></td>
+										<td style="text-align:right;"><strong>'.utf8_encode2('Razï¿½o Social: ').'</strong></td>
 										<td>'.$obra->distribuidor->razaoSocial.'</td>
 									</tr>
 								</td>
@@ -971,24 +971,24 @@ $contBilheteria = '<table>
 						foreach ($totalizacaoCategoriaIngresso->totalizacoesModalidadePagamento as $totalizacaoModalidadePagamento) {
 								$contModalidadePagamento .= '
 										 <tr>
-										 	<td style="text-align:right;"><strong>'.utf8_encode('Cod. Modalidade Pagamento: ').'</strong></td>
+										 	<td style="text-align:right;"><strong>'.utf8_encode2('Cod. Modalidade Pagamento: ').'</strong></td>
 										 	<td>'.$totalizacaoModalidadePagamento->codigoModalidadePagamento.'</td>
-										 	<td style="text-align:right;"><strong>'.utf8_encode('Valor Arrecadado: ').'</strong></td>
+										 	<td style="text-align:right;"><strong>'.utf8_encode2('Valor Arrecadado: ').'</strong></td>
 										 	<td>'.$totalizacaoModalidadePagamento->valorArrecadado.'</td>
 										 </tr>	
 										';
 						}
 
 						$contCategoriaIngresso .= '<tr>
-										<td style="text-align:right;"><strong>'.utf8_encode('Cod. Categoria Ingresso: ').'</strong></td>
+										<td style="text-align:right;"><strong>'.utf8_encode2('Cod. Categoria Ingresso: ').'</strong></td>
 										<td>'.$totalizacaoCategoriaIngresso->codigoCategoriaIngresso.'</td>
-										<td style="text-align:right;"><strong>'.utf8_encode('Qtd. Espectadores: ').'</strong></td>
+										<td style="text-align:right;"><strong>'.utf8_encode2('Qtd. Espectadores: ').'</strong></td>
 										<td>'.$totalizacaoCategoriaIngresso->quantidadeEspectadores.'</td>
 										
 										<td>
 											<tr>
 
-												<td style="text-align:right;"><br><strong class="title">'.utf8_encode('Totalizações Modalidade Pagamento ').'</strong>
+												<td style="text-align:right;"><br><strong class="title">'.utf8_encode2('Totalizaï¿½ï¿½es Modalidade Pagamento ').'</strong>
 													'.$contModalidadePagamento.'
 												</td>
 											</tr>
@@ -1005,15 +1005,15 @@ $contBilheteria = '<table>
 				$contTipoAssento .= '<table id="tipoAssento_'.$iTipoAssento.'" style="display: '.$styleDisplay.';"><tbody>';
 				$contTipoAssento .= '
 							<tr>
-								<td style="text-align:right;">   <strong>'.utf8_encode('Cod. Tipo Assento: ').'</strong></td>
+								<td style="text-align:right;">   <strong>'.utf8_encode2('Cod. Tipo Assento: ').'</strong></td>
 								<td>  '.$totalizacoesTipoAssento->codigoTipoAssento.'</td>
 							</tr>
 							<tr>
-								<td style="text-align:right;"><strong>   '.utf8_encode('Qtd. Disponibilizada: ').'</strong></td>
+								<td style="text-align:right;"><strong>   '.utf8_encode2('Qtd. Disponibilizada: ').'</strong></td>
 								<td> '.$totalizacoesTipoAssento->quantidadeDisponibilizada.'</td>
 							</tr>
 							<tr>
-								<td style="text-align:right;"><strong>   '.utf8_encode('Totalizações Categoria Ingresso: ').'</strong>
+								<td style="text-align:right;"><strong>   '.utf8_encode2('Totalizaï¿½ï¿½es Categoria Ingresso: ').'</strong>
 								 '.$contCategoriaIngresso.'
 								</td>
 							</tr>
@@ -1033,9 +1033,9 @@ $contBilheteria = '<table>
 	$html .= '<div id="divBilheteria" style="display:block;"><h3 class="title">Bilheteria</h3><br>'.$contBilheteria.'<hr></div>';
 
 
-	$html .= '<div id="divSessao" style="display:none;"><h3 class="title">'.utf8_encode('Sessões').'</h3><br> '.$contSessao.'<hr></div>';
+	$html .= '<div id="divSessao" style="display:none;"><h3 class="title">'.utf8_encode2('Sessï¿½es').'</h3><br> '.$contSessao.'<hr></div>';
 	$html .= '<div id="divObras" style="display:none;"><h3 class="title">Obras</h3> '.$contObra.'<hr></div>';
-	$html .= '<div id="divTotalizacao" style="display:none;"><h3 class="title">'.utf8_encode('Totalizações').'</h3> '.$contTipoAssento.'</div>';
+	$html .= '<div id="divTotalizacao" style="display:none;"><h3 class="title">'.utf8_encode2('Totalizaï¿½ï¿½es').'</h3> '.$contTipoAssento.'</div>';
 	
 	
 
@@ -1063,7 +1063,7 @@ function getToken($idBase){
 
 }
 
-//Operações WebService ANCINE
+//Operaï¿½ï¿½es WebService ANCINE
 // $login = '03459043000128';
 // $senha = 'cinesanta';
 
@@ -1090,7 +1090,7 @@ function registrarBilheteriaDeSalaDeExibicao(){
 
 	$token = getToken($idBase);
 	if(is_null($token) || $token == ''){
-		echo "Nenhuma token associada, por favor realize a associação de uma token para integração com ANCINE!";
+		echo "Nenhuma token associada, por favor realize a associaï¿½ï¿½o de uma token para integraï¿½ï¿½o com ANCINE!";
 		exit;
 	}
 		
@@ -1197,7 +1197,7 @@ function consultarProtocolo(){
 	
 	$token = getToken($idBase);
 	if(is_null($token) || $token == ''){
-		echo utf8_encode("Nenhuma token associada. Por favor realize a associação de uma token para realizar integração com a ANCINE!");
+		echo utf8_encode2("Nenhuma token associada. Por favor realize a associaï¿½ï¿½o de uma token para realizar integraï¿½ï¿½o com a ANCINE!");
 		exit;
 	}
 		
@@ -1268,7 +1268,7 @@ function consultarProtocolo(){
 
 }
 
-//Fim Operações WebService ANCINE
+//Fim Operaï¿½ï¿½es WebService ANCINE
 
 
 

@@ -160,7 +160,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 650, true)) {
         $json = array();
         while($rs = fetchResult($stmt)){
         	$json[] = array("id_regra_split" => $rs["id_regra_split"],
-        					"ds_razao_social" => utf8_encode($rs["ds_razao_social"]),
+        					"ds_razao_social" => utf8_encode2($rs["ds_razao_social"]),
         					"liable" => $rs["liable"],
         					"charge_processing_fee" => $rs["charge_processing_fee"],
         					"percentage_credit_web" => $rs["percentage_credit_web"],
@@ -195,7 +195,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 650, true)) {
     		$param = array($pecas[$i]["CodPeca"], $pecas[$i]["id_base"]);
     		$stmt = executeSQL($mainConnection, $query, $param);
     		while ($rs = fetchResult($stmt)) {
-    			$eventos[] = array("id_evento" => $rs["id_evento"], "ds_evento" => utf8_encode($rs["ds_evento"]));
+    			$eventos[] = array("id_evento" => $rs["id_evento"], "ds_evento" => utf8_encode2($rs["ds_evento"]));
     		}
     	}
 
@@ -205,7 +205,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 650, true)) {
     	$stmt = executeSQL($mainConnection, $query, array($_POST["produtor"]));
     	$json = array();
     	while ($rs = fetchResult($stmt)) {
-    		$json[] = array("id_recebedor" => $rs["id_recebedor"], "ds_razao_social" => utf8_encode($rs["ds_razao_social"]));
+    		$json[] = array("id_recebedor" => $rs["id_recebedor"], "ds_razao_social" => utf8_encode2($rs["ds_razao_social"]));
     	}
     	$retorno = json_encode($json);
     } else {

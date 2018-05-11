@@ -211,9 +211,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
         while ($rs = fetchResult($result)) {            
             $ret = array(
             	"id" => $rs["id_recebedor"],
-            	"razao_social" => utf8_encode($rs["ds_razao_social"]),
+            	"razao_social" => utf8_encode2($rs["ds_razao_social"]),
             	"cpf_cnpj" => $rs["cd_cpf_cnpj"],
-            	"nome" => utf8_encode($rs["ds_nome"]),
+            	"nome" => utf8_encode2($rs["ds_nome"]),
             	"email" => $rs["cd_email"],
             	"telefone" => $rs["ds_ddd_telefone"] ." ". substr($rs["ds_telefone"], 0, 4) ."-". substr($rs["ds_telefone"], 4, 5),
             	"celular" => $rs["ds_ddd_celular"] ." ". substr($rs["ds_celular"], 0, 4) ."-". substr($rs["ds_celular"], 4, 5),
@@ -260,7 +260,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
         while ($rs = fetchResult($result)) {            
             $json[] = array(
             	"id_recebedor" => $rs["id_recebedor"],
-            	"ds_razao_social" => utf8_encode($rs["ds_razao_social"]),
+            	"ds_razao_social" => utf8_encode2($rs["ds_razao_social"]),
             	"cd_cpf_cnpj" => $rs["cd_cpf_cnpj"]
             );
         }

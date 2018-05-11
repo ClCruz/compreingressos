@@ -111,21 +111,21 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 220, true)) {
 
 		//Gerar nome do arquivo com base nos dados da peça
 		$rs = getDadosPeca();
-			$file_name = $_GET['DatApresentacao'] . str_replace(':', '', $_GET['HorSessao']) . normalize_string(substr(utf8_encode($rs['NOMPECA']), 0, 15));
+			$file_name = $_GET['DatApresentacao'] . str_replace(':', '', $_GET['HorSessao']) . normalize_string(substr(utf8_encode2($rs['NOMPECA']), 0, 15));
 			$csv1_path = 'temp/EVE' . $file_name . '.csv';
 			$csv2_path = 'temp/ING' . $file_name . '.csv';
 			$zip_file = 'temp/' . $file_name . '.zip';
 
 			$csv1 = fopen($csv1_path, 'wt');
 			$data = substr($_GET['DatApresentacao'], 0, 4) . '-' . substr($_GET['DatApresentacao'], 4, 2) . '-' . substr($_GET['DatApresentacao'], -2);
-			fwrite($csv1, "00;" . utf8_encode($rs['NOMPECA']) . ";" . $data . ";00:00:00;" . $data . ";23:59:59;\n");
+			fwrite($csv1, "00;" . utf8_encode2($rs['NOMPECA']) . ";" . $data . ";00:00:00;" . $data . ";23:59:59;\n");
 
 		$result = getTiposBilhete(true);
 			$bilhetes = array();
 			foreach ($result as $rs)
 			{
-				fwrite($csv1, "01;" . $rs['CODTIPBILHETE'] . ";" . utf8_encode($rs['TIPBILHETE']) . "\n");
-				$bilhetes[$rs['CODTIPBILHETE']] = utf8_encode($rs['TIPBILHETE']);
+				fwrite($csv1, "01;" . $rs['CODTIPBILHETE'] . ";" . utf8_encode2($rs['TIPBILHETE']) . "\n");
+				$bilhetes[$rs['CODTIPBILHETE']] = utf8_encode2($rs['TIPBILHETE']);
 			}
 
 			fclose($csv1);

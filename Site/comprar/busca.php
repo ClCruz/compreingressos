@@ -68,7 +68,7 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
 				<a <?php echo $onclick; ?> href="<?php echo $href; ?>" class="cliente">
 					<li>
 						<p>
-							Nome: <?php echo utf8_encode($rs['DS_NOME'] . ' ' . $rs['DS_SOBRENOME']); ?><br>
+							Nome: <?php echo utf8_encode2($rs['DS_NOME'] . ' ' . $rs['DS_SOBRENOME']); ?><br>
 							CPF: <?php echo $rs['CD_CPF']; ?><br>
 							Telefone: <?php echo '(' . $rs['DS_DDD_TELEFONE'] . ') ' . $rs['DS_TELEFONE']; ?>
 						</p>

@@ -120,9 +120,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 661, true)) {
             	"bit_antecipacao" => $rs["bit_antecipacao"],
             	"DocumentoProdutor" => $rs["DocumentoProdutor"],
             	"DocumentoRecebedor" => $rs["DocumentoRecebedor"],
-            	"RazaoSocialProdutor" => utf8_encode($rs["RazaoSocialProdutor"]),
-            	"RazaoSocialRecebedor" => utf8_encode($rs["RazaoSocialRecebedor"]),
-            	"NomeUsuario" => utf8_encode($rs["NomeUsuario"])
+            	"RazaoSocialProdutor" => utf8_encode2($rs["RazaoSocialProdutor"]),
+            	"RazaoSocialRecebedor" => utf8_encode2($rs["RazaoSocialRecebedor"]),
+            	"NomeUsuario" => utf8_encode2($rs["NomeUsuario"])
             );
         }
         $retorno = json_encode($json);

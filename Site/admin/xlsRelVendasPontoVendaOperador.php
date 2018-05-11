@@ -117,10 +117,10 @@ if(isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["local"
 						$lastPonto =  $rs['descrcaixa'];
 						?>
 						<tr>
-							<td><?php echo utf8_encode($rs['ds_canal_venda']); ?></td>
-							<td><?php echo utf8_encode($rs['descrcaixa']); ?></td>
-							<td><?php echo utf8_encode($rs['nomusuario']); ?></td>
-							<td><?php echo utf8_encode($rs['tipbilhete']); ?></td>
+							<td><?php echo utf8_encode2($rs['ds_canal_venda']); ?></td>
+							<td><?php echo utf8_encode2($rs['descrcaixa']); ?></td>
+							<td><?php echo utf8_encode2($rs['nomusuario']); ?></td>
+							<td><?php echo utf8_encode2($rs['tipbilhete']); ?></td>
 							<td class="number"><?php echo $rs['qtd']; ?></td>
 							<td class="number"><?php echo number_format($rs['val'], 2, ',', '.'); ?></td>
 						</tr>
@@ -128,10 +128,10 @@ if(isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["local"
 					} elseif ($lastLocal != $rs['ds_canal_venda']) {
 						?>
 						<tr>
-							<td><?php echo utf8_encode($rs['ds_canal_venda']); ?></td>
-							<td><?php echo utf8_encode($rs['descrcaixa']); ?></td>
-							<td><?php echo utf8_encode($rs['nomusuario']); ?></td>
-							<td><?php echo utf8_encode($rs['tipbilhete']); ?></td>
+							<td><?php echo utf8_encode2($rs['ds_canal_venda']); ?></td>
+							<td><?php echo utf8_encode2($rs['descrcaixa']); ?></td>
+							<td><?php echo utf8_encode2($rs['nomusuario']); ?></td>
+							<td><?php echo utf8_encode2($rs['tipbilhete']); ?></td>
 							<td class="number"><?php echo $rs['qtd']; ?></td>
 							<td class="number"><?php echo number_format($rs['val'], 2, ',', '.'); ?></td>
 						</tr>
@@ -160,9 +160,9 @@ if(isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["local"
 						?>
 						<tr>
 							<td>&nbsp;</td>
-							<td><?php echo utf8_encode($rs['descrcaixa']); ?></td>
-							<td><?php echo utf8_encode($rs['nomusuario']); ?></td>
-							<td><?php echo utf8_encode($rs['tipbilhete']); ?></td>
+							<td><?php echo utf8_encode2($rs['descrcaixa']); ?></td>
+							<td><?php echo utf8_encode2($rs['nomusuario']); ?></td>
+							<td><?php echo utf8_encode2($rs['tipbilhete']); ?></td>
 							<td class="number"><?php echo $rs['qtd']; ?></td>
 							<td class="number"><?php echo number_format($rs['val'], 2, ',', '.'); ?></td>
 						</tr>

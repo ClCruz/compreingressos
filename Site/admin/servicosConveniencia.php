@@ -444,7 +444,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 6, true)) {
                 <tbody>
             <?php
               foreach ($newResult as $rs):
-                  $idEvento = utf8_encode($rs['ds_evento']);
+                  $idEvento = utf8_encode2($rs['ds_evento']);
                   $data = $rs['dt_inicio_vigencia'];
             ?>
             <tr>

@@ -132,10 +132,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 34, true)) {
         while ($funcionalidade = fetchResult($funcionalidades)) {
             if (isset($_GET["funcionalidade"]))
                 $selected = "";
-            if (strcmp(utf8_encode($funcionalidade["DS_FUNCIONALIDADE"]), $_GET["funcionalidade"]) == 0)
+            if (strcmp(utf8_encode2($funcionalidade["DS_FUNCIONALIDADE"]), $_GET["funcionalidade"]) == 0)
                 $selected = "selected=\"selecteded\"";
 ?>
-            <option <?php echo $selected; ?> value="<?php echo utf8_encode($funcionalidade["DS_FUNCIONALIDADE"]); ?>"><?php echo utf8_encode($funcionalidade["DS_FUNCIONALIDADE"]) ?></option>
+            <option <?php echo $selected; ?> value="<?php echo utf8_encode2($funcionalidade["DS_FUNCIONALIDADE"]); ?>"><?php echo utf8_encode2($funcionalidade["DS_FUNCIONALIDADE"]) ?></option>
 <?php
         }
 ?>
@@ -159,7 +159,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 34, true)) {
             <tr>
                 <td><?php echo $dados["DT_OCORRENCIA"]->format("d-m-Y G:i:s"); ?></td>
                 <td><?php echo $dados["DS_NOME"]; ?></td>
-                <td><?php echo utf8_encode($dados["DS_FUNCIONALIDADE"]); ?></td>
+                <td><?php echo utf8_encode2($dados["DS_FUNCIONALIDADE"]); ?></td>
                 <td><?php echo $dados["DS_LOG_MIDDLEWAY"]; ?></td>
             </tr>
 <?php

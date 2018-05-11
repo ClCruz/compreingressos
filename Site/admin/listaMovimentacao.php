@@ -539,7 +539,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 12, true)) {
                    </td>
                    <td><?php echo $rs['DT_PEDIDO_VENDA'] ?></td>
                    <td><?php echo $rs['ID_IP'] ?></td>
-                   <td><?php echo utf8_encode($rs['CLIENTE'] . " " . $rs['DS_SOBRENOME']) . "<br/>" . $rs['DS_DDD_TELEFONE'] . " " . $rs['DS_TELEFONE'] . " " . $rs['DS_DDD_CELULAR'] . " " . $rs['DS_CELULAR']; ?></td>
+                   <td><?php echo utf8_encode2($rs['CLIENTE'] . " " . $rs['DS_SOBRENOME']) . "<br/>" . $rs['DS_DDD_TELEFONE'] . " " . $rs['DS_TELEFONE'] . " " . $rs['DS_DDD_CELULAR'] . " " . $rs['DS_CELULAR']; ?></td>
                    <td><?php echo number_format($rs['TOTAL_UNIT'], 2, ",", "."); ?></td>
                    <td><?php echo $rs['QUANTIDADE']; ?></td>
                    <td><?php echo comboSituacao('situacao', $rs['IN_SITUACAO'], false); ?></td>

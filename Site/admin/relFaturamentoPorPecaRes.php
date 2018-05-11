@@ -141,7 +141,7 @@ $pagina = basename(__FILE__);
                         <br clear=all>
                         <table width="670px" border="1" bgcolor="<?php echo (!isset($_GET["exportar"])) ? "LightGrey" : ""; ?>" class="tabela">
                             <tr>
-                                <td colspan=7 align=left width="900" class=label style="font-size: 12;"><STRONG>Nome da Evento</STRONG>:   <?php echo utf8_encode($pRs["NomPeca"]); ?></td>
+                                <td colspan=7 align=left width="900" class=label style="font-size: 12;"><STRONG>Nome da Evento</STRONG>:   <?php echo utf8_encode2($pRs["NomPeca"]); ?></td>
                             </tr>
                         </table>
                         <table width="670" border="<?php echo (!isset($_GET["exportar"])) ? 0 : 1; ?>" bgcolor="<?php echo (!isset($_GET["exportar"])) ? "LightGrey" : ""; ?>" class="tabela">
@@ -200,7 +200,7 @@ $pagina = basename(__FILE__);
                     } //fecha while
     ?>
                     <tr>
-                        <td align="left" class="label"><strong><?php echo utf8_encode($var_forPagto); ?></strong></td>
+                        <td align="left" class="label"><strong><?php echo utf8_encode2($var_forPagto); ?></strong></td>
                         <td align="right" class="texto"><strong><?php echo $cont2; ?></strong></td>
                         <td align="right" class="texto"><strong><?php echo number_format($cont9, 2, ",", "."); ?></strong></td>
                         <td align="right" class="texto"><strong><?php echo number_format($cont3, 2, ",", "."); ?></strong></td>

@@ -11,7 +11,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
         while ($rs = fetchResult($resultEventos)) {
             $options .= '<option value="' . $rs['ID_EVENTO'] . '"' .
                     (($_GET["nm_evento"] == $rs['ID_EVENTO']) ? ' selected' : '' ) .
-                    '>' . utf8_encode($rs['DS_EVENTO']) . '</option>';
+                    '>' . utf8_encode2($rs['DS_EVENTO']) . '</option>';
         }
 
         $retorno = $options;
@@ -208,7 +208,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                         $value['descricao_erro'] = "Pedido inexistente ou já cancelado/estornado.";
                     }
 
-                    $value['descricao'] = utf8_encode($value['descricao']);
+                    $value['descricao'] = utf8_encode2($value['descricao']);
 
                     $resposta_geral .= "<b>{$value['descricao']}</b>:<br/>
                                             {$value['response']->ErrorReportDataCollection->ErrorReportDataResponse->ErrorMessage}<br/>

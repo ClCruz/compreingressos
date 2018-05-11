@@ -505,9 +505,9 @@ if ($_GET['bilhete'] == 888888888 or $_GET['bilhete'] == 777777777
 
 			if (count($confirmacao_options) > 2) $confirmacao_options[] = ' ';
 
-			$confirmacao_options[] = utf8_encode($rs['DS_EVENTO']);
+			$confirmacao_options[] = utf8_encode2($rs['DS_EVENTO']);
 			$confirmacao_options[] = $rs['DT_APRESENTACAO']->format('d/m/Y').' '.$rs['HR_APRESENTACAO'];
-			$confirmacao_options[] = utf8_encode($rs['DS_PISO']);
+			$confirmacao_options[] = utf8_encode2($rs['DS_PISO']);
 			
 			$last_title = $rs['DS_EVENTO'].$rs['DT_APRESENTACAO']->format('d/m/Y').$rs['HR_APRESENTACAO'].$rs['DS_PISO'];
 
@@ -515,7 +515,7 @@ if ($_GET['bilhete'] == 888888888 or $_GET['bilhete'] == 777777777
 		}
 
 		$valores = str_pad($rs['QTD_INGRESSOS'].'x', 8, ' ', STR_PAD_LEFT) . str_pad(number_format(($rs['VL_LIQUIDO_INGRESSO'] + obterValorServico($rs['ID_APRESENTACAO_BILHETE'], false, null, true)), 2, ',', '').' ', 21, ' ', STR_PAD_LEFT);
-		$confirmacao_options[] = utf8_encode($rs['DS_TIPO_BILHETE']);
+		$confirmacao_options[] = utf8_encode2($rs['DS_TIPO_BILHETE']);
 		$confirmacao_options[] = $valores;
 
 		$total_ingressos += $rs['VL_LIQUIDO_INGRESSO'] * $rs['QTD_INGRESSOS'];
@@ -950,7 +950,7 @@ switch ($_GET['subscreen']) {
 		$evento_options = array(999999999 => 'Voltar');
 
 		while ($rs = fetchResult($result)) {
-			$evento_options[$rs['ID_EVENTO']] = utf8_encode($rs['DS_EVENTO']);
+			$evento_options[$rs['ID_EVENTO']] = utf8_encode2($rs['DS_EVENTO']);
 		}
 
 		echo_select('evento', $evento_options, 3);
@@ -974,7 +974,7 @@ switch ($_GET['subscreen']) {
 		$apresentacao_options = array(999999999 => 'Voltar');
 
 		foreach ($array['horarios'] as $value) {
-			$apresentacao_options[$value['idApresentacao']] = utf8_encode($value['nDia'].'/'.$value['nMes'].'/'.$value['nAno'].' '.$value['nHora'].':'.$value['nMinuto']);
+			$apresentacao_options[$value['idApresentacao']] = utf8_encode2($value['nDia'].'/'.$value['nMes'].'/'.$value['nAno'].' '.$value['nHora'].':'.$value['nMinuto']);
 		}
 
 		echo_select('apresentacao', $apresentacao_options, 3);
@@ -1001,7 +1001,7 @@ switch ($_GET['subscreen']) {
 		$setor_options = array(999999999 => 'Voltar');
 
 		while ($rs = fetchResult($result)) {
-			$setor_options[$rs['ID_APRESENTACAO']] = utf8_encode(preg_replace('/^(\d*)?([\s]*)?-?([\s]*)?/', '', $rs['DS_PISO']));
+			$setor_options[$rs['ID_APRESENTACAO']] = utf8_encode2(preg_replace('/^(\d*)?([\s]*)?-?([\s]*)?/', '', $rs['DS_PISO']));
 		}
 
 		echo_select('apresentacao', $setor_options, 3);
@@ -1160,7 +1160,7 @@ switch ($_GET['subscreen']) {
 		}
 
 		while ($rs = fetchResult($result)) {
-			$fileira_options[$rs['INDICE']] = utf8_encode("{$rs['FILEIRA']} ({$rs['LUGARES_DISPONIVEIS']} lugares disp.)");
+			$fileira_options[$rs['INDICE']] = utf8_encode2("{$rs['FILEIRA']} ({$rs['LUGARES_DISPONIVEIS']} lugares disp.)");
 		}
 
 		echo_select('fileira', $fileira_options, 3);
@@ -1210,7 +1210,7 @@ switch ($_GET['subscreen']) {
 		$cadeira_options[999999999] = 'Voltar';
 
 		while ($rs = fetchResult($result)) {
-			$descricao = ($rs2['IN_VENDA_MESA'] ? utf8_encode($rs['CADEIRA']) . " (mesa para {$rs['LUGARES']})" : utf8_encode($rs['CADEIRA']));
+			$descricao = ($rs2['IN_VENDA_MESA'] ? utf8_encode2($rs['CADEIRA']) . " (mesa para {$rs['LUGARES']})" : utf8_encode2($rs['CADEIRA']));
 			$cadeira_options[$rs['INDICE']] = $descricao;
 		}
 
@@ -1242,7 +1242,7 @@ switch ($_GET['subscreen']) {
 		$local_options = array();
 
 		while ($rs = fetchResult($result)) {
-			$local_options[$rs['ID_BASE']] = utf8_encode($rs['DS_NOME_TEATRO']);
+			$local_options[$rs['ID_BASE']] = utf8_encode2($rs['DS_NOME_TEATRO']);
 		}
 
 		echo_select('local', $local_options, 3);

@@ -273,7 +273,7 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
             $queryEvento = 'SELECT E.DS_EVENTO FROM MW_EVENTO E WHERE E.ID_EVENTO = '. $_GET["nm_evento"];
             $resultEventos = executeSQL($mainConnection, $queryEvento, null);
             while ($rs = fetchResult($resultEventos)) {
-                $dsEvento = utf8_encode($rs["DS_EVENTO"]);
+                $dsEvento = utf8_encode2($rs["DS_EVENTO"]);
             }
    ?>
             <b>Nome do Evento</b> <?php print $dsEvento ?> &nbsp;&nbsp;
@@ -316,7 +316,7 @@ if (isset($_GET["dt_inicial"]) && isset($_GET["dt_final"]) && isset($_GET["situa
                     </td>
                     <td><?php echo $rs['DT_PEDIDO_VENDA'] ?></td>
                     <td><?php echo $rs['ID_IP'] ?></td>
-                    <td><?php echo utf8_encode($rs['CLIENTE'] . " " . $rs['DS_SOBRENOME']) . " / " . $rs['DS_DDD_TELEFONE'] . " " . $rs['DS_TELEFONE'] . " / " . $rs['DS_DDD_CELULAR'] . " " . $rs['DS_CELULAR']; ?></td>
+                    <td><?php echo utf8_encode2($rs['CLIENTE'] . " " . $rs['DS_SOBRENOME']) . " / " . $rs['DS_DDD_TELEFONE'] . " " . $rs['DS_TELEFONE'] . " / " . $rs['DS_DDD_CELULAR'] . " " . $rs['DS_CELULAR']; ?></td>
                     <td class="moeda"><?php echo str_replace(".", ",", $rs['TOTAL_UNIT']); ?></td>
                     <td><?php echo $rs["QUANTIDADE"];?></td>
                     <td><?php echo comboSituacao('situacao', $rs['IN_SITUACAO'], false)?></td>

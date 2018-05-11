@@ -41,7 +41,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 500, true)) {
 
         $combo = '<select name="pacote_combo" class="inputStyle" id="pacote_combo"><option value="">Selecione um pacote...</option>';
         while ($rs = fetchResult($result)) {
-            $combo .= '<option value="' . $rs['ID_PACOTE'] . '"' . (($_POST['pacote_combo'] == $rs['ID_PACOTE']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_EVENTO']) . '</option>';
+            $combo .= '<option value="' . $rs['ID_PACOTE'] . '"' . (($_POST['pacote_combo'] == $rs['ID_PACOTE']) ? ' selected' : '') . '>' . utf8_encode2($rs['DS_EVENTO']) . '</option>';
         }
         $combo .= '</select>';
 

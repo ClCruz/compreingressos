@@ -63,10 +63,10 @@ if (isset($_GET['action'])) {
                 
             }
             $table .="</td>";
-            $table .="<td class='npedido'><a href='" . $link . "'>" . utf8_encode($rs['DS_PACOTE']) . "</a></td>";
+            $table .="<td class='npedido'><a href='" . $link . "'>" . utf8_encode2($rs['DS_PACOTE']) . "</a></td>";
             $table .="<td>" . $rs['ID_ANO_TEMPORADA'] . "</td>";
-            $table .="<td>" . utf8_encode($rs['DS_SETOR']) . "</td>";
-            $table .="<td>" . utf8_encode($rs['DS_CADEIRA']) . "</td>";
+            $table .="<td>" . utf8_encode2($rs['DS_SETOR']) . "</td>";
+            $table .="<td>" . utf8_encode2($rs['DS_CADEIRA']) . "</td>";
             $table .="<td>R$ " . number_format($rs['VL_PACOTE'], 2, ',', '') . "</td>";
             $table .= $rs['VL_PAGO'] ? "<td>R$ " . number_format($rs['VL_PAGO'], 2, ',', '') . "</td>" : "<td></td>";
             $table .="<td>" . $situacao[$rs["IN_STATUS_RESERVA"]] . "</td>";

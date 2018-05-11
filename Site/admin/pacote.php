@@ -286,7 +286,7 @@ $(function() {
                     $dataFim3 = $rs['DT_FIM_FASE3'] ? $rs['DT_FIM_FASE3']->format('d/m/Y') : ' - ';
 			?>
 			<tr>
-				<td class="descricao"><?php echo utf8_encode($nome); ?></td>
+				<td class="descricao"><?php echo utf8_encode2($nome); ?></td>
 				<td><?php echo $dataInicio1; ?></td>
 				<td>a</td>
 				<td><?php echo $dataFim1; ?></td>

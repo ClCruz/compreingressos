@@ -112,7 +112,7 @@ if ($_GET['action'] == 'add' or ($_GET['action'] == 'update' and $_POST['idCarta
 
 if (is_array($retorno)) {
 	if ($retorno[0]['code'] == 547) {
-		echo utf8_encode('Não foi possível excluir!<br/><br/>Esse registro já está em uso.');
+		echo utf8_encode2('Não foi possível excluir!<br/><br/>Esse registro já está em uso.');
 	} else {
 		echo $retorno[0]['message'];
 	}

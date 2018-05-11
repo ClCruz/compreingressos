@@ -128,7 +128,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 470, true)) {
 ?>
             <tr>
                 <td><?php echo $rs['CD_ORIGEM']; ?></td>
-                <td><?php echo utf8_encode($rs['DS_ORIGEM']); ?></td>
+                <td><?php echo utf8_encode2($rs['DS_ORIGEM']); ?></td>
                 <td class="button"><a href="<?php echo $pagina; ?>?action=edit&id=<?php echo $id; ?>">Editar</a></td>
                 <td class="button"><a href="<?php echo $pagina; ?>?action=delete&id=<?php echo $id; ?>">Apagar</a></td>
             </tr>

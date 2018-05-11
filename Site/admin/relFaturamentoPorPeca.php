@@ -188,7 +188,7 @@ $pagina = basename(__FILE__);
                         <br clear=all>
                         <table width="900" class="tabela" border="<?php echo (!isset($_GET["exportar"])) ? 0 : 1; ?>" bgcolor="<?php echo (!isset($_GET["exportar"])) ? "LightGrey" : ""; ?>">
                             <tr>
-                                <td align="left" width="900" colspan="13" class="label" style="font-size: 12;"><STRONG>Nome da Evento</STRONG>:   <?php echo utf8_encode($pRs["NomPeca"]); ?></td>
+                                <td align="left" width="900" colspan="13" class="label" style="font-size: 12;"><STRONG>Nome da Evento</STRONG>:   <?php echo utf8_encode2($pRs["NomPeca"]); ?></td>
                             </tr>
                         </table>
         <?php
@@ -201,7 +201,7 @@ $pagina = basename(__FILE__);
                 <br clear="all"/>
                 <table name="tab" id="tab" style="width: 900px; " border="<?php echo (!isset($_GET["exportar"])) ? 0 : 1; ?>" bgcolor="<?php echo (!isset($_GET["exportar"])) ? "LightGrey" : ""; ?>" class="tabela">
                     <tr>
-                        <td align="left" width="900" colspan="13" class="label"><STRONG>Forma de Pagamento</STRONG>:   <?php echo utf8_encode($var_forPagto); ?></td>
+                        <td align="left" width="900" colspan="13" class="label"><STRONG>Forma de Pagamento</STRONG>:   <?php echo utf8_encode2($var_forPagto); ?></td>
                     </tr>
         <?php $nLin = $nLin + 1; ?>
                     <tr>
@@ -244,8 +244,8 @@ $pagina = basename(__FILE__);
                             }
         ?>
                             <tr>
-                                <td	align="left" width="210" class="texto"><?php echo utf8_encode($pRs["tipbilhete"]); ?></td>
-                                <td	align="left" width="" class="texto"><?php echo utf8_encode($pRs["nomsetor"]); ?></td>
+                                <td	align="left" width="210" class="texto"><?php echo utf8_encode2($pRs["tipbilhete"]); ?></td>
+                                <td	align="left" width="" class="texto"><?php echo utf8_encode2($pRs["nomsetor"]); ?></td>
                                 <td	align="right" width="" class="texto"><?php echo number_format(round($pRs["totfat"], 2), 2, ",", "."); ?></td>
                                 <td	align="right" width="" class="texto"><?php echo $pRs["qtdBilh"]; ?></td>
                                 <td	align="right" width="" class="texto"><?php echo (($pRs["vlCms"]) ? number_format(round($pRs["vlCms"], 2), 2, ",", ".") : "0.00"); ?></td>

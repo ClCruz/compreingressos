@@ -11,8 +11,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 218, true)) {
         if(hasRows($result)){
             while($dados = fetchResult($result)){
                 $html .= "<tr>";
-                $html .= "<td>". utf8_encode($dados['cliente']) ."</td>";
-                $html .= "<td>". utf8_encode($dados['ds_evento']) ."</td>";
+                $html .= "<td>". utf8_encode2($dados['cliente']) ."</td>";
+                $html .= "<td>". utf8_encode2($dados['ds_evento']) ."</td>";
                 $html .= "<td>". $dados['apresentacao'] ."</td>";
                 $html .= "<td>". $dados['id_pedido_venda'] ."</td>";
                 $html .= "<td>". $dados['CodVenda'] ."</td>";

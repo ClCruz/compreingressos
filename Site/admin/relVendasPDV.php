@@ -21,7 +21,7 @@ if ($_GET['action'] == 'combo_eventos') {
     while ($rs = fetchResult($result)) {
 	$combo .= '<option value="' . $rs['ID_EVENTO'] . '"' .
 		(($_GET["evento"] == $rs['ID_EVENTO']) ? ' selected' : '') .
-		'>' . str_replace("'", "\'", utf8_encode($rs['DS_EVENTO'])) . '</option>';
+		'>' . str_replace("'", "\'", utf8_encode2($rs['DS_EVENTO'])) . '</option>';
     }
     $combo .= '</select>';
 
@@ -227,11 +227,11 @@ $(function() {
 		<?php if ($_GET['xls']) {
 
 			$rs = executeSQL($mainConnection, 'SELECT DS_NOME_TEATRO FROM MW_BASE WHERE ID_BASE = ?', array($_GET["local"]), true);
-			$_GET["local"] = utf8_encode($rs['DS_NOME_TEATRO']);
+			$_GET["local"] = utf8_encode2($rs['DS_NOME_TEATRO']);
 
 			if ($_GET["evento"] != 'TODOS') {
 				$rs = executeSQL($mainConnection, 'SELECT DS_EVENTO FROM MW_EVENTO WHERE ID_EVENTO = ?', array($_GET["evento"]), true);
-				$_GET["evento"] = utf8_encode($rs['DS_EVENTO']);
+				$_GET["evento"] = utf8_encode2($rs['DS_EVENTO']);
 			}
 		?>
 		<tr class="ui-widget-header">
@@ -282,8 +282,8 @@ $(function() {
 					?>
 					<tr>
 						<td><?php echo ($rs['DS_NOME'] == $lastUsuario ? '&nbsp;' : $rs['DS_NOME']); ?></td>
-						<td><?php echo ($rs['DS_EVENTO'] == $lastEvento ? '&nbsp;' : utf8_encode($rs['DS_EVENTO'])); ?></td>
-						<td><?php echo utf8_encode($rs['DS_MEIO_PAGAMENTO']) ?></td>
+						<td><?php echo ($rs['DS_EVENTO'] == $lastEvento ? '&nbsp;' : utf8_encode2($rs['DS_EVENTO'])); ?></td>
+						<td><?php echo utf8_encode2($rs['DS_MEIO_PAGAMENTO']) ?></td>
 						<td class="number"><?php echo $rs['QT_INGRESSOS']; ?></td>
 						<td class="number"><?php echo number_format($rs['TOTAL_VENDA'], 2, ',', '.'); ?></td>
 						<td class="number"><?php echo number_format($rs['TOTAL_CONVENIENCIA'], 2, ',', '.'); ?></td>

@@ -147,7 +147,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 22, true)) {
             $id = $rs['ID_PATROCINADOR'];
 ?>
             <tr>
-                <td><?php echo utf8_encode($rs['DS_NOMPATROCINADOR']); ?></td>
+                <td><?php echo utf8_encode2($rs['DS_NOMPATROCINADOR']); ?></td>
                 <td class="button"><a href="<?php echo $pagina; ?>?action=edit&id=<?php echo $id; ?>">Editar</a></td>
                 <td class="button"><a href="<?php echo $pagina; ?>?action=delete&id=<?php echo $id; ?>">Apagar</a></td>
             </tr>

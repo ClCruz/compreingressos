@@ -5,10 +5,15 @@ require_once('../settings/settings.php');
 session_start();
 
 if ($_POST) {
+    sale_trace($_SESSION['user'],NULL,NULL,NULL,NULL,NULL,session_id(),'formCartao.php','Chamando bin','',0);
     require('validarBin.php');
+    sale_trace($_SESSION['user'],NULL,NULL,NULL,NULL,NULL,session_id(),'formCartao.php','Chamando Validar Lote','',0);
     require('validarLote.php');
+    sale_trace($_SESSION['user'],NULL,NULL,NULL,NULL,NULL,session_id(),'formCartao.php','Chamando Validar Assinatura','',0);
     require('verificarAssinatura.php');
+    sale_trace($_SESSION['user'],NULL,NULL,NULL,NULL,NULL,session_id(),'formCartao.php','Chamando Processar dados da compra','',0);
     require('processarDadosCompra.php');
+    sale_trace($_SESSION['user'],NULL,NULL,NULL,NULL,NULL,session_id(),'formCartao.php','Chamando Finalizando chamada do formCartao','',0);
 } else {
     $mainConnection = mainConnection();
 
@@ -168,13 +173,13 @@ if ($_POST) {
                 ?>
                 <div class="container_cartao">
                     <input id="<?php echo $rs['cd_meio_pagamento']; ?>" type="radio" name="codCartao" class="<?php echo ($rs['cd_meio_pagamento'] == 101 ? 'radio card_paypal' : 'radio card_others') ?>" value="<?php echo $rs['cd_meio_pagamento']; ?>"
-                        imgHelp="../images/cartoes/help_<?php echo file_exists('../images/cartoes/help_'.$rs['nm_cartao_exibicao_site'].'.png') ? utf8_encode($rs['nm_cartao_exibicao_site']) : 'default'; ?>.png"
+                        imgHelp="../images/cartoes/help_<?php echo file_exists('../images/cartoes/help_'.$rs['nm_cartao_exibicao_site'].'.png') ? utf8_encode2($rs['nm_cartao_exibicao_site']) : 'default'; ?>.png"
                         formatoCartao="<?php echo $formatoCartao ?>"
                         formatoCodigo="<?php echo $formatoCodigo ?>">
                     <label class="radio" for="<?php echo $rs['cd_meio_pagamento']; ?>">
                         <img src="<?php echo getCartaoImgURL($rs['nm_cartao_exibicao_site']); ?>"><br>
                     </label>
-                    <p class="nome"><?php echo $rs['nm_cartao_exibicao_site'] ? utf8_encode($rs['nm_cartao_exibicao_site']) : utf8_encode($rs['ds_meio_pagamento']); ?></p>
+                    <p class="nome"><?php echo $rs['nm_cartao_exibicao_site'] ? utf8_encode2($rs['nm_cartao_exibicao_site']) : utf8_encode2($rs['ds_meio_pagamento']); ?></p>
                 </div>
                 <?php
                 }

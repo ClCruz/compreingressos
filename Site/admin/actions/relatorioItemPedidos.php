@@ -108,17 +108,17 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
         ?>
             <tr>
                 <td class="text"><?php echo $rs['ID_PEDIDO_VENDA']; ?></td>
-                <td><?php echo utf8_encode($info['DS_CANAL_VENDA']); ?></td>
+                <td><?php echo utf8_encode2($info['DS_CANAL_VENDA']); ?></td>
                 <td><?php echo $rs['OPERADOR']; ?></td>
-                <td><?php echo utf8_encode($info['DS_LOCAL_EVENTO']); ?></td>
-                <td><?php echo utf8_encode($rs['DS_EVENTO']); ?></td>
+                <td><?php echo utf8_encode2($info['DS_LOCAL_EVENTO']); ?></td>
+                <td><?php echo utf8_encode2($rs['DS_EVENTO']); ?></td>
                 <td><?php echo $rs['DT_APRESENTACAO']->format("d/m/Y"); ?></td>
                 <td><?php echo $rs['HR_APRESENTACAO']; ?></td>
                 <td><?php echo $rs['DT_PEDIDO_VENDA']->format("d/m/Y"); ?></td>
                 <td><?php echo $rs['DT_PEDIDO_VENDA']->format("H:i:s"); ?></td>
                 <td><?php echo combosituacao('', $rs['IN_SITUACAO'], false); ?></td>
-                <td><?php echo utf8_encode($rs['REDE']); ?></td>
-                <td><?php echo utf8_encode($rs['BANDEIRA']); ?></td>
+                <td><?php echo utf8_encode2($rs['REDE']); ?></td>
+                <td><?php echo utf8_encode2($rs['BANDEIRA']); ?></td>
                 <td class="text"><?php echo $rs['NSU']; ?></td>
                 <td><?php echo $rs['FORMA_PAGAMENTO']; ?></td>
                 <td><?php echo $rs['PARCELAS']; ?></td>
@@ -126,10 +126,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 420, true)) {
                 <td class="money"><?php echo number_format($rs['VALOR_SEM_SERVICO'], 2, ',', '.'); ?></td>
                 <td class="money"><?php echo number_format($rs['VL_TOTAL_TAXA_CONVENIENCIA'], 2, ',', '.'); ?></td>
                 <td class="money"><?php echo number_format($rs['VL_TOTAL_PEDIDO_VENDA'], 2, ',', '.'); ?></td>
-                <td><?php echo utf8_encode($rs['NOME_CLIENTE']); ?></td>
+                <td><?php echo utf8_encode2($rs['NOME_CLIENTE']); ?></td>
                 <td class="text"><?php echo $rs['CD_CPF']; ?></td>
                 <td class="text"><?php echo $rs['CD_BIN_CARTAO']; ?></td>
-                <td><?php echo utf8_encode($info['TIPPECA']); ?></td>
+                <td><?php echo utf8_encode2($info['TIPPECA']); ?></td>
                 <td class="text"><?php echo $rs['NM_TITULAR_CARTAO']; ?></td>
             </tr>
         <?php

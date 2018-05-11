@@ -15,7 +15,7 @@ if ($_POST['action'] == 'cboTeatro') {
 
     $combo = array();
     while ($rs = fetchResult($result)) {
-        $combo[] = array("id" => $rs['ID_BASE'], "value" => utf8_encode($rs['DS_NOME_TEATRO']));
+        $combo[] = array("id" => $rs['ID_BASE'], "value" => utf8_encode2($rs['DS_NOME_TEATRO']));
     }        
     echo json_encode($combo);
     die();
@@ -26,7 +26,7 @@ if ($_POST['action'] == 'cboTeatro') {
     $result = executeSQL($conn, $query, $params);
     $json = array();
     while ($rs = fetchResult($result)) {
-        $json[] = array("id" => $rs["CodPeca"], "value" => utf8_encode($rs["nomPeca"]));
+        $json[] = array("id" => $rs["CodPeca"], "value" => utf8_encode2($rs["nomPeca"]));
     }
     echo json_encode($json);
     die();
@@ -91,7 +91,7 @@ if ($_POST['action'] == 'cboTeatro') {
   $result = executeSQL($conn, $query, $params);
   $json = array();
   while ($rs = fetchResult($result)) {
-      $json[] = array('id' => $rs["codsala"], 'value' => utf8_encode($rs["nomSala"]));
+      $json[] = array('id' => $rs["codsala"], 'value' => utf8_encode2($rs["nomSala"]));
   }
   echo json_encode($json);
   die();

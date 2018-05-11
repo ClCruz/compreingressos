@@ -107,7 +107,7 @@ $pagina = basename(__FILE__);
 				<?php while($rs = fetchResult($result)) { ?>
 				<tr>
 					<td><?php echo $rs['ID_EVENTO']; ?></td>
-					<td><?php echo utf8_encode($rs['DS_EVENTO']); ?></td>
+					<td><?php echo utf8_encode2($rs['DS_EVENTO']); ?></td>
 					<td><?php echo $rs['DATA_INICIAL']; ?></td>
 					<td><?php echo $rs['DATA_FINAL']; ?></td>
 					<td><?php echo ($rs['IN_VER_NO_BORDERO'] ? 'sim' : 'não'); ?></td>

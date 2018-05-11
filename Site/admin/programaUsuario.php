@@ -24,7 +24,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 14, true)) {
 
             while ($rs = fetchResult($result)) {
                 echo '<tr>
-						<td>' . $nbsp . '&nbsp;' . utf8_encode($rs['DS_PROGRAMA']) . '</td>
+						<td>' . $nbsp . '&nbsp;' . utf8_encode2($rs['DS_PROGRAMA']) . '</td>
 						<td style="text-align: center;">
 							<input type="checkbox" name="programas[]" ' . $rs["CHECKED"] . ' value="' . $rs["ID_PROGRAMA"] . '" class="filho' . $rs["ID_PARENT"] . '" />
 						</td>

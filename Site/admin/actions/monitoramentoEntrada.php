@@ -116,7 +116,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 330, true)) {
 
 			while ($rs = fetchResult($result)) {
 				$html .= '<tr>
-							<td>'.utf8_encode($rs['TIPBILHETE']).'</td>
+							<td>'.utf8_encode2($rs['TIPBILHETE']).'</td>
 							<td align="right">'.$rs['QTDE'].'</td>
 							<td align="right">'.number_format($rs['VALORUNITARIO'], 2, ',', '').'</td>
 							<td align="right">'.number_format($rs['TOTAL'], 2, ',', '').'</td>
@@ -191,7 +191,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 330, true)) {
 
 		$combo = '<option value="">Selecione...</option>';
         while ($rs = fetchResult($result)) {
-            $combo .= '<option value="' . $rs['ID_BASE'] . '"' . (($selected == $rs['ID_BASE']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_NOME_TEATRO']) . '</option>';
+            $combo .= '<option value="' . $rs['ID_BASE'] . '"' . (($selected == $rs['ID_BASE']) ? ' selected' : '') . '>' . utf8_encode2($rs['DS_NOME_TEATRO']) . '</option>';
         }
 
         echo $combo;
@@ -208,7 +208,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 330, true)) {
 		$html = '<option value="">Selecione...</option>';
 
 		while($rs = fetchResult($result)){
-			$html .= '<option value="'. $rs["CodPeca"] .'">'. utf8_encode($rs["nomPeca"]) .'</option>';	
+			$html .= '<option value="'. $rs["CodPeca"] .'">'. utf8_encode2($rs["nomPeca"]) .'</option>';	
 		}
 
 		echo $html;
@@ -289,7 +289,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 330, true)) {
 				 <option value='TODOS'>&lt; TODOS &gt;</option>";
 
 		while($rs = fetchResult($result)){
-			$html .= '<option value="'. $rs["codsala"] .'">'. utf8_encode($rs["nomSala"]) .'</option>';	
+			$html .= '<option value="'. $rs["codsala"] .'">'. utf8_encode2($rs["nomSala"]) .'</option>';	
 		}
 
 		echo $html;

@@ -53,7 +53,7 @@ $params = array($_SESSION['user']);
 $rs = executeSQL($mainConnection, $query, $params, true);
 
 foreach($rs as $key => $val) {
-        $rs[$key] = utf8_encode($val);
+        $rs[$key] = utf8_encode2($val);
 }
 
 $valor_pagar = getPrimeiroValorAssinatura($_SESSION['user'], $_POST['id']);

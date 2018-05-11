@@ -66,7 +66,7 @@ function carregarTipoBilhete($all = false){
 					ORDER BY tb.TipBilhete ASC";			
 	$rsGeralSub2 = executeSQL($conn,$querySub2);
 	while($rs = fetchResult($rsGeralSub2)){
-		$optionsCodTipBilhete[$rs['CodTipBilhete']] = utf8_encode($rs['TipBilhete']);
+		$optionsCodTipBilhete[$rs['CodTipBilhete']] = utf8_encode2($rs['TipBilhete']);
 	}
 
 
@@ -139,11 +139,11 @@ function buscarRegistros(){
 
 
 			 $html .= '<tr>
-	              <td style="text-align: center;"><label id="codigoCategoriaIngressoTx_'.$i.'" >'.utf8_encode($rs['ds_categoria_ingresso']).'</label>
+	              <td style="text-align: center;"><label id="codigoCategoriaIngressoTx_'.$i.'" >'.utf8_encode2($rs['ds_categoria_ingresso']).'</label>
 	                '.$codigoCategoriaIngresso.'
 	              </td>
 
-	             <td style="text-align: center;"><label id="CodTipBilheteTx_'.$i.'" >'.utf8_encode($rs['TipBilhete']).'</label>
+	             <td style="text-align: center;"><label id="CodTipBilheteTx_'.$i.'" >'.utf8_encode2($rs['TipBilhete']).'</label>
 	                '.$CodTipBilhete.'
 	              </td>
 	

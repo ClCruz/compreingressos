@@ -266,7 +266,7 @@ function validar(){
     <?php
 		while($rsBase = fetchResult($resultBase)){
 			(isset($_GET["local"]) && $arrayBase[0] == $rsBase["ID_BASE"]) ? $selected = "selected" : $selected = "";
-			print("<option ". $selected ." value=\"". $rsBase["ID_BASE"]."*".$rsBase["DS_NOME_BASE_SQL"] . "\">". utf8_encode($rsBase["DS_NOME_TEATRO"]) ."</option>");
+			print("<option ". $selected ." value=\"". $rsBase["ID_BASE"]."*".$rsBase["DS_NOME_BASE_SQL"] . "\">". utf8_encode2($rsBase["DS_NOME_TEATRO"]) ."</option>");
 		}
 	?>
     </select>
@@ -291,7 +291,7 @@ function validar(){
     	if ($hasRows) {
 			while ($rsEventos = fetchResult($resultEventos)) {
 				echo '<tr>
-						  <td>'.$nbsp.'&nbsp;'.utf8_encode($rsEventos['NOMPECA']).'</td>
+						  <td>'.$nbsp.'&nbsp;'.utf8_encode2($rsEventos['NOMPECA']).'</td>
 						  <td style="text-align: center;">
 							  <input type="checkbox" class="chm" name="eventos[]" '.$rsEventos["CHECKED"].' value="'.$rsEventos["CODPECA"].'" />		
 							  <input type="hidden" name="eventosOcultos" value="'.$rsEventos["CODPECA"].'" />

@@ -134,8 +134,8 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 	while ($rs = fetchResult($result)) {            
 		$json[] = array(
 			"id_usuario" => $rs["id_usuario"],
-			"ds_nome" => utf8_encode($rs["ds_nome"]),
-			"cd_login" => utf8_encode($rs["cd_login"])
+			"ds_nome" => utf8_encode2($rs["ds_nome"]),
+			"cd_login" => utf8_encode2($rs["cd_login"])
 		);
 	}
 

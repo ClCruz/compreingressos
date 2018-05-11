@@ -26,7 +26,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
             $checked = ( $rs['id_usuario'] != '' ) ? 'checked="checked"' : '';
             
             $html .= '<tr>';
-                $html .= '<td>'.utf8_encode($rs["ds_nome_teatro"]).'</td>';
+                $html .= '<td>'.utf8_encode2($rs["ds_nome_teatro"]).'</td>';
                 $html .= '<td><input class="check" type="checkbox" '.$checked.' value="'.$rs["id_base"].'"></td>';
             $html .= '</tr>';
         }

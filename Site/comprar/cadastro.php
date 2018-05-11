@@ -89,7 +89,7 @@ if (isset($_GET['action'])) {
 		}
 
 		if (!$_POST['concordo']) {
-			echo utf8_encode('Você deve concordar com os termos de uso e com a política de privacidade para se cadastrar!');
+			echo utf8_encode2('Você deve concordar com os termos de uso e com a política de privacidade para se cadastrar!');
 			exit();
 		}
 		

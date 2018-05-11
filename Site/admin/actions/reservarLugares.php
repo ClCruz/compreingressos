@@ -121,7 +121,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 381, true)) {
         $html .= "<option value=\"-1\">Selecione...</option>";
         while ($rs = fetchResult($result)) {
             $selected = ($_POST['usuario'] == $rs['CODUSUARIO']) ? "selected=\"selected\"" : "";
-            $html .= "<option ". $selected ." value=" . $rs['CODUSUARIO'] . ">" . utf8_encode($rs['NOMUSUARIO']) . "</option>";
+            $html .= "<option ". $selected ." value=" . $rs['CODUSUARIO'] . ">" . utf8_encode2($rs['NOMUSUARIO']) . "</option>";
         }
         $html .= "</select>";
         $retorno = $html;

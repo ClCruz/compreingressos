@@ -411,7 +411,7 @@ $(function() {
 		    <label for="banco">Banco:</label>		    
             <select id="banco" name="banco" class="ui-widget-content ui-corner-all" />
 		    <?php while($rs = fetchResult($stmtBanco)) { ?>
-            <option value="<?php echo $rs['cd_banco']; ?>"><?php echo utf8_encode($rs['cd_banco'] . " - " . $rs['ds_banco']); ?></option>
+            <option value="<?php echo $rs['cd_banco']; ?>"><?php echo utf8_encode2($rs['cd_banco'] . " - " . $rs['ds_banco']); ?></option>
             <?php } ?>
             </select>            
             <label for="agencia">Agência:</label>
@@ -456,7 +456,7 @@ $(function() {
                 while($rs = fetchResult($stmtProdutor)) {
                     $selected = $rs["id_produtor"] == $_GET["produtor"] ? "selected" : "";
             ?>
-            <option <?php echo $selected; ?> value="<?php echo $rs['id_produtor']; ?>"><?php echo utf8_encode($rs['ds_razao_social']); ?></option>
+            <option <?php echo $selected; ?> value="<?php echo $rs['id_produtor']; ?>"><?php echo utf8_encode2($rs['ds_razao_social']); ?></option>
             <?php
                 }
             ?>
@@ -486,8 +486,8 @@ $(function() {
             $agencia = ($rs["dv_agencia"] != "") ? $rs["cd_agencia"] ."-". $rs["dv_agencia"] : $rs["cd_agencia"];
 		?>
 		<tr>
-			<td class="text-left"><?php echo utf8_encode($rs["ds_nome"]); ?></td>
-			<td class="text-left"><?php echo utf8_encode($rs["cd_banco"] . " - " . $rs["ds_banco"]); ?></td>
+			<td class="text-left"><?php echo utf8_encode2($rs["ds_nome"]); ?></td>
+			<td class="text-left"><?php echo utf8_encode2($rs["cd_banco"] . " - " . $rs["ds_banco"]); ?></td>
 			<td class="text-right"><?php echo $agencia; ?></td>
 			<td class="text-right"><?php echo $conta; ?></td>
 			<td class="text-center"><?php echo $rs["cd_tipo_conta"] == "CC" ? "Conta Corrente" : "Conta Poupança"; ?></td>

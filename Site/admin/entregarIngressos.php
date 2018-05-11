@@ -406,7 +406,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
         while ($rs = fetchResult($resultEventos)) {
             $combo .= '<option value="' . $rs['ID_EVENTO'] . '"' .
                     (($_GET["nm_evento"] == $rs['ID_EVENTO']) ? ' selected' : '' ) .
-                    '>' . utf8_encode($rs['DS_EVENTO']) . '</option>';
+                    '>' . utf8_encode2($rs['DS_EVENTO']) . '</option>';
         }
         $combo .= '</select>';
     ?>
@@ -451,7 +451,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 216, true)) {
                     <td style="text-align: center;"><a style="cursor: pointer;" class="itensDetalhe" destino="listaItens.php?pedido=<?php echo $rs['ID_PEDIDO_VENDA']; ?>">+</a></td>
                     <td><?php echo $rs['ID_PEDIDO_VENDA']; ?></td>
                     <td><?php echo $rs['DT_PEDIDO_VENDA']; ?></td>
-                    <td><?php echo utf8_encode($rs['CLIENTE'] . " " . $rs['DS_SOBRENOME']) . "<br/>" . $rs['DS_DDD_TELEFONE'] . " " . $rs['DS_TELEFONE']; ?></td>
+                    <td><?php echo utf8_encode2($rs['CLIENTE'] . " " . $rs['DS_SOBRENOME']) . "<br/>" . $rs['DS_DDD_TELEFONE'] . " " . $rs['DS_TELEFONE']; ?></td>
                     <td><?php echo number_format($rs['TOTAL_UNIT'], 2, ",", "."); ?></td>
                     <td><?php echo $rs['QUANTIDADE']; ?></td>
                     <td>

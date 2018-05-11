@@ -111,7 +111,7 @@ function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 	}
 
 	foreach ($rs as $key => $value) {
-		$rs[$key] = utf8_encode($value);
+		$rs[$key] = utf8_encode2($value);
 	}
 
 	$query = "SELECT
@@ -132,7 +132,7 @@ function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 	$tickets_array = array();
 	while ($rs2 = fetchResult($result)) {
 		foreach ($rs2 as $key => $value) {
-			$rs2[$key] = utf8_encode($value);
+			$rs2[$key] = utf8_encode2($value);
 		}
 
 		$evento_info = getEvento($rs2['ID_EVENTO']);
@@ -142,7 +142,7 @@ function verificarAntiFraude($id_pedido, $array_dados_extra = array()) {
 				'Event' => array(
 					'ID' => $rs2['ID_APRESENTACAO'],
 					'Name' => $rs2['DS_EVENTO'],
-					'Local' => utf8_encode($evento_info['nome_teatro']),
+					'Local' => utf8_encode2($evento_info['nome_teatro']),
 					'Date' => $rs2['DT_APRESENTACAO']
 				),
 				'People' => array(

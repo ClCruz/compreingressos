@@ -130,7 +130,7 @@ $(function() {
 		<?php foreach ($result as $resp): ?>
 			<tr>
 				<td><?php echo $resp['id_usuario']; ?></td>
-				<td><?php echo utf8_encode($resp['ds_nome']); ?></td>
+				<td><?php echo utf8_encode2($resp['ds_nome']); ?></td>
 				<td><?php echo $resp['ds_email']; ?></td>
 				<td><?php echo $resp['cd_login'] ?></td>
 			</tr>

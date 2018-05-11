@@ -220,8 +220,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 460, true)) {
                                 $eventos_atuais[] = $rs['ID_EVENTO'];
                         ?>
                         <tr>
-                            <td><?php echo utf8_encode($rs['DS_EVENTO']); ?></td>
-                            <td><?php echo utf8_encode($rs['DS_NOME_TEATRO']); ?></td>
+                            <td><?php echo utf8_encode2($rs['DS_EVENTO']); ?></td>
+                            <td><?php echo utf8_encode2($rs['DS_NOME_TEATRO']); ?></td>
                             <td><?php echo $rs['DT_INICIO']->format('d/m/Y'); ?></td>
                             <td><?php echo $rs['DT_FIM']->format('d/m/Y'); ?></td>
                             <td class="chk_evento"><input type="checkbox" name="evento[]" value="<?php echo $rs['ID_EVENTO']; ?>" checked="true" /></td>

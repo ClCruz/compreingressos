@@ -24,7 +24,7 @@ $_SESSION["NomeBase"] = $stmt["DS_NOME_BASE_SQL"];
 $retorno = "<option value=''>Selecione...</option>";
 if (hasRows($result)) {
   while ($rs = fetchResult($result)) {
-    $retorno .= "<option value=\"" . $rs["CodPeca"] . "\">" . utf8_encode($rs["nomPeca"]) . "</option>\n";
+    $retorno .= "<option value=\"" . $rs["CodPeca"] . "\">" . utf8_encode2($rs["nomPeca"]) . "</option>\n";
   }
 } else {
   $retorno = "<option value=\"-1\">NENHUM EVENTO DISPONÍVEL</option>";

@@ -247,10 +247,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 500, true)) {
                     <input type="checkbox" name="cliente[]" value="<?php echo $rs['ID_CLIENTE']; ?>" class="ui-helper-hidden" />
                     <input type="checkbox" name="cadeira[]" value="<?php echo $rs['ID_CADEIRA']; ?>" class="ui-helper-hidden" />
                 </td>
-                <td><?php echo utf8_encode($rs['DS_PACOTE']); ?></td>
+                <td><?php echo utf8_encode2($rs['DS_PACOTE']); ?></td>
                 <td><?php echo $rs['IN_ANO_TEMPORADA']; ?></td>
-                <td><?php echo utf8_encode($rs['DS_SETOR']); ?></td>
-                <td><?php echo utf8_encode($rs['DS_CADEIRA']); ?></td>
+                <td><?php echo utf8_encode2($rs['DS_SETOR']); ?></td>
+                <td><?php echo utf8_encode2($rs['DS_CADEIRA']); ?></td>
                 <td><?php echo number_format($rs['VL_PACOTE'], 2, ',', ''); ?></td>
                 <td><?php echo $situacao[$rs['IN_STATUS_RESERVA']]; ?></td>
             </tr>

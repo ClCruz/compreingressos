@@ -160,7 +160,7 @@ $(function() {
 					$valor = $rs['VL_TAXA_FRETE'];
 			?>
 			<tr>
-				<td><?php echo utf8_encode($regiao); ?></td>
+				<td><?php echo utf8_encode2($regiao); ?></td>
 				<td><?php echo $data; ?></td>
 				<td>R$ <?php echo str_replace('.', ',', $valor); ?></td>
 				<?php if ($rs['EDICAO']) { ?>

@@ -86,13 +86,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 330, true)) {
 				$header_printed = true;
 				echo "<thead><tr>";
 				foreach ($rs as $key => $value) {
-					echo is_numeric($key) ? '' : utf8_encode("<td>$key</td>");
+					echo is_numeric($key) ? '' : utf8_encode2("<td>$key</td>");
 				}
 				echo "</tr></thead>";
 			}
 			echo "<tbody><tr>";
 			foreach ($rs as $key => $value) {
-				echo is_numeric($key) ? '' : utf8_encode("<td>$value</td>");
+				echo is_numeric($key) ? '' : utf8_encode2("<td>$value</td>");
 			}
 			echo "</tr></tbody>";
 		}
@@ -118,13 +118,13 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 330, true)) {
 				$header_printed = true;
 				echo "<thead><tr>";
 				foreach ($rs as $key => $value) {
-					echo is_numeric($key) ? '' : utf8_encode("<td>$key</td>");
+					echo is_numeric($key) ? '' : utf8_encode2("<td>$key</td>");
 				}
 				echo "</tr></thead>";
 			}
 			echo "<tbody><tr>";
 			foreach ($rs as $key => $value) {
-				echo is_numeric($key) ? '' : utf8_encode("<td>$value</td>");
+				echo is_numeric($key) ? '' : utf8_encode2("<td>$value</td>");
 			}
 			echo "</tr></tbody>";
 		}

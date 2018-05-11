@@ -542,12 +542,12 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                 ?>
                    </td>
                    <td><?php echo $rs['DT_PEDIDO_VENDA'] ?></td>
-                   <td><?php echo utf8_encode($rs['CLIENTE'] . " " . $rs['DS_SOBRENOME']) . "<br/>" . $rs['DS_DDD_TELEFONE'] . " " . $rs['DS_TELEFONE']; ?></td>
+                   <td><?php echo utf8_encode2($rs['CLIENTE'] . " " . $rs['DS_SOBRENOME']) . "<br/>" . $rs['DS_DDD_TELEFONE'] . " " . $rs['DS_TELEFONE']; ?></td>
                    <td><?php echo number_format($rs['TOTAL_UNIT'], 2, ",", "."); ?></td>
                    <td><?php echo $rs['QUANTIDADE']; ?></td>
                    <td><?php echo comboSituacao('situacao', $rs['IN_SITUACAO'], false); ?></td>
                    <td><?php echo comboFormaEntrega($rs['IN_RETIRA_ENTREGA']); ?></td>
-                   <td><button class="estorno" pedido="<?php echo $rs['ID_PEDIDO_VENDA']; ?>" data-meio-pagamento="<?php echo utf8_encode($rs['NM_CARTAO_EXIBICAO_SITE']); ?>">Estornar</button></td>
+                   <td><button class="estorno" pedido="<?php echo $rs['ID_PEDIDO_VENDA']; ?>" data-meio-pagamento="<?php echo utf8_encode2($rs['NM_CARTAO_EXIBICAO_SITE']); ?>">Estornar</button></td>
                </tr>
         <?php
                    }

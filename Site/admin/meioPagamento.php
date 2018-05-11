@@ -141,10 +141,10 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 260, true)) {
       while ($rs = fetchResult($result)) {
       ?>
         <tr>
-          <td><?php echo utf8_encode($rs['DS_MEIO_PAGAMENTO']); ?></td>
-          <td><?php echo utf8_encode($rs["NM_CARTAO_EXIBICAO_SITE"]); ?></td>
+          <td><?php echo utf8_encode2($rs['DS_MEIO_PAGAMENTO']); ?></td>
+          <td><?php echo utf8_encode2($rs["NM_CARTAO_EXIBICAO_SITE"]); ?></td>
           <td><?php echo $rs["QT_HR_ANTECED"]; ?></td>
-          <td><?php echo utf8_encode($rs["DS_CLEARSALE_BANDEIRA"]); ?></td>
+          <td><?php echo utf8_encode2($rs["DS_CLEARSALE_BANDEIRA"]); ?></td>
           <td><?php echo $rs['IN_ASSINATURA'] ? 'Sim' : 'Não'; ?></td>
           <td><?php echo $rs['IN_ATIVO'] ? 'Sim' : 'Não'; ?></td>
           <td class="button"><a href="<?php echo $pagina; ?>?action=edit&idMeioPagamento=<?php echo $rs['ID_MEIO_PAGAMENTO']; ?>">Editar</a></td>

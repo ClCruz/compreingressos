@@ -66,8 +66,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 384, true)) {
             $id = $rs['ID_PROMOCAO'];
         ?>
             <tr>
-                <td class="text"><?php echo utf8_encode($rs['DS_PROMOCAO']); ?></td>
-                <td class="text"><?php echo utf8_encode($rs['CD_PROMOCIONAL']); ?></td>
+                <td class="text"><?php echo utf8_encode2($rs['DS_PROMOCAO']); ?></td>
+                <td class="text"><?php echo utf8_encode2($rs['CD_PROMOCIONAL']); ?></td>
                 <td class="text"><?php echo $rs['ID_SESSION']; ?></td>
                 <td class="text"><?php echo $rs['ID_PEDIDO_VENDA']; ?></td>
                 <td class="text"><?php echo $rs['CD_CPF_PROMOCIONAL'] ? mask($rs['CD_CPF_PROMOCIONAL'],'###.###.###-##') : ' - '; ?></td>

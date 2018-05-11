@@ -40,14 +40,14 @@ namespace Fastcash
                 $apiKeySecret = IntegrationData::FastcashAPIKeySecret;
                 
                 $timestamp = time();
-                $urlHash = md5(utf8_encode($req->getUrl()));
+                $urlHash = md5(utf8_encode2($req->getUrl()));
                 
                 if ($req instanceof EntityEnclosingRequestInterface)
-					$bodyHash = md5(utf8_encode($req->getBody()));
+					$bodyHash = md5(utf8_encode2($req->getBody()));
                 else
 					$bodyHash = md5("");
                 
-                $auth = hash_hmac("sha256", utf8_encode($apiKey.$urlHash.$bodyHash.$timestamp), base64_decode($apiKeySecret));
+                $auth = hash_hmac("sha256", utf8_encode2($apiKey.$urlHash.$bodyHash.$timestamp), base64_decode($apiKeySecret));
                 
                 $req->setHeader("ApiKey", $apiKey);
                 $req->setHeader("Timestamp", $timestamp);

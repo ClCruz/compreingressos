@@ -51,22 +51,22 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 400, true)) {
         while ($rs = fetchResult($result)) {
         ?>
             <tr>
-                <td><?php echo utf8_encode($rs['NOME']); ?></td>
-                <td><?php echo utf8_encode($rs['ENDERECO']); ?></td>
-                <td><?php echo utf8_encode($rs['COMPL_ENDERECO']); ?></td>
-                <td><?php echo utf8_encode($rs['BAIRRO']); ?></td>
-                <td><?php echo utf8_encode($rs['CIDADE']); ?></td>
-                <td><?php echo utf8_encode($rs['ESTADO']); ?></td>
-                <td><?php echo utf8_encode($rs['CEP']); ?></td>
-                <td><?php echo utf8_encode($rs['DDD_TELEFONE']); ?></td>
-                <td><?php echo utf8_encode($rs['TELEFONE']); ?></td>
-                <td><?php echo utf8_encode($rs['DDD_CELULAR']); ?></td>
-                <td><?php echo utf8_encode($rs['CELULAR']); ?></td>
-                <td><?php echo utf8_encode($rs['EMAIL_LOGIN']); ?></td>
-                <td><?php echo utf8_encode($rs['PACOTE']); ?></td>
-                <td><?php echo utf8_encode($rs['SETOR']); ?></td>
-                <td><?php echo utf8_encode($rs['LOCALIZACAO']); ?></td>
-                <td><?php echo utf8_encode($rs['TIPO_BILHETE']); ?></td>
+                <td><?php echo utf8_encode2($rs['NOME']); ?></td>
+                <td><?php echo utf8_encode2($rs['ENDERECO']); ?></td>
+                <td><?php echo utf8_encode2($rs['COMPL_ENDERECO']); ?></td>
+                <td><?php echo utf8_encode2($rs['BAIRRO']); ?></td>
+                <td><?php echo utf8_encode2($rs['CIDADE']); ?></td>
+                <td><?php echo utf8_encode2($rs['ESTADO']); ?></td>
+                <td><?php echo utf8_encode2($rs['CEP']); ?></td>
+                <td><?php echo utf8_encode2($rs['DDD_TELEFONE']); ?></td>
+                <td><?php echo utf8_encode2($rs['TELEFONE']); ?></td>
+                <td><?php echo utf8_encode2($rs['DDD_CELULAR']); ?></td>
+                <td><?php echo utf8_encode2($rs['CELULAR']); ?></td>
+                <td><?php echo utf8_encode2($rs['EMAIL_LOGIN']); ?></td>
+                <td><?php echo utf8_encode2($rs['PACOTE']); ?></td>
+                <td><?php echo utf8_encode2($rs['SETOR']); ?></td>
+                <td><?php echo utf8_encode2($rs['LOCALIZACAO']); ?></td>
+                <td><?php echo utf8_encode2($rs['TIPO_BILHETE']); ?></td>
             </tr>
         <?php
         }
@@ -84,9 +84,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 400, true)) {
 
         $combo = '<option value="">Selecione...</option>';
         while ($rs = fetchResult($result)) {
-            $combo .= '<option value="' . $rs['ID_BASE'] . '"' . (($_GET['cboTeatro'] == $rs['ID_BASE']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_NOME_TEATRO']) . '</option>';
+            $combo .= '<option value="' . $rs['ID_BASE'] . '"' . (($_GET['cboTeatro'] == $rs['ID_BASE']) ? ' selected' : '') . '>' . utf8_encode2($rs['DS_NOME_TEATRO']) . '</option>';
             if ($_GET['excel'] and $_GET['cboTeatro'] == $rs['ID_BASE']) {
-                $text = utf8_encode($rs['DS_NOME_TEATRO']);
+                $text = utf8_encode2($rs['DS_NOME_TEATRO']);
                 break;
             }
         }

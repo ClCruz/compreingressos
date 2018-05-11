@@ -152,17 +152,17 @@ if (isset($result)) {
 <?php while ($rs = fetchResult($result)) { ?>
               <tr>
                   <td><?php echo $rs['Data da Venda']->format("d/m/y G:i:s") ?></td>
-                  <td><?php echo utf8_encode($rs['Lancamento']) ?></td>
-                  <td><?php echo utf8_encode($rs['Nome Usuario']) ?></td>
-                  <td><?php echo utf8_encode($rs['Nome da Peca']) ?></td>
+                  <td><?php echo utf8_encode2($rs['Lancamento']) ?></td>
+                  <td><?php echo utf8_encode2($rs['Nome Usuario']) ?></td>
+                  <td><?php echo utf8_encode2($rs['Nome da Peca']) ?></td>
                   <td><?php echo $rs['Data da Apresentacao'] . ' às ' . $rs['Hora da Sessao'] ?></td>
-                  <td><?php echo utf8_encode($rs['Poltrona']) ?></td>
-                  <td><?php echo utf8_encode($rs['Ingresso']) ?></td>
+                  <td><?php echo utf8_encode2($rs['Poltrona']) ?></td>
+                  <td><?php echo utf8_encode2($rs['Ingresso']) ?></td>
                   <td><?php echo $_GET['excel'] ? $rs['Valor Liquido'] : number_format($rs['Valor Liquido'], 2, ",", ".") ?></td>
-                  <td><?php echo utf8_encode($rs['Forma de Pagamento']) ?></td>
-                  <td><?php echo utf8_encode($rs['Nome do Cliente']) ?></td>
-                  <td><?php echo utf8_encode($rs['Telefone']) ?></td>
-                  <td><?php echo utf8_encode($rs['CPF']) ?></td>
+                  <td><?php echo utf8_encode2($rs['Forma de Pagamento']) ?></td>
+                  <td><?php echo utf8_encode2($rs['Nome do Cliente']) ?></td>
+                  <td><?php echo utf8_encode2($rs['Telefone']) ?></td>
+                  <td><?php echo utf8_encode2($rs['CPF']) ?></td>
               </tr>
 <?php
         if ($rs['Justificativa']) { ?>

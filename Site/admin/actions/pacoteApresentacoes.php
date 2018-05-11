@@ -111,7 +111,7 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 
     $retorno = '<option value="">Selecione um evento...</option>';
     while ($rs = fetchResult($result)) {
-		$retorno .= '<option value="' . $rs['ID_EVENTO'] . '">' . utf8_encode($rs['DS_EVENTO']) . '</option>';
+		$retorno .= '<option value="' . $rs['ID_EVENTO'] . '">' . utf8_encode2($rs['DS_EVENTO']) . '</option>';
     }
 	
 } else if ($_GET['action'] == 'comboData') { /*------------ COMBO DATAS ------------*/

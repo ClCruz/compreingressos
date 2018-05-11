@@ -169,7 +169,7 @@ $pagina = basename(__FILE__);
                     } //fecha while
                 ?>
                     <tr>
-                        <td align="left" class="label"><strong><?php echo utf8_encode($var_forPagto); ?></strong></td>
+                        <td align="left" class="label"><strong><?php echo utf8_encode2($var_forPagto); ?></strong></td>
                         <td align="right" class="texto"><strong><?php echo $cont2; ?></strong></td>
                         <td align="right" class="texto"><strong><?php echo number_format($cont9, 2, ",", "."); ?></strong></td>
                         <td align="right" class="texto"><strong><?php echo number_format($cont3, 2, ",", "."); ?></strong></td>

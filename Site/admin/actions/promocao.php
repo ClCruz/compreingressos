@@ -263,7 +263,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 430, true)) {
             $id = $rs['ID_PROMOCAO'];
         ?>
             <tr>
-                <td><?php echo utf8_encode($rs['DS_EVENTO']); ?></td>
+                <td><?php echo utf8_encode2($rs['DS_EVENTO']); ?></td>
                 <td class="limite_cpf"><input type="text" name="limite_cpf[]" /></td>
                 <td class="chk_evento"><input type="checkbox" name="evento[]" value="<?php echo $rs['ID_EVENTO']; ?>" /></td>
             </tr>

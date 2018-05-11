@@ -89,16 +89,16 @@ switch ($_GET['tipo']) {
 
 				if (count($confirmacao_options) > 2) $confirmacao_options[] = ' ';
 
-				$confirmacao_options[] = utf8_encode($rs['DS_EVENTO']);
+				$confirmacao_options[] = utf8_encode2($rs['DS_EVENTO']);
 				$confirmacao_options[] = $rs['DT_APRESENTACAO']->format('d/m/Y').' '.$rs['HR_APRESENTACAO'];
-				$confirmacao_options[] = utf8_encode($rs['DS_PISO']);
+				$confirmacao_options[] = utf8_encode2($rs['DS_PISO']);
 				
 				$last_title = $rs['DS_EVENTO'].$rs['DT_APRESENTACAO']->format('d/m/Y').$rs['HR_APRESENTACAO'].$rs['DS_PISO'];
 
 				$confirmacao_options[] = ' ';
 			}
 
-			$confirmacao_options[] = utf8_encode(str_pad(substr(remove_accents($rs['DS_TIPO_BILHETE'], false), 0, 24), 24, ' ', STR_PAD_RIGHT).' x'.str_pad($rs['QTD_INGRESSOS'], 2, ' ', STR_PAD_LEFT));
+			$confirmacao_options[] = utf8_encode2(str_pad(substr(remove_accents($rs['DS_TIPO_BILHETE'], false), 0, 24), 24, ' ', STR_PAD_RIGHT).' x'.str_pad($rs['QTD_INGRESSOS'], 2, ' ', STR_PAD_LEFT));
 		}
 
 		foreach ($lugares as $key => $value) {

@@ -186,7 +186,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 450, true)) {
 ?>
             <tr>
                 <td><?php echo substr(chunk_split($rs['SERIAL'], 3, '-'), 0, -1); ?></td>
-                <td><?php echo utf8_encode($rs['DESCRICAO']); ?></td>
+                <td><?php echo utf8_encode2($rs['DESCRICAO']); ?></td>
                 <td><?php echo $rs['VENDA_DINHEIRO'] ? 'sim' : 'não'; ?></td>
                 <td><?php echo $rs['VENDA_PROMO_CONVITE'] ? 'sim' : 'não'; ?></td>
                 <td data-tosort="<?php echo $rs['LAST_ACCESS_ORDER']; ?>"><?php echo $rs['LAST_ACCESS']; ?></td>

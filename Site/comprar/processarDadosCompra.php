@@ -1,28 +1,32 @@
 <?php
+
+sale_trace($_SESSION['user'],NULL,NULL,NULL,NULL,NULL,session_id(),'processarDadosCompra.php','Iniciando Processamendo da Compra','Ambiente: ' . ($_ENV['IS_TEST'] || $_ENV['IS_TEST'] == 1 || $_ENV['IS_TEST'] == "1" ? "Homologação" : "Produção"),0);
 require_once('../settings/functions.php');
 require_once('../settings/settings.php');
 require_once('../settings/Log.class.php');
-
 require_once('../settings/antiFraude.php');
-
 // verifica se o acesso via operador/pdv esta vendendo apenas aquilo que tem permissao
 require('acessoPermitido.php');
-
 require('../settings/pagseguro_functions.php');
-
 require_once('../settings/pagarme_functions.php');
-
 require_once('../settings/paypal_functions.php');
-
 require('../settings/tipagos_functions.php');
-
 require('../settings/cielo_functions.php');
-
+//sale_trace($_SESSION['user'],NULL,NULL,NULL,NULL,NULL,session_id(),'processarDadosCompra.php','Continuação do processo da compra','requires end',0);
 
 $isPaypal = false;
 
+$sale_trace_id_base = null;
+$sale_trace_id_evento = null;
+$sale_trace_id_pedido_venda = null;
+$sale_trace_codVenda = null;
+$sale_trace_codPeca = null;
+$sale_trace_id_base = null;
+
 if ($_POST["paypal_data"]!= "") {
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Gateway de pagamento paypal. - paypal_data',$_POST["paypal_data"],0);
     $paypal_data_obj = getObjFromString($_POST["paypal_data"]);
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Gateway de pagamento paypal. - paypal_payment',$_POST["paypal_payment"],0);
     $paypal_payment_obj = getObjFromString($_POST["paypal_payment"]);
     $isPaypal = true;
 }
@@ -50,6 +54,7 @@ $resp = json_decode($server_output, true);
 
 if (!$_ENV['IS_TEST'] and !isset($_SESSION['operador']) and !$isPaypal) {
     if (!$resp['success']) {
+        sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Falha no processo de autenticação da recaptcha.','',1);
         echo "Entre com a informação solicitada no campo Autenticidade.";
         exit();
     }
@@ -57,6 +62,7 @@ if (!$_ENV['IS_TEST'] and !isset($_SESSION['operador']) and !$isPaypal) {
 
 // não passar código de cartão nulo ()
 if ($_POST['codCartao'] == '') {
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Nenhuma forma de pagamento selecionada.','',1);
     echo "Nenhuma forma de pagamento selecionada.";
     die();
 }
@@ -69,6 +75,7 @@ if (!$_ENV['IS_TEST'] and $_POST['codCartao'] == 997) {
 
 
 // verifica se o meio de pagamento ainda pode ser utilizado
+sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Verificando se a compra ainda é valida.','',0);
 $query = "SELECT TOP 1 DATEDIFF(HOUR, GETDATE(), CONVERT(DATETIME, CONVERT(VARCHAR, A.DT_APRESENTACAO, 112) + ' ' + LEFT(A.HR_APRESENTACAO,2) + ':' + RIGHT(A.HR_APRESENTACAO,2) + ':00')) HORAS
             FROM MW_RESERVA R
             INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
@@ -84,12 +91,14 @@ $rs = executeSQL($mainConnection, $query, $params, true);
 $horas_antes_apresentacao_pagamento = $rs['QT_HR_ANTECED'];
 
 if ($horas_antes_apresentacao_pagamento != null and $horas_antes_apresentacao_pagamento > $horas_antes_apresentacao) {
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Esta forma de pagamento não pode ser utilizada no momento. Por favor, selecione outra.','',1);
     echo "Esta forma de pagamento não pode ser utilizada no momento. Por favor, selecione outra.";
     die();
 }
 
 
 if (strlen($_POST['numCartao']) > 16) {
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Por favor verifique o número do cartão.','',1);
     echo "Por favor verifique o número do cartão.";
     die();
 }
@@ -109,6 +118,8 @@ $queryReserva = "SELECT ID_RESERVA FROM MW_RESERVA WHERE ID_SESSION = ?";
 $resultReserva = executeSQL($mainConnection, $queryReserva, array(session_id()));
 
 if (!hasRows($resultReserva)) {
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Falha na recuperação da reserva.','',1);
+
     echo "redirect.php?redirect=".urlencode($homeSite);
     die();
 }
@@ -117,9 +128,15 @@ if (!hasRows($resultReserva)) {
 // require('antiFraude.php');
 
 // obtem o valor de parcelas para a apresentacao no reserva
-$query = "select e.id_base, e.codpeca from mw_evento e inner join mw_apresentacao a on a.id_evento = e.id_evento inner join mw_reserva r on r.id_apresentacao = a.id_apresentacao where r.id_session = ?";
+sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Recuperando valores das parcelas da reserva.','',0);
+$query = "select e.id_base, e.codpeca, e.id_evento from mw_evento e inner join mw_apresentacao a on a.id_evento = e.id_evento inner join mw_reserva r on r.id_apresentacao = a.id_apresentacao where r.id_session = ?";
 $rsParcelas = executeSQL($mainConnection, $query, array(session_id()), true);
 $conn = getConnection($rsParcelas['id_base']);
+
+$sale_trace_id_base=$rsParcelas['id_base'];
+$sale_trace_codPeca=$rsParcelas['codpeca'];
+$sale_trace_id_evento=$rsParcelas['id_evento'];
+
 $query = 'select qt_parcelas from tabpeca where codpeca = ?';
 $rsParcelas = executeSQL($conn, $query, array($rsParcelas['codpeca']), true);
 $parcelas = $rsParcelas['qt_parcelas'];
@@ -145,8 +162,10 @@ if ($entrega and $enderecoDif) {
 
 $rs = executeSQL($mainConnection, $query, $params, true);
 
+sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Recuperando informações do cliente.','',0);
+
 foreach($rs as $key => $val) {
-        $rs[$key] = utf8_encode($val);
+        $rs[$key] = utf8_encode2($val);
 }
 
 $errors = true;
@@ -186,11 +205,13 @@ if (isset($_COOKIE['id_braspag'])) {
 }
 
 //Dados cliente
+sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Montando dados do cliente.','',0);
 $parametros['CustomerData']['CustomerIdentity'] = $rs['CD_CPF'];// CPF ou ID?
 $parametros['CustomerData']['CustomerName'] = $rs['DS_NOME'] . ' ' . $rs['DS_SOBRENOME'];
 $parametros['CustomerData']['CustomerEmail'] = $rs['CD_EMAIL_LOGIN'];
 
 //Dados do cartão
+sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Montando dados da forma de pagamento.','Tipo de Pagamento: ' . $_POST['codCartao'],0);
 $PaymentDataCollection['CardHolder'] = $_POST['nomeCartao'];
 $PaymentDataCollection['PaymentMethod'] = $_POST['codCartao'];
 $PaymentDataCollection['CardNumber'] = $_POST['numCartao'];
@@ -208,6 +229,7 @@ $PaymentDataCollection['PaymentPlan'] = $PaymentDataCollection['NumberOfPayments
 $PaymentDataCollection['TransactionType'] = 1;
 
 //Dados do endereço de cobrança.
+sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Montando dados do endereço de cobrança.','',0);
 $parametros['CustomerData']['CustomerAddressData']['Street'] = $rs['DS_ENDERECO'];
 $parametros['CustomerData']['CustomerAddressData']['Number'] = $rs['NR_ENDERECO'];
 $parametros['CustomerData']['CustomerAddressData']['Complement'] = $rs['DS_COMPL_ENDERECO'];
@@ -218,6 +240,7 @@ $parametros['CustomerData']['CustomerAddressData']['State'] = $rs['SG_ESTADO'];
 $parametros['CustomerData']['CustomerAddressData']['Country'] = 'Brasil';
 
 //Dados do endereço de entrega.
+sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Montando dados do endereço de entrega.','',0);
 if ($entrega) {
     if ($enderecoDif) {
         $parametros['CustomerData']['DeliveryAddressData']['Street'] = $rs['DS_ENDERECO2'];
@@ -262,6 +285,7 @@ $params = array(session_id());
 $bilhete_inativo = executeSQL($mainConnection, $query, $params, true);
 
 if ($bilhete_inativo[0]) {
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Ocorreu uma inconsistência no Tipo de Ingresso selecionado.','',1);
     echo 'Prezado cliente, ocorreu uma inconsistência no Tipo de Ingresso selecionado,
             será necessário selecioná-lo novamente. Por favor, retorne até a etapa 
             "2. Tipo de ingresso passo 2 de 5 escolha descontos e vantagens", e selecione-o novamente. 
@@ -270,6 +294,7 @@ if ($bilhete_inativo[0]) {
 }
 
 //Dados dos itens de pedido
+sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Recuperando informações do pedido.','',0);
 $query = "SELECT R.ID_RESERVA, R.ID_APRESENTACAO, R.ID_APRESENTACAO_BILHETE, R.ID_CADEIRA, R.DS_CADEIRA, R.DS_SETOR, E.ID_EVENTO, E.DS_EVENTO, ISNULL(LE.DS_LOCAL_EVENTO, B.DS_NOME_TEATRO) DS_NOME_TEATRO, CONVERT(VARCHAR(10), A.DT_APRESENTACAO, 103) DT_APRESENTACAO, A.HR_APRESENTACAO,
             AB.VL_LIQUIDO_INGRESSO, AB.DS_TIPO_BILHETE, R.NR_BENEFICIO
             FROM MW_RESERVA R
@@ -298,14 +323,16 @@ $resultIdPedidoVenda = executeSQL($mainConnection, $queryIdPedidoVenda, array(se
 if (hasRows($resultIdPedidoVenda)) {
     $newMaxId = fetchResult($resultIdPedidoVenda);
     $newMaxId = $newMaxId['id_pedido_venda'];
-
+    $sale_trace_id_pedido_venda = $newMaxId;    
     executeSQL($mainConnection, 'DELETE FROM MW_ITEM_PEDIDO_VENDA WHERE ID_PEDIDO_VENDA = ?', array($newMaxId));
 } else {
     $prosseguir = false;
     //enquanto ele não achar um id disponível (não duplicado) ele não para de tentar
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Recuperando id_pedido_venda.','loop',0);
     while (!$prosseguir) {
         $newMaxId = executeSQL($mainConnection, 'SELECT ISNULL(MAX(ID_PEDIDO_VENDA), 0) + 1 FROM MW_PEDIDO_VENDA', array(), true);
         $newMaxId = $newMaxId[0];
+        $sale_trace_id_pedido_venda = $newMaxId;    
 
         $query = 'INSERT INTO MW_PEDIDO_VENDA
                                 (ID_PEDIDO_VENDA
@@ -347,7 +374,7 @@ if (hasRows($resultIdPedidoVenda)) {
         $prosseguir = executeSQL($mainConnection, $query, $params);
     }
 
-    
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','id_pedido_venda recuperado.','',0);
     
     $queryIdPedidoVenda = "update mw_reserva set id_pedido_venda = ? where id_session = ?";
     $resultIdPedidoVenda = executeSQL($mainConnection, $queryIdPedidoVenda, array($newMaxId, session_id()));
@@ -367,6 +394,9 @@ $rsServicos = executeSQL($mainConnection, $queryServicos, array(session_id()), t
 
 $itensPedido = 0;
 $nr_beneficio = null;
+
+sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Montando valores do pedido.','',0);
+
 while ($itens = fetchResult($result)) {
     $itensPedido++;
 
@@ -411,6 +441,8 @@ $query = 'UPDATE MW_PEDIDO_VENDA SET
                         ,NM_TITULAR_CARTAO = ? 
                         WHERE ID_PEDIDO_VENDA = ? AND ID_CLIENTE = ?';
 
+sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Valores do pedido recuperados e salvos.','',0);
+
 if ($_POST['nomePresente']) {
     $nome_presente = $_POST['nomePresente'];
     $email_presente = $_POST['emailPresente'] ? $_POST['emailPresente'] : null;
@@ -445,7 +477,7 @@ if ($itensPedido > 0) {
 }
 
 
-
+sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Salvando os itens do pedido.','MW_ITEM_PEDIDO_VENDA',0);
 //------------ GRAVAÇÂO DOS ITENS DO PEDIDO
 $query = 'INSERT INTO MW_ITEM_PEDIDO_VENDA (
                          ID_PEDIDO_VENDA,
@@ -472,8 +504,11 @@ if ($itensPedido > 0) {
 $sqlErrors = sqlErrors();
 if ($errors and empty($sqlErrors)) {
     commitTransaction($mainConnection);
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Inserido com sucesso os itens do pedido.','',0);
     setcookie('pedido', $parametros['OrderData']['OrderId']);
 } else {
+
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Erro para salvar itens do pedido.',print_r($sqlErrors, true),1);
     echo '<pre>'; print_r($sqlErrors); echo '</pre>';
     rollbackTransaction($mainConnection);
 }
@@ -486,12 +521,14 @@ $params = array(session_id());
 $contador_reserva = executeSQL($mainConnection, $query, $params, true);
 
 if ($contador_reserva[0] != count($params2)) {
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Ocorreu uma falha durante o processamento, por favor selecione novamente os lugares desejados.','',1);
     echo 'Ocorreu uma falha durante o processamento, por favor selecione novamente os lugares desejados.';
     die();
 }
 
 $valorTotal = $totalIngressos + $frete + $totalConveniencia;
 if (compara_float($valorTotal,floatval(str_replace(',', '.', $_COOKIE['total_exibicao']))) != 0 ) {
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Ocorreu uma falha durante o processamento, valores diferentes.','',1);
     echo 'valorDiferente';
     die();
 }
@@ -504,9 +541,15 @@ $is_promocional = ($rs[0] > 0);
 
 executeSQL($mainConnection, 'UPDATE MW_PEDIDO_VENDA SET DT_INICIO_COMPRA = (SELECT MIN(DT_SELECAO) FROM MW_RESERVA WHERE ID_SESSION = ?) WHERE ID_PEDIDO_VENDA = ?', array(session_id(), $newMaxId));
 
+sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Iniciando processo no gateway.','',0);
 
 if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] == 0 and $is_promocional)) and ($errors and empty($sqlErrors))) {
-    $parametros['PaymentDataCollection'] = array(new SoapVar($PaymentDataCollection, SOAP_ENC_ARRAY, 'CreditCardDataRequest', 'https://www.pagador.com.br/webservice/pagador', 'PaymentDataRequest'));
+    
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Verificação dos valores para inicio do processo do gateway ok.','',0);
+         //$parametros['PaymentDataCollection'] = array(new SoapVar($PaymentDataCollection, SOAP_ENC_ARRAY, 'CreditCardDataRequest', 'https://www.pagador.com.br/webservice/pagador', 'PaymentDataRequest'));
+    
+
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Inside.','1.1',0);
 
     $options = array(
         //'local_cert' => file_get_contents('../settings/cert.pem'),
@@ -519,24 +562,30 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
         'proxy_host'     => ($_ENV['IS_TEST'] ? $proxy_homologacao['host'] : $proxy_producao['host']),
         'proxy_port'     => ($_ENV['IS_TEST'] ? $proxy_homologacao['port'] : $proxy_producao['port'])*/
     );
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Inside.','1.2',0);
 
     $descricao_erro = '';
 
     $url_braspag = $rs_gateway_pagamento['DS_URL'];
 
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Inside.','1.3',0);
 
     // ALTERACAO DOS DADOS DO CARTAO PARA GRAVACAO DO LOG
     $parametrosLOG = array_merge(array(), $parametros);
     $PaymentDataCollectionLOG = array_merge(array(), $PaymentDataCollection);
     $PaymentDataCollectionLOG['CardNumber'] = substr($_POST['numCartao'], 0, 6) . '******' . substr($_POST['numCartao'], -4);
     $PaymentDataCollectionLOG['CardSecurityCode'] = '***';
-    $parametrosLOG['PaymentDataCollection'] = array(new SoapVar($PaymentDataCollectionLOG, SOAP_ENC_ARRAY, 'CreditCardDataRequest', 'https://www.pagador.com.br/webservice/pagador', 'PaymentDataRequest'));
+    //$parametrosLOG['PaymentDataCollection'] = array(new SoapVar($PaymentDataCollectionLOG, SOAP_ENC_ARRAY, 'CreditCardDataRequest', 'https://www.pagador.com.br/webservice/pagador', 'PaymentDataRequest'));
+
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Inside.','1.4',0);
 
     // echo "<br><br><br><pre>";
     // var_dump(array('requestOriginal' => $parametros),
     //     array('requestMascarado' => $parametrosLOG));
     // echo "</pre>";
     // die(''.time());
+
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Inside.','1.5',0);
     $pagamento_paypal = in_array($_POST['codCartao'], array('101'));
     $pagamento_fastcash = in_array($_POST['codCartao'], array('892', '893'));
     $pagamento_pagseguro = in_array($_POST['codCartao'], array('900', '901', '902'));
@@ -545,8 +594,26 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
     $pagamento_cielo = in_array($_POST['codCartao'], array('920', '921'));
     $pagamento_braspag = (!$pagamento_fastcash and !$pagamento_pagseguro and !$pagamento_pagarme and !$pagamento_tipagos and !$pagamento_cielo and !$pagamento_paypal);
 
+
+    $auxText = "paypal? " . ($pagamento_paypal ? "Sim" : "Não");
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Tipo de pagamento.',$auxText,0);
+    $auxText = "fastcash? " . ($pagamento_fastcash ? "Sim" : "Não");
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Tipo de pagamento.',$auxText,0);
+    $auxText = "pagseguro? " . ($pagamento_pagseguro ? "Sim" : "Não");
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Tipo de pagamento.',$auxText,0);
+    $auxText = "pagarme? " . ($pagamento_pagarme ? "Sim" : "Não");
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Tipo de pagamento.',$auxText,0);
+    $auxText = "tipagos? " . ($pagamento_tipagos ? "Sim" : "Não");
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Tipo de pagamento.',$auxText,0);
+    $auxText = "cielo? " . ($pagamento_cielo ? "Sim" : "Não");
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Tipo de pagamento.',$auxText,0);
+    $auxText = "baspag? " . ($pagamento_braspag ? "Sim" : "Não");
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Tipo de pagamento.',$auxText,0);
+
+
     // pular o bloco abaixo para vendas pelo fastcash e pagseguro
     if ($_SESSION['usuario_pdv'] !== 1 and $PaymentDataCollection['Amount'] != 0 and $pagamento_braspag) {
+        sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Pagamento por fastcash.','',0);
         try {
             executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
                 array($_SESSION['user'], json_encode(array('descricao' => '3. inicialização do pedido ' . $parametros['OrderData']['OrderId'], 'url' => $url_braspag)))
@@ -566,13 +633,15 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
             
         } catch (SoapFault $e) {
             $descricao_erro = $e->getMessage();
+            sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Fastcash erro.',$descricao_erro,1);
         } catch (Exception $e) {
             $descricao_erro = $e->getMessage();
+            sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Fastcash erro.',$descricao_erro,1);
         }
-
 
         if ($result->AuthorizeTransactionResult->CorrelationId == $ri and $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->Status == '1') {    
             // CHECAGEM PELO CLEARSALE
+            sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Pagamento por fastcash - Verificando na clearsale.','',0);
             $query = "SELECT COUNT(1) AS IN_ANTI_FRAUDE FROM MW_RESERVA R
                         INNER JOIN MW_APRESENTACAO A ON A.ID_APRESENTACAO = R.ID_APRESENTACAO
                         INNER JOIN MW_EVENTO E ON E.ID_EVENTO = A.ID_EVENTO
@@ -605,10 +674,11 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
             }
 
             if (confirmarPedido($result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId)) {
+                sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Pagamento por fastcash - Transação autorizada.','',0);
                 $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->Status = '0';
             } else {
                 cancelarPedido($result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId);
-
+                sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Pagamento por fastcash - Transação não autorizada.','',0);
                 echo "Transação não autorizada.";
                 die();
             }
@@ -626,6 +696,7 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
         setcookie('id_braspag', $result->AuthorizeTransactionResult->OrderData->BraspagOrderId);
         // pagamentos via pagarme
         if ($pagamento_pagarme){
+            sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Pagamento por pagarme.','',0);
             $query = "UPDATE P SET ID_MEIO_PAGAMENTO = M.ID_MEIO_PAGAMENTO, IN_SITUACAO = 'P'
                         FROM MW_PEDIDO_VENDA P, MW_MEIO_PAGAMENTO M
                         WHERE P.ID_PEDIDO_VENDA = ? AND M.CD_MEIO_PAGAMENTO = ?";
@@ -642,6 +713,8 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
             if ($response['success'] AND $response['transaction']['status'] == 'paid') {
                 $result = new stdClass();
 
+                sale_trace($_SESSION['user'],$id_pedido,NULL,NULL,NULL,NULL,session_id(),'processarDadosCompra.php','Pagamento autorizado.',$response['transaction']->id,0);
+
                 $result->AuthorizeTransactionResult->OrderData->BraspagOrderId = 'Pagar.me';
                 $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->BraspagTransactionId = $response['transaction']->id;
                 $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->AcquirerTransactionId = $response['transaction']->nsu;
@@ -656,6 +729,7 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
             // boleto
             elseif ($response['success'] AND $response['transaction']['status'] == 'waiting_payment' AND !empty($response['transaction']['boleto_url'])) {
                 
+                sale_trace($_SESSION['user'],$id_pedido,NULL,NULL,NULL,NULL,session_id(),'processarDadosCompra.php','Pagamento autorizado do boleto.',$response['transaction']->id,0);
                 extenderTempo($horas_antes_apresentacao_pagamento * 60);
 
                 $query = "SELECT DISTINCT E.ID_BASE FROM MW_RESERVA R
@@ -691,6 +765,7 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
                 die("redirect.php?redirect=".urlencode("pagamento_pagarme.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : '')));
             }
             else {
+                sale_trace($_SESSION['user'],$id_pedido,NULL,NULL,NULL,NULL,session_id(),'pagarme_functions.php','Pagamento não autorizado.',$response['error'],1);
                 $descricao_erro = $response['error'] ? $response['error'] : 'Transação não autorizada.';
             }
         }
@@ -1004,7 +1079,8 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
     $log->__set('funcionalidade', 'compra middleway');
     $log->__set('log', json_encode($parametros));
     $log->save($mainConnection);
-    
+
+    sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Ocorreu um erro inesperado.<br>Ajude a melhorar nosso serviço, entre em contato e reporte o erro.','',1);
     echo "Ocorreu um erro inesperado.<br>Ajude a melhorar nosso serviço, entre em contato e reporte o erro.";
     die();
     

@@ -119,7 +119,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
 
     $options = $isAssinanteCompre ? '<option value="compreingressos">CompreIngressos.com</option>' : '';
     while ($rsTeatros = fetchResult($resultTeatros)) {
-        $options .= '<option value="'.$rsTeatros['ID_BASE'].'">'.utf8_encode($rsTeatros['DS_NOME_TEATRO']).'</option>';
+        $options .= '<option value="'.$rsTeatros['ID_BASE'].'">'.utf8_encode2($rsTeatros['DS_NOME_TEATRO']).'</option>';
     }
 
 
@@ -383,7 +383,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                                 <a href="logout.php">logout</a>
                             </p>
                             <p class="descricao">
-                                Olá <b><?php echo utf8_encode($rs['DS_NOME']); ?>,</b> veja seus dados da conta, histórico de pedidos, troque
+                                Olá <b><?php echo utf8_encode2($rs['DS_NOME']); ?>,</b> veja seus dados da conta, histórico de pedidos, troque
                                 a sua senha ou altere suas configurações do guia de espetáculos
                             </p>
                             <div class="menu_conta">

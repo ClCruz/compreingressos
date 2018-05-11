@@ -210,7 +210,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 
 		$combo = '<option value="">Selecione...</option>';
         while ($rs = fetchResult($result)) {
-            $combo .= '<option value="' . $rs['ID_BASE'] . '"' . (($selected == $rs['ID_BASE']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_NOME_TEATRO']) . '</option>';
+            $combo .= '<option value="' . $rs['ID_BASE'] . '"' . (($selected == $rs['ID_BASE']) ? ' selected' : '') . '>' . utf8_encode2($rs['DS_NOME_TEATRO']) . '</option>';
         }
 
         echo $combo;
@@ -227,7 +227,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 		$html = '<option value="">Selecione...</option>';
 
 		while($rs = fetchResult($result)){
-			$html .= '<option value="'. $rs["CodPeca"] .'">'. utf8_encode($rs["nomPeca"]) .'</option>';	
+			$html .= '<option value="'. $rs["CodPeca"] .'">'. utf8_encode2($rs["nomPeca"]) .'</option>';	
 		}
 
 		echo $html;
@@ -327,7 +327,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 320, true)) {
 		 
 
 		while($rs = fetchResult($result)){
-			$html .= '<option value="'. $rs["codsetor"] .'">' . utf8_encode($rs["nomsetor"]) .'</option>';	
+			$html .= '<option value="'. $rs["codsetor"] .'">' . utf8_encode2($rs["nomsetor"]) .'</option>';	
 		}
 		echo $html ;
 		die();

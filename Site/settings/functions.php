@@ -4,12 +4,55 @@ require('../settings/Metzli/autoload.php');
 use Metzli\Encoder\Encoder;
 use Metzli\Renderer\PngRenderer;
 
+function sale_trace($id_cliente,$id_pedido_venda,$codVenda
+	,$id_evento,$codPeca,$id_base,$id_session,$page,$lastMessage,$moreData,$isError) 
+    {
+    
+    $query = "exec [dbo].[sale_trace_ins] ?
+	,?
+	,?
+	,?
+	,?
+	,?
+	,?
+	,?
+	,?
+	,?
+    ,?";
+    
+    $mainConnection = mainConnection();
+    $params = array($id_cliente == null ? NULL : $id_cliente
+	,$id_pedido_venda == null ? NULL : $id_pedido_venda
+	,$codVenda == null ? NULL : $codVenda
+	,$id_evento == null ? NULL : $id_evento
+	,$codPeca == null ? NULL : $codPeca
+	,$id_base == null ? NULL : $id_base
+	,$id_session == null ? NULL : $id_session
+	,$page == null ? NULL : $page
+	,$lastMessage == null ? NULL : $lastMessage
+	,$moreData == null ? NULL : $moreData
+    ,$isError);
+    
+    $result = executeSQL($mainConnection, $query, $params);
+}
+
 function getSiteLogo() {
     echo "<img src='../images/menu_logo.png' height='60px' id='logo' />";
 }
 
 function getSiteName() {
     echo "<h1 class='siteName'>$nomeSite</h1>";
+}
+
+function utf8_encode2($str) {
+    if (preg_match('!!u', $str))
+    {
+       return $str;
+    }
+    else 
+    {
+       return utf8_encode2($aux);       
+    }
 }
 
 /*  PEDIDOS  */
@@ -507,7 +550,7 @@ function getURLApresentacaoAtual() {
                 where r.id_session = ?';
     $rs = executeSQL($mainConnection, $query, array(session_id()), true);
 
-    return 'etapa1.php?apresentacao='.$rs['ID_APRESENTACAO'].'&eventoDS='.utf8_encode($rs['DS_EVENTO']);
+    return 'etapa1.php?apresentacao='.$rs['ID_APRESENTACAO'].'&eventoDS='.utf8_encode2($rs['DS_EVENTO']);
 }
 
 function getPrimeiroValorAssinatura($id_usuario, $id_assinatura) {
@@ -645,12 +688,14 @@ function comboRegiaoGeografica($name) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione uma regi&atilde;o...</option>';
     while ($rs = fetchResult($result)) {
-    $combo .= '<option value="' . $rs['ID_REGIAO_GEOGRAFICA'] . '">' . utf8_encode($rs['DS_REGIAO_GEOGRAFICA']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_REGIAO_GEOGRAFICA'] . '">' . utf8_encode2($rs['DS_REGIAO_GEOGRAFICA']) . '</option>';
     }
     $combo .= '</select>';
 
     return $combo;
 }
+
+
 
 function comboEvento($name, $teatro, $selected, $paramns = array())
 {
@@ -679,7 +724,7 @@ function comboEvento($name, $teatro, $selected, $paramns = array())
     while ($rs = fetchResult($result)) {
     $combo .= '<option value="' . $rs['ID_EVENTO'] . '"' .
         (($selected == $rs['ID_EVENTO']) ? ' selected' : '') .
-        '>' . str_replace("'", "\'", utf8_encode($rs['DS_EVENTO'])) . '</option>';
+        '>' . str_replace("'", "\'", utf8_encode2($rs['DS_EVENTO'])) . '</option>';
     }
     $combo .= '</select>';
 
@@ -697,7 +742,7 @@ function comboEventoPermissao($name, $params, $selected) {
     while ($rs = fetchResult($result)) {
     $combo .= '<option value="' . $rs['ID_EVENTO'] . '"' .
         (($selected == $rs['ID_EVENTO']) ? ' selected' : '') .
-        '>' . utf8_encode($rs['DS_EVENTO']) . '</option>';
+        '>' . utf8_encode2($rs['DS_EVENTO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -713,11 +758,11 @@ function comboEstado($name, $selected, $extenso = false, $isCombo = true, $extra
     while ($rs = fetchResult($result)) {
     if (($selected == $rs['ID_ESTADO'])) {
         $isSelected = 'selected';
-        $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode($rs[(($extenso) ? 'DS_ESTADO' : 'SG_ESTADO')]) . '</span>';
+        $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode2($rs[(($extenso) ? 'DS_ESTADO' : 'SG_ESTADO')]) . '</span>';
     } else {
         $isSelected = '';
     }
-    $combo .= '<option value="' . $rs['ID_ESTADO'] . '"' . $isSelected . '>' . utf8_encode($rs[(($extenso) ? 'DS_ESTADO' : 'SG_ESTADO')]) . '</option>';
+    $combo .= '<option value="' . $rs['ID_ESTADO'] . '"' . $isSelected . '>' . utf8_encode2($rs[(($extenso) ? 'DS_ESTADO' : 'SG_ESTADO')]) . '</option>';
     }
     $combo .= '</select>';
 
@@ -772,11 +817,11 @@ function comboEstadoOptions($name, $selected, $extenso = false, $isCombo = true)
     while ($rs = fetchResult($result)) {
     if (($selected == $rs['ID_ESTADO'])) {
         $isSelected = 'selected';
-        $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode($rs[(($extenso) ? 'DS_ESTADO' : 'SG_ESTADO')]) . '</span>';
+        $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode2($rs[(($extenso) ? 'DS_ESTADO' : 'SG_ESTADO')]) . '</span>';
     } else {
         $isSelected = '';
     }
-    $combo .= '<option value="' . $rs['ID_ESTADO'] . '"' . $isSelected . '>' . utf8_encode($rs[(($extenso) ? 'DS_ESTADO' : 'SG_ESTADO')]) . '</option>';
+    $combo .= '<option value="' . $rs['ID_ESTADO'] . '"' . $isSelected . '>' . utf8_encode2($rs[(($extenso) ? 'DS_ESTADO' : 'SG_ESTADO')]) . '</option>';
     }
     if (sqlErrors ())
     return print_r(sqlErrors());
@@ -794,11 +839,11 @@ function comboMunicipio($name, $selected, $idEstado, $isCombo = true) {
     while ($rs = fetchResult($result)) {
     if (($selected == $rs['ID_MUNICIPIO'])) {
         $isSelected = 'selected';
-        $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode($rs["DS_MUNICIPIO"]) . '</span>';
+        $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode2($rs["DS_MUNICIPIO"]) . '</span>';
     } else {
         $isSelected = '';
     }
-    $combo .= '<option value="' . $rs['ID_MUNICIPIO'] . '"' . $isSelected . '>' . utf8_encode($rs["DS_MUNICIPIO"]) . '</option>';
+    $combo .= '<option value="' . $rs['ID_MUNICIPIO'] . '"' . $isSelected . '>' . utf8_encode2($rs["DS_MUNICIPIO"]) . '</option>';
     }
     if (sqlErrors ())
     return print_r(sqlErrors()) . print_r($params);
@@ -815,11 +860,11 @@ function comboTipoLocal($name, $selected, $isCombo = true) {
     while ($rs = fetchResult($result)) {
     if (($selected == $rs['ID_TIPO_LOCAL'])) {
         $isSelected = 'selected';
-        $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode($rs["DS_TIPO_LOCAL"]) . '</span>';
+        $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode2($rs["DS_TIPO_LOCAL"]) . '</span>';
     } else {
         $isSelected = '';
     }
-    $combo .= '<option value="' . $rs['ID_TIPO_LOCAL'] . '"' . $isSelected . '>' . utf8_encode($rs["DS_TIPO_LOCAL"]) . '</option>';
+    $combo .= '<option value="' . $rs['ID_TIPO_LOCAL'] . '"' . $isSelected . '>' . utf8_encode2($rs["DS_TIPO_LOCAL"]) . '</option>';
     }
     $combo .= '</select>';
 
@@ -835,11 +880,11 @@ function comboTipoLocalOptions($name, $selected, $isCombo = true) {
     while ($rs = fetchResult($result)) {
     if (($selected == $rs['ID_TIPO_LOCAL'])) {
         $isSelected = 'selected';
-        $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode($rs["DS_TIPO_LOCAL"]) . '</span>';
+        $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode2($rs["DS_TIPO_LOCAL"]) . '</span>';
     } else {
         $isSelected = '';
     }
-    $combo .= '<option value="' . $rs['ID_TIPO_LOCAL'] . '"' . $isSelected . '>' . utf8_encode($rs["DS_TIPO_LOCAL"]) . '</option>';
+    $combo .= '<option value="' . $rs['ID_TIPO_LOCAL'] . '"' . $isSelected . '>' . utf8_encode2($rs["DS_TIPO_LOCAL"]) . '</option>';
     }
 
     return $isCombo ? $combo : $text;
@@ -1094,7 +1139,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
             if (($selected == $rs['ID_APRESENTACAO_BILHETE'])) {
                 $isSelected = 'selected';
                 $text = '<input type="hidden" name="' . $name . '" value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $BIN . $promocao . $tipoPromo .
-                        ' valor="'.number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', '').'"><span class="' . $name . ' inputStyle">' . utf8_encode($rs['DS_TIPO_BILHETE']) . '</span>';
+                        ' valor="'.number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', '').'"><span class="' . $name . ' inputStyle">' . utf8_encode2($rs['DS_TIPO_BILHETE']) . '</span>';
             } else {
                 $isSelected = '';
             }
@@ -1108,10 +1153,10 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
             // checar exibicao da promocao
             if ($rs['IN_EXIBICAO'] == null or $rs['IN_EXIBICAO'] == 'T' or $rs['IN_EXIBICAO'] == 'W') {
                 $combo .= '<option value="' . $rs['ID_APRESENTACAO_BILHETE'] . '" ' . $isSelected . ' ' . $BIN . $promocao . $meia_estudante . $lote . $tipoPromo .
-                          ' valor="'.number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', '').'">' . utf8_encode($rs['DS_TIPO_BILHETE']) . '</option>';
+                          ' valor="'.number_format($rs['VL_LIQUIDO_INGRESSO'], 2, ',', '').'">' . utf8_encode2($rs['DS_TIPO_BILHETE']) . '</option>';
             }
 
-            $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['descricao'] = utf8_encode($rs['DS_TIPO_BILHETE']);
+            $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['descricao'] = utf8_encode2($rs['DS_TIPO_BILHETE']);
             $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['valor'] = $rs['VL_LIQUIDO_INGRESSO'];
             $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['exibicao'] = $rs['IN_EXIBICAO'];
             $bilhetes[$rs['ID_APRESENTACAO_BILHETE']]['codTipPromocao'] = $rs['CODTIPPROMOCAO'];
@@ -1128,7 +1173,7 @@ function comboTeatro($name, $selected, $funcJavascript = "") {
 
     $combo = '<select name="' . $name . '" ' . $funcJavascript . ' class="inputStyle" id="' . $name . '"><option value="">Selecione um local...</option>';
     while ($rs = fetchResult($result)) {
-    $combo .= '<option value="' . $rs['ID_BASE'] . '"' . (($selected == $rs['ID_BASE']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_NOME_TEATRO']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_BASE'] . '"' . (($selected == $rs['ID_BASE']) ? ' selected' : '') . '>' . utf8_encode2($rs['DS_NOME_TEATRO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1141,7 +1186,7 @@ function comboSala($name, $teatroID) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione uma sala...</option>';
     while ($rs = fetchResult($result)) {
-    $combo .= '<option value="' . $rs['CODSALA'] . '" numerado="'.$rs['INGRESSONUMERADO'].'">' . utf8_encode($rs['NOMSALA']) . '</option>';
+    $combo .= '<option value="' . $rs['CODSALA'] . '" numerado="'.$rs['INGRESSONUMERADO'].'">' . utf8_encode2($rs['NOMSALA']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1157,11 +1202,11 @@ function comboMeioPagamento($name, $selected = '-1', $isCombo = true) {
     while ($rs = fetchResult($result)) {
     if ($selected == $rs['ID_MEIO_PAGAMENTO']) {
         $isSelected = 'selected';
-        $text = utf8_encode($rs['DS_MEIO_PAGAMENTO']);
+        $text = utf8_encode2($rs['DS_MEIO_PAGAMENTO']);
     } else {
         $isSelected = '';
     }
-    $combo .= '<option value="' . $rs['ID_MEIO_PAGAMENTO'] . '"' . $isSelected . '>' . utf8_encode($rs['DS_MEIO_PAGAMENTO']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_MEIO_PAGAMENTO'] . '"' . $isSelected . '>' . utf8_encode2($rs['DS_MEIO_PAGAMENTO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1177,11 +1222,11 @@ function comboFormaPagamento($name, $teatroID, $selected = '-1', $isCombo = true
     while ($rs = fetchResult($result)) {
     if ($selected == $rs['CODFORPAGTO']) {
         $isSelected = 'selected';
-        $text = utf8_encode($rs['FORPAGTO']);
+        $text = utf8_encode2($rs['FORPAGTO']);
     } else {
         $isSelected = '';
     }
-    $combo .= '<option value="' . $rs['CODFORPAGTO'] . '"' . $isSelected . '>' . utf8_encode($rs['FORPAGTO']) . '</option>';
+    $combo .= '<option value="' . $rs['CODFORPAGTO'] . '"' . $isSelected . '>' . utf8_encode2($rs['FORPAGTO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1197,11 +1242,11 @@ function comboBilhetes2($name, $teatroID, $selected = '-1', $isCombo = true) {
     while ($rs = fetchResult($result)) {
     if ($selected == $rs['CODTIPBILHETE']) {
         $isSelected = 'selected';
-        $text = utf8_encode($rs['DS_NOME_SITE']);
+        $text = utf8_encode2($rs['DS_NOME_SITE']);
     } else {
         $isSelected = '';
     }
-    $combo .= '<option value="' . $rs['CODTIPBILHETE'] . '"' . $isSelected . '>' . utf8_encode($rs['DS_NOME_SITE']) . '</option>';
+    $combo .= '<option value="' . $rs['CODTIPBILHETE'] . '"' . $isSelected . '>' . utf8_encode2($rs['DS_NOME_SITE']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1257,11 +1302,11 @@ function comboLocal($name, $selected = '-1', $isCombo = true) {
     while ($rs = fetchResult($result)) {
     if (($selected == $rs['ID_BASE'])) {
         $isSelected = 'selected';
-        $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode($rs["DS_NOME_TEATRO"]) . '</span>';
+        $text = '<span name="' . $name . '" class="inputStyle">' . utf8_encode2($rs["DS_NOME_TEATRO"]) . '</span>';
     } else {
         $isSelected = '';
     }
-    $combo .= '<option value="' . $rs['ID_BASE'] . '"' . $isSelected . '>' . utf8_encode($rs["DS_NOME_TEATRO"]) . '</option>';
+    $combo .= '<option value="' . $rs['ID_BASE'] . '"' . $isSelected . '>' . utf8_encode2($rs["DS_NOME_TEATRO"]) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1282,7 +1327,7 @@ function comboEventos($idBase, $nomeBase, $idUsuario) {
     $stmt = executeSQL($mainConnection, $tsql, array($idBase, $idUsuario));
     print("<option value=\"null\">Todos</option>");
     while ($eventos = fetchResult($stmt)) {
-    print("<option value=\"" . $eventos["CODPECA"] . "\">" . utf8_encode($eventos["NOMPECA"]) . "</option>\n");
+    print("<option value=\"" . $eventos["CODPECA"] . "\">" . utf8_encode2($eventos["NOMPECA"]) . "</option>\n");
     }
 }
 
@@ -1295,11 +1340,11 @@ function comboPatrocinador($name, $selected = '-1', $isCombo = true) {
     while ($rs = fetchResult($result)) {
     if ($selected == $rs['ID_PATROCINADOR']) {
         $isSelected = 'selected';
-        $text = utf8_encode($rs['DS_NOMPATROCINADOR']);
+        $text = utf8_encode2($rs['DS_NOMPATROCINADOR']);
     } else {
         $isSelected = '';
     }
-    $combo .= '<option value="' . $rs['ID_PATROCINADOR'] . '"' . $isSelected . '>' . utf8_encode($rs['DS_NOMPATROCINADOR']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_PATROCINADOR'] . '"' . $isSelected . '>' . utf8_encode2($rs['DS_NOMPATROCINADOR']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1315,11 +1360,11 @@ function comboCartaoPatrocinado($name, $idPatrocinador, $selected = '-1', $isCom
     while ($rs = fetchResult($result)) {
     if ($selected == $rs['ID_CARTAO_PATROCINADO']) {
         $isSelected = 'selected';
-        $text = utf8_encode($rs['DS_CARTAO_PATROCINADO']);
+        $text = utf8_encode2($rs['DS_CARTAO_PATROCINADO']);
     } else {
         $isSelected = '';
     }
-    $combo .= '<option value="' . $rs['ID_CARTAO_PATROCINADO'] . '"' . $isSelected . '>' . utf8_encode($rs['DS_CARTAO_PATROCINADO']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_CARTAO_PATROCINADO'] . '"' . $isSelected . '>' . utf8_encode2($rs['DS_CARTAO_PATROCINADO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1334,11 +1379,11 @@ function comboTabPeca($name, $conn, $selected = '-1', $isCombo = true) {
     while ($rs = fetchResult($result)) {
     if ($selected == $rs['CODPECA']) {
         $isSelected = 'selected';
-        $text = utf8_encode($rs['NOMPECA']);
+        $text = utf8_encode2($rs['NOMPECA']);
     } else {
         $isSelected = '';
     }
-    $combo .= '<option value="' . $rs['CODPECA'] . '"' . $isSelected . '>' . utf8_encode($rs['NOMPECA']) . '</option>';
+    $combo .= '<option value="' . $rs['CODPECA'] . '"' . $isSelected . '>' . utf8_encode2($rs['NOMPECA']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1361,7 +1406,7 @@ function comboEventosItau($name, $user, $selected = '-1') {
     } else {
         $isSelected = '';
     }
-    $combo .= '<option value="' . $rs['ID_EVENTO'] . '"' . $isSelected . '>' . utf8_encode($rs['DS_EVENTO']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_EVENTO'] . '"' . $isSelected . '>' . utf8_encode2($rs['DS_EVENTO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1388,7 +1433,7 @@ function comboApresentacoesItau($name, $user, $evento, $selected = '-1') {
     } else {
         $isSelected = '';
     }
-    $combo .= '<option value="' . $rs['ID_APRESENTACAO'] . '"' . $isSelected . '>' . utf8_encode($rs['DS_APRESENTACAO']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_APRESENTACAO'] . '"' . $isSelected . '>' . utf8_encode2($rs['DS_APRESENTACAO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1410,7 +1455,7 @@ function comboEventoPorUsuario($name, $teatro, $usuario, $selected) {
     while ($rs = fetchResult($result)) {
     $combo .= '<option value="' . $rs['CODPECA'] . '"' .
         (($selected == $rs['CODPECA']) ? ' selected' : '') .
-        '>' . str_replace("'", "\'", utf8_encode($rs['DS_EVENTO'])) . '</option>';
+        '>' . str_replace("'", "\'", utf8_encode2($rs['DS_EVENTO'])) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1429,7 +1474,7 @@ function comboTeatroPorUsuario($name, $usuario, $selected) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um local...</option>';
     while ($rs = fetchResult($result)) {
-    $combo .= '<option value="' . $rs['ID_BASE'] . '"' . (($selected == $rs['ID_BASE']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_NOME_TEATRO']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_BASE'] . '"' . (($selected == $rs['ID_BASE']) ? ' selected' : '') . '>' . utf8_encode2($rs['DS_NOME_TEATRO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1487,7 +1532,7 @@ function comboPaginas($name, $selected) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione uma p&aacute;gina...</option>';
     while ($rs = fetchResult($result)) {
-    $combo .= '<option value="' . $rs['ID_PAGINA'] . '"' . (($selected == $rs['ID_PAGINA']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_PAGINA']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_PAGINA'] . '"' . (($selected == $rs['ID_PAGINA']) ? ' selected' : '') . '>' . utf8_encode2($rs['DS_PAGINA']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1500,7 +1545,7 @@ function comboOrigemChamado($name, $selected) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione uma origem...</option>';
     while ($rs = fetchResult($result)) {
-    $combo .= '<option value="' . $rs['ID_ORIGEM_CHAMADO'] . '"' . (($selected == $rs['ID_ORIGEM_CHAMADO']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_ORIGEM_CHAMADO']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_ORIGEM_CHAMADO'] . '"' . (($selected == $rs['ID_ORIGEM_CHAMADO']) ? ' selected' : '') . '>' . utf8_encode2($rs['DS_ORIGEM_CHAMADO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1513,7 +1558,7 @@ function comboTipoChamado($name, $selected) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um tipo...</option>';
     while ($rs = fetchResult($result)) {
-    $combo .= '<option value="' . $rs['ID_TIPO_CHAMADO'] . '"' . (($selected == $rs['ID_TIPO_CHAMADO']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_TIPO_CHAMADO']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_TIPO_CHAMADO'] . '"' . (($selected == $rs['ID_TIPO_CHAMADO']) ? ' selected' : '') . '>' . utf8_encode2($rs['DS_TIPO_CHAMADO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1526,7 +1571,7 @@ function comboTipoResolucao($name, $selected) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione uma resolução...</option>';
     while ($rs = fetchResult($result)) {
-    $combo .= '<option value="' . $rs['ID_TIPO_RESOLUCAO'] . '"' . (($selected == $rs['ID_TIPO_RESOLUCAO']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_TIPO_RESOLUCAO']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_TIPO_RESOLUCAO'] . '"' . (($selected == $rs['ID_TIPO_RESOLUCAO']) ? ' selected' : '') . '>' . utf8_encode2($rs['DS_TIPO_RESOLUCAO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1575,7 +1620,7 @@ function comboUsuariosPorBase($name, $teatro, $selected) {
     while ($rs = fetchResult($result)) {
     $combo .= '<option value="' . $rs['CODUSUARIO'] . '"' .
         (($selected == $rs['CODUSUARIO']) ? ' selected' : '') .
-        '>' . utf8_encode($rs['NOMUSUARIO']) . '</option>';
+        '>' . utf8_encode2($rs['NOMUSUARIO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1590,7 +1635,7 @@ function comboTipoDocumento($name, $selected) {
     while ($rs = fetchResult($result)) {
     $combo .= '<option value="' . $rs['ID_DOC_ESTRANGEIRO'] . '"' .
         (($selected == $rs['ID_DOC_ESTRANGEIRO']) ? ' selected' : '') .
-        '>' . utf8_encode($rs['DS_DOC_ESTRANGEIRO']) . '</option>';
+        '>' . utf8_encode2($rs['DS_DOC_ESTRANGEIRO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1611,7 +1656,7 @@ function comboSetor($name, $apresentacao_id) {
     while ($rs = fetchResult($result)) {
         // esconde setor atual
         if ($apresentacao_id != $rs['ID_APRESENTACAO']) {
-            $combo .= '<option value="' . $rs['ID_APRESENTACAO'] . '">' . utf8_encode($rs['DS_PISO']) . '</option>';
+            $combo .= '<option value="' . $rs['ID_APRESENTACAO'] . '">' . utf8_encode2($rs['DS_PISO']) . '</option>';
         }
     }
     $combo .= '</select>';
@@ -1627,7 +1672,7 @@ function comboCanalVenda($name, $selected) {
     while ($rs = fetchResult($result)) {
     $combo .= '<option value="' . $rs['ID_CANAL_VENDA'] . '"' .
         (($selected == $rs['ID_CANAL_VENDA']) ? ' selected' : '') .
-        '>' . utf8_encode($rs['DS_CANAL_VENDA']) . '</option>';
+        '>' . utf8_encode2($rs['DS_CANAL_VENDA']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1649,7 +1694,7 @@ function comboPromocoes($name, $selected, $isCombo = true) {
 
         $combo .= '<option value="' . $rs['ID_PROMOCAO_CONTROLE'] . '"' . $isSelected . ' ' .
             (($selected == $rs['ID_PROMOCAO_CONTROLE']) ? ' selected' : '') .
-            '>' . utf8_encode($rs['DS_PROMOCAO']) . '</option>';
+            '>' . utf8_encode2($rs['DS_PROMOCAO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1742,7 +1787,7 @@ function comboBanco($name, $selected) {
     while ($rs = fetchResult($result)) {
     $combo .= '<option value="' . $rs['CD_BANCO'] . '"' .
         (($selected == $rs['CD_BANCO']) ? ' selected' : '') .
-        '>' . $rs['CD_BANCO'] . ' - ' . utf8_encode($rs['DS_BANCO']) . '</option>';
+        '>' . $rs['CD_BANCO'] . ' - ' . utf8_encode2($rs['DS_BANCO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1772,7 +1817,7 @@ function comboEventoPacotePorUsuario($name, $local, $usuario, $selected) {
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um evento/pacote...</option>';
     while ($rs = fetchResult($result)) {
-    $combo .= '<option value="' . $rs['ID_APRESENTACAO'] . '"' . (($selected == $rs['ID_APRESENTACAO']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_EVENTO']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_APRESENTACAO'] . '"' . (($selected == $rs['ID_APRESENTACAO']) ? ' selected' : '') . '>' . utf8_encode2($rs['DS_EVENTO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -1795,7 +1840,7 @@ function comboPacote($name, $usuario, $selected, $id_base = null, $fase = null) 
 
     $combo = '<select name="' . $name . '" class="inputStyle" id="' . $name . '"><option value="">Selecione um pacote...</option>';
     while ($rs = fetchResult($result)) {
-    $combo .= '<option value="' . $rs['ID_PACOTE'] . '"' . (($selected == $rs['ID_PACOTE']) ? ' selected' : '') . '>' . utf8_encode($rs['DS_EVENTO']) . '</option>';
+    $combo .= '<option value="' . $rs['ID_PACOTE'] . '"' . (($selected == $rs['ID_PACOTE']) ? ' selected' : '') . '>' . utf8_encode2($rs['DS_EVENTO']) . '</option>';
     }
     $combo .= '</select>';
 
@@ -2195,7 +2240,7 @@ function comboGateway($name, $gateway = ""){
         if($gateway == $rs['ID_GATEWAY']){
             $selecionavel = "selected";
         }
-        $combo .= '<option value="' . $rs['ID_GATEWAY'] . '" '. $selecionavel .'>' . utf8_encode($rs["DS_GATEWAY"]) . '</option>';
+        $combo .= '<option value="' . $rs['ID_GATEWAY'] . '" '. $selecionavel .'>' . utf8_encode2($rs["DS_GATEWAY"]) . '</option>';
     }
     $combo .= '</select>';
 
@@ -2280,7 +2325,7 @@ function getEnderecoCliente($id_cliente, $id_endereco) {
         );
 
         foreach ($retorno as $key => $val) {
-            $retorno[$key] = utf8_encode($val);
+            $retorno[$key] = utf8_encode2($val);
         }
     }
     else{
@@ -2585,7 +2630,7 @@ function sendSuccessMail($pedido_id) {
 function getPKPass($dados_pedido) {
 
     foreach ($dados_pedido as $key => $value) {
-        $dados_pedido[$key] = utf8_encode($value);
+        $dados_pedido[$key] = utf8_encode2($value);
     }
 
     $data = array(  
@@ -2781,7 +2826,7 @@ function remove_accents( $str, $utf8=true )
     }
 
     if(!$utf8)
-        $str = utf8_encode($str);
+        $str = utf8_encode2($str);
 
     $transliteration = array(
         'Ĳ' => 'I','Ö' => 'O','Œ' => 'O','Ü' => 'U','ä' => 'a','æ' => 'a',

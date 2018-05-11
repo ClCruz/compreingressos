@@ -1,6 +1,6 @@
 <?php
 foreach($_POST as $key => $val) {
-	$_POST[$key] = utf8_encode($val);
+	$_POST[$key] = utf8_encode2($val);
 }
 
 $jsonPOST = json_encode($_POST);

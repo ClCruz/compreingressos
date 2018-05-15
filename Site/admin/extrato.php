@@ -1,6 +1,7 @@
 <?php
 require_once('acessoLogadoDie.php');
 require_once('../settings/functions.php');
+require_once('../log4php/log.php');
 
 $mainConnection = mainConnection();
 session_start();
@@ -585,6 +586,7 @@ $(function() {
                             var toAppend = "<tr class='trline'><td>" + moment(value.date_created).format("DD/MM/YYYY HH:mm") +"</td>";
                             toAppend += "<td>"+ statusAux +"</td>";
                             toAppend += "<td>"+ value.type +"</td>";
+                            toAppend += "<td title='" + ((value.name == null || value.name == undefined) ? "-" : value.name) + "'>"+ ((value.login == null || value.login == undefined) ? "-" : value.login) +"</td>";
                             toAppend += "<td>R$ "+ (value.amount/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
                             toAppend += "<td>R$ "+ (value.fee/100).toFixed(2).toString().replace(',','').replace('.',',') +"</td>";
                             toAppend += "<td>"+ (value.funding_estimated_date == null ? "-" : moment(value.funding_estimated_date).format("DD/MM/YYYY")) +"</td>";
@@ -1517,8 +1519,9 @@ $(function() {
 	<thead>
 		<tr class="ui-widget-header">
             <th width="100">Data de requisição</th>
-            <th width="100">Tipo</th>
             <th width="100">Status</th>
+            <th width="100">Tipo</th>
+            <th width="100">Solicitante</th>
             <th width="100">Valor</th>
             <th width="100">Taxa</th>
 			<th width="100">Dt Estimada da Transf.</th>

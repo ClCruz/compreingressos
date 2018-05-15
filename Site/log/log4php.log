@@ -1,0 +1,258 @@
+TRACE - teste..
+TRACE - saque..
+TRACE - request..PagarMe_Request Object
+(
+    [path:PagarMe_Request:private] => /transfers
+    [method:PagarMe_Request:private] => POST
+    [parameters:PagarMe_Request:private] => Array
+        (
+            [amount] => 2116
+            [recipient_id] => re_cjg2pebge0037o76ew981robb
+            [metadata] => Array
+                (
+                    [id_usuario] => 2402
+                    [name] => 
+                    [login] => 
+                )
+
+        )
+
+    [headers:PagarMe_Request:private] => 
+    [live:PagarMe_Request:private] => 1
+)
+
+TRACE - saque..
+TRACE - query..
+TRACE - request..PagarMe_Request Object
+(
+    [path:PagarMe_Request:private] => /transfers
+    [method:PagarMe_Request:private] => POST
+    [parameters:PagarMe_Request:private] => Array
+        (
+            [amount] => 1087
+            [recipient_id] => re_cjg2pebge0037o76ew981robb
+            [metadata] => Array
+                (
+                    [id_usuario] => 2402
+                    [name] => 
+                    [login] => 
+                )
+
+        )
+
+    [headers:PagarMe_Request:private] => 
+    [live:PagarMe_Request:private] => 1
+)
+
+TRACE - saque..
+TRACE - query..Array
+(
+    [0] => 2402
+    [id_usuario] => 2402
+    [1] => coccaro
+    [cd_login] => coccaro
+    [2] => Bruno Coccaro
+    [ds_nome] => Bruno Coccaro
+)
+
+TRACE - request..PagarMe_Request Object
+(
+    [path:PagarMe_Request:private] => /transfers
+    [method:PagarMe_Request:private] => POST
+    [parameters:PagarMe_Request:private] => Array
+        (
+            [amount] => 1915
+            [recipient_id] => re_cjg2pebge0037o76ew981robb
+            [metadata] => Array
+                (
+                    [id_usuario] => 2402
+                    [name] => Bruno Coccaro
+                    [login] => coccaro
+                )
+
+        )
+
+    [headers:PagarMe_Request:private] => 
+    [live:PagarMe_Request:private] => 1
+)
+
+TRACE - saque..
+TRACE - query..Array
+(
+    [0] => 2402
+    [id_usuario] => 2402
+    [1] => coccaro
+    [cd_login] => coccaro
+    [2] => Bruno Coccaro
+    [ds_nome] => Bruno Coccaro
+)
+
+TRACE - request..PagarMe_Request Object
+(
+    [path:PagarMe_Request:private] => /transfers
+    [method:PagarMe_Request:private] => POST
+    [parameters:PagarMe_Request:private] => Array
+        (
+            [amount] => 851
+            [recipient_id] => re_cjg2pebge0037o76ew981robb
+            [metadata] => Array
+                (
+                    [id_usuario] => 2402
+                    [name] => Bruno Coccaro
+                    [login] => coccaro
+                )
+
+        )
+
+    [headers:PagarMe_Request:private] => 
+    [live:PagarMe_Request:private] => 1
+)
+
+TRACE - saque..
+TRACE - query..Array
+(
+    [0] => 2402
+    [id_usuario] => 2402
+    [1] => coccaro
+    [cd_login] => coccaro
+    [2] => Bruno Coccaro
+    [ds_nome] => Bruno Coccaro
+)
+
+TRACE - request..PagarMe_Request Object
+(
+    [path:PagarMe_Request:private] => /transfers
+    [method:PagarMe_Request:private] => POST
+    [parameters:PagarMe_Request:private] => Array
+        (
+            [amount] => 958
+            [recipient_id] => re_cjg2pebge0037o76ew981robb
+            [metadata] => Array
+                (
+                    [id_usuario] => 2402
+                    [name] => Bruno Coccaro
+                    [login] => coccaro
+                )
+
+        )
+
+    [headers:PagarMe_Request:private] => 
+    [live:PagarMe_Request:private] => 1
+)
+
+TRACE - response..Array
+(
+    [object] => transfer
+    [id] => 142811
+    [amount] => 958
+    [type] => ted
+    [status] => pending_transfer
+    [source_type] => recipient
+    [source_id] => re_cjg2pebge0037o76ew981robb
+    [target_type] => bank_account
+    [target_id] => 17759628
+    [fee] => 367
+    [funding_date] => 
+    [funding_estimated_date] => 2018-05-16T03:00:00.000Z
+    [transaction_id] => 
+    [date_created] => 2018-05-15T14:47:25.884Z
+    [metadata] => Array
+        (
+            [name] => Bruno Coccaro
+            [login] => coccaro
+            [id_usuario] => 2402
+        )
+
+    [bank_account] => Array
+        (
+            [object] => bank_account
+            [id] => 17759628
+            [bank_code] => 122
+            [agencia] => 1740
+            [agencia_dv] => 
+            [conta] => 01740
+            [conta_dv] => 1
+            [type] => conta_corrente
+            [document_type] => cpf
+            [document_number] => 18169479622
+            [legal_name] => Mad Max
+            [charge_transfer_fees] => 1
+            [date_created] => 2018-04-16T20:40:25.997Z
+        )
+
+)
+
+TRACE - saque..
+TRACE - query..Array
+(
+    [0] => 2402
+    [id_usuario] => 2402
+    [1] => coccaro
+    [cd_login] => coccaro
+    [2] => Bruno Coccaro
+    [ds_nome] => Bruno Coccaro
+)
+
+TRACE - request..PagarMe_Request Object
+(
+    [path:PagarMe_Request:private] => /transfers
+    [method:PagarMe_Request:private] => POST
+    [parameters:PagarMe_Request:private] => Array
+        (
+            [amount] => 833
+            [recipient_id] => re_cjg2pebge0037o76ew981robb
+            [metadata] => Array
+                (
+                    [id_usuario] => 2402
+                    [name] => Bruno Coccaro
+                    [login] => coccaro
+                )
+
+        )
+
+    [headers:PagarMe_Request:private] => 
+    [live:PagarMe_Request:private] => 1
+)
+
+TRACE - response..Array
+(
+    [object] => transfer
+    [id] => 142812
+    [amount] => 833
+    [type] => ted
+    [status] => pending_transfer
+    [source_type] => recipient
+    [source_id] => re_cjg2pebge0037o76ew981robb
+    [target_type] => bank_account
+    [target_id] => 17759628
+    [fee] => 367
+    [funding_date] => 
+    [funding_estimated_date] => 2018-05-16T03:00:00.000Z
+    [transaction_id] => 
+    [date_created] => 2018-05-15T14:49:04.962Z
+    [metadata] => Array
+        (
+            [name] => Bruno Coccaro
+            [login] => coccaro
+            [id_usuario] => 2402
+        )
+
+    [bank_account] => Array
+        (
+            [object] => bank_account
+            [id] => 17759628
+            [bank_code] => 122
+            [agencia] => 1740
+            [agencia_dv] => 
+            [conta] => 01740
+            [conta_dv] => 1
+            [type] => conta_corrente
+            [document_type] => cpf
+            [document_number] => 18169479622
+            [legal_name] => Mad Max
+            [charge_transfer_fees] => 1
+            [date_created] => 2018-04-16T20:40:25.997Z
+        )
+
+)
+

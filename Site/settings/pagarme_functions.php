@@ -1,5 +1,6 @@
 <?php
 require_once('../settings/functions.php');
+require_once('../log4php/log.php');
 require '../settings/pagarme/Pagarme.php';
 require_once('../settings/split/split_config.php');
 require_once('../settings/split/split_functions.php');
@@ -660,6 +661,9 @@ function consultarTransferencias($recipient_id) {
 		,"fee" => $value["fee"]
 		,"funding_date" => $value["funding_date"]
 		,"funding_estimated_date" => $value["funding_estimated_date"]
+		,"name" => $value["metadata"]["name"]
+		,"login" => $value["metadata"]["login"]
+		,"id_usuario" => $value["metadata"]["id_usuario"]
 		,"date_created" => $value["date_created"]
 		);
 	}
@@ -687,14 +691,27 @@ function consultarAntecipaveis($recipient_id) {
 
 function efetuarSaquePagarme($recipient_id, $amount) {
 	try {
+		log_trace("saque..");
+		$mainConnection = mainConnection();
+
 		$amount = getAmountPagarMe($amount);
-		// error_log("amount".$amount);
-		// error_log("recipient_id".$recipient_id);
+
 		$request = new PagarMe_Request("/transfers", "POST");
-		$request->setParameters(array("amount" => $amount, "recipient_id" => $recipient_id));
+		
+		$query = "select id_usuario, cd_login, ds_nome from mw_usuario where id_usuario=?";
+		$rs = executeSQL($mainConnection, $query, array($_SESSION["admin"]), true);		
+
+		log_trace("query.." . print_r($rs, true));
+
+		$name = $rs["ds_nome"];
+		$login = $rs["cd_login"];
+
+		$request->setParameters(array("amount" => $amount, "recipient_id" => $recipient_id, "metadata" => array("id_usuario" => $_SESSION["admin"], "name"=> $name, "login"=>$login)));
+		log_trace("request..".print_r($request, true));
 		$response = $request->run();
+		log_trace("response..".print_r($response, true));
 		// error_log("Saque..".print_r($response, true));
-		return array("status" => "success", "msg" => "A Transação de Saque foi efetuada com sucesso!", "response"=> $response);
+		return array("status" => "success", "msg" => "A Transação de Saque foi efetuada com sucesso! Transação: " . $response["id"] . ".", "response"=> $response);
 	} catch (Exception $e) {
 		return array("status" => "error", "msg" => $e->getMessage());
 	}

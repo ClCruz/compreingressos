@@ -1,6 +1,7 @@
 <?php
 function mainConnection() {
-	$host = '192.168.91.14';
+	$host = '192.168.91.14'; //Equinix - Homologacao
+	// $host = 'sqlserver.compreingressos.com'; //Producao
 	$port = '1433';
 	$dbname = 'CI_MIDDLEWAY';
 	$user = 'web';
@@ -13,7 +14,8 @@ function getConnection($teatroID) {
 	$mainConnection = mainConnection();
 	$rs = executeSQL($mainConnection, 'SELECT DS_NOME_BASE_SQL FROM MW_BASE WHERE ID_BASE = ?', array($teatroID), true);
 	
-	$host = '192.168.91.14';
+	$host = '192.168.91.14'; //Equinix - Homologacao
+	// $host = 'sqlserver.compreingressos.com'; //Producao
 	$port = '1433';
 	$user = 'web';
 	$pass = 'web';
@@ -22,7 +24,8 @@ function getConnection($teatroID) {
 }
 
 function getConnectionTsp() {
-	$host = '192.168.91.14';
+	$host = '192.168.91.14'; //Equinix - Homologacao
+	// $host = 'sqlserver.compreingressos.com'; //Producao
 	$port = '1433';
 	$dbname = 'tspweb';
 	$user = 'web';

@@ -51,7 +51,7 @@ function utf8_encode2($str) {
     }
     else 
     {
-       return utf8_encode2($aux);       
+       return utf8_encode($str);       
     }
 }
 

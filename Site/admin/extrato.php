@@ -1414,7 +1414,9 @@ $(function() {
             <option value="available">Saldo Disponível</option>
             <!--option value="transferred">Saldo transferido</option-->
             <option value="transfers">Transferências</option>
+            <?php if ($bit_antecipacao) { ?>
             <option value="antecipations">Antecipações</option>
+            <?php } ?>
         </select>
         <span id="spanPeriodo" style="display:none">
             <label>Periodo:</label>

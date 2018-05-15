@@ -14,11 +14,11 @@ function prodConnection() {
 	return sqlsrv_connect($host.','.$port, array("UID" => $user, "PWD" => $pass, "Database" => $dbname));
 }
 function devConnection() {
-	$host = '192.168.91.14';
+	$host = '192.168.11.3\sqlstd2012';
 	$port = '1433';
-	$dbname = 'CI_MIDDLEWAY';
-	$user = 'web';
-	$pass = 'web';
+	$dbname = 'APACS';
+	$user = 'dev';
+	$pass = 'Intuiti@2018!';
 	
 	return sqlsrv_connect($host.','.$port, array("UID" => $user, "PWD" => $pass, "Database" => $dbname));
 }
@@ -101,13 +101,14 @@ function test() {
     }
 
     echo "<br />Adding query.";
-    $query = "select ds_programa from [dbo].[mw_programa] where id_programa=390";
+    //$query = "select ds_programa from [dbo].[mw_programa] where id_programa=390";
+    $query = "select [TYPE] from dbo.CARDTYPE order by CODE desc";
 
     echo "<br />executeSQL.";
 	$rs = executeSQL($mainConnection, $query, array(), true);
     echo "<br />executed.";
     getEnconding();
-    $aux = $rs["ds_programa"];
+    $aux = $rs["code"];
     echo "<br />utf8_encode ds_programa: " . utf8_encode2($aux);
     echo "<br />normal ds_programa: " . $aux;
     die("end.");

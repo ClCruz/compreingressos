@@ -1,6 +1,7 @@
 <?php
 
 require_once('../settings/pagarme_functions.php');
+require_once('../log4php/log.php');
 
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 
@@ -94,6 +95,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 
 		$retorno = json_encode($aux);;
 	} else if ($_GET['action'] == 'listpayables'){
+		log_trace("Call of action... " . $_GET['action']);
 		$aux = listPayables($_POST["recebedor"]
 		, "waiting_funds"
 		, $_POST["evento"]

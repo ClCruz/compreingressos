@@ -525,17 +525,22 @@ function consultarExtratoRecebedorPagarme($recipient_id, $status, $start_date, $
 }
 
 function listPayables($recipient_id, $status, $evento, $count, $page) {
+	log_trace("Call of listPayables... ");
 	$start_date_modified = "";
 	$end_date_modified = "";
 
 	$playables = PagarMe_Recipient::getListPayables($recipient_id, $status, $count, $page);
 
-	//error_log("playables: " . print_r($playables, true));
+	log_trace("playables: " . print_r($playables, true) . " - size: " . sizeof($playables));
 
 	$firstDate = null;
 	$lastDate = null;
-
-	foreach ($playables as $value) {
+	$found = false;
+	
+	foreach ((array)$playables as $value) {
+		if (isset($value) || is_null($value) || empty($value) || isset($value["transaction_id"]) || is_null($value["transaction_id"]) || empty($value["transaction_id"])) {
+			continue;
+		}
 		$aux = explode("T", (string)$value["accrual_date"]);
 		$aux = explode("-", $aux[0]);
 		$date = $aux[0] . "-" . $aux[1] . "-" . $aux[2];
@@ -551,6 +556,14 @@ function listPayables($recipient_id, $status, $evento, $count, $page) {
 		if ($lastDate == null || $current>$lastDate) {
 			$lastDate = $current;
 		}
+
+		$found = true;
+	}
+
+	log_trace("Found? " . ($found ? "Yes" : "No"));
+
+	if (!$found) {
+		return array();		
 	}
 
 	date_add($firstDate, date_interval_create_from_date_string('-50 days'));
@@ -561,8 +574,8 @@ function listPayables($recipient_id, $status, $evento, $count, $page) {
 	$start_date_modified = $firstDate->format('Y-m-d');
 	$end_date_modified = $lastDate->format('Y-m-d');
 
-	error_log("firstDate" .$start_date_modified);
-	error_log("lastDate" .$end_date_modified);
+	log_trace("firstDate" .$start_date_modified);
+	log_trace("lastDate" .$end_date_modified);
 
 	$query = "SELECT DISTINCT e.id_evento, e.ds_evento, pv.cd_numero_autorizacao as codeTran
 	FROM mw_pedido_venda pv 

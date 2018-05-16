@@ -4,8 +4,8 @@ include_once( dirname(__FILE__) . '/Logger.php');
 Logger::configure(array(
     'rootLogger' => array(
         'appenders' => array('default'),
-	// 'level' => "TRACE",
-	'level' => "ERROR",
+		'level' => "TRACE"
+		// 'level' => "ERROR"
     ),
     'appenders' => array(
         'default' => array(
@@ -14,8 +14,8 @@ Logger::configure(array(
                 'class' => 'LoggerLayoutSimple'
             ),
             'params' => array(
-		//'file' => '/var/www/html/log/log4php.log',
-		'file' => 'D:\log\log4php.log',
+				'file' => '/var/www/html/log/log4php.log',
+				// 'file' => 'D:\log\log4php.log',
             	'append' => true
             )
         )

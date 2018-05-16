@@ -6,6 +6,7 @@ require_once('../log4php/log.php');
 $mainConnection = mainConnection();
 session_start();
 
+log_trace("Page extrato.php");
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 640, true)) {
 
     $pagina = basename(__FILE__);

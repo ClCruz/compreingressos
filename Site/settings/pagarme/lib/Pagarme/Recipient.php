@@ -1,4 +1,5 @@
 <?php
+require_once('../log4php/log.php');
 
 class PagarMe_Recipient extends PagarMe_Model {
 
@@ -108,13 +109,32 @@ class PagarMe_Recipient extends PagarMe_Model {
 
 	public static function findSaldoByRecipientId($recipientId)
 	{
-		$request = new PagarMe_Request(
-            self::ENDPOINT_RECIPIENTS . '/' . $recipientId . '/balance', 'GET'
-        );
+        log_trace("Call of findSaldoByRecipientId. recipient_id: " . $recipientId);
 
-        $response = $request->run();
-        $class = get_called_class();
-        return new $class($response);
+        //ticketspay
+        if ($recipientId == "re_cjfac43dq039c445ymjsxw9x4") {
+            $request = new PagarMe_Request(
+                '/balance', 'GET'
+            );
+            log_trace("findSaldoByRecipientId 1. - request: " . print_r($request,true));
+            $params = array("recipient_id"=> $recipientId);
+
+            $response = $request->runWithParameter($params);
+            $class = get_called_class();
+            log_trace("findSaldoByRecipientId 2. - response: " . print_r($response,true));
+            return new $class($response);
+        }
+        else {
+            $request = new PagarMe_Request(
+                self::ENDPOINT_RECIPIENTS . '/' . $recipientId . '/balance', 'GET'
+            );
+            log_trace("findSaldoByRecipientId 1.1 - request: " . print_r($request,true));
+            $response = $request->run();
+            $class = get_called_class();
+            log_trace("findSaldoByRecipientId 2.1 - response: " . print_r($response,true));
+            return new $class($response);
+
+        }
     }
 
     public static function getTransaction($transaction_id)

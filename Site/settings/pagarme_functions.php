@@ -531,24 +531,18 @@ function listPayables($recipient_id, $status, $evento, $count, $page) {
 
 	$playables = PagarMe_Recipient::getListPayables($recipient_id, $status, $count, $page);
 
-	log_trace("playables: " . print_r($playables, true) . " - size: " . sizeof($playables));
+	//log_trace("playables: " . print_r($playables, true) . " - size: " . sizeof($playables));
 
 	$firstDate = null;
 	$lastDate = null;
 	$found = false;
 	
-	foreach ((array)$playables as $value) {
-		if (isset($value) || is_null($value) || empty($value) || isset($value["transaction_id"]) || is_null($value["transaction_id"]) || empty($value["transaction_id"])) {
-			continue;
-		}
+	foreach ($playables as $value) {
+//		log_trace("1.1: " . $value["transaction_id"]);
 		$aux = explode("T", (string)$value["accrual_date"]);
 		$aux = explode("-", $aux[0]);
 		$date = $aux[0] . "-" . $aux[1] . "-" . $aux[2];
 		$current = date_create_from_format("Y-m-d", $date);
-
-		//error_log("current: ". $current->format('Y-m-d'));
-
-		//$current = new Datetime($value["accrual_date"]);
 		
 		if ($firstDate == null || $current<$firstDate) {
 			$firstDate = $current;

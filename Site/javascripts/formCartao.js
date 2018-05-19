@@ -9,6 +9,12 @@ $(function(){
 	});
 
 	$('#dadosPagamento').on('submit', function(e) {
+		if ($("#loaded_pagarme").length>0 && $("#loaded_pagarme").val() == "1" && $(".card_hash").length==0) {
+			console.log("forcing...");
+			pagarmeToken();
+		}
+
+
 		valido = true;
 	    e.preventDefault();
 

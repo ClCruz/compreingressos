@@ -264,7 +264,11 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	</script>
 
 	<?php
-	// formCartao.php
+	if ($carregar_pagarme_lib) {
+		echo '<script src="https://assets.pagar.me/js/pagarme.min.js"></script>';
+		echo '<script type="text/javascript" src="../javascripts/pagarme.js"></script>';
+		echo '<intput type="hidden" id="loaded_pagarme" value="1" >';
+	}
 	if ($carregar_pagseguro_lib) {
 		if ($_ENV['IS_TEST']) {
 			echo '<script type="text/javascript" src="https://stc.sandbox.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js"></script>';
@@ -275,10 +279,6 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 		$amount = str_replace(',', '.', $_COOKIE['total_exibicao']);
 		echo "<script type='text/javascript'>var pagseguro = {sessionId: '$sessionId', amount: $amount};</script>";
 		echo '<script type="text/javascript" src="../javascripts/pagseguro.js"></script>';
-	}
-	if ($carregar_pagarme_lib) {
-		echo '<script src="https://assets.pagar.me/js/pagarme.min.js"></script>';
-		echo '<script type="text/javascript" src="../javascripts/pagarme.js"></script>';
 	}
 	if ($carregar_cielo_lib) {
 		echo '<script src="https://assets.pagar.me/js/pagarme.min.js"></script>';

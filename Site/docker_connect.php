@@ -5,11 +5,11 @@
 
 <?php
 function prodConnection() {
-	$host = 'sqlserver.compreingressos.com';
+	$host = '192.168.91.17';
 	$port = '1433';
 	$dbname = 'CI_MIDDLEWAY';
-	$user = 'usr_debug';
-	$pass = 'bjbcTaZ';
+	$user = 'web';
+	$pass = '!ci@web@2018!';
 	
 	return sqlsrv_connect($host.','.$port, array("UID" => $user, "PWD" => $pass, "Database" => $dbname));
 }
@@ -101,17 +101,15 @@ function test() {
     }
 
     echo "<br />Adding query.";
-    //$query = "select ds_programa from [dbo].[mw_programa] where id_programa=390";
-    $query = "select [TYPE] from dbo.CARDTYPE order by CODE desc";
+    $query = "select ds_programa from [dbo].[mw_programa] where id_programa=390";
 
     echo "<br />executeSQL.";
 	$rs = executeSQL($mainConnection, $query, array(), true);
     echo "<br />executed.";
-    getEnconding();
-    $aux = $rs["code"];
+    $aux = $rs["ds_programa"];
     echo "<br />utf8_encode ds_programa: " . utf8_encode2($aux);
     echo "<br />normal ds_programa: " . $aux;
-    die("end.");
+    die("<br />end.");
 }
 
 test();

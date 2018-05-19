@@ -2,16 +2,21 @@
 
 require_once('../settings/settings.php');
 require_once('../settings/functions.php');
+require_once('../log4php/log.php');
 session_start();
 
 if (isset($_POST['login']) and isset($_POST['senha'])) {
     $mainConnection = mainConnection();
 
+    log_trace("Consultando Operador... ");
     $query = 'SELECT ID_USUARIO, IN_TELEMARKETING, IN_PDV FROM MW_USUARIO WHERE CD_LOGIN = ? AND CD_PWW = ? AND IN_ATIVO = 1';
+    //$query = 'SELECT ID_USUARIO, IN_TELEMARKETING, IN_PDV FROM MW_USUARIO WHERE CD_LOGIN = ? AND IN_ATIVO = 1';
     $params = array($_POST['login'], md5($_POST['senha']));
 
     $result = executeSQL($mainConnection, $query, $params);
     $rs = fetchResult($result);
+
+    log_trace("Retorno: " . print_r($rs, true));
 
     if (isset($_POST['pdv']) and $_POST['pdv'] == 1) {
         // VALIDA OPERADOR DE PDV

@@ -140,7 +140,6 @@ if ($_POST) {
                         $formatoCartao = '';
                         $formatoCodigo = '';
                     }
-                    
                     // pagseguro
                     if (in_array($rs['cd_meio_pagamento'], array('900', '901', '902'))) {
                         $carregar_pagseguro_lib = true;

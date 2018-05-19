@@ -29,6 +29,7 @@ $(function() {
     });
 
     function pagarmeToken() {
+        console.log("pagarmeToken");
         var creditCard = new PagarMe.creditCard();
         creditCard.cardHolderName = $form.find(":input[name=nomeCartao]").val();
         creditCard.cardExpirationMonth = $form.find(":input[name=validadeMes]").val();
@@ -49,7 +50,7 @@ $(function() {
             creditCard.generateHash(function(cardHash) {
                 var $card_hash = $(':input[name=card_hash]').length == 1
                         ? $(':input[name=card_hash]')
-                        : $('<input type="hidden" name="card_hash" class="pagseguro" />').appendTo('#dadosPagamento');
+                        : $('<input type="hidden" name="card_hash" class="pagseguro card_hash" />').appendTo('#dadosPagamento');
 
                 $card_hash.val(cardHash);
                 $('.botao_pagamento').removeClass('disabled');

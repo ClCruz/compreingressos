@@ -142,7 +142,7 @@ function pagarPedidoPagarme($id_pedido, $dados_extra) {
 	// $split = consultarSplitPagarme($id_pedido, "web", $payment_method, $amount);
 
 	$split = getSplit("pagarme", $id_pedido, "web", $payment_method, $amount);
-
+	
 	if (is_array($split)) {
 		$transaction_data = array_merge($transaction_data, array(
 			"split_rules" => $split
@@ -152,6 +152,9 @@ function pagarPedidoPagarme($id_pedido, $dados_extra) {
 	sale_trace($_SESSION['user'],$id_pedido,NULL,NULL,NULL,NULL,session_id(),'pagarme_functions.php','Split.',print_r($split,true),0);
 
 	try {
+
+		sale_trace($_SESSION['user'],$id_pedido,NULL,NULL,NULL,NULL,session_id(),'pagarme_functions.php','PagarMe Request',print_r($transaction_data,true),0);
+
 		$transaction = new PagarMe_Transaction($transaction_data);
 		$transaction->charge();
 
@@ -159,8 +162,8 @@ function pagarPedidoPagarme($id_pedido, $dados_extra) {
 
 		sale_trace($_SESSION['user'],$id_pedido,NULL,NULL,NULL,NULL,session_id(),'pagarme_functions.php','Resposta do gateway.',print_r($response, true),0);
 	} catch (Exception $e) {
-		executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . " - " . "SPLIT: " . print_r($split, true) ));
-
+		//executeSQL(mainConnection(), "insert into tbLogAux ( dt_log, descricao) values (getdate(), ?)", array(session_id(). " - " . " - " . "SPLIT: " . print_r($split, true) ));
+		log_trace("Erro no pagarme... " . print_r($e, true));
 		sale_trace($_SESSION['user'],$id_pedido,NULL,NULL,NULL,NULL,session_id(),'pagarme_functions.php','Erro no gateway.',$e->getMessage(),1);
 		$response = array('success' => false, 'error' => tratarErroPagarme($e, $id_pedido));
 	}

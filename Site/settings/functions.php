@@ -1,8 +1,36 @@
 <?php
 require('../settings/Metzli/autoload.php');
+require_once("../settings/multisite/names.php");
 
 use Metzli\Encoder\Encoder;
 use Metzli\Renderer\PngRenderer;
+
+function getMiniature($id) {
+    $id_mysql = -1;
+    $pdo = getConnectionHome();
+
+    if ($pdo !== false) {
+    
+        $query_mysql = "SELECT id FROM espetaculos
+                        WHERE cc_id = " . $id . " LIMIT 1";
+    
+        $stmt = $pdo->prepare($query_mysql);
+        $stmt->execute();
+    
+        $dados = $stmt->fetchAll();
+        foreach ($dados as $aux) {
+            $id_mysql = $aux["id"];
+        }
+    }
+
+    if ($id_mysql == -1) {
+        $url = multiSite_getInfo("URI_SSL") . "images/default_espetaculo.jpg";
+    }
+    else {
+        $url = multiSite_getInfo("URI_SSL") . "images/espetaculos/" . $id_mysql . "/miniatura.jpg";
+    }
+    return $url;
+}
 
 function sale_trace($id_cliente,$id_pedido_venda,$codVenda
 	,$id_evento,$codPeca,$id_base,$id_session,$page,$lastMessage,$moreData,$isError) 

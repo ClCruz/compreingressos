@@ -46,7 +46,7 @@ while ($rs = fetchResult($result)) {
 		
 		if ($eventoAtual != NULL) echo "</tbody></table></div>";
 ?>
-<div class="espetaculo_img"><?php if (file_exists('../images/evento/'.$rs['ID_EVENTO'].'.jpg')) { ?><img src="../images/evento/<?php echo $rs['ID_EVENTO']; ?>.jpg"><?php } ?></div>
+<div class="espetaculo_img"><img src="<?php echo getMiniature($rs['ID_EVENTO']); ?>"></div>
 <div class="resumo_espetaculo" data-evento="<?php echo $rs['ID_EVENTO']; ?>">
 	<div class="data<?php echo $is_pacote ? ' hidden' : ''; ?>">
 		<p class="nome_dia"><?php echo utf8_encode2(strftime("%a", strtotime($rs['DT_APRESENTACAO']->format('Ymd')))); ?></p>

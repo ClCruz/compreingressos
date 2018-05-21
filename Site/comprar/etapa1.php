@@ -351,7 +351,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
               </p>
             </div>
           </div>
-          <div class="espetaculo_img"><?php if (file_exists('../images/evento/'.$rs['ID_EVENTO'].'.jpg')) { ?><img src="../images/evento/<?php echo $rs['ID_EVENTO']; ?>.jpg"><?php } ?></div>
+          <div class="espetaculo_img"><img src="<?php echo getMiniature($rs['ID_EVENTO']); ?>"></div>
           <div class="resumo_espetaculo">
             <a id="info" name="info"></a>
             <div class="data<?php echo $is_pacote ? ' hidden' : ''; ?>">

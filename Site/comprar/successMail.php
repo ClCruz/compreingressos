@@ -119,6 +119,7 @@ foreach ($itensPedido as $item) {
         $pkpass_url = getPKPass($dados_pass);
 
         $valores['itens_pedido'][] = array(
+            'item_miniatura' => getMiniature($item['descricao_item']['id_evento']),
             'item_evento_id' => $item['descricao_item']['id_evento'],
             'item_evento' => $item['descricao_item']['evento'],
             'item_teatro' => $item['descricao_item']['teatro'],

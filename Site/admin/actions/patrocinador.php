@@ -4,7 +4,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 22, true)) {
 
     if ($_GET['action'] == 'add') { /* ------------ INSERT ------------ */
         $query = 'SELECT 1 FROM MW_PATROCINADOR WHERE DS_NOMPATROCINADOR = ?';
-        $params = array($_POST['nome']);
+        $params = array(utf8_encode2($_POST['nome']));
         $result = executeSQL($mainConnection, $query, $params);
         if (hasRows($result)) {
             echo 'Já existe um registro cadastrado com esse nome.';
@@ -14,7 +14,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 22, true)) {
         $query = "INSERT INTO MW_PATROCINADOR
 					(DS_NOMPATROCINADOR)
 					VALUES (?)";
-        $params = array(utf8_decode($_POST['nome']));
+        $params = array(utf8_encode2($_POST['nome']));
 
         if (executeSQL($mainConnection, $query, $params)) {
             $log = new Log($_SESSION['admin']);
@@ -24,7 +24,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 22, true)) {
             $log->save($mainConnection);
 
             $query = 'SELECT ID_PATROCINADOR FROM MW_PATROCINADOR WHERE DS_NOMPATROCINADOR = ?';
-            $params = array($_POST['nome']);
+            $params = array(utf8_encode2($_POST['nome']));
             $rs = executeSQL($mainConnection, $query, $params, true);
 
             $retorno = 'true?id=' . $rs['ID_PATROCINADOR'];
@@ -36,7 +36,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 22, true)) {
 					DS_NOMPATROCINADOR = ?
 				WHERE
 					ID_PATROCINADOR = ?";
-        $params = array(utf8_decode($_POST['nome']), $_GET['id']);
+        $params = array(utf8_encode2($_POST['nome']), $_GET['id']);
 
         if (executeSQL($mainConnection, $query, $params)) {
             $log = new Log($_SESSION['admin']);

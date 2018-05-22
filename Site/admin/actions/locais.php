@@ -87,7 +87,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
         $params = array(utf8_decode($_POST['nomeSql']),
                         utf8_decode($_POST['nome']),
                         $_POST['ativo'],
-                        utf8_decode($_POST['razao_social']),
+                        utf8_encode2($_POST['razao_social']),
                         $cpf_cnpj,
                         $_POST['prazo'],
                         utf8_decode($_POST['banco']),
@@ -95,7 +95,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                         $_POST['numero_agencia'],
                         $_POST['numero_conta'],
                         $_POST['tipo_conta'],
-                        utf8_decode($_POST['contato']),
+                        utf8_encode2($_POST['contato']),
                         $ddd_telefone,
                         trim($telefone),
                         $ddd_celular,
@@ -106,7 +106,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                         $_POST['taxa_rp'],
                         $_POST['valor'],
                         $idCliente,
-                        $_POST['msg_pos_venda'],
+                        utf8_encode2($_POST['msg_pos_venda']),
                         $_POST['url_msg']
                     );
         
@@ -188,7 +188,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
         $params = array(utf8_decode($_POST['nomeSql']),
                         utf8_decode($_POST['nome']),
                         $_POST['ativo'],
-                        utf8_decode($_POST['razao_social']),
+                        utf8_encode2($_POST['razao_social']),
                         $cpf_cnpj,
                         $_POST['prazo'],
                         utf8_decode($_POST['banco']),
@@ -196,7 +196,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                         $_POST['numero_agencia'],
                         $_POST['numero_conta'],
                         $_POST['tipo_conta'],
-                        utf8_decode($_POST['contato']),
+                        utf8_encode2($_POST['contato']),
                         $ddd_telefone,
                         trim($telefone),
                         $ddd_celular,
@@ -207,7 +207,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 3, true)) {
                         $_POST['taxa_rp'],
                         $_POST['valor'],
                         $idCliente,
-                        $_POST['msg_pos_venda'],
+                        utf8_encode2($_POST['msg_pos_venda']),
                         $_POST['url_msg'],
                         $_GET['id']);
 

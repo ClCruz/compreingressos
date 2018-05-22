@@ -13,7 +13,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 32, true)) {
 	$query = "INSERT INTO FATO_SAC
 		    (ID_DIA,ID_ORIGEM_CHAMADO,ID_TIPO_CHAMADO,ID_TIPO_RESOLUCAO,ID_DIA_RESOLUCAO,DS_OBSERVACAO)
 		    VALUES (?,?,?,?,?,?)";
-	$params = array($_POST['dia'], $_POST['origem'], $_POST['tipo'], $_POST['resolucao'], $_POST['diaResolucao'], $_POST['obs']);
+	$params = array($_POST['dia'], $_POST['origem'], $_POST['tipo'], $_POST['resolucao'], $_POST['diaResolucao'], utf8_encode2($_POST['obs']));
 
 	if (executeSQL($conn, $query, $params)) {
         $log = new Log($_SESSION['admin']);
@@ -41,7 +41,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 32, true)) {
 		    ID_DIA_RESOLUCAO = ?,
 		    DS_OBSERVACAO = ?
 		    WHERE ID_NR_CHAMADO = ?";
-	$params = array($_POST['dia'], $_POST['origem'], $_POST['tipo'], $_POST['resolucao'], $_POST['diaResolucao'], $_POST['obs'], $_GET['id']);
+	$params = array($_POST['dia'], $_POST['origem'], $_POST['tipo'], $_POST['resolucao'], $_POST['diaResolucao'], utf8_encode2($_POST['obs']), $_GET['id']);
 
 	if (executeSQL($conn, $query, $params)) {
         $log = new Log($_SESSION['admin']);

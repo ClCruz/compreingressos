@@ -4,7 +4,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 470, true)) {
 
     if ($_GET['action'] == 'update' and isset($_GET['id'])) { /* ------------ UPDATE ------------ */
         $query = 'SELECT 1 FROM MW_ORIGEM WHERE DS_ORIGEM = ? AND ID_ORIGEM != ?';
-        $params = array($_POST['descricao'], $_GET['id']);
+        $params = array(utf8_encode2($_POST['descricao']), $_GET['id']);
         $result = executeSQL($mainConnection, $query, $params);
         if (hasRows($result)) {
             echo 'Já existe um registro cadastrado com essa descrição.';
@@ -12,7 +12,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 470, true)) {
         }
 
         $query = "UPDATE MW_ORIGEM SET DS_ORIGEM = ? WHERE ID_ORIGEM = ?";
-        $params = array(utf8_decode($_POST['descricao']), $_GET['id']);
+        $params = array(utf8_encode2($_POST['descricao']), $_GET['id']);
 
         if (executeSQL($mainConnection, $query, $params)) {
             $log = new Log($_SESSION['admin']);

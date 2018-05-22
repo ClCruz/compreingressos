@@ -5,7 +5,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 27, true)) {
     if ($_GET['action'] == 'add') { /* ------------ INSERT ------------ */
 
         $query = "INSERT INTO MW_TIPO_LOCAL (DS_TIPO_LOCAL) VALUES (?)";
-        $params = array(utf8_decode($_POST['nome']));
+        $params = array(utf8_encode2($_POST['nome']));
 
         if (executeSQL($mainConnection, $query, $params)) {
             $log = new Log($_SESSION['admin']);
@@ -23,7 +23,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 27, true)) {
         }
     } else if ($_GET['action'] == 'update' and isset($_GET['id'])) { /* ------------ UPDATE ------------ */
         $query = "UPDATE MW_TIPO_LOCAL SET DS_TIPO_LOCAL = ? WHERE ID_TIPO_LOCAL = ?";
-        $params = array(utf8_decode($_POST['nome']), $_GET['id']);
+        $params = array(utf8_encode2($_POST['nome']), $_GET['id']);
 
         if (executeSQL($mainConnection, $query, $params)) {
             $log = new Log($_SESSION['admin']);

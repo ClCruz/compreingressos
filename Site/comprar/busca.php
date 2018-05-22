@@ -28,11 +28,11 @@ if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
 					 WHERE 1=1 ';
 		if ($_POST['nomeBusca'] != '') {
 			$query .= 'AND DS_NOME LIKE ? ';
-			$params[] = $_POST['nomeBusca'];
+			$params[] = utf8_encode2($_POST['nomeBusca']);
 		}
 		if ($_POST['sobrenomeBusca'] != '') {
 			$query .= 'AND DS_SOBRENOME LIKE ? ';
-			$params[] = $_POST['sobrenomeBusca'];
+			$params[] = utf8_encode2($_POST['sobrenomeBusca']);
 		}
 		if ($_POST['telefoneBusca'] != '') {
 			$query .= 'AND DS_TELEFONE LIKE ? ';

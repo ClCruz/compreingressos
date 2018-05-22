@@ -2,9 +2,8 @@
 require_once('../settings/functions.php');
 require_once('../settings/settings.php');
 require_once('../settings/Utils.php');
-
+require_once('../log4php/log.php');
 require_once('../settings/MCAPI.class.php');
-
 if (isset($_GET['action'])) {
 	$mainConnection = mainConnection();
 	session_start();
@@ -136,8 +135,8 @@ if (isset($_GET['action'])) {
 						WHERE ID_CLIENTE = ?';
 			$params = array(
 				$senha = isset($_SESSION['operador'])  ? '' : md5($_POST['senha1']),
-				$_POST['nome'],
-				$_POST['sobrenome'],
+				utf8_encode2($_POST['nome']),
+				utf8_encode2($_POST['sobrenome']),
 				validaNascimento(),
 				$_POST['ddd1'],
 				$_POST['ddd2'],
@@ -145,15 +144,15 @@ if (isset($_GET['action'])) {
 				$_POST['celular'],
 				$_POST['rg'],
 				$_POST['cpf'],
-				$_POST['endereco'],
-				$_POST['numero_endereco'],
-				$_POST['complemento'],
-				$_POST['bairro'],
-				$_POST['cidade'],
-				$_POST['estado'],
+				utf8_encode2($_POST['endereco']),
+				utf8_encode2($_POST['numero_endereco']),
+				utf8_encode2($_POST['complemento']),
+				utf8_encode2($_POST['bairro']),
+				utf8_encode2($_POST['cidade']),
+				utf8_encode2($_POST['estado']),
 				$_POST['cep'],
 				$_POST['email1'],
-				$_POST['extra_info'],
+				utf8_encode2($_POST['extra_info']),
 				$_POST['extra_sms'],
 				$_POST['sexo'],
 				$_POST['tipo_documento'],
@@ -244,8 +243,8 @@ if (isset($_GET['action'])) {
 						VALUES
 						('.$newID.',?,?,CONVERT(DATETIME, ?, 103),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
 		$params = array(
-							$_POST['nome'],
-							$_POST['sobrenome'],
+							utf8_encode2($_POST['nome']),
+							utf8_encode2($_POST['sobrenome']),
 							validaNascimento(),
 							$_POST['ddd1'],
 							$_POST['telefone'],
@@ -253,16 +252,16 @@ if (isset($_GET['action'])) {
 							$_POST['celular'],
 							$_POST['rg'],
 							$_POST['cpf'],
-							$_POST['endereco'],
-							$_POST['numero_endereco'],
-							$_POST['complemento'],
-							$_POST['bairro'],
-							$_POST['cidade'],
+							utf8_encode2($_POST['endereco']),
+							utf8_encode2($_POST['numero_endereco']),
+							utf8_encode2($_POST['complemento']),
+							utf8_encode2($_POST['bairro']),
+							utf8_encode2($_POST['cidade']),
 							$_POST['estado'],
 							$_POST['cep'],
 							$_POST['email1'],
 							md5($_POST['senha1']),
-							$_POST['extra_info'],
+							utf8_encode2($_POST['extra_info']),
 							$_POST['extra_sms'],
 							$_POST['concordo'],
 							$_POST['sexo'],
@@ -334,8 +333,8 @@ if (isset($_GET['action'])) {
 							ID_DOC_ESTRANGEIRO = ?
 						WHERE ID_CLIENTE = ?';
 		$params = array(
-							$_POST['nome'],
-							$_POST['sobrenome'],
+							utf8_encode2($_POST['nome']),
+							utf8_encode2($_POST['sobrenome']),
 							validaNascimento(),
 							$_POST['ddd1'],
 							$_POST['ddd2'],
@@ -343,18 +342,18 @@ if (isset($_GET['action'])) {
 							$_POST['celular'],
 							$_POST['rg'],
 							$_POST['cpf'],
-							$_POST['endereco'],
-							$_POST['numero_endereco'],
-							$_POST['complemento'],
-							$_POST['bairro'],
-							$_POST['cidade'],
+							utf8_encode2($_POST['endereco']),
+							utf8_encode2($_POST['numero_endereco']),
+							utf8_encode2($_POST['complemento']),
+							utf8_encode2($_POST['bairro']),
+							utf8_encode2($_POST['cidade']),
 							$_POST['estado'],
 							$_POST['cep']
 							);
 		if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
 			$params[] = $_POST['email'];
 		}
-		$params[] = $_POST['extra_info'];
+		$params[] = utf8_encode2($_POST['extra_info']);
 		$params[] = $_POST['extra_sms'];
 		$params[] = $_POST['sexo'];
 		$params[] = $_POST['tipo_documento'];
@@ -423,7 +422,7 @@ if (isset($_GET['action'])) {
 								(DS_ENDERECO, DS_COMPL_ENDERECO, DS_BAIRRO, DS_CIDADE, CD_CEP, ID_ESTADO, ID_CLIENTE, NM_ENDERECO, NR_ENDERECO)
 								VALUES
 								(?, ?, ?, ?, ?, ?, ?, ?, ?); SELECT SCOPE_IDENTITY();';
-				$params = array($_POST['endereco'], $_POST['complemento'], $_POST['bairro'], $_POST['cidade'], $_POST['cep'], $_POST['estado'], $_SESSION['user'], $_POST['nome'], $_POST['numero_endereco']);
+				$params = array(utf8_encode2($_POST['endereco']), utf8_encode2($_POST['complemento']), utf8_encode2($_POST['bairro']), utf8_encode2($_POST['cidade']), $_POST['cep'], $_POST['estado'], $_SESSION['user'], utf8_encode2($_POST['nome']), $_POST['numero_endereco']);
 
 				$rs = executeSQL($mainConnection, $query, $params);
 
@@ -481,14 +480,14 @@ if (isset($_GET['action'])) {
 		$mcapi = new MCAPI($MailChimp['api_key']);
 		$user_data = array(
 			'nm_email' => $_POST['email'],
-			'nome' => $_POST['nome'],
-			'apelido' => $_POST['sobrenome'],
+			'nome' => utf8_encode2($_POST['nome']),
+			'apelido' => utf8_encode2($_POST['sobrenome']),
 			'ddd_fone' => $_POST['ddd1'],
 			'telefone' => $_POST['telefone'],
 			'ddd_celular' => $_POST['ddd2'],
 			'celular' => $_POST['celular'],
-			'bairro' => $_POST['bairro'],
-			'cidade' => $_POST['cidade'],
+			'bairro' => utf8_encode2($_POST['bairro']),
+			'cidade' => utf8_encode2($_POST['cidade']),
 			'cep' => $_POST['cep'],
 			'dt_nascimento' => validaNascimento(),
 			'sexo' => $_POST['sexo'],

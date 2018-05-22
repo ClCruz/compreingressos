@@ -23,9 +23,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
 			$dv_agencia = trim($_POST["dv_agencia"]);
 		}
 		
-		$params = array(strtoupper(utf8_decode(trim($_POST["razao_social"]))), 
+		$params = array(strtoupper(utf8_encode2(trim($_POST["razao_social"]))), 
 						$_POST["cpf_cnpj"],
-						ucwords(utf8_decode(trim($_POST["nome"]))), 
+						ucwords(utf8_encode2(trim($_POST["nome"]))), 
 						trim(strtolower($_POST["email"])), 
 						trim($ddd_telefone),
 						trim($telefone),
@@ -136,9 +136,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 660, true)) {
 					  recipient_id = ?,
 				  WHERE id_recebedor = ?";
 
-		$params = array(strtoupper(utf8_decode(trim($_POST["razao_social"]))), 
+		$params = array(strtoupper(utf8_encode2(trim($_POST["razao_social"]))), 
 						$_POST["cpf_cnpj"],
-						ucwords(utf8_decode(trim($_POST["nome"]))), 
+						ucwords(utf8_encode2(trim($_POST["nome"]))), 
 						trim(strtolower($_POST["email"])), 
 						trim($ddd_telefone),
 						trim($telefone),

@@ -144,7 +144,7 @@ if (isset($_GET['action'])) {
 						}
 					} else {
 						$query = 'INSERT INTO MW_RESERVA (ID_APRESENTACAO,ID_CADEIRA,DS_CADEIRA,DS_SETOR,ID_SESSION,DT_VALIDADE) VALUES (?,?,?,?,?,DATEADD(MI, ?, GETDATE()))';
-						$params = array($_POST['apresentacao'], $_REQUEST['id'], $_POST['name'], $_POST['setor'], session_id(), $compraExpireTime);
+						$params = array($_POST['apresentacao'], $_REQUEST['id'], utf8_encode2($_POST['name']), $_POST['setor'], session_id(), $compraExpireTime);
 						$result = executeSQL($mainConnection, $query, $params);
 						
 						// gravou direito na mw_reserva?

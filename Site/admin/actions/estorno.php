@@ -18,7 +18,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
 
     } else if ($_POST['pedido'] != '' and isset($_POST['pedido'])) {
 
-        $_POST['justificativa'] = substr($_POST['justificativa'], 0, 250);
+        $_POST['justificativa'] = substr(utf8_encode2($_POST['justificativa']), 0, 250);
 
         //RequestID
         $ri = md5(time());
@@ -258,7 +258,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                             'conta' => $_POST['nr_conta'],
                             'conta_dv' => $_POST['dv_conta'],
                             'document_number' => $_POST['cpf'],
-                            'legal_name' => $_POST['nome']
+                            'legal_name' => utf8_encode2($_POST['nome'])
                         )
                     );
                 }
@@ -403,7 +403,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                                 // @Indice             int,
                                 // @CodApresentacao    int
                                 $query3 = 'EXEC ' . strtoupper($rs['DS_NOME_BASE_SQL']) . '..SP_JUS_INS001 ?,?,?';
-                                $params3 = array($_POST['justificativa'], $rs2['INDICE'], $rs['CODAPRESENTACAO']);
+                                $params3 = array(utf8_encode2($_POST['justificativa']), $rs2['INDICE'], $rs['CODAPRESENTACAO']);
                                 $rsProc1 = executeSQL($mainConnection, $query3, $params3, true);
 
                                 // echo "procedure 1: \n"; print_r(array($query3, $params3)); echo "\n"; print_r($rsProc1); echo "\n\n";
@@ -448,7 +448,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                                     DS_MOTIVO_CANCELAMENTO = ?,
                                     DT_HORA_CANCELAMENTO = GETDATE()
                             WHERE ID_PEDIDO_VENDA = ?";
-                    $params = array($_SESSION['admin'], $_POST['justificativa'], $pedido['ID_PEDIDO_VENDA']);
+                    $params = array($_SESSION['admin'], utf8_encode2($_POST['justificativa']), $pedido['ID_PEDIDO_VENDA']);
                     executeSQL($mainConnection, $query, $params);
 
                     $sqlErrors = sqlErrors();
@@ -491,7 +491,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 250, true)) {
                                     ID_USUARIO_ESTORNO = ?,
                                     DS_MOTIVO_CANCELAMENTO = ?
                             WHERE ID_PEDIDO_VENDA = ?";
-                    $params = array($_SESSION['admin'], $_POST['justificativa'], $pedido['ID_PEDIDO_VENDA']);
+                    $params = array($_SESSION['admin'], utf8_encode2($_POST['justificativa']), $pedido['ID_PEDIDO_VENDA']);
                     // ----------------
                     $log = new Log($_SESSION['admin']);
                     $log->__set('funcionalidade', 'Estorno de Pedidos');

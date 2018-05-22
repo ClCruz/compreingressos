@@ -187,7 +187,7 @@ $dadosExtrasEmail['numero_telefone2'] = $rs['DS_CELULAR'];
 $dadosExtrasEmail['ddd_telefone3'] = '';
 $dadosExtrasEmail['numero_telefone3'] = '';
 
-$dadosExtrasEmail['nome_presente'] = $_POST['nomePresente'];
+$dadosExtrasEmail['nome_presente'] = utf8_encode2($_POST['nomePresente']);
 $dadosExtrasEmail['email_presente'] = $_POST['emailPresente'];
 
 $parametros['RequestId'] = $ri;
@@ -444,7 +444,7 @@ $query = 'UPDATE MW_PEDIDO_VENDA SET
 sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Valores do pedido recuperados e salvos.','',0);
 
 if ($_POST['nomePresente']) {
-    $nome_presente = $_POST['nomePresente'];
+    $nome_presente = utf8_encode2($_POST['nomePresente']);
     $email_presente = $_POST['emailPresente'] ? $_POST['emailPresente'] : null;
 } else {
     $nome_presente = null;

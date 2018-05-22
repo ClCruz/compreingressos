@@ -22,7 +22,7 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 	$query = "INSERT INTO MW_USUARIO
 					(CD_LOGIN, DS_NOME, DS_EMAIL, IN_ATIVO, IN_ADMIN, IN_TELEMARKETING, IN_PDV, IN_POS, CD_PWW)
 					VALUES (?, ?, ?, ?, ?, ?, ?, ?, '". md5('123456') . "')";
-	$params = array($_POST['login'], $_POST['nome'], $_POST['email'], $_POST['ativo'], $_POST['admin'], $_POST["telemarketing"], $_POST["pdv"], $_POST["pos"]);
+	$params = array($_POST['login'], utf8_encode2($_POST['nome']), $_POST['email'], $_POST['ativo'], $_POST['admin'], $_POST["telemarketing"], $_POST["pdv"], $_POST["pos"]);
 
         $log = new Log($_SESSION['admin']);
         $log->__set('funcionalidade', 'Usuários');
@@ -39,7 +39,7 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 		$retorno = 'true?codusuario='.$rs['ID_USUARIO'];
 		$sendMail = true;
 		$login = $_POST['login'];
-		$nome = $_POST['nome'];
+		$nome = utf8_encode2($_POST['nome']);
 		$email = $_POST['email'];
 	} else {
 		$retorno = sqlErrors();
@@ -57,7 +57,7 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
                     IN_POS = ?
 				WHERE
 					ID_USUARIO = ?";
-	$params = array($_POST['nome'], $_POST['email'], $_POST['ativo'], $_POST['admin'], $_POST['telemarketing'], $_POST['pdv'], $_POST['pos'], $_GET['codusuario']);
+	$params = array(utf8_encode2($_POST['nome']), $_POST['email'], $_POST['ativo'], $_POST['admin'], $_POST['telemarketing'], $_POST['pdv'], $_POST['pos'], $_GET['codusuario']);
 
         $log = new Log($_SESSION['admin']);
         $log->__set('funcionalidade', 'Usuários');

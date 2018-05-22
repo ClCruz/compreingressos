@@ -166,7 +166,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 382, true)) {
                 beginTransaction($mainConnection);
                 beginTransaction($conn);
                 $query = 'INSERT INTO MW_RESERVA (ID_APRESENTACAO,ID_CADEIRA,DS_CADEIRA,DS_SETOR,ID_SESSION,DT_VALIDADE) VALUES (?,?,?,?,?,DATEADD(MI, ?, GETDATE()))';
-                $params = array($_POST['apresentacao'], $_REQUEST['id'], $_POST['name'], $_POST['setor'], session_id(), 150);
+                $params = array($_POST['apresentacao'], $_REQUEST['id'], utf8_encode2($_POST['name']), utf8_encode2($_POST['setor']), session_id(), 150);
                 $result = executeSQL($mainConnection, $query, $params);
 
                 // gravou direito na mw_reserva?

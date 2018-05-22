@@ -15,7 +15,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 27, true)) {
             $log->save($mainConnection);
 
             $query2 = "SELECT ID_TIPO_CHAMADO FROM DIM_TIPO_CHAMADO WHERE DS_TIPO_CHAMADO = ?";
-            $params2 = array($_POST["nome"]);
+            $params2 = array(utf8_encode2($_POST["nome"]));
             $rs = executeSQL($connectionDw, $query2, $params, true);
             $retorno = 'true?id='.$rs["ID_TIPO_CHAMADO"];
         }else{
@@ -23,7 +23,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 27, true)) {
         }
     } else if ($_GET['action'] == 'update' and isset($_GET['id'])) { /* ------------ UPDATE ------------ */
         $query = "UPDATE DIM_TIPO_CHAMADO SET DS_TIPO_CHAMADO = ?, DT_ATUALIZACAO = getdate() WHERE ID_TIPO_CHAMADO = ?";
-        $params = array(utf8_decode($_POST['nome']), $_GET['id']);
+        $params = array(utf8_encode2($_POST['nome']), $_GET['id']);
 
         if (executeSQL($connectionDw, $query, $params)) {
             $log = new Log($_SESSION['admin']);

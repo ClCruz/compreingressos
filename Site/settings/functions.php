@@ -1,4 +1,6 @@
 <?php
+//ini_set('mssql.charset', 'UTF-8');
+
 require('../settings/Metzli/autoload.php');
 require_once("../settings/multisite/names.php");
 

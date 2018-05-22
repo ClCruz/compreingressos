@@ -19,7 +19,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 215, true)) {
 
         $query2 = "UPDATE MW_GATEWAY_PAGAMENTO SET IN_ATIVO = 0 WHERE ID_GATEWAY_PAGAMENTO <> ? AND ID_GATEWAY = ?";
 
-        $params = array(utf8_decode($_POST['nome']), $_POST['url'], $_POST['codigo'],
+        $params = array(utf8_encode2($_POST['nome']), $_POST['url'], $_POST['codigo'],
                         $_POST['url_consulta'], $_POST['url_retorno'], $_POST['chave'], $_GET['id']);
         
         if (executeSQL($mainConnection, $query, $params)) {
@@ -47,7 +47,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 215, true)) {
                     CD_KEY_GATEWAY_PAGAMENTO = ?
                     WHERE ID_GATEWAY_PAGAMENTO = ?";
 
-        $params2 = array(utf8_decode($_POST['nome']), $_POST['url'], $_POST['codigo'],
+        $params2 = array(utf8_encode2($_POST['nome']), $_POST['url'], $_POST['codigo'],
                         $_POST['url_consulta'], $_POST['url_retorno'], $_POST['chave'], $_GET['id']);
         
         if (executeSQL($mainConnection, $query, $params2)) {

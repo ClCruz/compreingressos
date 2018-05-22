@@ -27,9 +27,9 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 620, true)) {
 		}
 
 		$query = "INSERT INTO mw_produtor VALUES(?, ?, ?, ?, ?, ?, ?, ?, 1, ?);";
-		$params = array(strtoupper(utf8_decode(trim($_POST["razao_social"]))), 
+		$params = array(strtoupper(utf8_encode2(trim($_POST["razao_social"]))), 
 						trim($_POST["cpf_cnpj"]), 
-						ucwords(utf8_decode(trim($_POST["nome"]))), 
+						ucwords(utf8_encode2(trim($_POST["nome"]))), 
 						trim(strtolower($_POST["email"])), 
 						trim($ddd_telefone),
 						trim($telefone), 
@@ -57,8 +57,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 620, true)) {
 					  id_gateway = ?
 				 WHERE id_produtor = ?";
 
-		$params = array(strtoupper(utf8_decode(trim($_POST["razao_social"]))), 						
-						ucwords(utf8_decode(trim($_POST["nome"]))), 
+		$params = array(strtoupper(utf8_encode2(trim($_POST["razao_social"]))), 						
+						ucwords(utf8_encode2(trim($_POST["nome"]))), 
 						trim($_POST["cpf_cnpj"]), 
 						trim(strtolower($_POST["email"])), 
 						trim($ddd_telefone),

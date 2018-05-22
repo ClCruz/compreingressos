@@ -30,7 +30,7 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 	$query = "INSERT INTO MW_USUARIO_ITAU
 					(CD_LOGIN, DS_NOME, DS_EMAIL, IN_ATIVO, IN_ADMIN, CD_PWW, CD_CPF, DS_DDD_CELULAR, DS_CELULAR)
 					VALUES (?, ?, ?, ?, ?, '". md5('123456') . "', ?, ?, ?)";
-	$params = array($_POST['login'], $_POST['nome'], $_POST['email'], $_POST['ativo'], $_POST['admin'], $_POST['cpf'], $_POST['ddd'], $_POST['celular']);
+	$params = array($_POST['login'], utf8_encode2($_POST['nome']), $_POST['email'], $_POST['ativo'], $_POST['admin'], $_POST['cpf'], $_POST['ddd'], $_POST['celular']);
 	
 	if (executeSQL($mainConnection, $query, $params)) {
 	    $log = new Log($_SESSION['admin']);
@@ -69,7 +69,7 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 					DS_CELULAR = ?
 				WHERE
 					ID_USUARIO = ?";
-	$params = array($_POST['nome'], $_POST['email'], $_POST['ativo'], $_POST['admin'], $_POST['cpf'], $_POST['ddd'], $_POST['celular'], $_GET['codusuario']);
+	$params = array(utf8_encode2($_POST['nome']), $_POST['email'], $_POST['ativo'], $_POST['admin'], $_POST['cpf'], $_POST['ddd'], $_POST['celular'], $_GET['codusuario']);
 	
 	if (executeSQL($mainConnection, $query, $params)) {
         $log = new Log($_SESSION['admin']);

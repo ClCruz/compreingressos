@@ -6,7 +6,7 @@ session_start();
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 218, true)) {
     if(!empty($_POST["nome"])){
         $sql = 'EXEC prc_cons_comprovante ?';
-        $params = array($_POST["nome"]);
+        $params = array(utf8_encode2($_POST["nome"]));
         $result = executeSQL($mainConnection, $sql, $params);
         if(hasRows($result)){
             while($dados = fetchResult($result)){

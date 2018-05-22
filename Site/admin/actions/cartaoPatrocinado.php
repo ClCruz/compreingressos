@@ -6,7 +6,7 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 	$query = "INSERT INTO MW_CARTAO_PATROCINADO
 					(ID_PATROCINADOR, DS_CARTAO_PATROCINADO, CD_BIN)
 					VALUES (?, ?, ?)";
-	$params = array($_POST['idPatrocinador'], utf8_decode($_POST['nome']), $_POST['bin']);
+	$params = array($_POST['idPatrocinador'], utf8_encode2($_POST['nome']), $_POST['bin']);
 	
 	if (executeSQL($mainConnection, $query, $params)) {
         $log = new Log($_SESSION['admin']);
@@ -16,7 +16,7 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
         $log->save($mainConnection);
 
 		$query = 'SELECT ID_CARTAO_PATROCINADO FROM MW_PATROCINADOR WHERE ID_PATROCINADOR = ? AND DS_CARTAO_PATROCINADO = ? AND CD_BIN = ?';
-		$params = array($_POST['idPatrocinador'], $_POST['nome'], $_POST['bin']);
+		$params = array($_POST['idPatrocinador'], utf8_encode2($_POST['nome']), $_POST['bin']);
 		
 		$rs = executeSQL($mainConnection, $query, $params, true);
 		
@@ -33,7 +33,7 @@ if ($_GET['action'] == 'add') { /*------------ INSERT ------------*/
 				 ,DS_CARTAO_PATROCINADO = ?
 				 ,CD_BIN = ?
 				 WHERE ID_CARTAO_PATROCINADO = ?";
-	$params = array($_POST['idPatrocinador'], utf8_decode($_POST['nome']), $_POST['bin'], $_GET['idCartaoPatrocinado']);
+	$params = array($_POST['idPatrocinador'], utf8_encode2($_POST['nome']), $_POST['bin'], $_GET['idCartaoPatrocinado']);
 	
 	if (executeSQL($mainConnection, $query, $params)) {
         $log = new Log($_SESSION['admin']);

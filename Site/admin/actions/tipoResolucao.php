@@ -5,7 +5,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 27, true)) {
     if ($_GET['action'] == 'add') { /* ------------ INSERT ------------ */
 
         $query = "INSERT INTO DIM_TIPO_RESOLUCAO (DS_TIPO_RESOLUCAO,DT_ATUALIZACAO) VALUES (?, getdate())";
-        $params = array(utf8_decode($_POST['nome']));
+        $params = array(utf8_encode2($_POST['nome']));
 
         if (executeSQL($connectionDw, $query, $params)) {
             $log = new Log($_SESSION['admin']);
@@ -23,7 +23,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 27, true)) {
         }
     } else if ($_GET['action'] == 'update' and isset($_GET['id'])) { /* ------------ UPDATE ------------ */
         $query = "UPDATE DIM_TIPO_RESOLUCAO SET DS_TIPO_RESOLUCAO = ?, DT_ATUALIZACAO = getdate() WHERE ID_TIPO_RESOLUCAO = ?";
-        $params = array(utf8_decode($_POST['nome']), $_GET['id']);
+        $params = array(utf8_encode2($_POST['nome']), $_GET['id']);
 
         if (executeSQL($connectionDw, $query, $params)) {    
             $log = new Log($_SESSION['admin']);

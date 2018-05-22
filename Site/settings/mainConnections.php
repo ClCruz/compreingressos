@@ -44,30 +44,15 @@ function getConnectionDw() {
 function getConnectionHome() {
 
 	if ($_ENV['IS_TEST']) return false;
-	
-	/** Conexao Mysql Locaweb 
-    $host = '186.202.34.139';
-	$port = '3306';
-	$dbname = 'compreingressos_development';
-	$user = 'ccmenu';
-	$pass = 'GQMfwbGLnyuQ2Wur';
 
-	try {
-		$conn = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
-		$conn->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	} catch (Exception $e) {
-		$conn = false;
-	} **/
-
-	$host = '10.0.37.5';
-	$port = '3306';
+	$host = '192.168.91.15';
+	$port = '3307';
 	$dbname = 'compreingressos_production';
-	$user = 'compreingressos';
+	$user = 'php';
 	$pass = 'SNq3mhh5Tyb59J';
 
 	try {
-		$conn = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
+		$conn = new PDO("mysql:host=$host;port=$port;dbname=$dbname", $user, $pass);
 		$conn->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	} catch (Exception $e) {

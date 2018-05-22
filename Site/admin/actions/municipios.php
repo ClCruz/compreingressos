@@ -5,7 +5,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 28, true)) {
     if ($_GET['action'] == 'add') { /* ------------ INSERT ------------ */
 
         $query = "INSERT INTO MW_MUNICIPIO (DS_MUNICIPIO, ID_ESTADO) VALUES (?, ?); SELECT @@IDENTITY AS 'ID';";
-        $params = array(utf8_decode($_POST['nome']), $_POST["idestado"]);
+        $params = array(utf8_encode2($_POST['nome']), $_POST["idestado"]);
 
         $rs = executeSQL($mainConnection, $query, $params);
         $retorno = 'true?id=' . $rs["ID"];
@@ -20,7 +20,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 28, true)) {
         }
     } else if ($_GET['action'] == 'update' and isset($_GET['id'])) { /* ------------ UPDATE ------------ */
         $query = "UPDATE MW_MUNICIPIO SET DS_MUNICIPIO = ?, ID_ESTADO = ? WHERE ID_MUNICIPIO = ?";
-        $params = array(utf8_decode($_POST['nome']), $_POST['idestado'], $_GET["id"]);
+        $params = array(utf8_encode2($_POST['nome']), $_POST['idestado'], $_GET["id"]);
 
         if (executeSQL($mainConnection, $query, $params)) {
             $retorno = 'true?id=' . $_GET["id"];

@@ -47,7 +47,7 @@ if ($_POST['action'] == 'add') {
         if($saldo >= 0){
 
           $query = 'INSERT INTO MW_CONVIDADO (id_apresentacao, nm_convidado, cd_cpf, cd_celular, cd_email, ds_convidado_por, ds_tipo_convite, qt_lugar, id_usuario, dt_atualizacao) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE()); SELECT SCOPE_IDENTITY() as ID;';
-          $params = array($rs["id_apresentacao"], $_POST['convidado'], $_POST['cpf'], $_POST['celular'], $_POST['email'] ,$_POST['convidadoPor'], $_POST['tipoConvite'], $_POST['qtdeIngresso'], $_POST['idUsuario']);
+          $params = array($rs["id_apresentacao"], $_POST['convidado'], $_POST['cpf'], $_POST['celular'], $_POST['email'] ,utf8_encode2($_POST['convidadoPor']), $_POST['tipoConvite'], $_POST['qtdeIngresso'], $_POST['idUsuario']);
 
           $result = executeSQL($mainConnection, $query, $params);
 
@@ -59,7 +59,7 @@ if ($_POST['action'] == 'add') {
           $namefrom = utf8_decode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS');
           $from = 'compreingressos@gmail.com';
           $tpl = new Template('templates/emailComprador.html');
-          $tpl->nome_cliente = $_POST['convidado'];
+          $tpl->nome_cliente = utf8_encode2($_POST['convidado']);
           $tpl->link_convite = 'https://compra.compreingressos.com/mobile/convidado.php?action=confirm&id='. $id_convidado;
 
           $query = "select e.ds_evento, a.dt_apresentacao, a.hr_apresentacao, b.ds_nome_teatro, m.ds_municipio, es.sg_estado

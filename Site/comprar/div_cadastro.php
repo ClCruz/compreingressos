@@ -1,6 +1,7 @@
 <?php
 require_once('../settings/settings.php');
 session_start();
+
 ?>
 <style type="text/css">
 	.dia div.erro_help p.help,

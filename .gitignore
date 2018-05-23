@@ -2,6 +2,7 @@
 /Site/web.config
 /Site/log/php_log.log
 /Site/log/php4log.log
+/Site/log/log4php.log
 /Site/.gitignore
 .idea/
 Thumbs.db

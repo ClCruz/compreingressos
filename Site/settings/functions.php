@@ -10,11 +10,9 @@ use Metzli\Renderer\PngRenderer;
 function getMiniature($id) {
     $id_mysql = -1;
     $pdo = getConnectionHome();
-
     if ($pdo !== false) {
-    
         $query_mysql = "SELECT id FROM espetaculos
-                        WHERE cc_id = " . $id . " LIMIT 1";
+                        WHERE cc_id = " . $id . " AND ativo=1 LIMIT 1";
     
         $stmt = $pdo->prepare($query_mysql);
         $stmt->execute();

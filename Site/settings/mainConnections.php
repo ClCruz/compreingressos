@@ -3,8 +3,9 @@ function mainConnection() {
         $host = '192.168.91.17';
         $port = '1433';
         $dbname = 'CI_MIDDLEWAY';
-        $user = 'web';
-		$pass = '!ci@web@2018!';
+        $user = 'dev';
+        $pass = '!ci@dev@2018!';
+        // $pass = 'dev';
 
         return sqlsrv_connect($host.','.$port, array("UID" => $user, "PWD" => $pass, "Database" => $dbname));
 }
@@ -15,8 +16,9 @@ function getConnection($teatroID) {
 
         $host = '192.168.91.17';
         $port = '1433';
-        $user = 'web';
-        $pass = '!ci@web@2018!';
+        $user = 'dev';
+        $pass = '!ci@dev@2018!';
+        // $pass = 'dev';
 
         return sqlsrv_connect($host.','.$port, array("UID" => $user, "PWD" => $pass, "Database" => $rs['DS_NOME_BASE_SQL']));
 }
@@ -25,8 +27,9 @@ function getConnectionTsp() {
         $host = '192.168.91.17';
         $port = '1433';
         $dbname = 'tspweb';
-        $user = 'web';
-        $pass = '!ci@web@2018!';
+        $user = 'dev';
+        $pass = '!ci@dev@2018!';
+        // $pass = 'dev';
 
         return sqlsrv_connect($host.','.$port, array("UID" => $user, "PWD" => $pass, "Database" => $dbname));
 }

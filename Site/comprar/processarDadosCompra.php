@@ -52,13 +52,13 @@ curl_close($ch);
 
 $resp = json_decode($server_output, true);
 
-if (!$_ENV['IS_TEST'] and !isset($_SESSION['operador']) and !$isPaypal) {
-    if (!$resp['success']) {
-        sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Falha no processo de autenticação da recaptcha.','',1);
-        echo "Entre com a informação solicitada no campo Autenticidade.";
-        exit();
-    }
-}
+// if (!$_ENV['IS_TEST'] and !isset($_SESSION['operador']) and !$isPaypal) {
+//     if (!$resp['success']) {
+//         sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Falha no processo de autenticação da recaptcha.','',1);
+//         echo "Entre com a informação solicitada no campo Autenticidade.";
+//         exit();
+//     }
+// }
 
 // não passar código de cartão nulo ()
 if ($_POST['codCartao'] == '') {
@@ -770,12 +770,13 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
             }
         }
         elseif ($pagamento_paypal) {
-
+            sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Pagamento por paypal.','',0);
             $paypal_ToSave = getObjToSave($parametros['OrderData']['OrderId'], $_POST["paypal_data"], $_POST["paypal_payment"]);
             $totalParaVerificar = $totalIngressos + $frete + $totalConveniencia;
             //if ($paypal_ToSave["amount"])
-
+            sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Paypal saving.','',0);
             paypal_saveTo($paypal_ToSave);      
+            sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Paypal saved.','',0);
 
             $query = "UPDATE P SET ID_MEIO_PAGAMENTO = M.ID_MEIO_PAGAMENTO, IN_SITUACAO = 'F',
                         id_pedido_ipagare=?, cd_numero_autorizacao=?, cd_numero_transacao=?
@@ -788,12 +789,16 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
                 ,$parametros['OrderData']['OrderId']
                 ,$_POST['codCartao']);
             $result = executeSQL($mainConnection, $query, $params);      
-
+            sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Paypal finalizando.','',0);
 
             require('concretizarCompra.php');
 
+            sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Paypal concretizada compra.','',0);
+
             // se necessario, replica os dados de assinatura e imprime url de redirecionamento
             require('concretizarAssinatura.php');
+
+            sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Paypal concretizada assinatura.','',0);
 
             die("redirect.php?redirect=".urlencode("pagamento_ok.php?pedido=".$parametros['OrderData']['OrderId'].(isset($_GET['tag']) ? $campanha['tag_avancar'] : '')));
         }
@@ -972,6 +977,7 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
         }
         //pagamentos via tipagos
         elseif($pagamento_tipagos){
+            sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','Pagamento por TIPagos.','',0);
             $query = "UPDATE P SET ID_MEIO_PAGAMENTO = M.ID_MEIO_PAGAMENTO, IN_SITUACAO = 'P'
                         FROM MW_PEDIDO_VENDA P, MW_MEIO_PAGAMENTO M
                         WHERE P.ID_PEDIDO_VENDA = ? AND M.CD_MEIO_PAGAMENTO = ?";
@@ -980,7 +986,11 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
 
             $_POST['parcelas'] = $PaymentDataCollection['NumberOfPayments'];
 
+            sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','TIPagos - Chamando serviço.','',0);
+
             $response = pagarPedidoTiPagos($parametros['OrderData']['OrderId'], $_POST);
+
+            sale_trace($_SESSION['user'],$sale_trace_id_pedido_venda,$sale_trace_codVenda,$sale_trace_id_evento,$sale_trace_codPeca,$sale_trace_id_base,session_id(),'processarDadosCompra.php','TIPagos - Retorno do serviço.','',0);
 
             executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
                 array($_SESSION['user'], json_encode(array('descricao' => '4. retorno do pedido=' . $parametros['OrderData']['OrderId'], 'tipagos_obj' => json_encode($response['transaction']))))

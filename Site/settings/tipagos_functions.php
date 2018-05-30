@@ -1,5 +1,6 @@
 <?php
 require_once('../settings/functions.php');
+require_once('../log4php/log.php');
 require_once('../settings/split/split_config.php');
 require_once('../settings/split/split_functions.php');
 
@@ -16,9 +17,44 @@ require_once('../settings/split/split_functions.php');
 // 	$codProduto = "55";
 // }
 
+function GUIDv4($trim = true)
+{
+    // Windows
+    if (function_exists('com_create_guid') === true) {
+        if ($trim === true)
+            return trim(com_create_guid(), '{}');
+        else
+            return com_create_guid();
+    }
+
+    // OSX/Linux
+    if (function_exists('openssl_random_pseudo_bytes') === true) {
+        $data = openssl_random_pseudo_bytes(16);
+        $data[6] = chr(ord($data[6]) & 0x0f | 0x40);    // set version to 0100
+        $data[8] = chr(ord($data[8]) & 0x3f | 0x80);    // set bits 6-7 to 10
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+    }
+
+    // Fallback (PHP 4.2+)
+    mt_srand((double)microtime() * 10000);
+    $charid = strtolower(md5(uniqid(rand(), true)));
+    $hyphen = chr(45);                  // "-"
+    $lbrace = $trim ? "" : chr(123);    // "{"
+    $rbrace = $trim ? "" : chr(125);    // "}"
+    $guidv4 = $lbrace.
+              substr($charid,  0,  8).$hyphen.
+              substr($charid,  8,  4).$hyphen.
+              substr($charid, 12,  4).$hyphen.
+              substr($charid, 16,  4).$hyphen.
+              substr($charid, 20, 12).
+              $rbrace;
+    return $guidv4;
+}
+
 function pagarPedidoTiPagos($id_pedido, $dados_extra) {
 	global $gw_tipagos;
 
+	sale_trace($_SESSION['user'],$id_pedido,NULL,NULL,NULL,NULL,session_id(),'tipagos_functions.php','Gerando pedido no tipagos.','',0);
 	$gw_tipagos = configureSplit("tipagos");
 
 	$url_ws = $gw_tipagos["url_ws"];
@@ -26,7 +62,7 @@ function pagarPedidoTiPagos($id_pedido, $dados_extra) {
 	$keyLoja = $gw_tipagos["keyLoja"];
 	$codProduto = $gw_tipagos["codProduto"];
 
-	error_log("gerando venda no TIPAGOS. " . $id_pedido);
+	sale_trace($_SESSION['user'],$id_pedido,NULL,NULL,NULL,NULL,session_id(),'tipagos_functions.php','Informações do TiPagos.',print_r($gw_tipagos,true),0);
 
 
 	$mainConnection = mainConnection();
@@ -100,7 +136,17 @@ function pagarPedidoTiPagos($id_pedido, $dados_extra) {
 
 			$dados = array();
 
+			sale_trace($_SESSION['user'],$id_pedido,NULL,NULL,NULL,NULL,session_id(),'tipagos_functions.php','Recuperando split.','',0);
+
 			$split = getSplit("tipagos", $id_pedido, "web", "credit_card", $valorTotal);
+
+			sale_trace($_SESSION['user'],$id_pedido,NULL,NULL,NULL,NULL,session_id(),'tipagos_functions.php','Informações do split.',print_r($split,true),0);
+
+			sale_trace($_SESSION['user'],$id_pedido,NULL,NULL,NULL,NULL,session_id(),'tipagos_functions.php','Informações do dadosCartao.',print_r($dadosCartao,true),0);
+
+			sale_trace($_SESSION['user'],$id_pedido,NULL,NULL,NULL,NULL,session_id(),'tipagos_functions.php','Informações do dados_extra.',print_r($dados_extra,true),0);
+
+			$guid = GUIDv4();
 
 			if ($split == null) {
 				$dados = array("header" => array("idLoja"=>$idLoja, 
@@ -114,7 +160,7 @@ function pagarPedidoTiPagos($id_pedido, $dados_extra) {
 					"qtdeParcelas"=>$dados_extra['parcelas'],
 					"transacaoCapturada"=>true,
 					"descricaoPedido"=>$id_pedido, 
-					"nsuTransacao"=>preg_replace('/\{|\}|\-/', "", com_create_guid())
+					"nsuTransacao"=>preg_replace('/\{|\}|\-/', "", $guid)
 				);
 			}
 			else {
@@ -129,16 +175,16 @@ function pagarPedidoTiPagos($id_pedido, $dados_extra) {
 					"qtdeParcelas"=>$dados_extra['parcelas'],
 					"transacaoCapturada"=>true,
 					"descricaoPedido"=>$id_pedido, 
-					"nsuTransacao"=>preg_replace('/\{|\}|\-/', "", com_create_guid()),
+					"nsuTransacao"=>preg_replace('/\{|\}|\-/', "", $guid),
 					"dadosSplit" => $split
 				);
 			}
 
-			error_log("Dados: " . print_r($dados, true));
+			sale_trace($_SESSION['user'],$id_pedido,NULL,NULL,NULL,NULL,session_id(),'tipagos_functions.php','Informações do dados.',print_r($dados,true),0);
 
 			$post_data = json_encode($dados);
 
-			error_log("post_data: " . $post_data);
+			sale_trace($_SESSION['user'],$id_pedido,NULL,NULL,NULL,NULL,session_id(),'tipagos_functions.php','Informações do post.',print_r($post_data,true),0);
 
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json')); 
@@ -152,7 +198,7 @@ function pagarPedidoTiPagos($id_pedido, $dados_extra) {
 
 			$resp = json_decode($server_output, true);
 
-			error_log("resposta TIPAGOS: " . print_r($resp, true));
+			sale_trace($_SESSION['user'],$id_pedido,NULL,NULL,NULL,NULL,session_id(),'tipagos_functions.php','Resposta TIPagos.',print_r($resp, true),0);
 
 			if($resp['retorno']['rc'] == '0'){
 				$response = array('success' => true, 'transaction' => $resp);

@@ -658,6 +658,7 @@ function rollbackTransaction($conn) {
 }
 
 function executeSQL($conn, $strSql, $params = array(), $returnRs = false) {
+    ini_set('mssql.charset', 'UTF-8');
     if (empty($params)) {
     $result = sqlsrv_query($conn, $strSql);
     } else {

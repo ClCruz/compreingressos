@@ -100,9 +100,9 @@ if ($noErrors and empty($sqlErrors)) {
             $response = estonarPedidoPagseguro($transaction->getCode());
 			break;
 
-		// CompreIngressos
+		// Operacional
 		case 4:
-			$response = "estorno operacional compreingressos";
+			$response = "estorno operacional.";
 			break;
 
 		// Braspag
@@ -208,6 +208,6 @@ if ( $enviar_email_erro_XXX OR !($noErrors and empty($sqlErrors)) ) {
 	//copy current buffer contents into $message variable and delete current output buffer
 	$message = ob_get_clean();
 
-	sendErrorMail('Atenção: Possibilidade de venda em duplicidade - COMPREINGRESSOS.COM', $message);
+	sendErrorMail('Atenção: Possibilidade de venda em duplicidade', $message);
 
 }

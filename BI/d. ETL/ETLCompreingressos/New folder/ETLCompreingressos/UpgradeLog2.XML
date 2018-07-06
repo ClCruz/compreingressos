@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="ETLCompreingressos">
+</Property><Property Name="Solution File" Value="E:\New folder\ETLCompreingressos\ETLCompreingressos.sln">
+</Property><Property Name="User Options File" Value="E:\New folder\ETLCompreingressos\ETLCompreingressos.suo">
+</Property><Property Name="Date" Value="Friday, June 15, 2018">
+</Property><Property Name="Time" Value="9:08 AM">
+</Property><Property Name="Log Number" Value="2">
+</Property></Properties><Event ErrorLevel="0" Project="" Source="ETLCompreingressos.sln" Description="File successfully backed up as E:\New folder\ETLCompreingressos\Backup1\ETLCompreingressos.sln">
+</Event><Event ErrorLevel="0" Project="" Source="ETLCompreingressos.suo" Description="File successfully backed up as E:\New folder\ETLCompreingressos\Backup1\ETLCompreingressos.suo">
+</Event><Event ErrorLevel="0" Project="ETLCompreingressos" Source="ETLCompreingressos.database" Description="File successfully backed up as E:\New folder\ETLCompreingressos\Backup1\ETLCompreingressos\ETLCompreingressos.database">
+</Event><Event ErrorLevel="0" Project="ETLCompreingressos" Source="Middleway2.ds" Description="File successfully backed up as E:\New folder\ETLCompreingressos\Backup1\ETLCompreingressos\Middleway2.ds">
+</Event><Event ErrorLevel="0" Project="ETLCompreingressos" Source="DW2.ds" Description="File successfully backed up as E:\New folder\ETLCompreingressos\Backup1\ETLCompreingressos\DW2.ds">
+</Event><Event ErrorLevel="0" Project="ETLCompreingressos" Source="01-Dim_municipio.dtsx" Description="File successfully backed up as E:\New folder\ETLCompreingressos\Backup1\ETLCompreingressos\01-Dim_municipio.dtsx">
+</Event><Event ErrorLevel="0" Project="ETLCompreingressos" Source="03-Dim_patrocinador.dtsx" Description="File successfully backed up as E:\New folder\ETLCompreingressos\Backup1\ETLCompreingressos\03-Dim_patrocinador.dtsx">
+</Event><Event ErrorLevel="0" Project="ETLCompreingressos" Source="04-Dim_cartao_patrocinado.dtsx" Description="File successfully backed up as E:\New folder\ETLCompreingressos\Backup1\ETLCompreingressos\04-Dim_cartao_patrocinado.dtsx">
+</Event><Event ErrorLevel="0" Project="ETLCompreingressos" Source="06-Dim_tipo_local.dtsx" Description="File successfully backed up as E:\New folder\ETLCompreingressos\Backup1\ETLCompreingressos\06-Dim_tipo_local.dtsx">
+</Event><Event ErrorLevel="0" Project="ETLCompreingressos" Source="07-Dim_canal_venda.dtsx" Description="File successfully backed up as E:\New folder\ETLCompreingressos\Backup1\ETLCompreingressos\07-Dim_canal_venda.dtsx">
+</Event><Event ErrorLevel="0" Project="ETLCompreingressos" Source="05-Dim_cliente.dtsx" Description="File successfully backed up as E:\New folder\ETLCompreingressos\Backup1\ETLCompreingressos\05-Dim_cliente.dtsx">
+</Event><Event ErrorLevel="0" Project="ETLCompreingressos" Source="02-Dim_bandeira_cartao.dtsx" Description="File successfully backed up as E:\New folder\ETLCompreingressos\Backup1\ETLCompreingressos\02-Dim_bandeira_cartao.dtsx">
+</Event><Event ErrorLevel="0" Project="ETLCompreingressos" Source="08-Dim_local_evento.dtsx" Description="File successfully backed up as E:\New folder\ETLCompreingressos\Backup1\ETLCompreingressos\08-Dim_local_evento.dtsx">
+</Event><Event ErrorLevel="0" Project="ETLCompreingressos" Source="09-Dim_tipo_evento.dtsx" Description="File successfully backed up as E:\New folder\ETLCompreingressos\Backup1\ETLCompreingressos\09-Dim_tipo_evento.dtsx">
+</Event><Event ErrorLevel="0" Project="ETLCompreingressos" Source="10-Dim_evento.dtsx" Description="File successfully backed up as E:\New folder\ETLCompreingressos\Backup1\ETLCompreingressos\10-Dim_evento.dtsx">
+</Event><Event ErrorLevel="0" Project="ETLCompreingressos" Source="11-Dim_apresentacao.dtsx" Description="File successfully backed up as E:\New folder\ETLCompreingressos\Backup1\ETLCompreingressos\11-Dim_apresentacao.dtsx">
+</Event><Event ErrorLevel="0" Project="ETLCompreingressos" Source="12-Fato_vendas_promocionais_itau.dtsx" Description="File successfully backed up as E:\New folder\ETLCompreingressos\Backup1\ETLCompreingressos\12-Fato_vendas_promocionais_itau.dtsx">
+</Event><Event ErrorLevel="0" Project="ETLCompreingressos" Source="13-Fato_evento_mes.dtsx" Description="File successfully backed up as E:\New folder\ETLCompreingressos\Backup1\ETLCompreingressos\13-Fato_evento_mes.dtsx">
+</Event><Event ErrorLevel="0" Project="ETLCompreingressos" Source="14-Dim_tipo_ingresso.dtsx" Description="File successfully backed up as E:\New folder\ETLCompreingressos\Backup1\ETLCompreingressos\14-Dim_tipo_ingresso.dtsx">
+</Event><Event ErrorLevel="0" Project="ETLCompreingressos" Source="50-Fato_Vendas_Ingresso.dtsx" Description="File successfully backed up as E:\New folder\ETLCompreingressos\Backup1\ETLCompreingressos\50-Fato_Vendas_Ingresso.dtsx">
+</Event><Event ErrorLevel="0" Project="ETLCompreingressos" Source="15-Dim_Forma_Pagamento.dtsx" Description="File successfully backed up as E:\New folder\ETLCompreingressos\Backup1\ETLCompreingressos\15-Dim_Forma_Pagamento.dtsx">
+</Event><Event ErrorLevel="0" Project="ETLCompreingressos" Source="07-Dim_base.dtsx" Description="File successfully backed up as E:\New folder\ETLCompreingressos\Backup1\ETLCompreingressos\07-Dim_base.dtsx">
+</Event><Event ErrorLevel="0" Project="ETLCompreingressos" Source="ETLCompreingressos.dtproj" Description="File successfully backed up as E:\New folder\ETLCompreingressos\Backup1\ETLCompreingressos\ETLCompreingressos.dtproj">
+</Event><Event ErrorLevel="3" Project="ETLCompreingressos" Source="ETLCompreingressos.dtproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="ETLCompreingressos" Source="ETLCompreingressos.dtproj" Description="Project converted successfully.">
+</Event><Event ErrorLevel="0" Project="" Source="ETLCompreingressos.sln" Description="The solution file does not require conversion.">
+</Event><Event ErrorLevel="3" Project="" Source="ETLCompreingressos.sln" Description="No Conversion Required">
+</Event></UpgradeLog>

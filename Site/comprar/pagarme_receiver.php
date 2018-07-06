@@ -1,5 +1,6 @@
 <?php
 require_once('../settings/functions.php');
+require_once('../settings/multisite/unique.php');
 
 $mainConnection = mainConnection();
 
@@ -104,7 +105,7 @@ if ($_REQUEST['object'] == 'transaction') {
                     // chargedback
                     case 'chargedback':
                         $post_data = http_build_query(array('pedido' => $_GET['pedido'], 'justificativa' => 'Estorno pela máquina POS', 'auth' => $auth_code));
-                        $url = 'http'.($_SERVER["HTTPS"] == "on" ? 's' : '').'://'.($_SERVER['SERVER_NAME'] ? $_SERVER['SERVER_NAME'] : 'compra.compreingressos.com').'/admin/estorno.php';
+                        $url = 'http'.($_SERVER["HTTPS"] == "on" ? 's' : '').'://'.($_SERVER['SERVER_NAME'] ? $_SERVER['SERVER_NAME'] : multiSite_getDomainCompra()).'/admin/estorno.php';
 
                         $ch = curl_init(); 
                         curl_setopt($ch, CURLOPT_URL, $url);
@@ -146,7 +147,7 @@ if ($_REQUEST['object'] == 'transaction') {
 
                         if ($rs['CD_STATUS'] == 'pending_refund' OR preg_match('/boleto/', strtolower($rs['NM_CARTAO_EXIBICAO_SITE']))) {
                             $message = "O pedido $id_pedido foi pago por boleto e precisa ser estornado devidamente.";
-                            sendErrorMail('Erro no Sistema COMPREINGRESSOS.COM - boleto', $message);
+                            sendErrorMail('Erro no Sistema - boleto', $message);
                         }
 
                         $return = 'Pedido cancelado.';

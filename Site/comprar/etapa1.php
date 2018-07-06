@@ -4,10 +4,12 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
 
   // se o usuario estiver em um processo de renovacao redirecionar imediatamente para a etapa 2, evitando a possibilidade de selecao de lugares
   if ($_SESSION['assinatura']['tipo'] == 'renovacao') header("Location: etapa2.php?eventoDS=" . $_SESSION['assinatura']['evento']);
-
-  require_once('../settings/Template.class.php');
+  
+  require_once('../settings/Template.class.php');  
   require_once('../settings/functions.php');
+  
   require_once('../settings/settings.php');
+  require_once('../settings/multisite/unique.php');
 
   if ($is_manutencao === true) {
     header("Location: manutencao.php");
@@ -15,7 +17,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
   }
 
   require_once('origem.php');
-
+  
   $mainConnection = mainConnection();
 
   $query = 'SELECT A.CODAPRESENTACAO, E.ID_BASE, E.ID_EVENTO,E.DS_EVENTO,
@@ -46,7 +48,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
   $setor_atual = utf8_encode2($rs['DS_PISO']);
 
   if (count($rs) < 2 and !isset($_GET['teste'])) {
-    header("Location: http://www.compreingressos.com");
+    header("Location: " . multiSite_getURI("URI_SSL"));
   } else {
     setcookie('lastEvent', 'apresentacao=' . $_GET['apresentacao'] . '&eventoDS=' . $rs['DS_EVENTO']);
     $vars = 'teatro=' . $rs['ID_BASE'] . '&codapresentacao=' . $rs['CODAPRESENTACAO'];
@@ -203,7 +205,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
   }
 
 } else
-  header("Location: http://www.compreingressos.com");
+  header("Location: " . multiSite_getURI("URI_SSL"));
 //echo session_id();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -220,7 +222,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
     <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
     <meta name="robots" content="noindex,nofollow" />
 
-    <link href="../images/favicon.ico" rel="shortcut icon"/>
+    <link href="<?php echo mulsiSite_getFavico()?>" rel="shortcut icon"/>
     <link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css' />
     <link rel="stylesheet" href="../stylesheets/cicompra.css"/>
     <?php require("desktopMobileVersion.php"); ?>
@@ -248,7 +250,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
     <script type="text/javascript" src="../javascripts/plateia.js?<?php echo $vars; ?>"></script>
     <script type="text/javascript" src="../javascripts/overlay_datas.js?evento=<?php echo $rs['ID_EVENTO']; ?>"></script>
 
-    <title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
+    <title><?php echo multiSite_getTitle()?></title>
     <!-- SCRIPT TAG -->
     <script type="text/JavaScript">
       var idcampanha = <?php echo ($idcampanha != "") ? $idcampanha : 0; ?>;
@@ -263,8 +265,8 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
 
     <script type="text/javascript">
       var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-16656615-1']);
-      _gaq.push(['_setDomainName', 'compreingressos.com']);
+      _gaq.push(['_setAccount', '<?php echo multiSite_getGoogleAnalytics(); ?>']);
+	    _gaq.push(['_setDomainName', '<?php echo multiSite_getName(); ?>']);
       _gaq.push(['_setAllowLinker', true]);
       _gaq.push(['_trackPageview']);
 
@@ -310,7 +312,9 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
   <!-- conteudo para exibir em popup -->
   <div class="hidden">
     <div id="login_assinante">
+      
       <?php require_once ('div_identificacao.php'); ?>
+    
       <div class="ui-helper-clearfix"></div>
     </div>
   </div>

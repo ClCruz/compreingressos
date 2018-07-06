@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once('../settings/multisite/unique.php');
 
 if (isset($_SESSION['operador']) and is_numeric($_SESSION['operador'])) {
 	require_once('../settings/functions.php');
@@ -32,7 +33,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 	<meta name="robots" content="noindex,nofollow">
-	<link href="../images/favicon.ico" rel="shortcut icon"/>
+	<link href="<?php echo mulsiSite_getFavico()?>" rel="shortcut icon"/>
 	<link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
     <?php require("desktopMobileVersion.php"); ?>
@@ -99,8 +100,8 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 
 	<script type="text/javascript">
 	  var _gaq = _gaq || [];
-	  _gaq.push(['_setAccount', 'UA-16656615-1']);
-	  _gaq.push(['_setDomainName', 'compreingressos.com']);
+	  _gaq.push(['_setAccount', '<?php echo multiSite_getGoogleAnalytics(); ?>']);
+	  _gaq.push(['_setDomainName', '<?php echo multiSite_getName(); ?>']);
 	  _gaq.push(['_setAllowLinker', true]);
 	  _gaq.push(['_trackPageview']);
 
@@ -110,7 +111,7 @@ $campanha = get_campanha_etapa(basename(__FILE__, '.php'));
 	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 	  })();
 	</script>
-	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
+	<title><?php echo multiSite_getTitle()?></title>
 </head>
 <body>
 	<!-- Google Tag Manager (noscript) -->

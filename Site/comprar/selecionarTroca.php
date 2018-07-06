@@ -2,6 +2,7 @@
 session_start();
 
 require_once('../settings/functions.php');
+require_once('../settings/multisite/unique.php');
 
 require('acessoLogado.php');
 
@@ -20,7 +21,7 @@ $mainConnection = mainConnection();
 
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 	<meta name="robots" content="noindex,nofollow">
-	<link href="../images/favicon.ico" rel="shortcut icon"/>
+	<link href="<?php echo mulsiSite_getFavico()?>" rel="shortcut icon"/>
 	<link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
     <?php require("desktopMobileVersion.php"); ?>
@@ -37,8 +38,8 @@ $mainConnection = mainConnection();
 
 	<script type="text/javascript">
 	  var _gaq = _gaq || [];
-	  _gaq.push(['_setAccount', 'UA-16656615-1']);
-	  _gaq.push(['_setDomainName', 'compreingressos.com']);
+	  _gaq.push(['_setAccount', '<?php echo multiSite_getGoogleAnalytics(); ?>']);
+	  _gaq.push(['_setDomainName', '<?php echo multiSite_getName(); ?>']);
 	  _gaq.push(['_setAllowLinker', true]);
 	  _gaq.push(['_trackPageview']);
 
@@ -76,7 +77,7 @@ $mainConnection = mainConnection();
 	});
 	</script>
 
-	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
+	<title><?php echo multiSite_getTitle()?></title>
 
 	<style>
 		form#dados table tr td {

@@ -99,7 +99,7 @@ if ($_GET['carrinho']) {
                 // assinatura
                 '8' => 'Os bilhetes de assinatura disponíveis já foram utilizados. Por favor, selecione outro tipo de ingresso.',
                 // assinatura
-                '9' => 'Este bilhete só pode ser utilizado por assinantes CompreIngressos.com',
+                '9' => 'Este bilhete só pode ser utilizado por assinantes',
                 // compre x leve y (msg padrao, pode mudar na checagem abaixo)
                 '10' => 'Não existem mais ingressos disponíveis para este tipo de promoção. Por favor, selecione outro tipo de ingresso.'
             );

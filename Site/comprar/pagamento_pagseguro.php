@@ -2,6 +2,7 @@
 session_start();
 require_once('../settings/functions.php');
 require_once('../settings/settings.php');
+require_once('../settings/multisite/unique.php');
 
 if ($is_manutencao === true) {
 	header("Location: manutencao.php");
@@ -37,7 +38,7 @@ $rs = executeSQL($mainConnection, $query, $params, true);
 // um pedido de outro usuario, meio de pagamento que nao bate com o
 // selecionado ou um pedido que nao esta mais em processamento
 if (empty($rs)) {
-    header("Location: http://www.compreingressos.com");
+    header("Location: ". multiSite_getURI("URI_SSL"));
     die();
 } else {
 	require '../settings/PagSeguroLibrary/PagSeguroLibrary.php';
@@ -69,7 +70,7 @@ if (empty($rs)) {
 
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 	<meta name="robots" content="noindex,nofollow">
-	<link href="../images/favicon.ico" rel="shortcut icon"/>
+	<link href="<?php echo mulsiSite_getFavico()?>" rel="shortcut icon"/>
 	<link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
     <?php require("desktopMobileVersion.php"); ?>
@@ -101,7 +102,7 @@ if (empty($rs)) {
 	}
 	</style>
 
-	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
+	<title><?php echo multiSite_getTitle()?></title>
 </head>
 <body>
 	<!-- Google Tag Manager (noscript) -->
@@ -165,11 +166,11 @@ if (empty($rs)) {
 
 		<div id="texts">
 			<div class="centraliza">
-				<p>Muito obrigado por escolher a COMPREINGRESSOS para a compra de seus ingressos.</p>
+				<p>Muito obrigado por escolher a <?php echo multiSite_getName(); ?> para a compra de seus ingressos.</p>
 
-				<p>Fique por dentro das principais atrações em cartaz na sua cidade através do nosso Guia de Espetáculos enviado por email. Adicione o email marketing@compreingressos.com ao seu catálogo de endereços para receber nossos emails na sua caixa de entrada.</p>
+				<p>Fique por dentro das principais atrações em cartaz na sua cidade através do nosso Guia de Espetáculos enviado por email. Adicione o email <?php multiSite_getEmail("marketing"); ?> ao seu catálogo de endereços para receber nossos emails na sua caixa de entrada.</p>
 
-				<p>Curta nossa página no <a href=“http://www.facebook.com/compreingressos”>Facebook</a> e acompanhe diariamente as últimas novidades da nossa programação.</p>
+				<p>Curta nossa página no <a href=“<?php echo multiSite_getFacebook(); ?>”>Facebook</a> e acompanhe diariamente as últimas novidades da nossa programação.</p>
 
 				<p>Bom espetáculo!</p>
 			</div>

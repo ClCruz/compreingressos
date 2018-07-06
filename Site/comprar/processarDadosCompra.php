@@ -1052,7 +1052,7 @@ if (($PaymentDataCollection['Amount'] > 0 or ($PaymentDataCollection['Amount'] =
                 echo "<pre>"; var_dump($dados); echo "</pre>";
                 $message = ob_get_clean();
 
-                sendErrorMail('Erro no Sistema COMPREINGRESSOS.COM', $message);
+                sendErrorMail('Erro no Sistema', $message);
 
                 executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)",
                     array($_SESSION['user'], json_encode(array('descricao' => '5.2. erro 135, retorno do pedido=' . $parametros['OrderData']['OrderId'], 'post' => $dados)))

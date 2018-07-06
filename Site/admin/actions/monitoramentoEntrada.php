@@ -1,4 +1,5 @@
 <?php
+require_once("../../settings/multisite/unique.php");
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 330, true)) {
 
 	if ($_GET['action'] == 'getTable') { /*------------ REPORT ------------*/
@@ -137,8 +138,8 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 330, true)) {
 			$html = '<tr><td colspan="4" style="text-align: center; font-size: medium; font-weight: bold;">Nenhum acesso encontrado.</td></tr>';
 		}
 
-		$header .= '<tr class="print_only"><th colspan="4">COMPREINGRESSOS.COM – Clique e Bom Espetáculo</th></tr>
-					<tr class="print_only"><th colspan="4">CNPJ 72.853.328/0001-61</th></tr>
+		$header .= '<tr class="print_only"><th colspan="4">'.multiSite_getName().' – Clique e Bom Espetáculo</th></tr>
+					<tr class="print_only"><th colspan="4">CNPJ ' . multiSite_CNPJ() . '</th></tr>
 					<tr><th colspan="4">Data e Horário: '.date("d/m/Y H:i").'</th></tr>
 					<tr class="print_only"><th colspan="4">&nbsp;</th></tr>
 					<tr class="print_only"><th colspan="4">Relatório e Atestado de Controle de Acesso</th></tr>
@@ -166,7 +167,7 @@ if (acessoPermitido($mainConnection, $_SESSION['admin'], 330, true)) {
 								</tr>
 								<tr>
 									<td>
-										COMPREINGRESSOS<br />
+										'.multiSite_getName().'<br />
 										CONTROLADOR DE ACESSO
 									</td>
 									<td>LOCAL</td>

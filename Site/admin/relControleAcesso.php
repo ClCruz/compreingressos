@@ -1,4 +1,5 @@
 <?php
+require_once("../../settings/multisite/unique.php");
 if(isset($_GET["exportar"]) && $_GET["exportar"] == "true"){
 	header("Content-type: application/vnd.ms-excel");
 	header("Content-type: application/force-download");
@@ -106,7 +107,7 @@ if(hasRows($pRSGeral)){
     ?>
     <table width="770" class="tabela" border="0">
         <tr>
-            <td colspan="1" rowspan="2"><img align="left" border="0" src="../images/logo.jpg" alt="Compreingressos"></td>
+            <td colspan="1" rowspan="2"><img align="left" border="0" src="<?php echo multiSite_getLogo(); ?>" alt=""></td>
             <td colspan="1" height="15"></td>
         </tr>
         <tr>

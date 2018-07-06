@@ -1,7 +1,8 @@
 <?php
+require_once("../settings/multisite/unique.php");
 error_reporting(0);
-$nomeSite = 'COMPREINGRESSOS.COM';
-$homeSite = 'http://www.compreingressos.com/';
+$nomeSite = multiSite_getName();
+$homeSite = multiSite_getURI("URI_SSL");
 $title = $nomeSite;// . ' - Painel Administrativo';
 
 $locale = setlocale(LC_ALL, "pt_BR", "pt_BR.iso-8859-1", "pt_BR.utf-8", "portuguese");

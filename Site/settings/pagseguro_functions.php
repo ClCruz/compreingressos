@@ -1,4 +1,5 @@
 <?php
+require_once("../settings/multisite/unique.php");
 require_once('../settings/functions.php');
 
 require '../settings/PagSeguroLibrary/PagSeguroLibrary.php';
@@ -83,9 +84,9 @@ function pagarPedidoPagSeguro($id_pedido, $dados_extra) {
 	$directPaymentRequest->setReference("$id_pedido");
 
 	if ($_ENV['IS_TEST']) {
-		$directPaymentRequest->setNotificationURL('http://homolog.compreingressos.com/comprar/pagseguro_receiver.php');
+		$directPaymentRequest->setNotificationURL('http://localhost:1002/comprar/pagseguro_receiver.php');
 	} else {
-		$directPaymentRequest->setNotificationURL('https://compra.compreingressos.com/comprar/pagseguro_receiver.php');
+		$directPaymentRequest->setNotificationURL(multiSite_getURICompra('comprar/pagseguro_receiver.php'));
 	}
 
 	$query = "SELECT

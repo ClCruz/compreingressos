@@ -1,9 +1,12 @@
-<?php session_start(); ?>
+<?php session_start(); 
+require_once("../../settings/multisite/unique.php");
+
+?>
 						<div id="cadastro">
 							<form id="form_cadastro" name="form_cadastro" method="POST" action="cadastro.php">
 								<div id="id_left_cadastro">
 									<h1>Dados pessoais</h1>
-									<p class="help_text">Os dados abaixo ser&atilde;o mantidos em sigilo e utilizados apenas pela compreingressos.com</p>
+									<p class="help_text">Os dados abaixo ser&atilde;o mantidos em sigilo e utilizados apenas pela <?php echo multiSite_getName(); ?></p>
 									<h2>Nome</h2>
 									<input type="text" name="nome" id="nome" size="30" maxlength="50" class="required"/>
 									<p class="err_msg">Insira o nome</p>

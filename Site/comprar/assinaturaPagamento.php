@@ -1,6 +1,6 @@
 <?php
 require_once('../settings/functions.php');
-
+require_once('../settings/multisite/unique.php');
 require('acessoLogado.php');
 
 if ($_POST) {
@@ -34,14 +34,14 @@ if ($_GET['action'] == 'alterar_assinatura') {
 	$rs = executeSQL($mainConnection, $query, $params, true);
 }
 
-if ($rs[0] != 1) header("Location: http://www.compreingressos.com");
+if ($rs[0] != 1) header("Location: " . multiSite_getURI("URI_SSL"));
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 	<meta name="robots" content="noindex,nofollow">
-	<link href="../images/favicon.ico" rel="shortcut icon"/>
+	<link href="<?php echo mulsiSite_getFavico()?>" rel="shortcut icon"/>
 	<link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
     <?php require("desktopMobileVersion.php"); ?>
@@ -64,8 +64,8 @@ if ($rs[0] != 1) header("Location: http://www.compreingressos.com");
 
 	<script type="text/javascript">
 	  var _gaq = _gaq || [];
-	  _gaq.push(['_setAccount', 'UA-16656615-1']);
-	  _gaq.push(['_setDomainName', 'compreingressos.com']);
+	  _gaq.push(['_setAccount', '<?php echo multiSite_getGoogleAnalytics(); ?>']);
+	  _gaq.push(['_setDomainName', '<?php echo multiSite_getName(); ?>']);
 	  _gaq.push(['_setAllowLinker', true]);
 	  _gaq.push(['_trackPageview']);
 
@@ -76,7 +76,7 @@ if ($rs[0] != 1) header("Location: http://www.compreingressos.com");
 	  })();
 	</script>
 
-	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
+	<title><?php echo multiSite_getTitle()?></title>
 </head>
 <body>
 	<div id="pai">

@@ -1,5 +1,6 @@
 <?php
 require_once('../settings/settings.php');
+require_once("../../settings/multisite/unique.php");
 session_start();
 
 ?>
@@ -279,7 +280,7 @@ session_start();
 				<input id="checkbox_politica" type="checkbox" name="concordo" class="checkbox" value="S" <?php echo (($url[2] != "login.php") and isset($_SESSION['user']) and is_numeric($_SESSION['user'])) ? ' checked disabled' : ''; ?>>
 				<label class="checkbox" for="checkbox_politica" id="label_politica">
 					concordo com os <a href="" target="_blank" class="termos_de_uso">termos de uso</a>, a 
-					<a href="" target="_blank" class="politica_de_privacidade">política de privacidade</a> e a <a href="http://www.compreingressos.com/politica" target="_blank" class="politica_de_venda">política de venda</a>
+					<a href="" target="_blank" class="politica_de_privacidade">política de privacidade</a> e a <a href="<?php echo multiSite_getURI("URI_SSL", "politica"); ?>" target="_blank" class="politica_de_venda">política de venda</a>
 				</label>
 			</div>
 

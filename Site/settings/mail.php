@@ -24,7 +24,7 @@ function authSendEmail($from, $namefrom, $to, $nameto, $subject, $message, $copi
 	
 	$mail->Port = 587;
 	
-	$mail->From = ($from ? $from : 'compreingressos@siscompre.com');
+	$mail->From = ($from ? $from : multiSite_getEmail('compreingressos@siscompre'));
 	$mail->FromName = $namefrom;
 	
 	$mail->AddAddress($to, $nameto);
@@ -108,11 +108,11 @@ function authSendEmail_alternativo($from, $namefrom, $to, $nameto, $subject, $me
 	
 	$mail->Port = 587;
 	$mail->SMTPAuth = true;
-	$mail->Username = 'compreingressos@gmail.com';
-	$mail->Password = '743081@clc';
+	$mail->Username = multiSite_getEmail('compreingressos@gmail');
+	$mail->Password = multiSite_getEmailPassword('compreingressos@gmail');
 	
 	// somente gmail
-	$mail->From = 'compreingressos@gmail.com';
+	$mail->From = multiSite_getEmail('compreingressos@gmail');
 	$mail->FromName = $namefrom;
 	
 	$mail->AddAddress($to, $nameto);
@@ -195,12 +195,12 @@ function authSendEmail_alternativo2($from, $namefrom, $to, $nameto, $subject, $m
 	$mail->Host = "smtp.live.com";
 	$mail->Port = 587;
 	$mail->SMTPAuth = true;
-	$mail->Username = "compreingressospedidos@hotmail.com";
-	$mail->Password = "Clcruz121415";
+	$mail->Username = multiSite_getEmail("compreingressospedidos@hotmail");
+	$mail->Password = multiSite_getEmailPassword("compreingressospedidos@hotmail");
 
 	$mail->SMTPSecure = "tls";
 	
-	$mail->From = 'compreingressospedidos@hotmail.com';
+	$mail->From = multiSite_getEmail("compreingressospedidos@hotmail");
 	$mail->FromName = $namefrom;
 	
 	$mail->AddAddress($to, $nameto);
@@ -282,11 +282,11 @@ function authSendEmail_alternativo3($from, $namefrom, $to, $nameto, $subject, $m
 	
 	$mail->Port = 587;
 	$mail->SMTPAuth = true;
-	$mail->Username = ($from == 'assinantea@siscompre.com' ? $from : 'compreingressos@siscompre.com');
-	$mail->Password = ($from == 'assinantea@siscompre.com' ? 'ci2016aa@' : '743081clc@');
+	$mail->Username = ($from == 'assinantea@siscompre.com' ? $from : multiSite_getEmail('compreingressos@siscompre'));
+	$mail->Password = ($from == 'assinantea@siscompre.com' ? multiSite_getEmailPassword('ci2016aa@') : multiSite_getEmailPassword('compreingressos@siscompre'));
 	
 	// somente gmail
-	$mail->From = ($from ? $from : 'compreingressos@siscompre.com');
+	$mail->From = ($from ? $from : multiSite_getEmail('compreingressos@siscompre'));
 	$mail->FromName = $namefrom;
 	
 	$mail->AddAddress($to, $nameto);

@@ -1,6 +1,6 @@
 <?php
 require_once('../settings/functions.php');
-$subject = 'Erro no Sistema COMPREINGRESSOS.COM';
+$subject = 'Erro no Sistema';
 
 //define the body of the message.
 ob_start(); //Turn on output buffering
@@ -16,5 +16,5 @@ ob_start(); //Turn on output buffering
 //copy current buffer contents into $message variable and delete current output buffer
 $message = ob_get_clean();
 
-sendErrorMail('Erro no Sistema COMPREINGRESSOS.COM', $message);
+sendErrorMail('Erro no Sistema', $message);
 ?>

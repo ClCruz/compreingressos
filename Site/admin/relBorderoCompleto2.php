@@ -1,4 +1,6 @@
 <?php
+require_once("../../settings/multisite/unique.php");
+
 if(isset($_GET["exportar"]) && $_GET["exportar"] == "true"){
   header("Content-type: application/vnd.ms-excel");
   header("Content-type: application/force-download");
@@ -97,11 +99,11 @@ if (isset($err) && $err != "") {
 
           <?php if(isset($_GET["exportar"]) && $_GET["exportar"] == "true") { ?>
               <td colspan="2">
-                <center><b><font size="3" face="tahoma,verdana,arial">Compreingressos.com</font></b></center>
+                <center><b><font size="3" face="tahoma,verdana,arial"><?php echo multiSite_getName(); ?></font></b></center>
               </td>
           <?php }else{ ?>
               <td width="80">
-                  <img alt="Compreingressos.com" align="left" border="0" src="http://www.compreingressos.com/images/logo_compre_2015.jpg" />
+                  <img alt="" align="left" border="0" src="<?php echo multiSite_getLogoFullURI(); ?>" />
               </td>
               <td>
                   <div class="logoTeatro">

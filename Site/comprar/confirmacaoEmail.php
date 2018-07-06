@@ -3,7 +3,7 @@
 
 	require_once('../settings/settings.php');
 	require_once('../settings/functions.php');
-
+	require_once('../settings/multisite/unique.php');
 	if (!isset($_SESSION['user'])) {
 		header("Location: login.php?redirect=" . urlencode(getCurrentUrl()));
 		die();
@@ -51,7 +51,7 @@
 
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 	<meta name="robots" content="noindex,nofollow">
-	<link href="../images/favicon.ico" rel="shortcut icon"/>
+	<link href="<?php echo mulsiSite_getFavico()?>" rel="shortcut icon"/>
 	<link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
 	<link rel="stylesheet" href="../stylesheets/ajustes2.css"/>
@@ -66,7 +66,7 @@
 
 	<script src="../javascripts/jquery.utils2.js" type="text/javascript"></script>
 	<script src="../javascripts/common.js" type="text/javascript"></script>
-	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
+	<title><?php echo multiSite_getTitle()?></title>
 </head>
 <body>
 	<!-- Google Tag Manager (noscript) -->

@@ -1,4 +1,5 @@
 <?php
+require_once("../settings/multisite/unique.php");
 
 function echo_header($scroll = true) {
 	// limpa tela
@@ -277,7 +278,7 @@ function print_order($pedido, $reprint = false){
 
 		echo "<PRINTER>";
 
-		echo str_pad("COMPREINGRESSOS.COM", 42, " ", STR_PAD_BOTH) ."<BR>";
+		echo str_pad(multiSite_getName(), 42, " ", STR_PAD_BOTH) ."<BR>";
 		echo substr($space ."Local: ". remove_accents($rs['DS_NOME_TEATRO'], false), 0, 42) ."<BR>";
 		
 		echo $space ."Forma Pgto: ". remove_accents($rs['NM_CARTAO_EXIBICAO_SITE'], false) ."<BR>";

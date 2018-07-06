@@ -1,4 +1,5 @@
 <?php
+require_once("../../settings/multisite/unique.php");
 require_once("../settings/functions.php");
 $connGeral = getConnection($_GET["local"]);
 session_start();
@@ -129,7 +130,7 @@ if(hasRows($pRSGeral)){
 <body>
     <table width="770" class="tabela" border="0">
         <tr>
-            <td colspan="1" rowspan="2"><img align="left" border="0" src="../images/logo.jpg" alt="Compreingressos"></td>
+            <td colspan="1" rowspan="2"><img align="left" border="0" src="<?php echo multiSite_getLogo(); ?>" alt=""></td>
             <td colspan="1" height="15"></td>
         </tr>
         <tr>

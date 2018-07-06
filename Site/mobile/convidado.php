@@ -1,5 +1,5 @@
 <?php
-
+require_once("../settings/multisite/unique.php");
 require_once('../settings/settings.php');
 require_once('../settings/functions.php');
 require_once('../settings/Log.class.php');
@@ -56,11 +56,23 @@ if ($_POST['action'] == 'add') {
           $id_convidado = $rsid['ID'];
 
           $subject = utf8_decode('Convite para Evento');
-          $namefrom = utf8_decode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS');
-          $from = 'compreingressos@gmail.com';
-          $tpl = new Template('templates/emailComprador.html');
+          $namefrom = utf8_decode(multiSite_getTitle());
+          $from = multiSite_getEmail("compreingressos@gmail");
+
+          $caminhoHtml = "templates/emailComprador.html";
+
+        switch (getCurrentSite()) {
+            case "ingressoslitoral":
+                $caminhoHtml = 'templates/multi_ingressoslitoral/emailComprador.html';
+            break;
+            case "compreingressos":
+                $caminhoHtml = 'templates/emailComprador.html';
+            break;
+        }
+
+          $tpl = new Template($caminhoHtml);
           $tpl->nome_cliente = utf8_encode2($_POST['convidado']);
-          $tpl->link_convite = 'https://compra.compreingressos.com/mobile/convidado.php?action=confirm&id='. $id_convidado;
+          $tpl->link_convite = multiSite_getURICompra("/mobile/convidado.php?action=confirm&id=". $id_convidado);
 
           $query = "select e.ds_evento, a.dt_apresentacao, a.hr_apresentacao, b.ds_nome_teatro, m.ds_municipio, es.sg_estado
                     from mw_apresentacao a

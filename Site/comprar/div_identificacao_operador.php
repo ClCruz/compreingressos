@@ -1,8 +1,11 @@
+<?php
+require_once("../../settings/multisite/unique.php");
+?>
 <span id="identificacao" style="display: inline-block">
 	<form id="identificacaoForm" name="identificacao" method="post" action="busca.php">
 		<div class="identificacao">
 			<p class="frase"><b>Já sou</b> cliente</p>
-			<p class="site">compreingressos.com</p>
+			<p class="site"><?php echo multiSite_getName(); ?></p>
 			<input name="nomeBusca" type="text" id="nomeBusca" size="30" maxlength="50" placeholder="Nome"/>
 			<input name="sobrenomeBusca" type="text" id="sobrenomeBusca" size="30" maxlength="50" placeholder="Sobrenome"/>
 			<input name="telefoneBusca" type="text" id="telefoneBusca" size="15" maxlength="15" placeholder="Telefone"/>
@@ -12,7 +15,7 @@
 		</div>
 		<div class="identificacao">
 			<p class="frase"><b>Não sou</b> cliente</p>
-			<p class="site">compreingressos.com</p>
+			<p class="site"><?php echo multiSite_getName(); ?></p>
 			<a href="" class="botao cadastrar bt_cadastro">cadastrar</a>
 		</div>
 	</form>

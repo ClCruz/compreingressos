@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2026
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{159641D6-6404-4A2A-AE62-294DE0FE8301}") = "ETLCompreingressos", "ETLCompreingressos\ETLCompreingressos.dtproj", "{157E908B-EB33-411B-834C-D310247F5280}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Development|Default = Development|Default
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{157E908B-EB33-411B-834C-D310247F5280}.Development|Default.ActiveCfg = Development
+		{157E908B-EB33-411B-834C-D310247F5280}.Development|Default.Build.0 = Development
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A48FDF36-759D-439C-9C1C-C1586A2AB728}
+	EndGlobalSection
+EndGlobal

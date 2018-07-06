@@ -1,4 +1,5 @@
 <?php
+require_once("../../settings/multisite/unique.php");
 if (isset($_GET['email'])) {
 	$mail_sent = false;
 
@@ -21,8 +22,8 @@ if (isset($_GET['email'])) {
 			$to = $_GET['email'];
 			$subject = '=?UTF-8?b?' . base64_encode('Solicitação de Nova Senha') . '?=';
 
-			$namefrom = '=?UTF-8?b?' . base64_encode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS').'?=';
-			// $from = 'lembrete@compreingressos.com';
+			$namefrom = '=?UTF-8?b?' . base64_encode(multiSite_getTitle()).'?=';
+			
 			$from = '';
 
 			//define the body of the message.
@@ -30,7 +31,7 @@ if (isset($_GET['email'])) {
 		?>
 <p>&nbsp;</p>
 <div style="background-color: rgb(255, 255, 255); padding-top: 5px; padding-right: 5px; padding-bottom: 5px; padding-left: 5px; margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; ">
-<p style="text-align: left; font-family: Arial, Verdana, sans-serif; font-size: 12px; ">&nbsp;<img alt="" src="http://www.compreingressos.com/images/logo_compre_2015.jpg" /><span style="font-family: Verdana; "><strong>GESTÃO E ADMINISTRAÇÃO DE INGRESSOS</strong></span></p>
+<p style="text-align: left; font-family: Arial, Verdana, sans-serif; font-size: 12px; ">&nbsp;<img alt="" src="<? echo multiSite_getLogoFullURI();?>" /><span style="font-family: Verdana; "><strong>GESTÃO E ADMINISTRAÇÃO DE INGRESSOS</strong></span></p>
 <h3 style="font-family: Arial, Verdana, sans-serif; font-size: 12px; "><strong>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</strong><strong>SOLICIT</strong><strong>AÇÃO&nbsp;DE&nbsp;NOVA SENHA</strong></h3>
 <h2 style="margin-left: 40px; font-family: Arial, Verdana, sans-serif; font-size: 12px; "><span style="color: rgb(98, 98, 97); ">Olá,&nbsp;</span><span style="color: rgb(181, 9, 56); "><span style="font-size: smaller; "><span style="font-family: Verdana, sans-serif; "><?php echo $rs['DS_NOME']; ?></span></span></span><span style="font-size: medium; "><span style="font-family: Verdana; "><strong><span><br />
 </span></strong></span></span></h2>
@@ -42,9 +43,9 @@ if (isset($_GET['email'])) {
 <div style="line-height: normal; font-family: Arial, Verdana, sans-serif; font-size: 12px; "><span style="color: rgb(98, 98, 97); ">&nbsp;</span></div>
 <div style="line-height: normal; font-family: Arial, Verdana, sans-serif; font-size: 12px; "><span style="color: rgb(98, 98, 97); ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Atenciosamente</span></div>
 <div style="line-height: normal; font-family: Arial, Verdana, sans-serif; font-size: 12px; ">&nbsp;</div>
-<div style="line-height: normal; font-family: Arial, Verdana, sans-serif; font-size: 12px; "><span style="color: rgb(98, 98, 97); ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;COMPREINGRESSOS.COM&nbsp;&nbsp;</span><span style="color: rgb(98, 98, 97); ">11 2122 4070</span></div>
+<div style="line-height: normal; font-family: Arial, Verdana, sans-serif; font-size: 12px; "><span style="color: rgb(98, 98, 97); ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo multiSite_getName(); ?>&nbsp;&nbsp;</span><span style="color: rgb(98, 98, 97); "><?php echo multiSite_getPhone(); ?></span></div>
 <div style="line-height: normal; font-family: Arial, Verdana, sans-serif; font-size: 12px; "><span style="color: rgb(98, 98, 97); ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
-<div style="line-height: normal; font-family: Arial, Verdana, sans-serif; font-size: 12px; "><span style="color: rgb(98, 98, 97); ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sac@compreingressos.com</span></div>
+<div style="line-height: normal; font-family: Arial, Verdana, sans-serif; font-size: 12px; "><span style="color: rgb(98, 98, 97); ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <?php echo multiSite_getEmail("sac"); ?></span></div>
 <div style="line-height: normal; margin-left: 40px; font-family: Arial, Verdana, sans-serif; font-size: 12px; "><span style="font-family: Verdana, sans-serif; font-size: 8pt; ">&nbsp;</span><span style="font-family: Verdana, sans-serif; font-size: 8pt; "><br />
 </span></div>
 <p style="margin-left: 40px; font-family: Arial, Verdana, sans-serif; font-size: 12px; "><span style="color: rgb(98, 98, 97); "><span style="font-size: smaller; ">Esse é um e-mail automático. Não é necessário respondê-lo.</span></span></p>

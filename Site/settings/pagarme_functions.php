@@ -5,19 +5,6 @@ require '../settings/pagarme/Pagarme.php';
 require_once('../settings/split/split_config.php');
 require_once('../settings/split/split_functions.php');
 
-
-// if ($_ENV['IS_TEST']) {
-// 	//ticketpay : ak_test_183DNskQiE3q7uBAA8UQjkSvENOEdY
-// 	//compreingressos: ak_test_rh88QdkXXKpFQhTkVlCm63zrw3kQgJ
-// 	Pagarme::setApiKey("ak_test_183DNskQiE3q7uBAA8UQjkSvENOEdY");
-// 	$postback_url = 'http://homolog.compreingressos.com/comprar/pagarme_receiver.php';
-// } else {
-// 	//ticketpay: ak_live_pcYp3eGXxpOBHqViOLfBQ61NQ4433y
-// 	//compreingressos: ak_live_5aYKGG3AyIb8cvv7Tq44q7ZasJzPl8
-// 	Pagarme::setApiKey("ak_live_pcYp3eGXxpOBHqViOLfBQ61NQ4433y");
-// 	$postback_url = 'https://compra.compreingressos.com/comprar/pagarme_receiver.php';
-// }
-
 configureSplit("pagarme");
 
 function pagarPedidoPagarme($id_pedido, $dados_extra) {

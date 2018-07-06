@@ -1,0 +1,2284 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="12/3/2011 6:39:52 PM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="DESCOING"
+  DTS:CreatorName="DESCOING\Administrator"
+  DTS:DTSID="{5FC8E7F3-D0B1-4CDA-A5AF-14F7161BE744}"
+  DTS:EnableConfig="True"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="14.0.3002.106"
+  DTS:LocaleID="1046"
+  DTS:ObjectName="04-Dim_cartao_patrocinado"
+  DTS:PackageType="5"
+  DTS:ProtectionLevel="0"
+  DTS:VersionBuild="20"
+  DTS:VersionGUID="{D38E848A-5842-412C-828B-E4696C782BC5}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[DW2]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{E1BA86B8-66B5-4748-87D7-75ABB6335B26}"
+      DTS:ObjectName="DW2">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=192.168.91.16;User ID=mstr;Initial Catalog=CI_DW;Provider=SQLOLEDB.1;Persist Security Info=True;">
+          <DTS:Password
+            DTS:Name="Password"
+            Sensitive="1"></DTS:Password>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Middleway2]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{DEFBD749-125F-4922-B609-C587B127998A}"
+      DTS:ObjectName="Middleway2">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=192.168.91.17;User ID=tsp;Initial Catalog=CI_MIDDLEWAY;Provider=SQLOLEDB.1;Persist Security Info=True;">
+          <DTS:Password
+            DTS:Name="Password"
+            Sensitive="1"></DTS:Password>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Configurations>
+    <DTS:Configuration
+      DTS:ConfigurationString="C:\ETLCompreingressos\ETLCompreingressos\ETLConfigFiles\DW2.dtsConfig"
+      DTS:ConfigurationType="1"
+      DTS:CreationName=""
+      DTS:DTSID="{08CC8C39-A61C-46F8-B443-FC15C8126F1A}"
+      DTS:ObjectName="DW2" />
+    <DTS:Configuration
+      DTS:ConfigurationString="C:\ETLCompreingressos\ETLCompreingressos\ETLConfigFiles\Middleway2.dtsConfig"
+      DTS:ConfigurationType="1"
+      DTS:CreationName=""
+      DTS:DTSID="{5019CD74-DF40-4E3C-9B51-FF7DE9C3DA24}"
+      DTS:ObjectName="Middleway2" />
+  </DTS:Configurations>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\DIM_CARTAO_PATROCINADO"
+      DTS:CreationName="Microsoft.Pipeline"
+      DTS:Description="Data Flow Task"
+      DTS:DTSID="{AAE9C4D0-D485-4CAB-A626-F17461C851D0}"
+      DTS:ExecutableType="Microsoft.Pipeline"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="DIM_CARTAO_PATROCINADO"
+      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server v9; (C) 2004 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <pipeline
+          BLOBTempStoragePath=""
+          bufferTempStoragePath=""
+          engineThreads="5"
+          version="1">
+          <components>
+            <component
+              refId="Package\DIM_CARTAO_PATROCINADO\GERAR ID_PATROCINADOR"
+              componentClassID="Microsoft.DerivedColumn"
+              contactInfo="Derived Column;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0"
+              description="Updates column values using expressions"
+              name="GERAR ID_PATROCINADOR"
+              usesDispositions="true">
+              <inputs>
+                <input
+                  refId="Package\DIM_CARTAO_PATROCINADO\GERAR ID_PATROCINADOR.Inputs[Derived Column Input]"
+                  description="Input to the Derived Column Transformation"
+                  name="Derived Column Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\GERAR ID_PATROCINADOR.Inputs[Derived Column Input].Columns[ID_PATROCINADOR]"
+                      cachedDataType="i4"
+                      cachedName="ID_PATROCINADOR"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_PATROCINADOR.Outputs[Lookup Match Output].Columns[ID_PATROCINADOR]" />
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\GERAR ID_PATROCINADOR.Outputs[Derived Column Output]"
+                  description="Default Output of the Derived Column Transformation"
+                  exclusionGroup="1"
+                  name="Derived Column Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\GERAR ID_PATROCINADOR.Inputs[Derived Column Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\GERAR ID_PATROCINADOR.Outputs[Derived Column Output].Columns[ID_PATROCINADOR3]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Computation"
+                      errorRowDisposition="FailComponent"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\GERAR ID_PATROCINADOR.Outputs[Derived Column Output].Columns[ID_PATROCINADOR3]"
+                      name="ID_PATROCINADOR3"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.String"
+                          description="Derived Column Expression"
+                          name="Expression">#{Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_PATROCINADOR.Outputs[Lookup Match Output].Columns[ID_PATROCINADOR]}</property>
+                        <property
+                          containsID="true"
+                          dataType="System.String"
+                          description="Derived Column Friendly Expression"
+                          expressionType="Notify"
+                          name="FriendlyExpression">ID_PATROCINADOR</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\GERAR ID_PATROCINADOR.Outputs[Derived Column Error Output]"
+                  description="Error Output of the Derived Column Transformation"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="Derived Column Error Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\GERAR ID_PATROCINADOR.Inputs[Derived Column Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\GERAR ID_PATROCINADOR.Outputs[Derived Column Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\GERAR ID_PATROCINADOR.Outputs[Derived Column Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\GERAR ID_PATROCINADOR.Outputs[Derived Column Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\GERAR ID_PATROCINADOR.Outputs[Derived Column Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO"
+              componentClassID="Microsoft.DerivedColumn"
+              contactInfo="Derived Column;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0"
+              description="Updates column values using expressions"
+              name="ID_BANDEIRA_CARTAO"
+              usesDispositions="true">
+              <inputs>
+                <input
+                  refId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO.Inputs[Derived Column Input]"
+                  description="Input to the Derived Column Transformation"
+                  name="Derived Column Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO.Inputs[Derived Column Input].Columns[ID_BANDEIRA_CARTAO]"
+                      cachedDataType="i4"
+                      cachedName="ID_BANDEIRA_CARTAO"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_BANDEIRA_CARTAO.Outputs[Lookup Match Output].Columns[ID_BANDEIRA_CARTAO]" />
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO.Outputs[Derived Column Output]"
+                  description="Default Output of the Derived Column Transformation"
+                  exclusionGroup="1"
+                  name="Derived Column Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO.Inputs[Derived Column Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO.Outputs[Derived Column Output].Columns[Derived Column 1]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Computation"
+                      errorRowDisposition="FailComponent"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO.Outputs[Derived Column Output].Columns[Derived Column 1]"
+                      name="Derived Column 1"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.String"
+                          description="Derived Column Expression"
+                          name="Expression">#{Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_BANDEIRA_CARTAO.Outputs[Lookup Match Output].Columns[ID_BANDEIRA_CARTAO]}</property>
+                        <property
+                          containsID="true"
+                          dataType="System.String"
+                          description="Derived Column Friendly Expression"
+                          expressionType="Notify"
+                          name="FriendlyExpression">ID_BANDEIRA_CARTAO</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO.Outputs[Derived Column Error Output]"
+                  description="Error Output of the Derived Column Transformation"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="Derived Column Error Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO.Inputs[Derived Column Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO.Outputs[Derived Column Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO.Outputs[Derived Column Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO.Outputs[Derived Column Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO.Outputs[Derived Column Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO NÃO ENCONTRADO"
+              componentClassID="Microsoft.DerivedColumn"
+              contactInfo="Derived Column;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0"
+              description="Updates column values using expressions"
+              name="ID_BANDEIRA_CARTAO NÃO ENCONTRADO"
+              usesDispositions="true">
+              <inputs>
+                <input
+                  refId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO NÃO ENCONTRADO.Inputs[Derived Column Input]"
+                  description="Input to the Derived Column Transformation"
+                  name="Derived Column Input">
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO NÃO ENCONTRADO.Outputs[Derived Column Output]"
+                  description="Default Output of the Derived Column Transformation"
+                  exclusionGroup="1"
+                  name="Derived Column Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO NÃO ENCONTRADO.Inputs[Derived Column Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO NÃO ENCONTRADO.Outputs[Derived Column Output].Columns[ID_BANDEIRA_CARTAO]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Computation"
+                      errorRowDisposition="FailComponent"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO NÃO ENCONTRADO.Outputs[Derived Column Output].Columns[ID_BANDEIRA_CARTAO]"
+                      name="ID_BANDEIRA_CARTAO"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.String"
+                          description="Derived Column Expression"
+                          name="Expression">-1</property>
+                        <property
+                          containsID="true"
+                          dataType="System.String"
+                          description="Derived Column Friendly Expression"
+                          expressionType="Notify"
+                          name="FriendlyExpression">-1</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO NÃO ENCONTRADO.Outputs[Derived Column Error Output]"
+                  description="Error Output of the Derived Column Transformation"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="Derived Column Error Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO NÃO ENCONTRADO.Inputs[Derived Column Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO NÃO ENCONTRADO.Outputs[Derived Column Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO NÃO ENCONTRADO.Outputs[Derived Column Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO NÃO ENCONTRADO.Outputs[Derived Column Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO NÃO ENCONTRADO.Outputs[Derived Column Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR"
+              componentClassID="Microsoft.DerivedColumn"
+              contactInfo="Derived Column;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0"
+              description="Updates column values using expressions"
+              name="ID_PATROCINADOR"
+              usesDispositions="true">
+              <inputs>
+                <input
+                  refId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR.Inputs[Derived Column Input]"
+                  description="Input to the Derived Column Transformation"
+                  name="Derived Column Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR.Inputs[Derived Column Input].Columns[id_patrocinador]"
+                      cachedDataType="i2"
+                      cachedName="id_patrocinador"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[id_patrocinador]" />
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR.Inputs[Derived Column Input].Columns[ds_cartao_patrocinado]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="ds_cartao_patrocinado"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[ds_cartao_patrocinado]" />
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR.Outputs[Derived Column Output]"
+                  description="Default Output of the Derived Column Transformation"
+                  exclusionGroup="1"
+                  name="Derived Column Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR.Inputs[Derived Column Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR.Outputs[Derived Column Output].Columns[ID_PATROCINADOR2]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Computation"
+                      errorRowDisposition="FailComponent"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR.Outputs[Derived Column Output].Columns[ID_PATROCINADOR2]"
+                      name="ID_PATROCINADOR2"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.String"
+                          description="Derived Column Expression"
+                          name="Expression">(DT_I4)#{Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[id_patrocinador]}</property>
+                        <property
+                          containsID="true"
+                          dataType="System.String"
+                          description="Derived Column Friendly Expression"
+                          expressionType="Notify"
+                          name="FriendlyExpression">(DT_I4)id_patrocinador</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR.Outputs[Derived Column Output].Columns[DS_CARTAO_PATROCINADO2]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Computation"
+                      errorRowDisposition="FailComponent"
+                      length="30"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR.Outputs[Derived Column Output].Columns[DS_CARTAO_PATROCINADO2]"
+                      name="DS_CARTAO_PATROCINADO2"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.String"
+                          description="Derived Column Expression"
+                          name="Expression">[SUBSTRING](#{Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[ds_cartao_patrocinado]},1,30)</property>
+                        <property
+                          containsID="true"
+                          dataType="System.String"
+                          description="Derived Column Friendly Expression"
+                          expressionType="Notify"
+                          name="FriendlyExpression">SUBSTRING(ds_cartao_patrocinado,1,30)</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR.Outputs[Derived Column Error Output]"
+                  description="Error Output of the Derived Column Transformation"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="Derived Column Error Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR.Inputs[Derived Column Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR.Outputs[Derived Column Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR.Outputs[Derived Column Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR.Outputs[Derived Column Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR.Outputs[Derived Column Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR NÃO ENCONTRADO"
+              componentClassID="Microsoft.DerivedColumn"
+              contactInfo="Derived Column;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0"
+              description="Updates column values using expressions"
+              name="ID_PATROCINADOR NÃO ENCONTRADO"
+              usesDispositions="true">
+              <inputs>
+                <input
+                  refId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR NÃO ENCONTRADO.Inputs[Derived Column Input]"
+                  description="Input to the Derived Column Transformation"
+                  name="Derived Column Input">
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR NÃO ENCONTRADO.Outputs[Derived Column Output]"
+                  description="Default Output of the Derived Column Transformation"
+                  exclusionGroup="1"
+                  name="Derived Column Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR NÃO ENCONTRADO.Inputs[Derived Column Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR NÃO ENCONTRADO.Outputs[Derived Column Output].Columns[ID_PATROCINADOR3]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Computation"
+                      errorRowDisposition="FailComponent"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR NÃO ENCONTRADO.Outputs[Derived Column Output].Columns[ID_PATROCINADOR3]"
+                      name="ID_PATROCINADOR3"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.String"
+                          description="Derived Column Expression"
+                          name="Expression">-1</property>
+                        <property
+                          containsID="true"
+                          dataType="System.String"
+                          description="Derived Column Friendly Expression"
+                          expressionType="Notify"
+                          name="FriendlyExpression">-1</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR NÃO ENCONTRADO.Outputs[Derived Column Error Output]"
+                  description="Error Output of the Derived Column Transformation"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="Derived Column Error Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR NÃO ENCONTRADO.Inputs[Derived Column Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR NÃO ENCONTRADO.Outputs[Derived Column Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR NÃO ENCONTRADO.Outputs[Derived Column Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR NÃO ENCONTRADO.Outputs[Derived Column Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR NÃO ENCONTRADO.Outputs[Derived Column Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\DIM_CARTAO_PATROCINADO\Insert Destination"
+              componentClassID="Microsoft.OLEDBDestination"
+              contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SqlServer v10; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
+              description="OLE DB Destination"
+              name="Insert Destination"
+              usesDispositions="true"
+              version="4">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of the database object used to open a rowset."
+                  name="OpenRowset">[dbo].[DIM_CARTAO_PATROCINADO]</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the variable that contains the name of the database object used to open a rowset."
+                  name="OpenRowsetVariable"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Forces the use of the DefaultCodePage property value when describing character data."
+                  name="AlwaysUseDefaultCodePage">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the mode used to access the database."
+                  name="AccessMode"
+                  typeConverter="AccessMode">0</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on."
+                  name="FastLoadKeepIdentity">false</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destination. Applies only if fast load is turned on."
+                  name="FastLoadKeepNulls">false</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
+                  name="FastLoadOptions"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
+                  name="FastLoadMaxInsertCommitSize">2147483647</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[DW2]"
+                  connectionManagerRefId="Package.ConnectionManagers[DW2]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Inputs[OLE DB Destination Input]"
+                  errorOrTruncationOperation="Insert"
+                  errorRowDisposition="FailComponent"
+                  hasSideEffects="true"
+                  name="OLE DB Destination Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Inputs[OLE DB Destination Input].Columns[cd_bin]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="6"
+                      cachedName="cd_bin"
+                      externalMetadataColumnId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[NR_BIN]"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[cd_bin]" />
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Inputs[OLE DB Destination Input].Columns[id_cartao_patrocinado]"
+                      cachedDataType="i4"
+                      cachedName="id_cartao_patrocinado"
+                      externalMetadataColumnId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[CD_CARTAO_PATROCINADO]"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[id_cartao_patrocinado]" />
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Inputs[OLE DB Destination Input].Columns[ID_BANDEIRA_CARTAO]"
+                      cachedDataType="i4"
+                      cachedName="ID_BANDEIRA_CARTAO"
+                      externalMetadataColumnId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[ID_BANDEIRA_CARTAO]"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ID_BANDEIRA_CARTAO]" />
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Inputs[OLE DB Destination Input].Columns[ID_PATROCINADOR]"
+                      cachedDataType="i4"
+                      cachedName="ID_PATROCINADOR"
+                      externalMetadataColumnId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[ID_PATROCINADOR]"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ID_PATROCINADOR]" />
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Inputs[OLE DB Destination Input].Columns[DS_CARTAO_PATROCINADO2]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="30"
+                      cachedName="DS_CARTAO_PATROCINADO2"
+                      externalMetadataColumnId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[DS_CARTAO_PATROCINADO]"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[DS_CARTAO_PATROCINADO2]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[ID_CARTAO_PATROCINADO]"
+                      dataType="i4"
+                      name="ID_CARTAO_PATROCINADO" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[DS_CARTAO_PATROCINADO]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      name="DS_CARTAO_PATROCINADO" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[NR_BIN]"
+                      codePage="1252"
+                      dataType="str"
+                      length="6"
+                      name="NR_BIN" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[CD_CARTAO_PATROCINADO]"
+                      dataType="i4"
+                      name="CD_CARTAO_PATROCINADO" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[ID_BANDEIRA_CARTAO]"
+                      dataType="i4"
+                      name="ID_BANDEIRA_CARTAO" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[ID_PATROCINADOR]"
+                      dataType="i4"
+                      name="ID_PATROCINADOR" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[DT_ATUALIZACAO]"
+                      dataType="dbTimeStamp"
+                      name="DT_ATUALIZACAO" />
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Outputs[OLE DB Destination Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="OLE DB Destination Error Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Inputs[OLE DB Destination Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_BANDEIRA_CARTAO"
+              componentClassID="Microsoft.Lookup"
+              contactInfo="Lookup;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
+              description="Looks up values in a reference dataset by using exact matching."
+              name="Lookup na DIM_BANDEIRA_CARTAO"
+              usesDispositions="true"
+              version="6">
+              <properties>
+                <property
+                  dataType="System.String"
+                  description="Specifies the SQL statement that generates the lookup table."
+                  expressionType="Notify"
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select * from [dbo].[DIM_BANDEIRA_CARTAO]</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies a SQL statement that uses parameters to generate the lookup table."
+                  expressionType="Notify"
+                  name="SqlCommandParam"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select * from (select * from [dbo].[DIM_BANDEIRA_CARTAO]) [refTable]
+where [refTable].[CD_BANDEIRA_CARTAO] = ?</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the cache type of the lookup table."
+                  name="CacheType"
+                  typeConverter="CacheType">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Maximum Memory Usage for Reference Cache on a 32 bit platform."
+                  name="MaxMemoryUsage">25</property>
+                <property
+                  dataType="System.Int64"
+                  description="Maximum Memory Usage for Reference Cache on a 64 bit platform."
+                  name="MaxMemoryUsage64">25</property>
+                <property
+                  dataType="System.String"
+                  description="Indicates whether to reference metadata in an XML format."
+                  name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name="ID_BANDEIRA_CARTAO" dataType="DT_I4" length="0" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="DS_BANDEIRA_CARTAO" dataType="DT_STR" length="20" precision="0" scale="0" codePage="1252"/&gt;&lt;referenceColumn name="CD_BANDEIRA_CARTAO" dataType="DT_I4" length="0" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="DT_ATUALIZACAO" dataType="DT_DBTIMESTAMP" length="0" precision="0" scale="0" codePage="0"/&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
+                <property
+                  containsID="true"
+                  dataType="System.String"
+                  description="Specifies the list of lineage identifiers that map to the parameters that the SQL statement in the SQLCommand property uses. Entries in the list are separated by semicolons."
+                  name="ParameterMap">#{Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].Columns[id_bandeira_cartao]};</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the type of connection used to access the reference dataset."
+                  name="ConnectionType"
+                  typeConverter="LookupConnectionType">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies how the Lookup transformation handles rows without matching entries in the reference data set."
+                  name="NoMatchBehavior"
+                  typeConverter="LookupNoMatchBehavior">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the percentage of the cache that is allocated for rows with no matching entries in the reference dataset."
+                  name="NoMatchCachePercentage">0</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Determines whether duplicate keys in the reference data should be treated as errors when full cache mode is used."
+                  name="TreatDuplicateKeysAsError">false</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_BANDEIRA_CARTAO.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[DW2]"
+                  connectionManagerRefId="Package.ConnectionManagers[DW2]"
+                  description="Connection manager used to access lookup data."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_BANDEIRA_CARTAO.Inputs[Lookup Input]"
+                  name="Lookup Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_BANDEIRA_CARTAO.Inputs[Lookup Input].Columns[id_bandeira_cartao]"
+                      cachedDataType="i4"
+                      cachedName="id_bandeira_cartao"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].Columns[id_bandeira_cartao]">
+                      <properties>
+                        <property
+                          dataType="System.String"
+                          description="Specifies the column in the reference table that a column joins."
+                          name="JoinToReferenceColumn">CD_BANDEIRA_CARTAO</property>
+                        <property
+                          dataType="System.Null"
+                          description="Specifies the column in the reference table from which a column is copied."
+                          name="CopyFromReferenceColumn" />
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_BANDEIRA_CARTAO.Outputs[Lookup Match Output]"
+                  errorOrTruncationOperation="Lookup"
+                  errorRowDisposition="RedirectRow"
+                  exclusionGroup="1"
+                  name="Lookup Match Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_BANDEIRA_CARTAO.Inputs[Lookup Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_BANDEIRA_CARTAO.Outputs[Lookup Match Output].Columns[ID_BANDEIRA_CARTAO]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Copy Column"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_BANDEIRA_CARTAO.Outputs[Lookup Match Output].Columns[ID_BANDEIRA_CARTAO]"
+                      name="ID_BANDEIRA_CARTAO"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          dataType="System.String"
+                          description="Specifies the column in the reference table from which a column is copied."
+                          name="CopyFromReferenceColumn">ID_BANDEIRA_CARTAO</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_BANDEIRA_CARTAO.Outputs[Lookup No Match Output]"
+                  description="The Lookup output that handles rows with no matching entries in the reference dataset. Use this output when the NoMatchBehavior property is set to &quot;Send rows with no matching entries to the no match output.&quot;"
+                  exclusionGroup="1"
+                  name="Lookup No Match Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_BANDEIRA_CARTAO.Inputs[Lookup Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_BANDEIRA_CARTAO.Outputs[Lookup Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="Lookup Error Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_BANDEIRA_CARTAO.Inputs[Lookup Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_BANDEIRA_CARTAO.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_BANDEIRA_CARTAO.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_BANDEIRA_CARTAO.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_BANDEIRA_CARTAO.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_PATROCINADOR"
+              componentClassID="Microsoft.Lookup"
+              contactInfo="Lookup;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
+              description="Looks up values in a reference dataset by using exact matching."
+              name="Lookup na DIM_PATROCINADOR"
+              usesDispositions="true"
+              version="6">
+              <properties>
+                <property
+                  dataType="System.String"
+                  description="Specifies the SQL statement that generates the lookup table."
+                  expressionType="Notify"
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select * from [dbo].[DIM_PATROCINADOR]</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies a SQL statement that uses parameters to generate the lookup table."
+                  expressionType="Notify"
+                  name="SqlCommandParam"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select * from (select * from [dbo].[DIM_PATROCINADOR]) [refTable]
+where [refTable].[CD_PATROCINADOR] = ?</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the cache type of the lookup table."
+                  name="CacheType"
+                  typeConverter="CacheType">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Maximum Memory Usage for Reference Cache on a 32 bit platform."
+                  name="MaxMemoryUsage">25</property>
+                <property
+                  dataType="System.Int64"
+                  description="Maximum Memory Usage for Reference Cache on a 64 bit platform."
+                  name="MaxMemoryUsage64">25</property>
+                <property
+                  dataType="System.String"
+                  description="Indicates whether to reference metadata in an XML format."
+                  name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name="ID_PATROCINADOR" dataType="DT_I4" length="0" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="DS_NOMPATROCINADOR" dataType="DT_STR" length="30" precision="0" scale="0" codePage="1252"/&gt;&lt;referenceColumn name="CD_PATROCINADOR" dataType="DT_I4" length="0" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="DT_ATUALIZACAO" dataType="DT_DBTIMESTAMP" length="0" precision="0" scale="0" codePage="0"/&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
+                <property
+                  containsID="true"
+                  dataType="System.String"
+                  description="Specifies the list of lineage identifiers that map to the parameters that the SQL statement in the SQLCommand property uses. Entries in the list are separated by semicolons."
+                  name="ParameterMap">#{Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR.Outputs[Derived Column Output].Columns[ID_PATROCINADOR2]};</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the type of connection used to access the reference dataset."
+                  name="ConnectionType"
+                  typeConverter="LookupConnectionType">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies how the Lookup transformation handles rows without matching entries in the reference data set."
+                  name="NoMatchBehavior"
+                  typeConverter="LookupNoMatchBehavior">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the percentage of the cache that is allocated for rows with no matching entries in the reference dataset."
+                  name="NoMatchCachePercentage">0</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Determines whether duplicate keys in the reference data should be treated as errors when full cache mode is used."
+                  name="TreatDuplicateKeysAsError">false</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_PATROCINADOR.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[DW2]"
+                  connectionManagerRefId="Package.ConnectionManagers[DW2]"
+                  description="Connection manager used to access lookup data."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_PATROCINADOR.Inputs[Lookup Input]"
+                  name="Lookup Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_PATROCINADOR.Inputs[Lookup Input].Columns[ID_PATROCINADOR2]"
+                      cachedDataType="i4"
+                      cachedName="ID_PATROCINADOR2"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR.Outputs[Derived Column Output].Columns[ID_PATROCINADOR2]">
+                      <properties>
+                        <property
+                          dataType="System.String"
+                          description="Specifies the column in the reference table that a column joins."
+                          name="JoinToReferenceColumn">CD_PATROCINADOR</property>
+                        <property
+                          dataType="System.Null"
+                          description="Specifies the column in the reference table from which a column is copied."
+                          name="CopyFromReferenceColumn" />
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_PATROCINADOR.Outputs[Lookup Match Output]"
+                  errorOrTruncationOperation="Lookup"
+                  errorRowDisposition="RedirectRow"
+                  exclusionGroup="1"
+                  name="Lookup Match Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_PATROCINADOR.Inputs[Lookup Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_PATROCINADOR.Outputs[Lookup Match Output].Columns[ID_PATROCINADOR]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Copy Column"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_PATROCINADOR.Outputs[Lookup Match Output].Columns[ID_PATROCINADOR]"
+                      name="ID_PATROCINADOR"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          dataType="System.String"
+                          description="Specifies the column in the reference table from which a column is copied."
+                          name="CopyFromReferenceColumn">ID_PATROCINADOR</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_PATROCINADOR.Outputs[Lookup No Match Output]"
+                  description="The Lookup output that handles rows with no matching entries in the reference dataset. Use this output when the NoMatchBehavior property is set to &quot;Send rows with no matching entries to the no match output.&quot;"
+                  exclusionGroup="1"
+                  name="Lookup No Match Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_PATROCINADOR.Inputs[Lookup Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_PATROCINADOR.Outputs[Lookup Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="Lookup Error Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_PATROCINADOR.Inputs[Lookup Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_PATROCINADOR.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_PATROCINADOR.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_PATROCINADOR.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_PATROCINADOR.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command"
+              componentClassID="Microsoft.OLEDBCommand"
+              contactInfo="OLE DB Command;Microsoft Corporation; Microsoft SqlServer v10; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;2"
+              description="Executes an SQL command for each row in a dataset."
+              name="OLE DB Command"
+              usesDispositions="true"
+              version="2">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  expressionType="Notify"
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">UPDATE [dbo].[DIM_CARTAO_PATROCINADO] SET [DS_CARTAO_PATROCINADO] = ?,[ID_BANDEIRA_CARTAO] = ?,[ID_PATROCINADOR] = ?,[NR_BIN] = ?, DT_ATUALIZACAO = GETDATE()  WHERE [CD_CARTAO_PATROCINADO] = ?</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[DW2]"
+                  connectionManagerRefId="Package.ConnectionManagers[DW2]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Inputs[OLE DB Command Input]"
+                  errorOrTruncationOperation="Command Execution"
+                  errorRowDisposition="FailComponent"
+                  hasSideEffects="true"
+                  name="OLE DB Command Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Inputs[OLE DB Command Input].Columns[id_cartao_patrocinado]"
+                      cachedDataType="i4"
+                      cachedName="id_cartao_patrocinado"
+                      externalMetadataColumnId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_4]"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[id_cartao_patrocinado]" />
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Inputs[OLE DB Command Input].Columns[ds_cartao_patrocinado]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="ds_cartao_patrocinado"
+                      externalMetadataColumnId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_0]"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ds_cartao_patrocinado]" />
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Inputs[OLE DB Command Input].Columns[ID_BANDEIRA_CARTAO]"
+                      cachedDataType="i4"
+                      cachedName="ID_BANDEIRA_CARTAO"
+                      externalMetadataColumnId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_1]"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ID_BANDEIRA_CARTAO]" />
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Inputs[OLE DB Command Input].Columns[ID_PATROCINADOR]"
+                      cachedDataType="i4"
+                      cachedName="ID_PATROCINADOR"
+                      externalMetadataColumnId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_2]"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ID_PATROCINADOR]" />
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Inputs[OLE DB Command Input].Columns[cd_bin]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="6"
+                      cachedName="cd_bin"
+                      externalMetadataColumnId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_3]"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[cd_bin]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_0]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      name="Param_0">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                          name="DBParamInfoFlags">1</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_1]"
+                      dataType="i4"
+                      name="Param_1">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                          name="DBParamInfoFlags">81</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_2]"
+                      dataType="i4"
+                      name="Param_2">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                          name="DBParamInfoFlags">81</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_3]"
+                      codePage="1252"
+                      dataType="str"
+                      length="6"
+                      name="Param_3">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                          name="DBParamInfoFlags">1</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_4]"
+                      dataType="i4"
+                      name="Param_4">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                          name="DBParamInfoFlags">17</property>
+                      </properties>
+                    </externalMetadataColumn>
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Outputs[OLE DB Command Output]"
+                  exclusionGroup="1"
+                  name="OLE DB Command Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Inputs[OLE DB Command Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Outputs[OLE DB Command Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="OLE DB Command Error Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Inputs[OLE DB Command Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Outputs[OLE DB Command Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Outputs[OLE DB Command Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Outputs[OLE DB Command Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Outputs[OLE DB Command Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source"
+              componentClassID="Microsoft.OLEDBSource"
+              contactInfo="OLE DB Source;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
+              description="OLE DB Source"
+              name="OLE DB Source"
+              usesDispositions="true"
+              version="7">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of the database object used to open a rowset."
+                  name="OpenRowset">[dbo].[mw_cartao_patrocinado]</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the variable that contains the name of the database object used to open a rowset."
+                  name="OpenRowsetVariable"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT cp.id_cartao_patrocinado
+      ,cp.id_patrocinador
+      ,cp.ds_cartao_patrocinado
+      ,cp.cd_bin
+      ,cp.id_bandeira_cartao
+  FROM mw_cartao_patrocinado as cp
+  
+  inner join mw_bandeira_cartao as bc
+  on bc.id_bandeira_cartao = cp.id_bandeira_cartao
+
+  inner join mw_patrocinador as p
+  on p.id_patrocinador = cp.id_patrocinador</property>
+                <property
+                  dataType="System.String"
+                  description="The variable that contains the SQL command to be executed."
+                  name="SqlCommandVariable"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Forces the use of the DefaultCodePage property value when describing character data."
+                  name="AlwaysUseDefaultCodePage">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the mode used to access the database."
+                  name="AccessMode"
+                  typeConverter="AccessMode">2</property>
+                <property
+                  dataType="System.String"
+                  description="The mappings between the parameters in the SQL command and variables."
+                  name="ParameterMapping"></property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Middleway2]"
+                  connectionManagerRefId="Package.ConnectionManagers[Middleway2]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <outputs>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output]"
+                  name="OLE DB Source Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].Columns[id_bandeira_cartao]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[id_bandeira_cartao]"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].Columns[id_bandeira_cartao]"
+                      name="id_bandeira_cartao"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].Columns[id_cartao_patrocinado]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[id_cartao_patrocinado]"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].Columns[id_cartao_patrocinado]"
+                      name="id_cartao_patrocinado"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].Columns[id_patrocinador]"
+                      dataType="i2"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[id_patrocinador]"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].Columns[id_patrocinador]"
+                      name="id_patrocinador"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].Columns[ds_cartao_patrocinado]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ds_cartao_patrocinado]"
+                      length="50"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].Columns[ds_cartao_patrocinado]"
+                      name="ds_cartao_patrocinado"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].Columns[cd_bin]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[cd_bin]"
+                      length="6"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].Columns[cd_bin]"
+                      name="cd_bin"
+                      truncationRowDisposition="FailComponent" />
+                  </outputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[id_bandeira_cartao]"
+                      dataType="i4"
+                      name="id_bandeira_cartao" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[id_cartao_patrocinado]"
+                      dataType="i4"
+                      name="id_cartao_patrocinado" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[id_patrocinador]"
+                      dataType="i2"
+                      name="id_patrocinador" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ds_cartao_patrocinado]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="ds_cartao_patrocinado" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[cd_bin]"
+                      codePage="1252"
+                      dataType="str"
+                      length="6"
+                      name="cd_bin" />
+                  </externalMetadataColumns>
+                </output>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Error Output]"
+                  isErrorOut="true"
+                  name="OLE DB Source Error Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[id_cartao_patrocinado]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[id_cartao_patrocinado]"
+                      name="id_cartao_patrocinado" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[id_patrocinador]"
+                      dataType="i2"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[id_patrocinador]"
+                      name="id_patrocinador" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ds_cartao_patrocinado]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ds_cartao_patrocinado]"
+                      name="ds_cartao_patrocinado" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[cd_bin]"
+                      codePage="1252"
+                      dataType="str"
+                      length="6"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[cd_bin]"
+                      name="cd_bin" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[id_bandeira_cartao]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[id_bandeira_cartao]"
+                      name="id_bandeira_cartao" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension"
+              componentClassID="Microsoft.SCD"
+              contactInfo="Slowly Changing Dimension;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;3"
+              description="Updates a slowly changing dimension."
+              name="Slowly Changing Dimension"
+              version="3">
+              <properties>
+                <property
+                  dataType="System.String"
+                  description="Specifies the SELECT statement used to create a schema rowset."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT [CD_CARTAO_PATROCINADO], [DS_CARTAO_PATROCINADO], [ID_BANDEIRA_CARTAO], [ID_PATROCINADOR], [NR_BIN] FROM [dbo].[DIM_CARTAO_PATROCINADO]</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the WHERE clause in the SELECT statement that selects the current row among rows with identical business keys."
+                  name="CurrentRowWhere"></property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether historical attribute updates are directed to the transformation output for changing attribute updates."
+                  name="UpdateChangingAttributeHistory">false</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the transformation fails when columns with fixed attributes contain changes."
+                  name="FailOnFixedAttributeChange">false</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the column name for the inferred member."
+                  name="InferredMemberIndicator"></property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether inferred member updates are detected."
+                  name="EnableInferredMember">false</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the transformation fails when a lookup of an existing record fails."
+                  name="FailOnLookupFailure">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies that all rows in the input are new or the transformation detects the change type."
+                  name="IncomingRowChangeType"
+                  typeConverter="IncomingRowChangeType">1</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Connections[LookupConnection]"
+                  connectionManagerID="Package.ConnectionManagers[DW2]"
+                  connectionManagerRefId="Package.ConnectionManagers[DW2]"
+                  description="Defines the connection to use for lookups in the dimension table"
+                  name="LookupConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]"
+                  name="Slowly Changing Dimension Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].Columns[id_cartao_patrocinado]"
+                      cachedDataType="i4"
+                      cachedName="id_cartao_patrocinado"
+                      externalMetadataColumnId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[CD_CARTAO_PATROCINADO]"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[id_cartao_patrocinado]">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          name="ColumnType"
+                          typeConverter="ColumnType">1</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].Columns[ds_cartao_patrocinado]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="ds_cartao_patrocinado"
+                      externalMetadataColumnId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[DS_CARTAO_PATROCINADO]"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ds_cartao_patrocinado]">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          name="ColumnType"
+                          typeConverter="ColumnType">2</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].Columns[ID_BANDEIRA_CARTAO]"
+                      cachedDataType="i4"
+                      cachedName="ID_BANDEIRA_CARTAO"
+                      externalMetadataColumnId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[ID_BANDEIRA_CARTAO]"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ID_BANDEIRA_CARTAO]">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          name="ColumnType"
+                          typeConverter="ColumnType">2</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].Columns[ID_PATROCINADOR]"
+                      cachedDataType="i4"
+                      cachedName="ID_PATROCINADOR"
+                      externalMetadataColumnId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[ID_PATROCINADOR]"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ID_PATROCINADOR]">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          name="ColumnType"
+                          typeConverter="ColumnType">2</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].Columns[cd_bin]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="6"
+                      cachedName="cd_bin"
+                      externalMetadataColumnId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[NR_BIN]"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[cd_bin]">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          name="ColumnType"
+                          typeConverter="ColumnType">2</property>
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[CD_CARTAO_PATROCINADO]"
+                      dataType="i4"
+                      name="CD_CARTAO_PATROCINADO" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[DS_CARTAO_PATROCINADO]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      name="DS_CARTAO_PATROCINADO" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[ID_BANDEIRA_CARTAO]"
+                      dataType="i4"
+                      name="ID_BANDEIRA_CARTAO" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[ID_PATROCINADOR]"
+                      dataType="i4"
+                      name="ID_PATROCINADOR" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[NR_BIN]"
+                      codePage="1252"
+                      dataType="str"
+                      length="6"
+                      name="NR_BIN" />
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Outputs[Unchanged Output]"
+                  description="Unchanged rows"
+                  exclusionGroup="1"
+                  name="Unchanged Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Outputs[New Output]"
+                  description="New rows"
+                  exclusionGroup="1"
+                  name="New Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Outputs[Fixed Attribute Output]"
+                  description="Rows with changes in columns tagged FixedAttribute"
+                  exclusionGroup="1"
+                  name="Fixed Attribute Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Outputs[Changing Attribute Updates Output]"
+                  description="These rows contain new information for ChangingAttribute (Type 1) column changes"
+                  exclusionGroup="1"
+                  name="Changing Attribute Updates Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Outputs[Historical Attribute Inserts Output]"
+                  description="HistoricalAttribute (Type 2) changes result in these new rows"
+                  exclusionGroup="2"
+                  name="Historical Attribute Inserts Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Outputs[Inferred Member Updates Output]"
+                  description="Information to update unpopulated initial dimension row"
+                  exclusionGroup="1"
+                  name="Inferred Member Updates Output"
+                  synchronousInputId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\DIM_CARTAO_PATROCINADO\Union All"
+              componentClassID="Microsoft.UnionAll"
+              contactInfo="Union All;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;1"
+              description="Merges multiple datasets."
+              name="Union All"
+              version="1">
+              <inputs>
+                <input
+                  refId="Package\DIM_CARTAO_PATROCINADO\Union All.Inputs[Union All Input 1]"
+                  name="Union All Input 1">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All.Inputs[Union All Input 1].Columns[id_cartao_patrocinado]"
+                      cachedDataType="i4"
+                      cachedName="id_cartao_patrocinado"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].Columns[id_cartao_patrocinado]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[id_cartao_patrocinado]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All.Inputs[Union All Input 1].Columns[id_patrocinador]"
+                      cachedDataType="i2"
+                      cachedName="id_patrocinador"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].Columns[id_patrocinador]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[id_patrocinador]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All.Inputs[Union All Input 1].Columns[ds_cartao_patrocinado]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="ds_cartao_patrocinado"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].Columns[ds_cartao_patrocinado]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[ds_cartao_patrocinado]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All.Inputs[Union All Input 1].Columns[cd_bin]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="6"
+                      cachedName="cd_bin"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].Columns[cd_bin]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[cd_bin]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All.Inputs[Union All Input 1].Columns[id_bandeira_cartao]"
+                      cachedDataType="i4"
+                      cachedName="id_bandeira_cartao"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].Columns[id_bandeira_cartao]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[id_bandeira_cartao]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All.Inputs[Union All Input 1].Columns[ID_BANDEIRA_CARTAO]"
+                      cachedDataType="i4"
+                      cachedName="ID_BANDEIRA_CARTAO"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_BANDEIRA_CARTAO.Outputs[Lookup Match Output].Columns[ID_BANDEIRA_CARTAO]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[ID_BANDEIRA_CARTAO]}</property>
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+                <input
+                  refId="Package\DIM_CARTAO_PATROCINADO\Union All.Inputs[Union All Input 2]"
+                  hasSideEffects="true"
+                  name="Union All Input 2">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All.Inputs[Union All Input 2].Columns[id_cartao_patrocinado]"
+                      cachedDataType="i4"
+                      cachedName="id_cartao_patrocinado"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].Columns[id_cartao_patrocinado]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[id_cartao_patrocinado]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All.Inputs[Union All Input 2].Columns[id_patrocinador]"
+                      cachedDataType="i2"
+                      cachedName="id_patrocinador"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].Columns[id_patrocinador]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[id_patrocinador]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All.Inputs[Union All Input 2].Columns[ds_cartao_patrocinado]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="ds_cartao_patrocinado"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].Columns[ds_cartao_patrocinado]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[ds_cartao_patrocinado]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All.Inputs[Union All Input 2].Columns[cd_bin]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="6"
+                      cachedName="cd_bin"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].Columns[cd_bin]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[cd_bin]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All.Inputs[Union All Input 2].Columns[id_bandeira_cartao]"
+                      cachedDataType="i4"
+                      cachedName="id_bandeira_cartao"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output].Columns[id_bandeira_cartao]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[id_bandeira_cartao]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All.Inputs[Union All Input 2].Columns[ID_BANDEIRA_CARTAO]"
+                      cachedDataType="i4"
+                      cachedName="ID_BANDEIRA_CARTAO"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO NÃO ENCONTRADO.Outputs[Derived Column Output].Columns[ID_BANDEIRA_CARTAO]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[ID_BANDEIRA_CARTAO]}</property>
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+                <input
+                  refId="Package\DIM_CARTAO_PATROCINADO\Union All.Inputs[Union All Input 3]"
+                  dangling="true"
+                  hasSideEffects="true"
+                  name="Union All Input 3">
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1]"
+                  name="Union All Output 1">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[id_cartao_patrocinado]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[id_cartao_patrocinado]"
+                      name="id_cartao_patrocinado" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[id_patrocinador]"
+                      dataType="i2"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[id_patrocinador]"
+                      name="id_patrocinador" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[ds_cartao_patrocinado]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[ds_cartao_patrocinado]"
+                      name="ds_cartao_patrocinado" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[cd_bin]"
+                      codePage="1252"
+                      dataType="str"
+                      length="6"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[cd_bin]"
+                      name="cd_bin" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[id_bandeira_cartao]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[id_bandeira_cartao]"
+                      name="id_bandeira_cartao" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[ID_BANDEIRA_CARTAO]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[ID_BANDEIRA_CARTAO]"
+                      name="ID_BANDEIRA_CARTAO" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\DIM_CARTAO_PATROCINADO\Union All 1"
+              componentClassID="Microsoft.UnionAll"
+              contactInfo="Union All;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;1"
+              description="Merges multiple datasets."
+              name="Union All 1"
+              version="1">
+              <inputs>
+                <input
+                  refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 1]"
+                  name="Union All Input 1">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 1].Columns[id_cartao_patrocinado]"
+                      cachedDataType="i4"
+                      cachedName="id_cartao_patrocinado"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[id_cartao_patrocinado]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[id_cartao_patrocinado]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 1].Columns[id_patrocinador]"
+                      cachedDataType="i2"
+                      cachedName="id_patrocinador"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[id_patrocinador]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[id_patrocinador]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 1].Columns[ds_cartao_patrocinado]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="ds_cartao_patrocinado"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[ds_cartao_patrocinado]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ds_cartao_patrocinado]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 1].Columns[cd_bin]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="6"
+                      cachedName="cd_bin"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[cd_bin]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[cd_bin]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 1].Columns[id_bandeira_cartao]"
+                      cachedDataType="i4"
+                      cachedName="id_bandeira_cartao"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[id_bandeira_cartao]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[id_bandeira_cartao]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 1].Columns[ID_BANDEIRA_CARTAO]"
+                      cachedDataType="i4"
+                      cachedName="ID_BANDEIRA_CARTAO"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[ID_BANDEIRA_CARTAO]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ID_BANDEIRA_CARTAO]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 1].Columns[ID_PATROCINADOR2]"
+                      cachedDataType="i4"
+                      cachedName="ID_PATROCINADOR2"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR.Outputs[Derived Column Output].Columns[ID_PATROCINADOR2]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ID_PATROCINADOR2]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 1].Columns[ID_PATROCINADOR]"
+                      cachedDataType="i4"
+                      cachedName="ID_PATROCINADOR"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_PATROCINADOR.Outputs[Lookup Match Output].Columns[ID_PATROCINADOR]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ID_PATROCINADOR]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 1].Columns[ID_PATROCINADOR3]"
+                      cachedDataType="i4"
+                      cachedName="ID_PATROCINADOR3"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\GERAR ID_PATROCINADOR.Outputs[Derived Column Output].Columns[ID_PATROCINADOR3]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ID_PATROCINADOR3]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 1].Columns[DS_CARTAO_PATROCINADO2]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="30"
+                      cachedName="DS_CARTAO_PATROCINADO2"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR.Outputs[Derived Column Output].Columns[DS_CARTAO_PATROCINADO2]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[DS_CARTAO_PATROCINADO2]}</property>
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+                <input
+                  refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 2]"
+                  hasSideEffects="true"
+                  name="Union All Input 2">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 2].Columns[id_cartao_patrocinado]"
+                      cachedDataType="i4"
+                      cachedName="id_cartao_patrocinado"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[id_cartao_patrocinado]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[id_cartao_patrocinado]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 2].Columns[id_patrocinador]"
+                      cachedDataType="i2"
+                      cachedName="id_patrocinador"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[id_patrocinador]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[id_patrocinador]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 2].Columns[ds_cartao_patrocinado]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="ds_cartao_patrocinado"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[ds_cartao_patrocinado]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ds_cartao_patrocinado]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 2].Columns[cd_bin]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="6"
+                      cachedName="cd_bin"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[cd_bin]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[cd_bin]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 2].Columns[id_bandeira_cartao]"
+                      cachedDataType="i4"
+                      cachedName="id_bandeira_cartao"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[id_bandeira_cartao]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[id_bandeira_cartao]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 2].Columns[ID_BANDEIRA_CARTAO]"
+                      cachedDataType="i4"
+                      cachedName="ID_BANDEIRA_CARTAO"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1].Columns[ID_BANDEIRA_CARTAO]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ID_BANDEIRA_CARTAO]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 2].Columns[ID_PATROCINADOR2]"
+                      cachedDataType="i4"
+                      cachedName="ID_PATROCINADOR2"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR.Outputs[Derived Column Output].Columns[ID_PATROCINADOR2]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ID_PATROCINADOR2]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 2].Columns[ID_PATROCINADOR3]"
+                      cachedDataType="i4"
+                      cachedName="ID_PATROCINADOR3"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR NÃO ENCONTRADO.Outputs[Derived Column Output].Columns[ID_PATROCINADOR3]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ID_PATROCINADOR3]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 2].Columns[DS_CARTAO_PATROCINADO2]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="30"
+                      cachedName="DS_CARTAO_PATROCINADO2"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR.Outputs[Derived Column Output].Columns[DS_CARTAO_PATROCINADO2]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[DS_CARTAO_PATROCINADO2]}</property>
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+                <input
+                  refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 3]"
+                  dangling="true"
+                  hasSideEffects="true"
+                  name="Union All Input 3">
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1]"
+                  name="Union All Output 1">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[id_cartao_patrocinado]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[id_cartao_patrocinado]"
+                      name="id_cartao_patrocinado" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[id_patrocinador]"
+                      dataType="i2"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[id_patrocinador]"
+                      name="id_patrocinador" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ds_cartao_patrocinado]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ds_cartao_patrocinado]"
+                      name="ds_cartao_patrocinado" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[cd_bin]"
+                      codePage="1252"
+                      dataType="str"
+                      length="6"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[cd_bin]"
+                      name="cd_bin" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[id_bandeira_cartao]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[id_bandeira_cartao]"
+                      name="id_bandeira_cartao" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ID_BANDEIRA_CARTAO]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ID_BANDEIRA_CARTAO]"
+                      name="ID_BANDEIRA_CARTAO" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ID_PATROCINADOR2]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ID_PATROCINADOR2]"
+                      name="ID_PATROCINADOR2" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ID_PATROCINADOR]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ID_PATROCINADOR]"
+                      name="ID_PATROCINADOR" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ID_PATROCINADOR3]"
+                      dataType="i4"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[ID_PATROCINADOR3]"
+                      name="ID_PATROCINADOR3" />
+                    <outputColumn
+                      refId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[DS_CARTAO_PATROCINADO2]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      lineageId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1].Columns[DS_CARTAO_PATROCINADO2]"
+                      name="DS_CARTAO_PATROCINADO2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+          </components>
+          <paths>
+            <path
+              refId="Package\DIM_CARTAO_PATROCINADO.Paths[Changing Attribute Updates Output]"
+              endId="Package\DIM_CARTAO_PATROCINADO\OLE DB Command.Inputs[OLE DB Command Input]"
+              name="Changing Attribute Updates Output"
+              startId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Outputs[Changing Attribute Updates Output]" />
+            <path
+              refId="Package\DIM_CARTAO_PATROCINADO.Paths[Derived Column Output]"
+              endId="Package\DIM_CARTAO_PATROCINADO\Union All.Inputs[Union All Input 1]"
+              name="Derived Column Output"
+              startId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO.Outputs[Derived Column Output]" />
+            <path
+              refId="Package\DIM_CARTAO_PATROCINADO.Paths[Derived Column Output1]"
+              endId="Package\DIM_CARTAO_PATROCINADO\Union All.Inputs[Union All Input 2]"
+              name="Derived Column Output"
+              startId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO NÃO ENCONTRADO.Outputs[Derived Column Output]" />
+            <path
+              refId="Package\DIM_CARTAO_PATROCINADO.Paths[Derived Column Output2]"
+              endId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_PATROCINADOR.Inputs[Lookup Input]"
+              name="Derived Column Output"
+              startId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR.Outputs[Derived Column Output]" />
+            <path
+              refId="Package\DIM_CARTAO_PATROCINADO.Paths[Derived Column Output3]"
+              endId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 1]"
+              name="Derived Column Output"
+              startId="Package\DIM_CARTAO_PATROCINADO\GERAR ID_PATROCINADOR.Outputs[Derived Column Output]" />
+            <path
+              refId="Package\DIM_CARTAO_PATROCINADO.Paths[Derived Column Output4]"
+              endId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Inputs[Union All Input 2]"
+              name="Derived Column Output"
+              startId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR NÃO ENCONTRADO.Outputs[Derived Column Output]" />
+            <path
+              refId="Package\DIM_CARTAO_PATROCINADO.Paths[Lookup Error Output]"
+              endId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO NÃO ENCONTRADO.Inputs[Derived Column Input]"
+              name="Lookup Error Output"
+              startId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_BANDEIRA_CARTAO.Outputs[Lookup Error Output]" />
+            <path
+              refId="Package\DIM_CARTAO_PATROCINADO.Paths[Lookup Error Output1]"
+              endId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR NÃO ENCONTRADO.Inputs[Derived Column Input]"
+              name="Lookup Error Output"
+              startId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_PATROCINADOR.Outputs[Lookup Error Output]" />
+            <path
+              refId="Package\DIM_CARTAO_PATROCINADO.Paths[Lookup Output]"
+              endId="Package\DIM_CARTAO_PATROCINADO\ID_BANDEIRA_CARTAO.Inputs[Derived Column Input]"
+              name="Lookup Output"
+              startId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_BANDEIRA_CARTAO.Outputs[Lookup Match Output]" />
+            <path
+              refId="Package\DIM_CARTAO_PATROCINADO.Paths[Lookup Output1]"
+              endId="Package\DIM_CARTAO_PATROCINADO\GERAR ID_PATROCINADOR.Inputs[Derived Column Input]"
+              name="Lookup Output"
+              startId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_PATROCINADOR.Outputs[Lookup Match Output]" />
+            <path
+              refId="Package\DIM_CARTAO_PATROCINADO.Paths[New Output]"
+              endId="Package\DIM_CARTAO_PATROCINADO\Insert Destination.Inputs[OLE DB Destination Input]"
+              name="New Output"
+              startId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Outputs[New Output]" />
+            <path
+              refId="Package\DIM_CARTAO_PATROCINADO.Paths[OLE DB Source Output]"
+              endId="Package\DIM_CARTAO_PATROCINADO\Lookup na DIM_BANDEIRA_CARTAO.Inputs[Lookup Input]"
+              name="OLE DB Source Output"
+              startId="Package\DIM_CARTAO_PATROCINADO\OLE DB Source.Outputs[OLE DB Source Output]" />
+            <path
+              refId="Package\DIM_CARTAO_PATROCINADO.Paths[Union All Output 1]"
+              endId="Package\DIM_CARTAO_PATROCINADO\ID_PATROCINADOR.Inputs[Derived Column Input]"
+              name="Union All Output 1"
+              startId="Package\DIM_CARTAO_PATROCINADO\Union All.Outputs[Union All Output 1]" />
+            <path
+              refId="Package\DIM_CARTAO_PATROCINADO.Paths[Union All Output 11]"
+              endId="Package\DIM_CARTAO_PATROCINADO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]"
+              name="Union All Output 1"
+              startId="Package\DIM_CARTAO_PATROCINADO\Union All 1.Outputs[Union All Output 1]" />
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="8">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssge="clr-namespace:Microsoft.SqlServer.Graph.Extended;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+        <NodeLayout
+          Size="212,44"
+          Id="Package\DIM_CARTAO_PATROCINADO"
+          TopLeft="9.46226415094339,42.4811320754717" />
+        <AnnotationLayout
+          Text="Este pacote tem por finalidade&#xD;&#xA;persistir a entidade DIM_CARTAO_PATROCINADO"
+          ParentId="Package"
+          Size="226,65"
+          Id="797d39ca-86d4-445e-8692-cf11cff1c1cd"
+          TopLeft="5.5,5.5">
+          <AnnotationLayout.FontInfo>
+            <mssge:FontInfo
+              Family="Tahoma"
+              Size="11.25"
+              Color="#FF080000">
+              <mssge:FontInfo.TextDecorations>
+                <av:TextDecorationCollection />
+              </mssge:FontInfo.TextDecorations>
+            </mssge:FontInfo>
+          </AnnotationLayout.FontInfo>
+        </AnnotationLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+  <ConnectionManager
+    design-time-name="Package.ConnectionManagers[DW2]">
+    <DataSourceID>DW2</DataSourceID>
+  </ConnectionManager>
+  <ConnectionManager
+    design-time-name="Package.ConnectionManagers[Middleway2]">
+    <DataSourceID>Middleway2</DataSourceID>
+  </ConnectionManager>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>

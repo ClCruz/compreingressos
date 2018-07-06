@@ -256,7 +256,7 @@ if (isset($_GET['action'])) {
 		
 		for ($i = 0; $i < count($_POST['apresentacao']); $i++) {
 			if (!isset($_POST['valorIngresso'][$i])) {
-				$retorno = "Não existem tipos de ingressos disponíveis para a operação. Por favor, entre em contato com a Compreingressos pelo telefone: 11 2122 4070.";
+				$retorno = "Não existem tipos de ingressos disponíveis para a operação. Por favor, entre em contato conosco.";
 			}
 
 			$rs = executeSQL($mainConnection, $selectInfoVB, array($_POST['valorIngresso'][$i], $_POST['apresentacao'][$i]), true);

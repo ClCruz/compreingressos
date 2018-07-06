@@ -1,5 +1,6 @@
 <?php
 require_once('../settings/functions.php');
+require_once("../multisite/unique.php");
 
 require_once('../settings/pagarme/Pagarme.php');
 
@@ -20,11 +21,11 @@ function configureSplit($type) {
             if ($_ENV['IS_TEST']) {
                 //$gw_pagarme["apikey"] = "ak_test_183DNskQiE3q7uBAA8UQjkSvENOEdY";
                 $gw_pagarme["apikey"] = "ak_test_183DNskQiE3q7uBAA8UQjkSvENOEdY";
-                $gw_pagarme["postbackURI"] = "http://homolog.compreingressos.com/comprar/pagarme_receiver.php";
+                $gw_pagarme["postbackURI"] = "http://localhost:1002/comprar/pagarme_receiver.php";
             } else {
                 //$gw_pagarme["apikey"] = "ak_live_pcYp3eGXxpOBHqViOLfBQ61NQ4433y";
                 $gw_pagarme["apikey"] = "ak_live_pcYp3eGXxpOBHqViOLfBQ61NQ4433y";
-                $gw_pagarme["postbackURI"] = "http://compra.compreingressos.com/comprar/pagarme_receiver.php";
+                $gw_pagarme["postbackURI"] = multiSite_getURICompra("comprar/pagarme_receiver.php");
             }
 
             log_trace("configureSplit variables.");

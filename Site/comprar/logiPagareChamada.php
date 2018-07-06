@@ -1,4 +1,5 @@
 <?php
+require_once("../settings/multisite/unique.php");
 $mainConnection = mainConnection();
 $query = 'INSERT INTO MW_LOG_IPAGARE (DT_OCORRENCIA, ID_CLIENTE, DS_LOG)
 			 VALUES (GETDATE(), ?, ?)';
@@ -9,7 +10,7 @@ $errorsiPagare = sqlErrors();
 if (!$resultiPagare or !empty($errorsiPagare)) {
 	$subject = 'Erro no LOG do iPagare';
 	
-	$namefrom = 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS';
+	$namefrom = multiSite_getTitle();
 	$from = '';
 	
 	//define the body of the message.

@@ -1,6 +1,7 @@
 <?php
 session_start();
-
+require_once("../settings/multisite/tellmethesite.php");
+require_once("../settings/multisite/layout.php");
 $pdo = getConnectionHome();
 
 if ($pdo !== false) {
@@ -40,6 +41,11 @@ $rows = numRows($mainConnection, "SELECT 1 FROM MW_RESERVA WHERE ID_SESSION = ?"
 ?>
 
 <link rel="stylesheet" type="text/css" href="../stylesheets/nova_home.css">
+<?php
+	if (getCurrentSite() == "ingressoslitoral") {
+		echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"../stylesheets/cssmulti_litoralingressos.css\">";
+	}
+?>
 <link rel="stylesheet" type="text/css" href="../stylesheets/icons/socicon/styles.css">
 <link rel="stylesheet" type="text/css" href="../stylesheets/icons/flaticon1/flaticon.css">
 
@@ -61,8 +67,8 @@ $rows = numRows($mainConnection, "SELECT 1 FROM MW_RESERVA WHERE ID_SESSION = ?"
 		<div class="itens">
 			<div class="primeira">
 				<div class="logo">
-					<a href="http://compreingressos.com/">
-						<img src="../images/menu_logo.png">
+					<a href="<?php echo multiSite_getURI("URI_SSL")?>">
+						<img src="<?php echo multiSite_getLogo()?>">
 					</a>
 				</div>
 			</div>
@@ -73,9 +79,9 @@ $rows = numRows($mainConnection, "SELECT 1 FROM MW_RESERVA WHERE ID_SESSION = ?"
 						<li><a href="pesquisa_usuario.php">Pesquisar Cliente</a></li>
 						<?php } ?>
 						<li><a href="minha_conta.php">Minha Conta</a></li>
-						<li><a href="http://compreingressos.com/espetaculos">Todos os Espetáculos</a></li>
-						<li><a href="http://compreingressos.com/teatros">Teatros e Casas de Show</a></li>
-						<li><a href="https://compreingressos.tomticket.com/kb/" >SAC & Suporte</a></li>
+						<li><a href="<?php echo multiSite_getURI("URI_SSL","espetaculos")?>">Todos os Espetáculos</a></li>
+						<li><a href="<?php echo multiSite_getURI("URI_SSL", "teatros")?>">Teatros e Casas de Show</a></li>
+						<!-- <li><a href="https://compreingressos.tomticket.com/kb/" >SAC & Suporte</a></li> -->
 					</ul>
 				</div>
 
@@ -100,42 +106,67 @@ $rows = numRows($mainConnection, "SELECT 1 FROM MW_RESERVA WHERE ID_SESSION = ?"
 			<div class="fim">
 				<div class="div_header">
 					<ul class="midias_sociais">
+						<?php if (multiSite_getFacebook() != "") {
+						?>
 						<li class="midia">
-							<a href="http://www.facebook.com/compreingressos" target="_blank" class="facebook"></a>
+							<a href="<?php echo multiSite_getFacebook(); ?>" target="_blank" class="facebook"></a>
 							<div class="icone">
 								<span class="icon socicon-facebook" A style="cursor:pointer"> </span>
 							</div>
 						</li>
+						<?php 
+						}
+						if (multiSite_getTwitter() != "") {
+						?>
 						<li class="midia">
-							<a href="http://twitter.com/compreingressos" target="_blank" class="twitter"></a>
+							<a href="<?php echo multiSite_getTwitter();?>" target="_blank" class="twitter"></a>
 							<div class="icone">
 								<span class="icon socicon-twitter" A style="cursor:pointer"> </span>
 							</div>
 						</li>
+						<?php 
+						}
+						if (multiSite_getBlog() != "") {
+						?>
 						<li class="midia">
-							<a href="http://blog.compreingressos.com/" target="_blank" class="wordpress"></a>
+							<a href="<?php echo multiSite_getBlog(); ?>" target="_blank" class="wordpress"></a>
 							<div class="icone">
 								<span class="icon socicon-wordpress" A style="cursor:pointer"> </span>
 							</div>
 						</li>
+						<?php 
+						}
+						if (multiSite_getInstagram() != "") {
+						?>
 						<li class="midia">
-							<a href="https://www.instagram.com/compreingressos" target="_blank" class="instagram"></a>
+							<a href="<?php echo multiSite_getInstagram(); ?>" target="_blank" class="instagram"></a>
 							<div class="icone">
 								<span class="icon socicon-instagram" A style="cursor:pointer"> </span>
 							</div>
 						</li>
+						<?php 
+						}
+						if (multiSite_getYoutube() != "") {
+						?>
 						<li class="midia">
-							<a href="https://www.youtube.com/compreingressos" target="_blank" class="youtube"></a>
+							<a href="<?php echo multiSite_getYoutube(); ?>" target="_blank" class="youtube"></a>
 							<div class="icone">
 								<span class="icon socicon-youtube" A style="cursor:pointer"> </span>
 							</div>
 						</li>
+						<?php 
+						}
+						if (multiSite_getGooglePlus() != "") {
+						?>
 						<li class="midia">
-							<a href="https://plus.google.com/b/107039038797259256027/107039038797259256027" target="_blank" class="google"></a>
+							<a href="<?php echo multiSite_getGooglePlus(); ?>" target="_blank" class="google"></a>
 							<div class="icone">
 								<span class="icon socicon-googleplus" A style="cursor:pointer"> </span>
 							</div>
 						</li>
+						<?php 
+						}
+						?>
 					</ul>
 				</div>
 
@@ -154,7 +185,7 @@ $rows = numRows($mainConnection, "SELECT 1 FROM MW_RESERVA WHERE ID_SESSION = ?"
 				</script>
 				<div class="bottom">
 					<div class="search">
-						<form method="get" action="https://compreingressos.com/espetaculos">
+						<form method="get" action="<?php echo multiSite_getSearch(); ?>">
 							<span class="flaticon-magnifier" onclick="buscaEspetaculos();"></span>
 							<input type="submit" id="busca-espetaculos" class="hidden" />
 							<span><input name="busca" type="text" placeholder="Espetáculo, diretor, teatro, elenco"></span>
@@ -169,19 +200,19 @@ $rows = numRows($mainConnection, "SELECT 1 FROM MW_RESERVA WHERE ID_SESSION = ?"
 	<!-- container hidden -->
 	<div id="buscaCidade" class="menu_busca container cidade">
 		<div class="centraliza">
-			<a href="http://compreingressos.com/espetaculos" class="ativo">Todas as cidades</a>
+			<a href="<?php echo multiSite_getSearch(); ?>" class="ativo">Todas as cidades</a>
 			<?php foreach ($dados_cidade as $cidade) {
 				$cidade['nome'] = utf8_encode2($cidade['nome']);
-				?><a href="http://compreingressos.com/espetaculos?cidade=<?php echo $cidade['nome']; ?>"><?php echo $cidade['nome']; ?> <span>(<?php echo $cidade['total']; ?>)</span></a><?php
+				?><a href="<?php echo multiSite_getSearch("?cidade=".$cidade['nome']); ?>"><?php echo $cidade['nome']; ?> <span>(<?php echo $cidade['total']; ?>)</span></a><?php
 			}?>
 		</div>
 	</div>
 	<div id="buscaGenero" class="menu_busca container genero">
 		<div class="centraliza">
-			<a href="http://compreingressos.com/espetaculos?cidade=" class="ativo">Todos os gêneros</a>
+			<a href="<?php echo multiSite_getSearch("?cidade="); ?>" class="ativo">Todos os gêneros</a>
 			<?php foreach ($dados_genero as $genero) {
 				$genero['nome'] = utf8_encode2($genero['nome']);
-				?><a href="http://compreingressos.com/espetaculos?cidade=&amp;genero=<?php echo $genero['nome']; ?>"><?php echo $genero['nome']; ?> <span>(<?php echo $genero['total']; ?>)</span></a><?php
+				?><a href="<?php echo multiSite_getSearch("?cidade=&genero=" .$genero['nome']); ?>"><?php echo $genero['nome']; ?> <span>(<?php echo $genero['total']; ?>)</span></a><?php
 			}?>
 		</div>
 	</div>

@@ -1,6 +1,7 @@
 <?php
+	require_once("../../settings/multisite/unique.php");
 	require_once('../settings/functions.php');
-
+	
 	/**
 	 * Retorna o numero total de eventos
 	 * @param string $nomeBase Nome da base de dados a ser consultada
@@ -225,11 +226,11 @@
 		?>
 		</ul>
 		<p>Seguem informa&ccedil;&otilde;es para acesso:</p>
-		<p>URL: <a href="https://compra.compreingressos.com/admin/?p=relatorioBordero">https://compra.compreingressos.com/admin/?p=relatorioBordero</a></p>
+		<p>URL: <a href="<?php echo multiSite_getURICompra("/admin/?p=relatorioBordero")?>"><?php echo multiSite_getURICompra("/admin/?p=relatorioBordero")?></a></p>
 		<p>Usu&aacute;rio: <?php echo $user['CD_LOGIN']; ?></p>
-		<p>Senha: caso n&atilde;o lembre a senha clique <a href="https://compra.compreingressos.com/admin/gerarNovaSenha.php?email=<?php echo $user['DS_EMAIL']; ?>">aqui</a> para receber uma nova senha, que ser&aacute; enviada para o email <?php echo $user['DS_EMAIL']; ?>.</p>
+		<p>Senha: caso n&atilde;o lembre a senha clique <a href="<?php echo multiSite_getURICompra("admin/gerarNovaSenha.php?email=" .$user['DS_EMAIL']?>">aqui</a> para receber uma nova senha, que ser&aacute; enviada para o email <?php echo $user['DS_EMAIL']; ?>.</p>
 		<p>Att.<br/>
-		Compreingressos.com</p>
+		<?php echo multiSite_getName(); ?></p>
 		<?php
 		$body = ob_get_contents();
 		ob_end_clean();
@@ -239,7 +240,7 @@
 		$to = $user['DS_EMAIL'];
 		$subject = utf8_decode('Notificação de Permissão');
 		
-		$namefrom = utf8_decode('COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS');
+		$namefrom = utf8_decode(multiSite_getTitle());
 		$from = '';
 
 		echo authSendEmail($from, $namefrom, $to, $nameto, $subject, $body) === true ? 'true' : '<br><br>Se o erro persistir, favor entrar em contato com o suporte.';

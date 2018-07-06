@@ -1,5 +1,5 @@
 <?php
-
+require_once("../settings/multisite/unique.php");
 echo_header();
 
 echo "<GET TYPE=SERIALNO NAME=pos_serial>";
@@ -23,7 +23,7 @@ if ($_GET['RESPAG'] == 'APROVADO') {
 	$strCookie = 'PHPSESSID=' . $_COOKIE['PHPSESSID'] . '; path=/';
 
 	$post_data = http_build_query(array('pedido' => $_GET['pedido'], 'justificativa' => 'Estorno pela máquina POS', 'pos_serial' => $_GET['pos_serial']));
-	$url = 'http'.($_SERVER["HTTPS"] == "on" ? 's' : '').'://'.($_SERVER['SERVER_NAME'] ? $_SERVER['SERVER_NAME'] : 'compra.compreingressos.com').'/admin/estorno.php';
+	$url = 'http'.($_SERVER["HTTPS"] == "on" ? 's' : '').'://'.($_SERVER['SERVER_NAME'] ? $_SERVER['SERVER_NAME'] : multiSite_getDomainCompra()).'/admin/estorno.php';
 
 	session_write_close();
 

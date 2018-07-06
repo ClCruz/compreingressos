@@ -2,7 +2,8 @@
 //ini_set('mssql.charset', 'UTF-8');
 
 require('../settings/Metzli/autoload.php');
-require_once("../settings/multisite/names.php");
+
+require_once("../settings/multisite/unique.php");
 
 use Metzli\Encoder\Encoder;
 use Metzli\Renderer\PngRenderer;
@@ -24,10 +25,10 @@ function getMiniature($id) {
     }
 
     if ($id_mysql == -1) {
-        $url = multiSite_getInfo("URI_SSL") . "images/default_espetaculo.jpg";
+        $url = "../". multiSite_getDefaultMiniatura();
     }
     else {
-        $url = multiSite_getInfo("URI_SSL") . "images/espetaculos/" . $id_mysql . "/miniatura.jpg";
+        $url = multiSite_getURI("URI_SSL") . "images/espetaculos/" . $id_mysql . "/miniatura.jpg";
     }
     return $url;
 }
@@ -65,7 +66,7 @@ function sale_trace($id_cliente,$id_pedido_venda,$codVenda
 }
 
 function getSiteLogo() {
-    echo "<img src='../images/menu_logo.png' height='60px' id='logo' />";
+    echo "<img src='" .multiSite_getLogo()."' height='60px' id='logo' />";
 }
 
 function getSiteName() {
@@ -359,14 +360,14 @@ function enviarEmailNovaConta ($login, $nome, $email) {
 
     $subject = 'Aviso de Acesso';
     $from = '';
-    $namefrom = 'COMPREINGRESSOS.COM - AGENCIA DE VENDA DE INGRESSOS';
+    $namefrom = multiSite_getTitle();
 
     //define the body of the message.
     ob_start(); //Turn on output buffering
 ?>
 <p>&nbsp;</p>
 <div style="background-color: rgb(255, 255, 255); padding-top: 5px; padding-right: 5px; padding-bottom: 5px; padding-left: 5px; margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; ">
-<p style="text-align: left; font-family: Arial, Verdana, sans-serif; font-size: 12px; ">&nbsp;<img alt="" src="http://www.compreingressos.com/images/logo_compre_2015.jpg" /><span style="font-family: Verdana; "><strong>GEST&Atilde;O E ADMINISTRA&Ccedil;&Atilde;O DE INGRESSOS</strong></span></p>
+<p style="text-align: left; font-family: Arial, Verdana, sans-serif; font-size: 12px; ">&nbsp;<img alt="" src="<?php multiSite_getLogoFullURI(); ?>" /><span style="font-family: Verdana; "><strong>GEST&Atilde;O E ADMINISTRA&Ccedil;&Atilde;O DE INGRESSOS</strong></span></p>
 <h3 style="font-family: Arial, Verdana, sans-serif; font-size: 12px; "><strong>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</strong><strong>NOTIFICA&Ccedil;&Atilde;O&nbsp;DE&nbsp;ACESSO</strong></h3>
 <h2 style="margin-left: 40px; font-family: Arial, Verdana, sans-serif; font-size: 12px; "><span style="color: rgb(98, 98, 97); ">Ol&aacute;,&nbsp;</span><span style="color: rgb(181, 9, 56); "><span style="font-size: smaller; "><span style="font-family: Verdana, sans-serif; "><?php echo $nome; ?></span></span></span><span style="font-size: medium; "><span style="font-family: Verdana; "><strong><span><br />
 </span></strong></span></span></h2>
@@ -375,7 +376,7 @@ function enviarEmailNovaConta ($login, $nome, $email) {
 <p style="text-align: left; margin-left: 40px; font-family: Arial, Verdana, sans-serif; font-size: 12px; "><span style="color: rgb(98, 97, 97); "><span style="font-family: Verdana; "><span style="font-size: 10pt; ">Para efetuar o login voc&ecirc; deve utilizar as seguintes informa&ccedil;&otilde;es:</span></span></span></p>
 <p style="text-align: left; margin-left: 40px; font-family: Arial, Verdana, sans-serif; font-size: 12px; "><em><span style="font-size: small; "><span style="color: rgb(97, 97, 98); "><span style="font-family: Verdana, sans-serif; ">
 <ul>
-    <li>URL: <a href="https://compra.compreingressos.com/admin/">https://compra.compreingressos.com/admin/</a></li>
+    <li>URL: <a href="<?php echo multiSite_getURIAdmin(); ?>"><?php echo multiSite_getURIAdmin(); ?></a></li>
     <li>Usu&aacute;rio: <?php echo $login; ?></li>
     <li>Senha: 123456</li>
 </ul>
@@ -385,7 +386,7 @@ function enviarEmailNovaConta ($login, $nome, $email) {
 <div style="line-height: normal; font-family: Arial, Verdana, sans-serif; font-size: 12px; "><span style="color: rgb(98, 98, 97); ">&nbsp;</span></div>
 <div style="line-height: normal; font-family: Arial, Verdana, sans-serif; font-size: 12px; "><span style="color: rgb(98, 98, 97); ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Atenciosamente</span></div>
 <div style="line-height: normal; font-family: Arial, Verdana, sans-serif; font-size: 12px; ">&nbsp;</div>
-<div style="line-height: normal; font-family: Arial, Verdana, sans-serif; font-size: 12px; "><span style="color: rgb(98, 98, 97); ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;COMPREINGRESSOS.COM&nbsp;&nbsp;</span><span style="color: rgb(98, 98, 97); ">11 2122 4070</span></div>
+<div style="line-height: normal; font-family: Arial, Verdana, sans-serif; font-size: 12px; "><span style="color: rgb(98, 98, 97); ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo multiSite_getName(); ?>&nbsp;&nbsp;</span><span style="color: rgb(98, 98, 97); "><?php echo multiSite_getPhone(); ?></span></div>
 <div style="line-height: normal; font-family: Arial, Verdana, sans-serif; font-size: 12px; "><span style="color: rgb(98, 98, 97); ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
 <div style="line-height: normal; margin-left: 40px; font-family: Arial, Verdana, sans-serif; font-size: 12px; "><span style="font-family: Verdana, sans-serif; font-size: 8pt; ">&nbsp;</span><span style="font-family: Verdana, sans-serif; font-size: 8pt; "><br />
 </span></div>
@@ -511,7 +512,7 @@ function getCaixaTotalMeiaEntrada($apresentacao) {
         $t = getTotalMeiaEntradaDisponivel($apresentacao);
         $t = ($t < 0 ? 0 : $t);
 
-        $html = "<p>Existem <b><span class='contagem-meia'>" . $t . "</span></b> de <b><span>" . getTotalMeiaEntrada($apresentacao) . "</span></b> ingressos disponíveis para <a href='http://www.compreingressos.com/meia_entrada.html' target='_blank'>meia-entrada</a>.</p>";
+        $html = "<p>Existem <b><span class='contagem-meia'>" . $t . "</span></b> de <b><span>" . getTotalMeiaEntrada($apresentacao) . "</span></b> ingressos disponíveis para <a href='" . multiSite_getURI("meia_entrada.html") . "' target='_blank'>meia-entrada</a>.</p>";
     } else {
         $html = '';
     }
@@ -2007,6 +2008,8 @@ function acessoPermitido($conn, $idUser, $idPrograma, $echo = false) {
     return $hasRows;
 }
 
+
+
 function acessoPermitidoEvento($idBase, $idUser, $codPeca, $die = false) {
     $mainConnection = mainConnection();
     $query = 'SELECT 1
@@ -2451,7 +2454,7 @@ function getIdClienteBaseSelecionada($idBase){
 }
 
 function sendErrorMail($subject, $message) {
-    $namefrom = 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS';
+    $namefrom = multiSite_getTitle();
     $from = '';
 
     $cc = array('Jefferson => jefferson.ferreira@intuiti.com.br', 'Edicarlos => edicarlos.barbosa@intuiti.com.br');
@@ -2481,12 +2484,23 @@ function sendConfirmationMail($id_cliente, $assinatura = false) {
     require('../settings/settings.php');
     require_once('../settings/Template.class.php');
 
+    $caminhoHtml = "confirmacaoEmail.html";
+
+    switch (getCurrentSite()) {
+        case "ingressoslitoral":
+            $caminhoHtml = ($assinatura ? 'multi_ingressoslitoral/confirmacaoEmailAssinatura.html' : 'multi_ingressoslitoral/confirmacaoEmail.html');
+        break;
+        case "compreingressos":
+            $caminhoHtml = ($assinatura ? 'confirmacaoEmailAssinatura.html' : 'confirmacaoEmail.html');
+        break;
+    }
+
     $tpl = new Template('../comprar/templates/' . ($assinatura ? 'confirmacaoEmailAssinatura.html' : 'confirmacaoEmail.html'));
     $tpl->nome = $rs['DS_NOME'];
     $tpl->codigo = $rs['CD_CONFIRMACAO'];
     $tpl->link = ($_ENV['IS_TEST']
-                    ? 'http://homolog.compreingressos.com:8081/comprar/confirmacaoEmail.php?codigo='.urlencode($rs['CD_CONFIRMACAO'])
-                    : 'https://compra.compreingressos.com/comprar/confirmacaoEmail.php?codigo='.urlencode($rs['CD_CONFIRMACAO'])
+                    ? 'http://localhost:1002/comprar/confirmacaoEmail.php?codigo='.urlencode($rs['CD_CONFIRMACAO'])
+                    : multiSite_getURICompra("comprar/confirmacaoEmail.php?codigo=".urlencode($rs['CD_CONFIRMACAO'])))
     );
 
     if ($_REQUEST['redirect']) {
@@ -2499,7 +2513,7 @@ function sendConfirmationMail($id_cliente, $assinatura = false) {
     $tpl->show();
     $message = ob_get_clean();
 
-    $namefrom = '=?UTF-8?b?'.base64_encode($assinatura ? 'Assinatura A' : 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS').'?=';
+    $namefrom = '=?UTF-8?b?'.base64_encode($assinatura ? 'Assinatura A' : multiSite_getTitle().'?=';
     $from = '';
 
     $successMail = authSendEmail($from, $namefrom, $rs['CD_EMAIL_LOGIN'], $rs['DS_NOME'], $subject, utf8_decode($message));
@@ -2738,7 +2752,7 @@ function getFastcashPaymentURL($id_pedido) {
     $email = urlencode($rs['CD_EMAIL_LOGIN']);
     $paymentOptions = ($rs['CD_MEIO_PAGAMENTO'] == 892 ? 'transference' : 'deposit');//transference / deposit / creditcard
     $showHeader = 'false';
-    $companyName = urlencode('Compreingressos.com');
+    $companyName = urlencode(multiSite_getName());
     $hideCompanyName = 'false';
     $showValue = 'true';
     $showDescription = 'true';
@@ -2808,8 +2822,6 @@ function httpReferer($string){
 
     return $result;
 }
-
-
 
 /**
  * Unaccent the input string string. An example string like `ÀØėÿᾜὨζὅБю`

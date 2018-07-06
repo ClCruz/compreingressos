@@ -1,5 +1,6 @@
 <?php
 require 'acessoLogado.php';
+require_once('../settings/multisite/unique.php');
 
 if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
     require_once('../settings/functions.php');
@@ -117,7 +118,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                     where PR.ID_CLIENTE = ?";
     $resultTeatros = executeSQL($mainConnection, $queryTeatros, array($_SESSION['user']));
 
-    $options = $isAssinanteCompre ? '<option value="compreingressos">CompreIngressos.com</option>' : '';
+    $options = $isAssinanteCompre ? '<option value="' . multiSite_getNameWithoutDotCom(). '">'.multiSite_getName().'</option>' : '';
     while ($rsTeatros = fetchResult($resultTeatros)) {
         $options .= '<option value="'.$rsTeatros['ID_BASE'].'">'.utf8_encode2($rsTeatros['DS_NOME_TEATRO']).'</option>';
     }
@@ -165,7 +166,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
 
         <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
         <meta name="robots" content="noindex,nofollow"/>
-        <link href="../images/favicon.ico" rel="shortcut icon"/>
+        <link href="<?php echo mulsiSite_getFavico()?>" rel="shortcut icon"/>
         <link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'/>
         <link rel="stylesheet" href="../stylesheets/cicompra.css"/>
         
@@ -236,7 +237,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
             </script>
         <?php } ?>
 
-        <title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
+        <title><?php echo multiSite_getTitle()?></title>
         <style type="text/css">
             div.descricao_pag div.descricao{ float:left; width:840px; }            
             a.botao{ margin-right: 10px; }
@@ -347,7 +348,7 @@ if (isset($_SESSION['user']) and is_numeric($_SESSION['user'])) {
                 <?php if ($isAssinante) { ?>
                 <?php } else {
                         if (isset($_GET['assinatura'])) {
-                            $msg_nao_assinante = 'Pacotes disponíveis apenas para assinantes, novas assinaturas consulte caderno de programação (<a href="http://www.compreingressos.com/theatromunicipaldesaopaulo/assinaturas" style="float: none; background: none; font-size: inherit;">http://www.compreingressos.com/theatromunicipaldesaopaulo/assinaturas</a>).';
+                            $msg_nao_assinante = 'Pacotes disponíveis apenas para assinantes, novas assinaturas consulte caderno de programação.';
                             echo "$.dialog({title: 'Alerta...', text: '$msg_nao_assinante'});";
                         }
                     }

@@ -1,0 +1,736 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="12/3/2011 6:33:01 PM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="DESCOING"
+  DTS:CreatorName="DESCOING\Administrator"
+  DTS:DTSID="{94DF2E9C-D6DE-4CF5-B1B7-AB8CD9632665}"
+  DTS:EnableConfig="True"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="14.0.3002.106"
+  DTS:LocaleID="1046"
+  DTS:ObjectName="03-Dim_patrocinador"
+  DTS:PackageType="5"
+  DTS:ProtectionLevel="0"
+  DTS:VersionBuild="16"
+  DTS:VersionGUID="{EE27D974-49ED-4578-94D1-F48FE42C4DD8}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[DW]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{838CA3D5-B578-474F-A845-C02D32BB9B21}"
+      DTS:ObjectName="DW">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=192.168.91.16;User ID=mstr;Initial Catalog=CI_DW;Provider=SQLOLEDB.1;Persist Security Info=True;">
+          <DTS:Password
+            DTS:Name="Password"
+            Sensitive="1"></DTS:Password>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[DW2]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{3D658306-0BB9-4BBA-88CC-6442C37CD128}"
+      DTS:ObjectName="DW2">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=192.168.91.16;User ID=mstr;Initial Catalog=CI_DW;Provider=SQLOLEDB.1;Persist Security Info=True;">
+          <DTS:Password
+            DTS:Name="Password"
+            Sensitive="1"></DTS:Password>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Middleway]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{2D9CBBE4-5048-482A-82ED-EC2F223416EC}"
+      DTS:ObjectName="Middleway">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=192.168.91.17;User ID=tsp;Initial Catalog=ci_middleway;Provider=SQLOLEDB.1;Persist Security Info=True;">
+          <DTS:Password
+            DTS:Name="Password"
+            Sensitive="1"></DTS:Password>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Middleway2]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{40C28479-6D37-440F-B232-3462DC240434}"
+      DTS:ObjectName="Middleway2">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=192.168.91.17;User ID=tsp;Initial Catalog=CI_MIDDLEWAY;Provider=SQLOLEDB.1;Persist Security Info=True;">
+          <DTS:Password
+            DTS:Name="Password"
+            Sensitive="1"></DTS:Password>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Configurations>
+    <DTS:Configuration
+      DTS:ConfigurationString="C:\ETLCompreingressos\ETLConfigFiles\Middleway.dtsConfig"
+      DTS:ConfigurationType="1"
+      DTS:CreationName=""
+      DTS:DTSID="{75DF03DB-953D-472C-A098-CF8EF23FA08D}"
+      DTS:ObjectName="Middleway" />
+    <DTS:Configuration
+      DTS:ConfigurationString="C:\ETLCompreingressos\ETLConfigFiles\DW.dtsConfig"
+      DTS:ConfigurationType="1"
+      DTS:CreationName=""
+      DTS:DTSID="{B6947B96-B20F-45F1-AE36-C0BEEDCA0B12}"
+      DTS:ObjectName="DW" />
+    <DTS:Configuration
+      DTS:ConfigurationString="C:\ETLCompreingressos\ETLCompreingressos\ETLConfigFiles\DW2.dtsConfig"
+      DTS:ConfigurationType="1"
+      DTS:CreationName=""
+      DTS:DTSID="{F087B6D3-AF48-4ECF-B84C-170C383DCE0A}"
+      DTS:ObjectName="DW2" />
+    <DTS:Configuration
+      DTS:ConfigurationString="C:\ETLCompreingressos\ETLCompreingressos\ETLConfigFiles\Middleway2.dtsConfig"
+      DTS:ConfigurationType="1"
+      DTS:CreationName=""
+      DTS:DTSID="{B12217F2-C8AC-4712-BA94-DDCE4D0A3211}"
+      DTS:ObjectName="Middleway2" />
+  </DTS:Configurations>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\DIM_PATROCINADOR"
+      DTS:CreationName="Microsoft.Pipeline"
+      DTS:Description="Data Flow Task"
+      DTS:DTSID="{D69EABB3-2E98-416A-A51F-3E5E510CBCFE}"
+      DTS:ExecutableType="Microsoft.Pipeline"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="DIM_PATROCINADOR"
+      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server v9; (C) 2004 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <pipeline
+          BLOBTempStoragePath=""
+          bufferTempStoragePath=""
+          engineThreads="5"
+          version="1">
+          <components>
+            <component
+              refId="Package\DIM_PATROCINADOR\Insert Destination"
+              componentClassID="Microsoft.OLEDBDestination"
+              contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SqlServer v10; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
+              description="OLE DB Destination"
+              name="Insert Destination"
+              usesDispositions="true"
+              version="4">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of the database object used to open a rowset."
+                  name="OpenRowset">[dbo].[DIM_PATROCINADOR]</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the variable that contains the name of the database object used to open a rowset."
+                  name="OpenRowsetVariable"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Forces the use of the DefaultCodePage property value when describing character data."
+                  name="AlwaysUseDefaultCodePage">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the mode used to access the database."
+                  name="AccessMode"
+                  typeConverter="AccessMode">0</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on."
+                  name="FastLoadKeepIdentity">false</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destination. Applies only if fast load is turned on."
+                  name="FastLoadKeepNulls">false</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
+                  name="FastLoadOptions"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
+                  name="FastLoadMaxInsertCommitSize">2147483647</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\DIM_PATROCINADOR\Insert Destination.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[DW2]"
+                  connectionManagerRefId="Package.ConnectionManagers[DW2]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\DIM_PATROCINADOR\Insert Destination.Inputs[OLE DB Destination Input]"
+                  errorOrTruncationOperation="Insert"
+                  errorRowDisposition="FailComponent"
+                  hasSideEffects="true"
+                  name="OLE DB Destination Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\DIM_PATROCINADOR\Insert Destination.Inputs[OLE DB Destination Input].Columns[ds_NomPatrocinador]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="30"
+                      cachedName="ds_NomPatrocinador"
+                      externalMetadataColumnId="Package\DIM_PATROCINADOR\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[DS_NOMPATROCINADOR]"
+                      lineageId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Output].Columns[ds_NomPatrocinador]" />
+                    <inputColumn
+                      refId="Package\DIM_PATROCINADOR\Insert Destination.Inputs[OLE DB Destination Input].Columns[ID_PATROCINADOR]"
+                      cachedDataType="i4"
+                      cachedName="ID_PATROCINADOR"
+                      externalMetadataColumnId="Package\DIM_PATROCINADOR\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[CD_PATROCINADOR]"
+                      lineageId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Output].Columns[ID_PATROCINADOR]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\DIM_PATROCINADOR\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[ID_PATROCINADOR]"
+                      dataType="i4"
+                      name="ID_PATROCINADOR" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_PATROCINADOR\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[DS_NOMPATROCINADOR]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      name="DS_NOMPATROCINADOR" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_PATROCINADOR\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[CD_PATROCINADOR]"
+                      dataType="i4"
+                      name="CD_PATROCINADOR" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_PATROCINADOR\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[DT_ATUALIZACAO]"
+                      dataType="dbTimeStamp"
+                      name="DT_ATUALIZACAO" />
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\DIM_PATROCINADOR\Insert Destination.Outputs[OLE DB Destination Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="OLE DB Destination Error Output"
+                  synchronousInputId="Package\DIM_PATROCINADOR\Insert Destination.Inputs[OLE DB Destination Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_PATROCINADOR\Insert Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\DIM_PATROCINADOR\Insert Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\DIM_PATROCINADOR\Insert Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\DIM_PATROCINADOR\Insert Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\DIM_PATROCINADOR\OLE DB Command"
+              componentClassID="Microsoft.OLEDBCommand"
+              contactInfo="OLE DB Command;Microsoft Corporation; Microsoft SqlServer v10; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;2"
+              description="Executes an SQL command for each row in a dataset."
+              name="OLE DB Command"
+              usesDispositions="true"
+              version="2">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  expressionType="Notify"
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">UPDATE [dbo].[DIM_PATROCINADOR] SET [DS_NOMPATROCINADOR] = ?, DT_ATUALIZACAO = GETDATE()  WHERE [CD_PATROCINADOR] = ?</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\DIM_PATROCINADOR\OLE DB Command.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[DW2]"
+                  connectionManagerRefId="Package.ConnectionManagers[DW2]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\DIM_PATROCINADOR\OLE DB Command.Inputs[OLE DB Command Input]"
+                  errorOrTruncationOperation="Command Execution"
+                  errorRowDisposition="FailComponent"
+                  hasSideEffects="true"
+                  name="OLE DB Command Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\DIM_PATROCINADOR\OLE DB Command.Inputs[OLE DB Command Input].Columns[ID_PATROCINADOR]"
+                      cachedDataType="i4"
+                      cachedName="ID_PATROCINADOR"
+                      externalMetadataColumnId="Package\DIM_PATROCINADOR\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_1]"
+                      lineageId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Output].Columns[ID_PATROCINADOR]" />
+                    <inputColumn
+                      refId="Package\DIM_PATROCINADOR\OLE DB Command.Inputs[OLE DB Command Input].Columns[ds_NomPatrocinador]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="30"
+                      cachedName="ds_NomPatrocinador"
+                      externalMetadataColumnId="Package\DIM_PATROCINADOR\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_0]"
+                      lineageId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Output].Columns[ds_NomPatrocinador]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\DIM_PATROCINADOR\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_0]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      name="Param_0">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                          name="DBParamInfoFlags">1</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\DIM_PATROCINADOR\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_1]"
+                      dataType="i4"
+                      name="Param_1">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                          name="DBParamInfoFlags">17</property>
+                      </properties>
+                    </externalMetadataColumn>
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\DIM_PATROCINADOR\OLE DB Command.Outputs[OLE DB Command Output]"
+                  exclusionGroup="1"
+                  name="OLE DB Command Output"
+                  synchronousInputId="Package\DIM_PATROCINADOR\OLE DB Command.Inputs[OLE DB Command Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_PATROCINADOR\OLE DB Command.Outputs[OLE DB Command Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="OLE DB Command Error Output"
+                  synchronousInputId="Package\DIM_PATROCINADOR\OLE DB Command.Inputs[OLE DB Command Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_PATROCINADOR\OLE DB Command.Outputs[OLE DB Command Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\DIM_PATROCINADOR\OLE DB Command.Outputs[OLE DB Command Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\DIM_PATROCINADOR\OLE DB Command.Outputs[OLE DB Command Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\DIM_PATROCINADOR\OLE DB Command.Outputs[OLE DB Command Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\DIM_PATROCINADOR\OLE DB Source"
+              componentClassID="Microsoft.OLEDBSource"
+              contactInfo="OLE DB Source;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
+              description="OLE DB Source"
+              name="OLE DB Source"
+              usesDispositions="true"
+              version="7">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of the database object used to open a rowset."
+                  name="OpenRowset"></property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the variable that contains the name of the database object used to open a rowset."
+                  name="OpenRowsetVariable"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT CONVERT(INT, id_Patrocinador) AS ID_PATROCINADOR
+      ,ds_NomPatrocinador
+  FROM mw_patrocinador</property>
+                <property
+                  dataType="System.String"
+                  description="The variable that contains the SQL command to be executed."
+                  name="SqlCommandVariable"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Forces the use of the DefaultCodePage property value when describing character data."
+                  name="AlwaysUseDefaultCodePage">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the mode used to access the database."
+                  name="AccessMode"
+                  typeConverter="AccessMode">2</property>
+                <property
+                  dataType="System.String"
+                  description="The mappings between the parameters in the SQL command and variables."
+                  name="ParameterMapping"></property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\DIM_PATROCINADOR\OLE DB Source.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Middleway2]"
+                  connectionManagerRefId="Package.ConnectionManagers[Middleway2]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <outputs>
+                <output
+                  refId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Output]"
+                  name="OLE DB Source Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Output].Columns[ds_NomPatrocinador]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ds_NomPatrocinador]"
+                      length="30"
+                      lineageId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Output].Columns[ds_NomPatrocinador]"
+                      name="ds_NomPatrocinador"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Output].Columns[ID_PATROCINADOR]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ID_PATROCINADOR]"
+                      lineageId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Output].Columns[ID_PATROCINADOR]"
+                      name="ID_PATROCINADOR"
+                      truncationRowDisposition="FailComponent" />
+                  </outputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ds_NomPatrocinador]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      name="ds_NomPatrocinador" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ID_PATROCINADOR]"
+                      dataType="i4"
+                      name="ID_PATROCINADOR" />
+                  </externalMetadataColumns>
+                </output>
+                <output
+                  refId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Error Output]"
+                  isErrorOut="true"
+                  name="OLE DB Source Error Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ID_PATROCINADOR]"
+                      dataType="i4"
+                      lineageId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ID_PATROCINADOR]"
+                      name="ID_PATROCINADOR" />
+                    <outputColumn
+                      refId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ds_NomPatrocinador]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      lineageId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ds_NomPatrocinador]"
+                      name="ds_NomPatrocinador" />
+                    <outputColumn
+                      refId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\DIM_PATROCINADOR\Slowly Changing Dimension"
+              componentClassID="Microsoft.SCD"
+              contactInfo="Slowly Changing Dimension;Microsoft Corporation; Microsoft SqlServer v10; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;3"
+              description="Updates a slowly changing dimension."
+              name="Slowly Changing Dimension"
+              version="3">
+              <properties>
+                <property
+                  dataType="System.String"
+                  description="Specifies the SELECT statement used to create a schema rowset."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT [CD_PATROCINADOR], [DS_NOMPATROCINADOR] FROM [dbo].[DIM_PATROCINADOR]</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the WHERE clause in the SELECT statement that selects the current row among rows with identical business keys."
+                  name="CurrentRowWhere"></property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether historical attribute updates are directed to the transformation output for changing attribute updates."
+                  name="UpdateChangingAttributeHistory">false</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the transformation fails when columns with fixed attributes contain changes."
+                  name="FailOnFixedAttributeChange">false</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the column name for the inferred member."
+                  name="InferredMemberIndicator"></property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether inferred member updates are detected."
+                  name="EnableInferredMember">false</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the transformation fails when a lookup of an existing record fails."
+                  name="FailOnLookupFailure">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies that all rows in the input are new or the transformation detects the change type."
+                  name="IncomingRowChangeType"
+                  typeConverter="IncomingRowChangeType">1</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\DIM_PATROCINADOR\Slowly Changing Dimension.Connections[LookupConnection]"
+                  connectionManagerID="Package.ConnectionManagers[DW2]"
+                  connectionManagerRefId="Package.ConnectionManagers[DW2]"
+                  description="Defines the connection to use for lookups in the dimension table"
+                  name="LookupConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\DIM_PATROCINADOR\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]"
+                  name="Slowly Changing Dimension Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\DIM_PATROCINADOR\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].Columns[ID_PATROCINADOR]"
+                      cachedDataType="i4"
+                      cachedName="ID_PATROCINADOR"
+                      externalMetadataColumnId="Package\DIM_PATROCINADOR\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[CD_PATROCINADOR]"
+                      lineageId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Output].Columns[ID_PATROCINADOR]">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          name="ColumnType"
+                          typeConverter="ColumnType">1</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_PATROCINADOR\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].Columns[ds_NomPatrocinador]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="30"
+                      cachedName="ds_NomPatrocinador"
+                      externalMetadataColumnId="Package\DIM_PATROCINADOR\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[DS_NOMPATROCINADOR]"
+                      lineageId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Output].Columns[ds_NomPatrocinador]">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          name="ColumnType"
+                          typeConverter="ColumnType">2</property>
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\DIM_PATROCINADOR\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[CD_PATROCINADOR]"
+                      dataType="i4"
+                      name="CD_PATROCINADOR" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_PATROCINADOR\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[DS_NOMPATROCINADOR]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      name="DS_NOMPATROCINADOR" />
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\DIM_PATROCINADOR\Slowly Changing Dimension.Outputs[Unchanged Output]"
+                  description="Unchanged rows"
+                  exclusionGroup="1"
+                  name="Unchanged Output"
+                  synchronousInputId="Package\DIM_PATROCINADOR\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_PATROCINADOR\Slowly Changing Dimension.Outputs[New Output]"
+                  description="New rows"
+                  exclusionGroup="1"
+                  name="New Output"
+                  synchronousInputId="Package\DIM_PATROCINADOR\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_PATROCINADOR\Slowly Changing Dimension.Outputs[Fixed Attribute Output]"
+                  description="Rows with changes in columns tagged FixedAttribute"
+                  exclusionGroup="1"
+                  name="Fixed Attribute Output"
+                  synchronousInputId="Package\DIM_PATROCINADOR\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_PATROCINADOR\Slowly Changing Dimension.Outputs[Changing Attribute Updates Output]"
+                  description="These rows contain new information for ChangingAttribute (Type 1) column changes"
+                  exclusionGroup="1"
+                  name="Changing Attribute Updates Output"
+                  synchronousInputId="Package\DIM_PATROCINADOR\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_PATROCINADOR\Slowly Changing Dimension.Outputs[Historical Attribute Inserts Output]"
+                  description="HistoricalAttribute (Type 2) changes result in these new rows"
+                  exclusionGroup="2"
+                  name="Historical Attribute Inserts Output"
+                  synchronousInputId="Package\DIM_PATROCINADOR\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_PATROCINADOR\Slowly Changing Dimension.Outputs[Inferred Member Updates Output]"
+                  description="Information to update unpopulated initial dimension row"
+                  exclusionGroup="1"
+                  name="Inferred Member Updates Output"
+                  synchronousInputId="Package\DIM_PATROCINADOR\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+          </components>
+          <paths>
+            <path
+              refId="Package\DIM_PATROCINADOR.Paths[Changing Attribute Updates Output]"
+              endId="Package\DIM_PATROCINADOR\OLE DB Command.Inputs[OLE DB Command Input]"
+              name="Changing Attribute Updates Output"
+              startId="Package\DIM_PATROCINADOR\Slowly Changing Dimension.Outputs[Changing Attribute Updates Output]" />
+            <path
+              refId="Package\DIM_PATROCINADOR.Paths[New Output]"
+              endId="Package\DIM_PATROCINADOR\Insert Destination.Inputs[OLE DB Destination Input]"
+              name="New Output"
+              startId="Package\DIM_PATROCINADOR\Slowly Changing Dimension.Outputs[New Output]" />
+            <path
+              refId="Package\DIM_PATROCINADOR.Paths[OLE DB Source Output]"
+              endId="Package\DIM_PATROCINADOR\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]"
+              name="OLE DB Source Output"
+              startId="Package\DIM_PATROCINADOR\OLE DB Source.Outputs[OLE DB Source Output]" />
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="8">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssge="clr-namespace:Microsoft.SqlServer.Graph.Extended;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+        <NodeLayout
+          Size="176,44"
+          Id="Package\DIM_PATROCINADOR"
+          TopLeft="5.5,42.4433962264151" />
+        <AnnotationLayout
+          Text="Este pacote tem por finalidade &#xD;&#xA;persistir a entidade DIM_PATROCINADOR"
+          ParentId="Package"
+          Size="226,65"
+          Id="afa34653-d0a7-4791-aa37-2e0d4b118579"
+          TopLeft="10.4811320754717,5.5">
+          <AnnotationLayout.FontInfo>
+            <mssge:FontInfo
+              Family="Tahoma"
+              Size="11.25"
+              Color="#FF080000">
+              <mssge:FontInfo.TextDecorations>
+                <av:TextDecorationCollection />
+              </mssge:FontInfo.TextDecorations>
+            </mssge:FontInfo>
+          </AnnotationLayout.FontInfo>
+        </AnnotationLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+  <ConnectionManager
+    design-time-name="Package.ConnectionManagers[DW]">
+    <DataSourceID>DW</DataSourceID>
+  </ConnectionManager>
+  <ConnectionManager
+    design-time-name="Package.ConnectionManagers[DW2]">
+    <DataSourceID>DW2</DataSourceID>
+  </ConnectionManager>
+  <ConnectionManager
+    design-time-name="Package.ConnectionManagers[Middleway]">
+    <DataSourceID>Middleway</DataSourceID>
+  </ConnectionManager>
+  <ConnectionManager
+    design-time-name="Package.ConnectionManagers[Middleway2]">
+    <DataSourceID>Middleway2</DataSourceID>
+  </ConnectionManager>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>

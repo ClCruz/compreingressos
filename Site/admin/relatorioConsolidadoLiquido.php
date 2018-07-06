@@ -1,4 +1,5 @@
 <?php
+require_once("../settings/multisite/unique.php");
 
 /**
  * Consulta para Relatório Consolidado Liquido
@@ -19,7 +20,7 @@ session_start();
 
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 272, true)) {
   $pagina = basename(__FILE__);
-  $tpl->host = $_SERVER["HTTP_HOST"];
+  $tpl->host = multiSite_getURICompra("admin/relConsolidadoLiquido.php");
   // Carrega o combo de Local
   $rsLocal = executeSQL($mainConnection, 'SELECT DISTINCT B.ID_BASE, B.DS_NOME_TEATRO FROM MW_BASE B INNER JOIN MW_ACESSO_CONCEDIDO AC ON AC.ID_BASE = B.ID_BASE WHERE AC.ID_USUARIO =' . $_SESSION['admin'] . '  AND B.IN_ATIVO = \'1\' ORDER BY B.DS_NOME_TEATRO');
   while ($locais = fetchResult($rsLocal)) {

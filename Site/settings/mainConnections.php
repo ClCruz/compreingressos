@@ -1,12 +1,21 @@
 <?php
-function mainConnection() {
-        $host = '192.168.91.17';
-        $port = '1433';
-        $dbname = 'CI_MIDDLEWAY';
-        $user = 'dev';
-        $pass = '!ci@dev@2018!';
-        // $pass = 'dev';
 
+require_once("../settings/multisite/tellmethesite.php");
+
+require_once("../settings/multisite/cnnConfig.php");
+
+function mainConnection() {
+        $host = multiSite_getCurrentSQLServer()["host"];
+	$port = '1433';
+	$dbname = 'CI_MIDDLEWAY';
+	$user = multiSite_getCurrentSQLServer()["user"];
+	$pass = multiSite_getCurrentSQLServer()["pass"];
+	// echo "<br />host: " .$host;
+	// echo "<br />port: " .$port;
+	// echo "<br />dbname: " .$dbname;
+	// echo "<br />host: " .$user;
+	// echo "<br />host: " .$pass;
+	
         return sqlsrv_connect($host.','.$port, array("UID" => $user, "PWD" => $pass, "Database" => $dbname));
 }
 
@@ -14,22 +23,20 @@ function getConnection($teatroID) {
         $mainConnection = mainConnection();
         $rs = executeSQL($mainConnection, 'SELECT DS_NOME_BASE_SQL FROM MW_BASE WHERE ID_BASE = ?', array($teatroID), true);
 
-        $host = '192.168.91.17';
+        $host = multiSite_getCurrentSQLServer()["host"];
         $port = '1433';
-        $user = 'dev';
-        $pass = '!ci@dev@2018!';
-        // $pass = 'dev';
+	$user = multiSite_getCurrentSQLServer()["user"];
+	$pass = multiSite_getCurrentSQLServer()["pass"];
 
         return sqlsrv_connect($host.','.$port, array("UID" => $user, "PWD" => $pass, "Database" => $rs['DS_NOME_BASE_SQL']));
 }
 
 function getConnectionTsp() {
-        $host = '192.168.91.17';
+        $host = multiSite_getCurrentSQLServer()["host"];
         $port = '1433';
         $dbname = 'tspweb';
-        $user = 'dev';
-        $pass = '!ci@dev@2018!';
-        // $pass = 'dev';
+	$user = multiSite_getCurrentSQLServer()["user"];
+	$pass = multiSite_getCurrentSQLServer()["pass"];
 
         return sqlsrv_connect($host.','.$port, array("UID" => $user, "PWD" => $pass, "Database" => $dbname));
 }
@@ -48,11 +55,11 @@ function getConnectionHome() {
 
 	if ($_ENV['IS_TEST']) return false;
 
-	$host = '192.168.91.15';
-	$port = '3307';
-	$dbname = 'compreingressos_production';
-	$user = 'php';
-	$pass = 'SNq3mhh5Tyb59J';
+	$host = multiSite_getCurrentMysql()["host"];;
+	$port = '4003';
+	$dbname = multiSite_getCurrentMysql()["database"];
+	$user = multiSite_getCurrentMysql()["user"];;
+	$pass = multiSite_getCurrentMysql()["pass"];;
 
 	try {
 		$conn = new PDO("mysql:host=$host;port=$port;dbname=$dbname", $user, $pass);

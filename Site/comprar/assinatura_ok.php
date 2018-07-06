@@ -1,11 +1,12 @@
 <?php
 session_start();
+
 require_once('../settings/functions.php');
 
 require('acessoLogado.php');
 require_once('../settings/settings.php');
 require_once('../settings/MCAPI.class.php');
-
+require_once('../settings/multisite/unique.php');
 $mainConnection = mainConnection();
 
 $json = json_encode(array('descricao' => '8. chamada do assinatura_ok - codigo_pedido=' . $_GET['pedido'], 'Post='=>$_GET ));
@@ -24,7 +25,7 @@ unset($_SESSION['id_braspag']);
 <head>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 	<meta name="robots" content="noindex,nofollow">
-	<link href="../images/favicon.ico" rel="shortcut icon"/>
+	<link href="<?php echo mulsiSite_getFavico()?>" rel="shortcut icon"/>
 	<link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
     <?php require("desktopMobileVersion.php"); ?>
@@ -69,8 +70,8 @@ unset($_SESSION['id_braspag']);
 
 	<script type="text/javascript">
 	  var _gaq = _gaq || [];
-	  _gaq.push(['_setAccount', 'UA-16656615-1']);
-	  _gaq.push(['_setDomainName', 'compreingressos.com']);
+	  _gaq.push(['_setAccount', '<?php echo multiSite_getGoogleAnalytics();?>']);
+	  _gaq.push(['_setDomainName', '<?php echo multiSite_getName(); ?>']);
 	  _gaq.push(['_setAllowLinker', true]);
 	  _gaq.push(['_trackPageview']);
 
@@ -116,7 +117,7 @@ unset($_SESSION['id_braspag']);
 	</script>
 	<noscript><img height="1" width="1" alt="" style="display:none" src="https://www.facebook.com/tr?ev=6025588813845&amp;cd[value]=<?php echo $valorPagamento; ?>&amp;cd[currency]=BRL&amp;noscript=1" /></noscript>
 
-	<title>COMPREINGRESSOS.COM - Gestão e Venda de Ingressos</title>
+	<title><?php echo multiSite_getTitle()?></title>
 </head>
 <body>
 	<div id="pai">
@@ -164,11 +165,11 @@ unset($_SESSION['id_braspag']);
 
 		<div id="texts">
 			<div class="centraliza">
-				<p>Muito obrigado por escolher a COMPREINGRESSOS para a compra de seus ingressos.</p>
+				<p>Muito obrigado por escolher a <?php echo multiSite_getName(); ?> para a compra de seus ingressos.</p>
 
-				<p>Fique por dentro das principais atrações em cartaz na sua cidade através do nosso Guia de Espetáculos enviado por email. Adicione o email marketing@compreingressos.com ao seu catálogo de endereços para receber nossos emails na sua caixa de entrada.</p>
+				<p>Fique por dentro das principais atrações em cartaz na sua cidade através do nosso Guia de Espetáculos enviado por email. Adicione o email <?php echo multiSite_getEmail("marketing"); ?> ao seu catálogo de endereços para receber nossos emails na sua caixa de entrada.</p>
 
-				<p>Curta nossa página no <a href=“http://www.facebook.com/compreingressos”>Facebook</a> e acompanhe diariamente as últimas novidades da nossa programação.</p>
+				<p>Curta nossa página no <a href=“<?php echo multiSite_getFacebook(); ?>”>Facebook</a> e acompanhe diariamente as últimas novidades da nossa programação.</p>
 
 				<p>Bom espetáculo!</p>
 			</div>

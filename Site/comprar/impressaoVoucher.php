@@ -193,9 +193,18 @@ foreach ($itensPedido as $item) {
 
 $valores['itens_destacaveis'] = $valores['itens_pedido'];
 
-$tpl_file = $is_gift
-                ? '../comprar/templates/impressaoPresente.html'
-                : '../comprar/templates/impressaoComprador.html';
+$caminhoHtml = $is_gift ? "../comprar/templates/impressaoPresente.html" : "../comprar/templates/impressaoComprador.html";
+
+switch (getCurrentSite()) {
+    case "ingressoslitoral":
+        $caminhoHtml = $is_gift ? "../comprar/templates/multi_ingressoslitoral/impressaoPresente.html" : "../comprar/templates/multi_ingressoslitoral/impressaoComprador.html";
+    break;
+    case "compreingressos":
+        $caminhoHtml = $is_gift ? "../comprar/templates/impressaoPresente.html" : "../comprar/templates/impressaoComprador.html";
+    break;
+}
+
+$tpl_file = $caminhoHtml;
 
 $tpl = new Template($tpl_file);
 

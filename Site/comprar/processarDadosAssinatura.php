@@ -242,7 +242,7 @@ if ($descricao_erro == '') {
         echo "<pre>"; var_dump($dados); echo "</pre>";
         $message = ob_get_clean();
 
-        sendErrorMail('Erro no Sistema COMPREINGRESSOS.COM - assinatura', $message);
+        sendErrorMail('Erro no Sistema - assinatura', $message);
     }
 
     if (($result->AuthorizeTransactionResult->CorrelationId == $ri and $result->AuthorizeTransactionResult->PaymentDataCollection->PaymentDataResponse->Status == '0')

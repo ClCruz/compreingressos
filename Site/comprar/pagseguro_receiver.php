@@ -2,6 +2,7 @@
 if ($_REQUEST['notificationType'] == 'transaction') {
 
     require_once('../settings/functions.php');
+    require_once('../settings/multisite/unique.php');
     require_once('../settings/pagseguro_functions.php');
 
     $mainConnection = mainConnection();
@@ -89,7 +90,7 @@ if ($_REQUEST['notificationType'] == 'transaction') {
                     // retenção temporária
                     case 9:
                         $post_data = http_build_query(array('pedido' => $_GET['pedido'], 'justificativa' => 'Estorno pela máquina POS', 'auth' => $auth_code));
-                        $url = 'http'.($_SERVER["HTTPS"] == "on" ? 's' : '').'://'.($_SERVER['SERVER_NAME'] ? $_SERVER['SERVER_NAME'] : 'compra.compreingressos.com').'/admin/estorno.php';
+                        $url = 'http'.($_SERVER["HTTPS"] == "on" ? 's' : '').'://'.($_SERVER['SERVER_NAME'] ? $_SERVER['SERVER_NAME'] : multiSite_getDomainCompra()).'/admin/estorno.php';
 
                         $ch = curl_init(); 
                         curl_setopt($ch, CURLOPT_URL, $url);

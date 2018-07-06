@@ -1,5 +1,6 @@
 <?php
 require_once('../settings/functions.php');
+require_once("../settings/multisite/unique.php");
 require_once('../settings/settings.php');
 require_once('../settings/Template.class.php');
 
@@ -19,7 +20,7 @@ $is_assinatura = hasRows($result);
 
 $subject = 'Pedido ' . $parametros['OrderData']['OrderId'] . ' - Pago';
 
-$namefrom = 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS';
+$namefrom = multiSite_getTitle();
 $from = '';
 
 $query = 'SELECT ds_meio_pagamento FROM mw_meio_pagamento WHERE cd_meio_pagamento = ?';
@@ -120,7 +121,7 @@ foreach ($itensPedido as $item) {
         
         $valores['itens_pedido'][] = array(
             //'item_miniatura' => getMiniature($item['descricao_item']['id_evento']),
-            'item_miniatura' => multiSite_getInfo("URI_SSL") . "images/default_espetaculo.jpg",
+            'item_miniatura' => multiSite_getURI("URI_SSL") . "images/default_espetaculo.jpg",
             'item_evento_id' => $item['descricao_item']['id_evento'],
             'item_evento' => $item['descricao_item']['evento'],
             'item_teatro' => $item['descricao_item']['teatro'],
@@ -145,10 +146,21 @@ foreach ($itensPedido as $item) {
 }
 
 $valores['link_voucher'] = ($_ENV['IS_TEST']
-                                ? 'http://homolog.compreingressos.com:8081/comprar/reimprimirEmail.php?pedido='.$parametros['OrderData']['OrderId']
-                                : 'https://compra.compreingressos.com/comprar/reimprimirEmail.php?pedido='.$parametros['OrderData']['OrderId']);
+                                ? 'localhost:1002/comprar/reimprimirEmail.php?pedido='.$parametros['OrderData']['OrderId']
+                                : multiSite_getURIReeimprimir($parametros['OrderData']['OrderId']));
 
-$tpl = new Template('../comprar/templates/emailComprador.html');
+$caminhoHtml = "../comprar/templates/emailComprador.html";
+
+switch (getCurrentSite()) {
+    case "ingressoslitoral":
+        $caminhoHtml = '../comprar/templates/multi_ingressoslitoral/emailComprador.html';
+    break;
+    case "compreingressos":
+        $caminhoHtml = '../comprar/templates/emailComprador.html';
+    break;
+}
+                                
+$tpl = new Template($caminhoHtml);
 
 foreach ($valores as $key => $value) {
     if (is_array($value)) {
@@ -173,7 +185,7 @@ $message = ob_get_clean();
 
 $bcc = ($_ENV['IS_TEST']
         ? array()
-        : array('Pedidos=>pedidos@compreingressos.com'));
+        : array('Pedidos=>'.multiSite_getEmail("pedido")));
 
 $successMail = authSendEmail($from, $namefrom, $parametros['CustomerData']['CustomerEmail'], $parametros['CustomerData']['CustomerName'], $subject, $message, array(), $bcc, 'utf-8', $barcodes);
 
@@ -185,9 +197,20 @@ if (filter_var($valores['email_presenteado'], FILTER_VALIDATE_EMAIL)) {
 
     $valores['link_voucher'] = ($_ENV['IS_TEST']
                                 ? 'http://homolog.compreingressos.com:8081/comprar/reimprimirEmail.php?pedido='.$cipher_var
-                                : 'https://compra.compreingressos.com/comprar/reimprimirEmail.php?pedido='.$cipher_var);
+                                : multiSite_getURIReeimprimir($cipher_var));
 
-    $tpl = new Template('../comprar/templates/emailPresente.html');
+    $caminhoHtml = "../comprar/templates/emailPresente.html";
+
+    switch (getCurrentSite()) {
+        case "ingressoslitoral":
+            $caminhoHtml = '../comprar/templates/multi_ingressoslitoral/emailPresente.html';
+        break;
+        case "compreingressos":
+            $caminhoHtml = '../comprar/templates/emailPresente.html';
+        break;
+    }
+                                
+    $tpl = new Template($caminhoHtml);
 
     foreach ($valores as $key => $value) {
         if (is_array($value)) {
@@ -222,6 +245,6 @@ if (!empty($codigo_error_data)) {
     ));
     echo "</pre>";
     $message = ob_get_clean();
-    sendErrorMail('Erro no Sistema COMPREINGRESSOS.COM - codigo do ingresso', $message);
+    sendErrorMail('Erro no Sistema - codigo do ingresso', $message);
 }
 ?>

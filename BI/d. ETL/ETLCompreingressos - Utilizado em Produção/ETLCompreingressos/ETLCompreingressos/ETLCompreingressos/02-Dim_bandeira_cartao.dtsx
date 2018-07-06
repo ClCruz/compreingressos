@@ -1,0 +1,736 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="3/12/2011 6:26:57 PM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="DESCOING"
+  DTS:CreatorName="DESCOING\Administrator"
+  DTS:DTSID="{23A5E6D0-D783-4098-9079-5AA9CB5F25B0}"
+  DTS:EnableConfig="True"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="14.0.3002.106"
+  DTS:LocaleID="1046"
+  DTS:ObjectName="02-Dim_bandeira_cartao"
+  DTS:PackageType="5"
+  DTS:ProtectionLevel="0"
+  DTS:VersionBuild="8"
+  DTS:VersionGUID="{9CE73020-E11C-4D46-A1B1-8BFC3BE497FA}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[DW]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{F28CD089-F387-4E27-A863-5A8CB141D27F}"
+      DTS:ObjectName="DW">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=192.168.91.16;User ID=mstr;Initial Catalog=CI_DW;Provider=SQLOLEDB.1;Persist Security Info=True;">
+          <DTS:Password
+            DTS:Name="Password"
+            Sensitive="1"></DTS:Password>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[DW2]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{F54CD74F-502C-499D-8AFB-F1BBEA8E79AD}"
+      DTS:ObjectName="DW2">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=192.168.91.16;User ID=mstr;Initial Catalog=CI_DW;Provider=SQLOLEDB.1;Persist Security Info=True;">
+          <DTS:Password
+            DTS:Name="Password"
+            Sensitive="1"></DTS:Password>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Middleway]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{F5069394-C608-40BA-A107-E091F1262CC4}"
+      DTS:ObjectName="Middleway">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=192.168.91.17;User ID=tsp;Initial Catalog=ci_middleway;Provider=SQLOLEDB.1;Persist Security Info=True;">
+          <DTS:Password
+            DTS:Name="Password"
+            Sensitive="1"></DTS:Password>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Middleway2]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{319E40F8-EED2-4E61-B099-0853B769ECF5}"
+      DTS:ObjectName="Middleway2">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=192.168.91.17;User ID=tsp;Initial Catalog=CI_MIDDLEWAY;Provider=SQLOLEDB.1;Persist Security Info=True;">
+          <DTS:Password
+            DTS:Name="Password"
+            Sensitive="1"></DTS:Password>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Configurations>
+    <DTS:Configuration
+      DTS:ConfigurationString="C:\ETLCompreingressos\ETLConfigFiles\DW.dtsConfig"
+      DTS:ConfigurationType="1"
+      DTS:CreationName=""
+      DTS:DTSID="{C390751C-461E-471C-B31A-DAE5B131F861}"
+      DTS:ObjectName="DW" />
+    <DTS:Configuration
+      DTS:ConfigurationString="C:\ETLCompreingressos\ETLConfigFiles\Middleway.dtsConfig"
+      DTS:ConfigurationType="1"
+      DTS:CreationName=""
+      DTS:DTSID="{BCE30AEA-1EC4-4473-9732-5D3162A0570C}"
+      DTS:ObjectName="Middleway" />
+    <DTS:Configuration
+      DTS:ConfigurationString="C:\ETLCompreingressos\ETLCompreingressos\ETLConfigFiles\DW2.dtsConfig"
+      DTS:ConfigurationType="1"
+      DTS:CreationName=""
+      DTS:DTSID="{EEDE899C-E615-4B80-A114-D34DBE72AEB1}"
+      DTS:ObjectName="DW2" />
+    <DTS:Configuration
+      DTS:ConfigurationString="C:\ETLCompreingressos\ETLCompreingressos\ETLConfigFiles\Middleway2.dtsConfig"
+      DTS:ConfigurationType="1"
+      DTS:CreationName=""
+      DTS:DTSID="{27F7D004-F612-4F1D-8FCE-DADCF0FAFEAE}"
+      DTS:ObjectName="Middleway2" />
+  </DTS:Configurations>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\DIM_BANDEIRA_CARTAO"
+      DTS:CreationName="Microsoft.Pipeline"
+      DTS:Description="Data Flow Task"
+      DTS:DTSID="{96E7CC9F-2B1F-4099-94FA-27A3250D2FFC}"
+      DTS:ExecutableType="Microsoft.Pipeline"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="DIM_BANDEIRA_CARTAO"
+      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server v9; (C) 2004 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <pipeline
+          BLOBTempStoragePath=""
+          bufferTempStoragePath=""
+          engineThreads="5"
+          version="1">
+          <components>
+            <component
+              refId="Package\DIM_BANDEIRA_CARTAO\Insert Destination"
+              componentClassID="Microsoft.OLEDBDestination"
+              contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SqlServer v10; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
+              description="OLE DB Destination"
+              name="Insert Destination"
+              usesDispositions="true"
+              version="4">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of the database object used to open a rowset."
+                  name="OpenRowset">[dbo].[DIM_BANDEIRA_CARTAO]</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the variable that contains the name of the database object used to open a rowset."
+                  name="OpenRowsetVariable"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Forces the use of the DefaultCodePage property value when describing character data."
+                  name="AlwaysUseDefaultCodePage">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the mode used to access the database."
+                  name="AccessMode"
+                  typeConverter="AccessMode">0</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on."
+                  name="FastLoadKeepIdentity">false</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destination. Applies only if fast load is turned on."
+                  name="FastLoadKeepNulls">false</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
+                  name="FastLoadOptions"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
+                  name="FastLoadMaxInsertCommitSize">2147483647</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\DIM_BANDEIRA_CARTAO\Insert Destination.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[DW2]"
+                  connectionManagerRefId="Package.ConnectionManagers[DW2]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\DIM_BANDEIRA_CARTAO\Insert Destination.Inputs[OLE DB Destination Input]"
+                  errorOrTruncationOperation="Insert"
+                  errorRowDisposition="FailComponent"
+                  hasSideEffects="true"
+                  name="OLE DB Destination Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\Insert Destination.Inputs[OLE DB Destination Input].Columns[ds_bandeira_cartao]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="20"
+                      cachedName="ds_bandeira_cartao"
+                      externalMetadataColumnId="Package\DIM_BANDEIRA_CARTAO\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[DS_BANDEIRA_CARTAO]"
+                      lineageId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Output].Columns[ds_bandeira_cartao]" />
+                    <inputColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\Insert Destination.Inputs[OLE DB Destination Input].Columns[id_bandeira_cartao]"
+                      cachedDataType="i4"
+                      cachedName="id_bandeira_cartao"
+                      externalMetadataColumnId="Package\DIM_BANDEIRA_CARTAO\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[CD_BANDEIRA_CARTAO]"
+                      lineageId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Output].Columns[id_bandeira_cartao]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[ID_BANDEIRA_CARTAO]"
+                      dataType="i4"
+                      name="ID_BANDEIRA_CARTAO" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[DS_BANDEIRA_CARTAO]"
+                      codePage="1252"
+                      dataType="str"
+                      length="20"
+                      name="DS_BANDEIRA_CARTAO" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[CD_BANDEIRA_CARTAO]"
+                      dataType="i4"
+                      name="CD_BANDEIRA_CARTAO" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[DT_ATUALIZACAO]"
+                      dataType="dbTimeStamp"
+                      name="DT_ATUALIZACAO" />
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\DIM_BANDEIRA_CARTAO\Insert Destination.Outputs[OLE DB Destination Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="OLE DB Destination Error Output"
+                  synchronousInputId="Package\DIM_BANDEIRA_CARTAO\Insert Destination.Inputs[OLE DB Destination Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\Insert Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\DIM_BANDEIRA_CARTAO\Insert Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\Insert Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\DIM_BANDEIRA_CARTAO\Insert Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\DIM_BANDEIRA_CARTAO\OLE DB Command"
+              componentClassID="Microsoft.OLEDBCommand"
+              contactInfo="OLE DB Command;Microsoft Corporation; Microsoft SqlServer v10; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;2"
+              description="Executes an SQL command for each row in a dataset."
+              name="OLE DB Command"
+              usesDispositions="true"
+              version="2">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  expressionType="Notify"
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">UPDATE [dbo].[DIM_BANDEIRA_CARTAO] SET [DS_BANDEIRA_CARTAO] = ?, DT_ATUALIZACAO = GETDATE()  WHERE [CD_BANDEIRA_CARTAO] = ?</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\DIM_BANDEIRA_CARTAO\OLE DB Command.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[DW2]"
+                  connectionManagerRefId="Package.ConnectionManagers[DW2]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\DIM_BANDEIRA_CARTAO\OLE DB Command.Inputs[OLE DB Command Input]"
+                  errorOrTruncationOperation="Command Execution"
+                  errorRowDisposition="FailComponent"
+                  hasSideEffects="true"
+                  name="OLE DB Command Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\OLE DB Command.Inputs[OLE DB Command Input].Columns[id_bandeira_cartao]"
+                      cachedDataType="i4"
+                      cachedName="id_bandeira_cartao"
+                      externalMetadataColumnId="Package\DIM_BANDEIRA_CARTAO\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_1]"
+                      lineageId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Output].Columns[id_bandeira_cartao]" />
+                    <inputColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\OLE DB Command.Inputs[OLE DB Command Input].Columns[ds_bandeira_cartao]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="20"
+                      cachedName="ds_bandeira_cartao"
+                      externalMetadataColumnId="Package\DIM_BANDEIRA_CARTAO\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_0]"
+                      lineageId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Output].Columns[ds_bandeira_cartao]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_0]"
+                      codePage="1252"
+                      dataType="str"
+                      length="20"
+                      name="Param_0">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                          name="DBParamInfoFlags">1</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_1]"
+                      dataType="i4"
+                      name="Param_1">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                          name="DBParamInfoFlags">17</property>
+                      </properties>
+                    </externalMetadataColumn>
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\DIM_BANDEIRA_CARTAO\OLE DB Command.Outputs[OLE DB Command Output]"
+                  exclusionGroup="1"
+                  name="OLE DB Command Output"
+                  synchronousInputId="Package\DIM_BANDEIRA_CARTAO\OLE DB Command.Inputs[OLE DB Command Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_BANDEIRA_CARTAO\OLE DB Command.Outputs[OLE DB Command Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="OLE DB Command Error Output"
+                  synchronousInputId="Package\DIM_BANDEIRA_CARTAO\OLE DB Command.Inputs[OLE DB Command Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\OLE DB Command.Outputs[OLE DB Command Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\DIM_BANDEIRA_CARTAO\OLE DB Command.Outputs[OLE DB Command Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\OLE DB Command.Outputs[OLE DB Command Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\DIM_BANDEIRA_CARTAO\OLE DB Command.Outputs[OLE DB Command Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source"
+              componentClassID="Microsoft.OLEDBSource"
+              contactInfo="OLE DB Source;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
+              description="OLE DB Source"
+              name="OLE DB Source"
+              usesDispositions="true"
+              version="7">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of the database object used to open a rowset."
+                  name="OpenRowset"></property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the variable that contains the name of the database object used to open a rowset."
+                  name="OpenRowsetVariable"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT id_bandeira_cartao
+      ,ds_bandeira_cartao
+  FROM mw_bandeira_cartao</property>
+                <property
+                  dataType="System.String"
+                  description="The variable that contains the SQL command to be executed."
+                  name="SqlCommandVariable"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Forces the use of the DefaultCodePage property value when describing character data."
+                  name="AlwaysUseDefaultCodePage">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the mode used to access the database."
+                  name="AccessMode"
+                  typeConverter="AccessMode">2</property>
+                <property
+                  dataType="System.String"
+                  description="The mappings between the parameters in the SQL command and variables."
+                  name="ParameterMapping"></property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Middleway2]"
+                  connectionManagerRefId="Package.ConnectionManagers[Middleway2]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <outputs>
+                <output
+                  refId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Output]"
+                  name="OLE DB Source Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Output].Columns[id_bandeira_cartao]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[id_bandeira_cartao]"
+                      lineageId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Output].Columns[id_bandeira_cartao]"
+                      name="id_bandeira_cartao"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Output].Columns[ds_bandeira_cartao]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ds_bandeira_cartao]"
+                      length="20"
+                      lineageId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Output].Columns[ds_bandeira_cartao]"
+                      name="ds_bandeira_cartao"
+                      truncationRowDisposition="FailComponent" />
+                  </outputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[id_bandeira_cartao]"
+                      dataType="i4"
+                      name="id_bandeira_cartao" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ds_bandeira_cartao]"
+                      codePage="1252"
+                      dataType="str"
+                      length="20"
+                      name="ds_bandeira_cartao" />
+                  </externalMetadataColumns>
+                </output>
+                <output
+                  refId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Error Output]"
+                  isErrorOut="true"
+                  name="OLE DB Source Error Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[id_bandeira_cartao]"
+                      dataType="i4"
+                      lineageId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[id_bandeira_cartao]"
+                      name="id_bandeira_cartao" />
+                    <outputColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ds_bandeira_cartao]"
+                      codePage="1252"
+                      dataType="str"
+                      length="20"
+                      lineageId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ds_bandeira_cartao]"
+                      name="ds_bandeira_cartao" />
+                    <outputColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension"
+              componentClassID="Microsoft.SCD"
+              contactInfo="Slowly Changing Dimension;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;3"
+              description="Updates a slowly changing dimension."
+              name="Slowly Changing Dimension"
+              version="3">
+              <properties>
+                <property
+                  dataType="System.String"
+                  description="Specifies the SELECT statement used to create a schema rowset."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT [CD_BANDEIRA_CARTAO], [DS_BANDEIRA_CARTAO] FROM [dbo].[DIM_BANDEIRA_CARTAO]</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the WHERE clause in the SELECT statement that selects the current row among rows with identical business keys."
+                  name="CurrentRowWhere"></property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether historical attribute updates are directed to the transformation output for changing attribute updates."
+                  name="UpdateChangingAttributeHistory">false</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the transformation fails when columns with fixed attributes contain changes."
+                  name="FailOnFixedAttributeChange">false</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the column name for the inferred member."
+                  name="InferredMemberIndicator"></property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether inferred member updates are detected."
+                  name="EnableInferredMember">false</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the transformation fails when a lookup of an existing record fails."
+                  name="FailOnLookupFailure">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies that all rows in the input are new or the transformation detects the change type."
+                  name="IncomingRowChangeType"
+                  typeConverter="IncomingRowChangeType">1</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension.Connections[LookupConnection]"
+                  connectionManagerID="Package.ConnectionManagers[DW2]"
+                  connectionManagerRefId="Package.ConnectionManagers[DW2]"
+                  description="Defines the connection to use for lookups in the dimension table"
+                  name="LookupConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]"
+                  name="Slowly Changing Dimension Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].Columns[id_bandeira_cartao]"
+                      cachedDataType="i4"
+                      cachedName="id_bandeira_cartao"
+                      externalMetadataColumnId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[CD_BANDEIRA_CARTAO]"
+                      lineageId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Output].Columns[id_bandeira_cartao]">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          name="ColumnType"
+                          typeConverter="ColumnType">1</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].Columns[ds_bandeira_cartao]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="20"
+                      cachedName="ds_bandeira_cartao"
+                      externalMetadataColumnId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[DS_BANDEIRA_CARTAO]"
+                      lineageId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Output].Columns[ds_bandeira_cartao]">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          name="ColumnType"
+                          typeConverter="ColumnType">2</property>
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[CD_BANDEIRA_CARTAO]"
+                      dataType="i4"
+                      name="CD_BANDEIRA_CARTAO" />
+                    <externalMetadataColumn
+                      refId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[DS_BANDEIRA_CARTAO]"
+                      codePage="1252"
+                      dataType="str"
+                      length="20"
+                      name="DS_BANDEIRA_CARTAO" />
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension.Outputs[Unchanged Output]"
+                  description="Unchanged rows"
+                  exclusionGroup="1"
+                  name="Unchanged Output"
+                  synchronousInputId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension.Outputs[New Output]"
+                  description="New rows"
+                  exclusionGroup="1"
+                  name="New Output"
+                  synchronousInputId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension.Outputs[Fixed Attribute Output]"
+                  description="Rows with changes in columns tagged FixedAttribute"
+                  exclusionGroup="1"
+                  name="Fixed Attribute Output"
+                  synchronousInputId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension.Outputs[Changing Attribute Updates Output]"
+                  description="These rows contain new information for ChangingAttribute (Type 1) column changes"
+                  exclusionGroup="1"
+                  name="Changing Attribute Updates Output"
+                  synchronousInputId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension.Outputs[Historical Attribute Inserts Output]"
+                  description="HistoricalAttribute (Type 2) changes result in these new rows"
+                  exclusionGroup="2"
+                  name="Historical Attribute Inserts Output"
+                  synchronousInputId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension.Outputs[Inferred Member Updates Output]"
+                  description="Information to update unpopulated initial dimension row"
+                  exclusionGroup="1"
+                  name="Inferred Member Updates Output"
+                  synchronousInputId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+          </components>
+          <paths>
+            <path
+              refId="Package\DIM_BANDEIRA_CARTAO.Paths[Changing Attribute Updates Output]"
+              endId="Package\DIM_BANDEIRA_CARTAO\OLE DB Command.Inputs[OLE DB Command Input]"
+              name="Changing Attribute Updates Output"
+              startId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension.Outputs[Changing Attribute Updates Output]" />
+            <path
+              refId="Package\DIM_BANDEIRA_CARTAO.Paths[New Output]"
+              endId="Package\DIM_BANDEIRA_CARTAO\Insert Destination.Inputs[OLE DB Destination Input]"
+              name="New Output"
+              startId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension.Outputs[New Output]" />
+            <path
+              refId="Package\DIM_BANDEIRA_CARTAO.Paths[OLE DB Source Output]"
+              endId="Package\DIM_BANDEIRA_CARTAO\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]"
+              name="OLE DB Source Output"
+              startId="Package\DIM_BANDEIRA_CARTAO\OLE DB Source.Outputs[OLE DB Source Output]" />
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="8">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssge="clr-namespace:Microsoft.SqlServer.Graph.Extended;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+        <NodeLayout
+          Size="181,44"
+          Id="Package\DIM_BANDEIRA_CARTAO"
+          TopLeft="10.4811320754717,42.4433962264151" />
+        <AnnotationLayout
+          Text="Este pacote tem como finalidade&#xD;&#xA;popular a entidade DIM_BANDEIRA_CARTAO"
+          ParentId="Package"
+          Size="226,65"
+          Id="68436a2c-30c3-4869-b3ac-259dbc5e1b91"
+          TopLeft="5.5,5.5">
+          <AnnotationLayout.FontInfo>
+            <mssge:FontInfo
+              Family="Tahoma"
+              Size="11.25"
+              Color="#FF080000">
+              <mssge:FontInfo.TextDecorations>
+                <av:TextDecorationCollection />
+              </mssge:FontInfo.TextDecorations>
+            </mssge:FontInfo>
+          </AnnotationLayout.FontInfo>
+        </AnnotationLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+  <ConnectionManager
+    design-time-name="Package.ConnectionManagers[DW]">
+    <DataSourceID>DW</DataSourceID>
+  </ConnectionManager>
+  <ConnectionManager
+    design-time-name="Package.ConnectionManagers[DW2]">
+    <DataSourceID>DW2</DataSourceID>
+  </ConnectionManager>
+  <ConnectionManager
+    design-time-name="Package.ConnectionManagers[Middleway]">
+    <DataSourceID>Middleway</DataSourceID>
+  </ConnectionManager>
+  <ConnectionManager
+    design-time-name="Package.ConnectionManagers[Middleway2]">
+    <DataSourceID>Middleway2</DataSourceID>
+  </ConnectionManager>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>

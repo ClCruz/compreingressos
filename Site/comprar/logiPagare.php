@@ -1,4 +1,5 @@
 <?php
+require_once("../settings/multisite/unique.php");
 foreach($_POST as $key => $val) {
 	$_POST[$key] = utf8_encode2($val);
 }
@@ -14,7 +15,7 @@ $errorsiPagare = sqlErrors();
 if (!$resultiPagare or !empty($errorsiPagare)) {
 	$subject = 'Erro no LOG do iPagare'; 
 	
-	$namefrom = 'COMPREINGRESSOS.COM - AGÊNCIA DE VENDA DE INGRESSOS';
+	$namefrom = multiSite_getTitle();
 	$from = '';
 	
 	//define the body of the message.

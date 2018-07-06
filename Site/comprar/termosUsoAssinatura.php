@@ -1,3 +1,6 @@
+<?php
+require_once("../settings/multisite/unique.php");
+?>
 <div class="centraliza hidden" id="termos_de_uso">
 	<div class="fechar"></div>
 	<h2>Termos de uso</h2>
@@ -7,14 +10,14 @@
 	</p>
 	<p>
 		<span>&nbsp;&nbsp;&nbsp;&nbsp;Regulamenta a participa&ccedil;&atilde;o dos clientes da</span>
-		<span>COMPREINGRESSOS.COM e parceiros</span>
+		<span><?php echo multiSite_getName(); ?> e parceiros</span>
 		<span>&nbsp;no programa de benef&iacute;cios denominado &ldquo;Assinante A&rdquo;</span>
 	</p>
 	<p>
 		<span>1. CONDI&Ccedil;&Otilde;ES GERAIS</span>
 	</p>
 	<p>
-		<span>1.1. O Assinante A (Assinante A) consiste num programa de benef&iacute;cios criado pela COMPREINGRESSOS.COM para estreitar seu relacionamento com seus clientes participantes (Participantes), oferecendo vantagens e benef&iacute;cios, mediante a aquisi&ccedil;&atilde;o de um Plano de assinatura.</span>
+		<span>1.1. O Assinante A (Assinante A) consiste num programa de benef&iacute;cios criado pela <?php echo multiSite_getName(); ?> para estreitar seu relacionamento com seus clientes participantes (Participantes), oferecendo vantagens e benef&iacute;cios, mediante a aquisi&ccedil;&atilde;o de um Plano de assinatura.</span>
 	</p>
 	<p>
 		<span>1.2. Poder&aacute; tornar-se Participante do Assinante A toda e qualquer pessoa f&iacute;sica, sem limite de idade, desde que efetue a aquisi&ccedil;&atilde;o da assinatura no site do programa Assinante A, ao endere&ccedil;o</span>
@@ -29,16 +32,16 @@
 		<span>1.5. O programa Assinante A &eacute; v&aacute;lido somente no territ&oacute;rio brasileiro, nos teatros e parceiros participantes constant no site do programa (Assinante A).</span>
 	</p>
 	<p>
-		<span>1.6. Os assinantes poder&atilde;o verificar quais os espet&aacute;culos do site COMPREINGRESSOS.COM participantes do programa Assinante A atrav&eacute;s do site da COMPREINGRESSOS.COM/ASSINATEA, na aba conte&uacute;do.</span>
+		<span>1.6. Os assinantes poder&atilde;o verificar quais os espet&aacute;culos do site <?php echo multiSite_getName(); ?> participantes do programa Assinante A atrav&eacute;s do site da <?php echo multiSite_getName(); ?>/ASSINATEA, na aba conte&uacute;do.</span>
 	</p>
 	<p>
 		<span>II. FUNCIONAMENTO DO PROGRAMA</span>
 	</p>
 	<p>
-		<span>2.1. A Assinatura poder&aacute; ser adquirida no site, compreingresso/assinantea, call center atrav&eacute;s do do n&uacute;mero 11 XXXXXXXX ou bilheterias participantes nos teatros com bilheteria COMPREINGRESSOS.COM que participe do programa Assinante A, pelo valor informado na data da compra.</span>
+		<span>2.1. A Assinatura poder&aacute; ser adquirida no site, compreingresso/assinantea, call center atrav&eacute;s do do n&uacute;mero 11 XXXXXXXX ou bilheterias participantes nos teatros com bilheteria <?php echo multiSite_getName(); ?> que participe do programa Assinante A, pelo valor informado na data da compra.</span>
 	</p>
 	<p>
-		<span>2.1.1 Por motivos operacionais, a aquisi&ccedil;&atilde;o da assinatura dever&aacute; ocorrer mediante a celebra&ccedil;&atilde;o de uma transa&ccedil;&atilde;o individual, n&atilde;o podendo o Participante adquirir, atrav&eacute;s da mesma transa&ccedil;&atilde;o, a assinatura e ingressos nos estabelecimentos da COMPREINGRESSOS.COM.</span>
+		<span>2.1.1 Por motivos operacionais, a aquisi&ccedil;&atilde;o da assinatura dever&aacute; ocorrer mediante a celebra&ccedil;&atilde;o de uma transa&ccedil;&atilde;o individual, n&atilde;o podendo o Participante adquirir, atrav&eacute;s da mesma transa&ccedil;&atilde;o, a assinatura e ingressos nos estabelecimentos da <?php echo multiSite_getName(); ?>.</span>
 	</p>
 	<p>
 		<span>2.2. O Participante possuidor de registro no Cadastro de Pessoas F&iacute;sicas - CPF, ap&oacute;s a derir ao programa e durante o prazo mencionado no item 1.3, cabendo ao programa assinanteA a aprova&ccedil;&atilde;o da referida inscri&ccedil;&atilde;o.</span>
@@ -53,7 +56,7 @@
 		<span>2.2.3. Em caso de inscri&ccedil;&atilde;o de dependentes, o Participante poder&aacute; utilizar-se de seu CPF para a conclus&atilde;o da inscri&ccedil;&atilde;o, desde que possa comprovar, em caso de solicita&ccedil;&atilde;o, a rela&ccedil;&atilde;o de depend&ecirc;ncia com o menor de idade.</span>
 	</p>
 	<p>
-		<span>2.3. O Participante dever&aacute; comunicar ao programa, qualquer altera&ccedil;&atilde;o cadastral, sendo respons&aacute;vel pelas informa&ccedil;&otilde;es que prestar. Quando considerar necess&aacute;rio, a COMPREINGRESSOS.COM poder&aacute; solicitar o envio da documenta&ccedil;&atilde;o comprobat&oacute;ria da altera&ccedil;&atilde;o dos referidos dados cadastrais.</span>
+		<span>2.3. O Participante dever&aacute; comunicar ao programa, qualquer altera&ccedil;&atilde;o cadastral, sendo respons&aacute;vel pelas informa&ccedil;&otilde;es que prestar. Quando considerar necess&aacute;rio, a <?php echo multiSite_getName(); ?> poder&aacute; solicitar o envio da documenta&ccedil;&atilde;o comprobat&oacute;ria da altera&ccedil;&atilde;o dos referidos dados cadastrais.</span>
 	</p>
 	<p>
 		<span>2.4 &Eacute; proibido ao assinante o uso dos seus ingressos para fins comerciais e ou qualquer outro uso que n&atilde;o apenas o pessoal e de seu acompanhante, na mesma data hor&aacute;rio e local do espet&aacute;culo;</span>
@@ -72,10 +75,10 @@
 		<span>Assinante A</span>
 		<span>, na forma descrita no item 2.2., receber&aacute;, como cortesia, um par de ingressos v&aacute;lidos para utiliza&ccedil;&atilde;o nos teatros participantes do programa</span>
 		<span>assinante A</span>
-		<span>&nbsp;participantes e que e estejam na p&aacute;gina compreingressos.com.assinantea e que somente poder&aacute; ser utilizado em sua pr&oacute;xima visita a qualquer um dos teatros da rede participantes do programa.</span>
+		<span>&nbsp;participantes e que e estejam na p&aacute;gina <?php echo multiSite_getName(); ?>.assinantea e que somente poder&aacute; ser utilizado em sua pr&oacute;xima visita a qualquer um dos teatros da rede participantes do programa.</span>
 	</p>
 	<p>
-		<span>3.2.1. Para utiliza&ccedil;&atilde;o do ingresso de cortesia, o Participante dever&aacute; apresentar o seu Cart&atilde;o virtual ou informar o CPF utilizado em sua inscri&ccedil;&atilde;o na bilheteria ou no site. O resgate deste benef&iacute;cio somente poder&aacute; ser feito no compreingressos.com/assinantea. &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span>
+		<span>3.2.1. Para utiliza&ccedil;&atilde;o do ingresso de cortesia, o Participante dever&aacute; apresentar o seu Cart&atilde;o virtual ou informar o CPF utilizado em sua inscri&ccedil;&atilde;o na bilheteria ou no site. O resgate deste benef&iacute;cio somente poder&aacute; ser feito no <?php echo multiSite_getName(); ?>/assinantea. &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span>
 	</p>
 	<p>
 		<span>3.2.2 Uma vez que o Participante realizar o resgate do ingresso de cortesia para determinado estabelecimento, dia e sess&atilde;o, este n&atilde;o ter&aacute; direito &agrave; cancelamento da troca do ingresso.</span>
@@ -89,13 +92,13 @@
 		<span>&nbsp;&eacute; condi&ccedil;&atilde;o obrigat&oacute;ria e o Participante que optar por n&atilde;o faz&ecirc;-la integralmente e com todos os dados reais e corretos n&atilde;o far&aacute; jus aos Benef&iacute;cios que fazem parte do programa.</span>
 	</p>
 	<p>
-		<span>3.3. A COMPREINGRESSOS.COM oferecer&aacute;, ao Participante do programa Assinante A, ao menos um Benef&iacute;cio n&atilde;o especificado, de acordo com as seguintes regras:</span>
+		<span>3.3. A <?php echo multiSite_getName(); ?> oferecer&aacute;, ao Participante do programa Assinante A, ao menos um Benef&iacute;cio n&atilde;o especificado, de acordo com as seguintes regras:</span>
 	</p>
 	<p>
-		<span>&nbsp;&nbsp;&nbsp;&nbsp;a) O Benef&iacute;cio poder&aacute; garantir ao Participante vantagens de descontos, referentes &agrave; aquisi&ccedil;&atilde;o de ingressos no site da COMPREINGRESSOS.COM que participem do programa Assinante A, que poder&aacute; ser, mas n&atilde;o necessariamente ser&aacute;, um desconto em rela&ccedil;&atilde;o aos pre&ccedil;os praticados na bilheteria, entrega de brindes, etc.;</span>
+		<span>&nbsp;&nbsp;&nbsp;&nbsp;a) O Benef&iacute;cio poder&aacute; garantir ao Participante vantagens de descontos, referentes &agrave; aquisi&ccedil;&atilde;o de ingressos no site da <?php echo multiSite_getName(); ?> que participem do programa Assinante A, que poder&aacute; ser, mas n&atilde;o necessariamente ser&aacute;, um desconto em rela&ccedil;&atilde;o aos pre&ccedil;os praticados na bilheteria, entrega de brindes, etc.;</span>
 	</p>
 	<p>
-		<span>&nbsp;&nbsp;&nbsp;&nbsp;b) O Benef&iacute;cio poder&aacute; ainda consistir em vantagens quando da aquisi&ccedil;&atilde;o de produtos nos estabelecimentos participantes do programa assinante A e nos eventos comercializados pela COMPREINGRESSOS.COM.</span>
+		<span>&nbsp;&nbsp;&nbsp;&nbsp;b) O Benef&iacute;cio poder&aacute; ainda consistir em vantagens quando da aquisi&ccedil;&atilde;o de produtos nos estabelecimentos participantes do programa assinante A e nos eventos comercializados pela <?php echo multiSite_getName(); ?>.</span>
 	</p>
 	<p>
 		<span>3.3.3. O voucher mencionado no item 3.3.2 ser&aacute; v&aacute;lido apenas para utiliza&ccedil;&atilde;o imediata na troca, podendo o participante escolher data e hora de utiliza&ccedil;&atilde;o dentre os hor&aacute;rios dos espet&aacute;culos no per&iacute;odo do m&ecirc;s vigente de sua assinatura. Caso o Participante n&atilde;o utilize o voucher para fazer o resgate do Benef&iacute;cio imediatamente, poder&aacute; faz&ecirc;-lo dentro do m&ecirc;s vigente de resgate, ou seja dentro de cada per&iacute;odo de trinta dias de sua assinatura, desde que esta esteja vigente.</span>
@@ -104,16 +107,16 @@
 		<span>3.3.4. Os Benef&iacute;cios consistentes na entrega de brindes estar&atilde;o sujeitos &agrave; disponibilidade dos mesmos, que ter&atilde;o estoques limitados.</span>
 	</p>
 	<p>
-		<span>3.4. &Eacute; facultado &agrave; COMPREINGRESSOS.COM, quando lhe convier, oferecer apenas Benef&iacute;cio relacionado &agrave; bilheteria ou ainda apenas relacionado &agrave; bomboniere, sem que haja direito de reclama&ccedil;&atilde;o para o Participante.</span>
+		<span>3.4. &Eacute; facultado &agrave; <?php echo multiSite_getName(); ?>, quando lhe convier, oferecer apenas Benef&iacute;cio relacionado &agrave; bilheteria ou ainda apenas relacionado &agrave; bomboniere, sem que haja direito de reclama&ccedil;&atilde;o para o Participante.</span>
 	</p>
 	<p>
-		<span>3.5. Os Benef&iacute;cios ser&atilde;o alterados com periodicidade semanal, sendo facultado &agrave; COMPREINGRESSOS.COM mant&ecirc;-los por prazos maiores ou substitu&iacute;-los por outros, a seu exclusivo crit&eacute;rio, sem que haja direito de reclama&ccedil;&atilde;o para o Participante.</span>
+		<span>3.5. Os Benef&iacute;cios ser&atilde;o alterados com periodicidade semanal, sendo facultado &agrave; <?php echo multiSite_getName(); ?> mant&ecirc;-los por prazos maiores ou substitu&iacute;-los por outros, a seu exclusivo crit&eacute;rio, sem que haja direito de reclama&ccedil;&atilde;o para o Participante.</span>
 	</p>
 	<p>
-		<span>3.6. Caso seja imposs&iacute;vel fornecer ao Participante os Benef&iacute;cios referentes &agrave;quela semana, a COMPREINGRESSOS.COM se compromete a substitu&iacute;-los por vantagens e benef&iacute;cios equivalentes, escolhidos ao exclusivo crit&eacute;rio da COMPREINGRESSOS.COM.</span>
+		<span>3.6. Caso seja imposs&iacute;vel fornecer ao Participante os Benef&iacute;cios referentes &agrave;quela semana, a <?php echo multiSite_getName(); ?> se compromete a substitu&iacute;-los por vantagens e benef&iacute;cios equivalentes, escolhidos ao exclusivo crit&eacute;rio da <?php echo multiSite_getName(); ?>.</span>
 	</p>
 	<p>
-		<span>3.7. O Participante poder&aacute; obter informa&ccedil;&otilde;es sobre o cronograma de Benef&iacute;cios vigentes em determinado per&iacute;odo atrav&eacute;s do site da COMPREINGRESSOS.COM/assinantea, na &aacute;rea referente ao programa Assinante A; ou ainda atrav&eacute;s do endere&ccedil;o de e-mail fornecido pelo Participante, caso este tenha assim autorizado e fornecido o endere&ccedil;o, quando da inscri&ccedil;&atilde;o no site da Assinante A, nos termos do item 2.2.</span>
+		<span>3.7. O Participante poder&aacute; obter informa&ccedil;&otilde;es sobre o cronograma de Benef&iacute;cios vigentes em determinado per&iacute;odo atrav&eacute;s do site da <?php echo multiSite_getName(); ?>/assinantea, na &aacute;rea referente ao programa Assinante A; ou ainda atrav&eacute;s do endere&ccedil;o de e-mail fornecido pelo Participante, caso este tenha assim autorizado e fornecido o endere&ccedil;o, quando da inscri&ccedil;&atilde;o no site da Assinante A, nos termos do item 2.2.</span>
 	</p>
 	<p>
 		<span>IV. DO RESGATE DOS BENEF&Iacute;CIOS</span>

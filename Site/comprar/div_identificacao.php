@@ -1,4 +1,6 @@
 <?php
+require_once("../settings/multisite/unique.php");
+
 	//printr($_SERVER);
 	function is_etapa1(){
 		$url = $_SERVER['URL'];
@@ -27,10 +29,10 @@
 			<p class="frase"><b>Já sou</b> <?php echo $titulo ?></p>
 			<?php if ( $assinante ): ?>
 				<div>
-					Se você já é cadastrado na compreingressos ou já possui os benefícios do clube Assinante A ,faça o seu login.
+					Se você já é cadastrado na <?php echo multiSite_getName(); ?> ou já possui os benefícios do clube Assinante A ,faça o seu login.
 				</div>
 			<?php endif; ?>
-			<p class="site">compreingressos.com</p>
+			<p class="site"><?php echo multiSite_getName(); ?></p>
 			<div id="loginForm">
 				<input type="text" name="email" placeholder="digite seu e-mail" id="login" maxlength="100">
 				<div class="erro_help">
@@ -71,7 +73,7 @@
 		</div>
 		<div class="identificacao cadastro">
 			<p class="frase"><b>Não sou</b> cliente</p>
-			<p class="site">compreingressos.com</p>
+			<p class="site"><?php echo multiSite_getName(); ?></p>
 			<a href="" class="botao cadastrar bt_cadastro">cadastrar</a>
 		</div>
 	</form>

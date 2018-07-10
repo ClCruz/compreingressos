@@ -1,5 +1,5 @@
 <?php
-require_once("../../settings/multisite/unique.php");
+require_once($_SERVER['DOCUMENT_ROOT']."/settings/multisite/unique.php");
 if (acessoPermitido($mainConnection, $_SESSION['admin'], 330, true)) {
 
 	if ($_GET['action'] == 'getTable') { /*------------ REPORT ------------*/

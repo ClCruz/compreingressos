@@ -1,10 +1,7 @@
 <?php
 //ini_set('mssql.charset', 'UTF-8');
-
 require('../settings/Metzli/autoload.php');
-
-require_once("../settings/multisite/unique.php");
-
+require_once($_SERVER['DOCUMENT_ROOT']."/settings/multisite/unique.php");
 use Metzli\Encoder\Encoder;
 use Metzli\Renderer\PngRenderer;
 
@@ -68,6 +65,7 @@ function sale_trace($id_cliente,$id_pedido_venda,$codVenda
 function getSiteLogo() {
     echo "<img src='" .multiSite_getLogo()."' height='60px' id='logo' />";
 }
+    
 
 function getSiteName() {
     echo "<h1 class='siteName'>$nomeSite</h1>";
@@ -1196,7 +1194,7 @@ function comboPrecosIngresso($name, $apresentacaoID, $idCadeira, $selected = NUL
 
     return $isCombo ? $combo : ($isArray ? $bilhetes : $text);
 }
-
+// ----------------------------
 function comboTeatro($name, $selected, $funcJavascript = "") {
     $mainConnection = mainConnection();
     $result = executeSQL($mainConnection, 'SELECT ID_BASE, DS_NOME_TEATRO FROM MW_BASE WHERE IN_ATIVO = \'1\' ORDER BY DS_NOME_TEATRO');
@@ -1927,6 +1925,7 @@ function printr($array, $titulo = '')
         print_r($array);
     echo '</pre>';
 }
+// ----------------------------
 
 function verificaCPF($cpf) {
     if (!is_numeric($cpf)) {
@@ -2495,13 +2494,12 @@ function sendConfirmationMail($id_cliente, $assinatura = false) {
         break;
     }
 
-    $tpl = new Template('../comprar/templates/' . ($assinatura ? 'confirmacaoEmailAssinatura.html' : 'confirmacaoEmail.html'));
+    $tpl = new Template('../comprar/templates/' . $caminhoHtml);
     $tpl->nome = $rs['DS_NOME'];
     $tpl->codigo = $rs['CD_CONFIRMACAO'];
     $tpl->link = ($_ENV['IS_TEST']
                     ? 'http://localhost:1002/comprar/confirmacaoEmail.php?codigo='.urlencode($rs['CD_CONFIRMACAO'])
-                    : multiSite_getURICompra("comprar/confirmacaoEmail.php?codigo=".urlencode($rs['CD_CONFIRMACAO'])))
-    );
+                    : multiSite_getURICompra("comprar/confirmacaoEmail.php?codigo=".urlencode($rs['CD_CONFIRMACAO'])));
 
     if ($_REQUEST['redirect']) {
         $tpl->link .= '&redirect='.urlencode($_REQUEST['redirect']);
@@ -2513,13 +2511,15 @@ function sendConfirmationMail($id_cliente, $assinatura = false) {
     $tpl->show();
     $message = ob_get_clean();
 
-    $namefrom = '=?UTF-8?b?'.base64_encode($assinatura ? 'Assinatura A' : multiSite_getTitle().'?=';
+    $namefrom = '=?UTF-8?b?'.base64_encode($assinatura ? 'Assinatura A' : multiSite_getTitle().'?=');
     $from = '';
 
     $successMail = authSendEmail($from, $namefrom, $rs['CD_EMAIL_LOGIN'], $rs['DS_NOME'], $subject, utf8_decode($message));
 
     return $successMail;
 }
+
+// ----------------------------
 
 function sendSuccessMail($pedido_id) {
     $mainConnection = mainConnection();
@@ -2657,7 +2657,7 @@ function sendSuccessMail($pedido_id) {
 
     if ($i >= 0) {
 
-        require "../comprar/successMail.php";
+        // require "../comprar/successMail.php";
 
         if ($successMail === true) {
             return true;

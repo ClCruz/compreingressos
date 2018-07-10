@@ -1,5 +1,6 @@
 <?php
 session_start();
+
 require_once("../settings/multisite/tellmethesite.php");
 require_once("../settings/multisite/layout.php");
 $pdo = getConnectionHome();

@@ -4,7 +4,7 @@ require_once("../settings/functions.php");
 $mainConnection = mainConnection();
 
 // Host do Reporting Services
-$report_host = "http://201.48.139.237:8081";
+$report_host = "http://138.36.216.94";
 // URL do ReportViewer
 $report_server = "/ReportServer/Pages/ReportViewer.aspx?";
 // Pasta onde esta o relatório no ReportServer

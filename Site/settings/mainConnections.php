@@ -6,7 +6,7 @@ require_once("../settings/multisite/cnnConfig.php");
 
 function mainConnection() {
         $host = multiSite_getCurrentSQLServer()["host"];
-	$port = '1433';
+	$port = multiSite_getCurrentSQLServer()["port"];
 	$dbname = 'CI_MIDDLEWAY';
 	$user = multiSite_getCurrentSQLServer()["user"];
 	$pass = multiSite_getCurrentSQLServer()["pass"];
@@ -24,7 +24,7 @@ function getConnection($teatroID) {
         $rs = executeSQL($mainConnection, 'SELECT DS_NOME_BASE_SQL FROM MW_BASE WHERE ID_BASE = ?', array($teatroID), true);
 
         $host = multiSite_getCurrentSQLServer()["host"];
-        $port = '1433';
+        $port = multiSite_getCurrentSQLServer()["port"];
 	$user = multiSite_getCurrentSQLServer()["user"];
 	$pass = multiSite_getCurrentSQLServer()["pass"];
 
@@ -33,7 +33,7 @@ function getConnection($teatroID) {
 
 function getConnectionTsp() {
         $host = multiSite_getCurrentSQLServer()["host"];
-        $port = '1433';
+        $port = multiSite_getCurrentSQLServer()["port"];
         $dbname = 'tspweb';
 	$user = multiSite_getCurrentSQLServer()["user"];
 	$pass = multiSite_getCurrentSQLServer()["pass"];
@@ -54,9 +54,10 @@ function getConnectionDw() {
 function getConnectionHome() {
 
 	if ($_ENV['IS_TEST']) return false;
+	// return false;
 
 	$host = multiSite_getCurrentMysql()["host"];;
-	$port = '4003';
+	$port = multiSite_getCurrentMysql()["port"];
 	$dbname = multiSite_getCurrentMysql()["database"];
 	$user = multiSite_getCurrentMysql()["user"];;
 	$pass = multiSite_getCurrentMysql()["pass"];;

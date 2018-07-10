@@ -1,6 +1,6 @@
 <?php
 session_start();
-
+require_once($_SERVER['DOCUMENT_ROOT']."/settings/multisite/unique.php");
 if ($_GET['action'] == 'logout') {
 	foreach ($_COOKIE as $key => $val) {
 		setcookie($key, "", time() - 3600);
@@ -14,7 +14,6 @@ if ($_GET['action'] == 'logout') {
 
 require_once('../settings/settings.php');
 require_once('../settings/functions.php');
-
 require_once('header_new.php');
 
 $nome = "";
@@ -67,7 +66,7 @@ $nome = $rs['DS_NOME'];
 	<div class="flex-center flex-column">
 	
 		<div class="view overlay">
-			<img src="../images/logo.png" style="width:100%; max-width:350px;" class="mx-auto d-block mb-4" alt="">
+			<img src="<?php echo getCurrentSite() == "ingressoslitoral" ? '../images/multi_litoralingressos/logo_header.png':'../images/logo.png'; ?>" style="width:100%; max-width:350px;" class="mx-auto d-block mb-4" alt="">
 			<a href="#">
 				<div class="mask rgba-white-slight"></div>
 			</a>
@@ -132,7 +131,7 @@ $nome = $rs['DS_NOME'];
 	<div class="flex-center flex-column">
 	
 		<div class="view overlay">
-			<img src="../images/logo.png" style="width:100%; max-width:350px;" class="mx-auto d-block mb-4" alt="">
+			<img src="<?php echo getCurrentSite() == "ingressoslitoral" ? '../images/multi_litoralingressos/logo_header.png':'../images/logo.png'; ?>" style="width:100%; max-width:350px;" class="mx-auto d-block mb-4" alt="">
 			<a href="#">
 				<div class="mask rgba-white-slight"></div>
 			</a>

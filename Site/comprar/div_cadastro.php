@@ -1,6 +1,6 @@
 <?php
 require_once('../settings/settings.php');
-require_once("../../settings/multisite/unique.php");
+require_once($_SERVER['DOCUMENT_ROOT']."/settings/multisite/unique.php");
 session_start();
 
 ?>

@@ -1,5 +1,5 @@
 <?php
-require_once("../settings/multisite/unique.php");
+require_once($_SERVER['DOCUMENT_ROOT']."/settings/multisite/unique.php");
 ?>
 <font size="-1">
 <FONT face=Verdana><B><BR>NÓS RESPEITAMOS A SUA 

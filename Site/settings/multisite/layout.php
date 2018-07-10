@@ -1,5 +1,6 @@
 <?php
-include_once("../multisite/tellmethesite.php");
+require_once($_SERVER['DOCUMENT_ROOT']."/settings/multisite/tellmethesite.php");
+require_once($_SERVER['DOCUMENT_ROOT']."/settings/multisite/names.php");
 
 function multiSite_getLogo() {
     $ret = "";
@@ -40,10 +41,10 @@ function multiSite_getGoogleAnalytics() {
     
     return $ret;
 }
-function mulsiSite_getFavico() {
+function multiSite_getFavico() {
     switch (getCurrentSite()) {
         case "compreingressos":
-            $ret = "<?php echo mulsiSite_getFavico()?>";
+            $ret = "../images/favicon.ico";
         break;
         case "ingressoslitoral":
             $ret = "../images/multi_litoralingressos/favicon.ico";

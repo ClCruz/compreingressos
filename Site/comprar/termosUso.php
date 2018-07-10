@@ -1,5 +1,5 @@
 <?php
-require_once("../settings/multisite/unique.php");
+require_once($_SERVER['DOCUMENT_ROOT']."/settings/multisite/unique.php");
 ?>
 <div class="centraliza hidden" id="termos_de_uso">
 	<div class="fechar"></div>

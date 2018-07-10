@@ -1,7 +1,7 @@
 <?php
-require_once("../../settings/multisite/unique.php");
-require_once('../settings/settings.php');
-require_once('../settings/functions.php');
+require_once($_SERVER['DOCUMENT_ROOT']."/settings/multisite/unique.php");
+require_once($_SERVER['DOCUMENT_ROOT']."/settings/settings.php");
+require_once($_SERVER['DOCUMENT_ROOT']."/settings/functions.php");
 
 if (isset($_GET['email'])) {
 	require_once('../settings/functions.php');

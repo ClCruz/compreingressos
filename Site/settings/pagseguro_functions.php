@@ -1,5 +1,5 @@
 <?php
-require_once("../settings/multisite/unique.php");
+require_once($_SERVER['DOCUMENT_ROOT']."/settings/multisite/unique.php");
 require_once('../settings/functions.php');
 
 require '../settings/PagSeguroLibrary/PagSeguroLibrary.php';

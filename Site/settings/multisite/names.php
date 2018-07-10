@@ -74,7 +74,7 @@ function multiSite_getName() {
             $ret = "COMPREINGRESSOS.COM";
         break;
         case "ingressoslitoral":
-            $ret = "LITORALINGRESSOS.COM";
+            $ret = "INGRESSOSLITORAL.COM";
         break;
     }
     return $ret;
@@ -99,7 +99,8 @@ function multiSite_getEmail($type) {
                     $ret = "lembrete@compreingressos.com";
                 break;
                 case "ingressoslitoral":
-                    $ret = "contato@litoralingressos.com";
+                    //$ret = "contato@ingressoslitoral.com";
+                    $ret = "ingressoslitoralcontato@gmail.com";
                 break;
             }
         break;
@@ -109,7 +110,8 @@ function multiSite_getEmail($type) {
                     $ret = "marketing@compreingressos.com";
                 break;
                 case "ingressoslitoral":
-                    $ret = "contato@litoralingressos.com";
+                    //$ret = "contato@ingressoslitoral.com";
+                    $ret = "ingressoslitoralcontato@gmail.com";
                 break;
             }
         break;
@@ -119,7 +121,8 @@ function multiSite_getEmail($type) {
                     $ret = "info@compreingressos.com";
                 break;
                 case "ingressoslitoral":
-                    $ret = "contato@litoralingressos.com";
+                    //$ret = "contato@ingressoslitoral.com";
+                    $ret = "ingressoslitoralcontato@gmail.com";
                 break;
             }
         break;
@@ -129,7 +132,8 @@ function multiSite_getEmail($type) {
                     $ret = "sac@compreingressos.com";
                 break;
                 case "ingressoslitoral":
-                    $ret = "contato@litoralingressos.com";
+                    //$ret = "contato@ingressoslitoral.com";
+                    $ret = "ingressoslitoralcontato@gmail.com";
                 break;
             }
         break;
@@ -139,7 +143,8 @@ function multiSite_getEmail($type) {
                     $ret = "pedido@compreingressos.com";
                 break;
                 case "ingressoslitoral":
-                    $ret = "contato@litoralingressos.com";
+                    //$ret = "contato@ingressoslitoral.com";
+                    $ret = "ingressoslitoralcontato@gmail.com";
                 break;
             }
         break;
@@ -149,7 +154,8 @@ function multiSite_getEmail($type) {
                     $ret = "compreingressos@gmail.com";
                 break;
                 case "ingressoslitoral":
-                    $ret = "contato@litoralingressos.com";
+                    //$ret = "contato@ingressoslitoral.com";
+                    $ret = "ingressoslitoralcontato@gmail.com";
                 break;
             }
         break;
@@ -159,7 +165,8 @@ function multiSite_getEmail($type) {
                     $ret = "compreingressos@siscompre.com";
                 break;
                 case "ingressoslitoral":
-                    $ret = "contato@litoralingressos.com";
+                    //$ret = "contato@ingressoslitoral.com";
+                    $ret = "ingressoslitoralcontato@gmail.com";
                 break;
             }
         break;
@@ -195,7 +202,7 @@ function multiSite_getEmailPassword($type) {
                     $ret = "";
                 break;
                 case "ingressoslitoral":
-                    $ret = "";
+                    $ret = "restrito";
                 break;
             }
         break;
@@ -205,7 +212,7 @@ function multiSite_getEmailPassword($type) {
                     $ret = "";
                 break;
                 case "ingressoslitoral":
-                    $ret = "";
+                $ret = "restrito";
                 break;
             }
         break;
@@ -215,7 +222,7 @@ function multiSite_getEmailPassword($type) {
                     $ret = "";
                 break;
                 case "ingressoslitoral":
-                    $ret = "";
+                    $ret = "restrito";
                 break;
             }
         break;
@@ -225,7 +232,7 @@ function multiSite_getEmailPassword($type) {
                     $ret = "";
                 break;
                 case "ingressoslitoral":
-                    $ret = "";
+                    $ret = "restrito";
                 break;
             }
         break;
@@ -235,7 +242,7 @@ function multiSite_getEmailPassword($type) {
                     $ret = "";
                 break;
                 case "ingressoslitoral":
-                    $ret = "";
+                    $ret = "restrito";
                 break;
             }
         break;
@@ -245,7 +252,7 @@ function multiSite_getEmailPassword($type) {
                     $ret = "743081@clc";
                 break;
                 case "ingressoslitoral":
-                    $ret = "";
+                    $ret = "restrito";
                 break;
             }
         break;
@@ -255,7 +262,7 @@ function multiSite_getEmailPassword($type) {
                     $ret = "";
                 break;
                 case "ingressoslitoral":
-                    $ret = "";
+                    $ret = "restrito";
                 break;
             }
         break;
@@ -310,7 +317,7 @@ function multiSite_getTitle() {
             $ret = "COMPREINGRESSOS.COM - Gestão e Venda de Ingressos";
         break;
         case "ingressoslitoral":
-            $ret = "LITORALINGRESSOS.COM - Venda de Ingressos";
+            $ret = "INGRESSOSLITORAL.COM - Venda de Ingressos";
         break;
     }
     return $ret;
@@ -323,7 +330,7 @@ function multiSite_getURIReeimprimir($concat = "") {
             $ret = "https://compra.compreingressos.com/comprar/reimprimirEmail.php?pedido=";
         break;
         case "ingressoslitoral":
-            $ret = "https://compra.litoralingressos.com/comprar/reimprimirEmail.php?pedido=";
+            $ret = "https://compra.ingressoslitoral.com/comprar/reimprimirEmail.php?pedido=";
         break;
     }
     $ret .= $concat;
@@ -350,7 +357,7 @@ function multiSite_seloCertificado() {
             $ret = "https://seal.verisign.com/getseal?host_name=compra.compreingressos.com&size=S&use_flash=NO&use_transparent=getsealjs_b.js&lang=pt";
         break;
         case "ingressoslitoral":
-            $ret = "https://seal.verisign.com/getseal?host_name=compra.litoralingressos.com&size=S&use_flash=NO&use_transparent=getsealjs_b.js&lang=pt";
+            $ret = "https://seal.verisign.com/getseal?host_name=compra.ingressoslitoral.com&size=S&use_flash=NO&use_transparent=getsealjs_b.js&lang=pt";
         break;
     }
     return $ret;    
@@ -362,7 +369,7 @@ function multiSite_getDomainCompra() {
             $ret = "compra.compreingressos.com/";
         break;
         case "ingressoslitoral":
-            $ret = "compra.litoralingressos.com/";
+            $ret = "compra.ingressoslitoral.com/";
         break;
     }
     return $ret;
@@ -392,7 +399,7 @@ function multiSite_getURI($type, $concat = "") {
             $ret = "www.compreingressos.com/";
         break;
         case "ingressoslitoral":
-            $ret = "www.litoralingressos.com/";
+            $ret = "www.ingressoslitoral.com/";
         break;
     }
 

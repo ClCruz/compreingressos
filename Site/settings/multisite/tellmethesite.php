@@ -1,5 +1,5 @@
 <?php
-//$whatIsTheSite = "compreingressos";
+// $whatIsTheSite = "compreingressos";
 $whatIsTheSite = "ingressoslitoral";
 // $type = "bringressos;"
 

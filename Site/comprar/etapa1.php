@@ -1,4 +1,9 @@
 <?php
+
+include_once($_SERVER['DOCUMENT_ROOT'].'/settings/functions.php');
+include_once($_SERVER['DOCUMENT_ROOT'].'/settings/settings.php');
+include_once($_SERVER['DOCUMENT_ROOT'].'/settings/multisite/unique.php');
+
 if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
   session_start();
 
@@ -6,10 +11,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
   if ($_SESSION['assinatura']['tipo'] == 'renovacao') header("Location: etapa2.php?eventoDS=" . $_SESSION['assinatura']['evento']);
   
   require_once('../settings/Template.class.php');  
-  require_once('../settings/functions.php');
   
-  require_once('../settings/settings.php');
-  require_once('../settings/multisite/unique.php');
 
   if ($is_manutencao === true) {
     header("Location: manutencao.php");
@@ -209,6 +211,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
 //echo session_id();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
 <html style="overflow: visible;">
   <head>
       <!-- Google Tag Manager -->
@@ -222,7 +225,7 @@ if (isset($_GET['apresentacao']) and is_numeric($_GET['apresentacao'])) {
     <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
     <meta name="robots" content="noindex,nofollow" />
 
-    <link href="<?php echo mulsiSite_getFavico()?>" rel="shortcut icon"/>
+    <link href="<?php echo multiSite_getFavico();?>" rel="shortcut icon"/>
     <link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css' />
     <link rel="stylesheet" href="../stylesheets/cicompra.css"/>
     <?php require("desktopMobileVersion.php"); ?>

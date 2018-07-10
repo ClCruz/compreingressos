@@ -1,5 +1,5 @@
 <?php
-require_once("../settings/multisite/unique.php");
+require_once($_SERVER['DOCUMENT_ROOT']."/settings/multisite/unique.php");
 $mainConnection = mainConnection();
 $query = 'INSERT INTO MW_LOG_IPAGARE (DT_OCORRENCIA, ID_CLIENTE, DS_LOG)
 			 VALUES (GETDATE(), ?, ?)';

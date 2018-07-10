@@ -1,6 +1,6 @@
 <?php
 // botao de cancelar para os ooperadores
-require_once("../../settings/multisite/unique.php");
+require_once($_SERVER['DOCUMENT_ROOT']."/settings/multisite/unique.php");
 $etapa_atual = basename($_SERVER['PHP_SELF'], '.php');
 $etapas_para_exibir = array('etapa1', 'etapa2', 'etapa4', 'etapa5');
 

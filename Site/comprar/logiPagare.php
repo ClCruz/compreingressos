@@ -1,5 +1,5 @@
 <?php
-require_once("../settings/multisite/unique.php");
+require_once($_SERVER['DOCUMENT_ROOT']."/settings/multisite/unique.php");
 foreach($_POST as $key => $val) {
 	$_POST[$key] = utf8_encode2($val);
 }

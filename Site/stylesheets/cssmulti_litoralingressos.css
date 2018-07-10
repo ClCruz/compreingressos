@@ -578,3 +578,26 @@ a.botao.enderecos:hover {
     background-image: url(../images/multi_litoralingressos/btn_meus_enderecos_hover.png);
 }
 
+input.submit.logar {
+    background-image: url(../images/multi_litoralingressos/btn_acessar.png);
+    width: 150px;
+    height: 53px;
+}
+input.submit.logar:hover {
+    background-image: url(../images/multi_litoralingressos/btn_acessar_hover.png);
+    width: 150px;
+    height: 53px;
+    background-position: 0 0;
+}
+
+input.submit.reenviar {
+    background-image: url(../images/multi_litoralingressos/btn_reenviar.png);
+    width: 150px;
+    height: 53px;
+}
+input.submit.reenviar:hover {
+    background-image: url(../images/multi_litoralingressos/btn_reenviar_hover.png);
+    width: 150px;
+    height: 53px;
+    background-position: 0 0;
+}

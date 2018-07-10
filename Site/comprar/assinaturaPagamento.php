@@ -41,7 +41,7 @@ if ($rs[0] != 1) header("Location: " . multiSite_getURI("URI_SSL"));
 <head>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 	<meta name="robots" content="noindex,nofollow">
-	<link href="<?php echo mulsiSite_getFavico()?>" rel="shortcut icon"/>
+	<link href="<?php echo multiSite_getFavico()?>" rel="shortcut icon"/>
 	<link href='https://fonts.googleapis.com/css?family=Paprika|Source+Sans+Pro:200,400,400italic,200italic,300,900' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="../stylesheets/cicompra.css"/>
     <?php require("desktopMobileVersion.php"); ?>

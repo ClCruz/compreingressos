@@ -1,6 +1,6 @@
 <?php
 require_once('../settings/functions.php');
-require_once("../multisite/unique.php");
+require_once($_SERVER['DOCUMENT_ROOT']."/settings/multisite/unique.php");
 
 require_once('../settings/pagarme/Pagarme.php');
 

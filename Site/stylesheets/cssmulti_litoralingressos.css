@@ -601,3 +601,22 @@ input.submit.reenviar:hover {
     height: 53px;
     background-position: 0 0;
 }
+
+@media only screen and (max-width:640px) {
+    div#novo_menu .fim {
+        padding-left: 15px;
+        width: 30%;
+        height: 57px !important;
+    }
+    body {
+        overflow: 1000px !important;
+    }
+    a.botao {
+        width: 150px !important;
+        height: 53px !important;
+    }
+    a.voltar {
+        width: 122px !important;
+        height: 43px !important;
+    }
+}

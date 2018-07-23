@@ -5,13 +5,12 @@ include('../settings/Log.class.php');
 
 $mainConnection = mainConnection();
 session_start();
-
-if (acessoPermitido($mainConnection, $_SESSION['admin'], 16, true)) {
+if (acessoPermitido($mainConnection, $_SESSION['admin'], 16, true) === true) {
 
 $pagina = basename(__FILE__);
 
-require('actions/'.$pagina);
-	
+require_once($_SERVER['DOCUMENT_ROOT']."/admin/actions/".$pagina);
+
 if (isset($_GET['action'])) {
 
 	if ( isset($_POST['local']) )

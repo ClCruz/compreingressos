@@ -61,15 +61,15 @@ if (isset($_SESSION['operador']) and in_array($etapa_atual, $etapas_para_exibir)
     <div class="centraliza">
         <ul>
             <li class="title">Serviços</li>
-            <li><a href="<?php echo multiSite_getURI("URI_SSL", "servicos/6-Captacao_de_Patrocinio"?>">Captação de patrocínio</a></li>
-            <li><a href="<?php echo multiSite_getURI("URI_SSL", "servicos/3-Catracas_Offline_e_Online"?>">Catracas online e offline</a></li>
-            <li><a href="<?php echo multiSite_getURI("URI_SSL", "servicos/2-Central_de_Vendas"?>">Central de vendas</a></li>
-            <li><a href="<?php echo multiSite_getURI("URI_SSL", "servicos/7-Credenciamento"?>">Credenciamento</a></li>
-            <li><a href="<?php echo multiSite_getURI("URI_SSL", "servicos/8-Gestao_de_Bilheteria"?>">Gestão de bilheteria</a></li>
-            <li><a href="<?php echo multiSite_getURI("URI_SSL", "servicos/4-Ingressos"?>">Ingressos</a></li>
-            <li><a href="<?php echo multiSite_getURI("URI_SSL", "grupos"?>">Vendas para grupos</a></li>
-            <li><a href="<?php echo multiSite_getURI("URI_SSL", "servicos/1-Vendas_pela_Internet"?>">Vendas pela internet</a></li>
-            <li><a href="<?php echo multiSite_getURI("URI_SSL", "servicos/5-Vantagens_do_Sistema"?>">Vantagens do sistema</a></li>
+            <li><a href="<?php echo multiSite_getURI("URI_SSL", "servicos/6-Captacao_de_Patrocinio");?>">Captação de patrocínio</a></li>
+            <li><a href="<?php echo multiSite_getURI("URI_SSL", "servicos/3-Catracas_Offline_e_Online");?>">Catracas online e offline</a></li>
+            <li><a href="<?php echo multiSite_getURI("URI_SSL", "servicos/2-Central_de_Vendas");?>">Central de vendas</a></li>
+            <li><a href="<?php echo multiSite_getURI("URI_SSL", "servicos/7-Credenciamento");?>">Credenciamento</a></li>
+            <li><a href="<?php echo multiSite_getURI("URI_SSL", "servicos/8-Gestao_de_Bilheteria");?>">Gestão de bilheteria</a></li>
+            <li><a href="<?php echo multiSite_getURI("URI_SSL", "servicos/4-Ingressos");?>">Ingressos</a></li>
+            <li><a href="<?php echo multiSite_getURI("URI_SSL", "grupos");?>">Vendas para grupos</a></li>
+            <li><a href="<?php echo multiSite_getURI("URI_SSL", "servicos/1-Vendas_pela_Internet");?>">Vendas pela internet</a></li>
+            <li><a href="<?php echo multiSite_getURI("URI_SSL", "servicos/5-Vantagens_do_Sistema");?>">Vantagens do sistema</a></li>
         </ul>
         <ul>
             <li class="title">Ajuda</li>
@@ -77,19 +77,18 @@ if (isset($_SESSION['operador']) and in_array($etapa_atual, $etapas_para_exibir)
             <li><a href="<?php echo multiSite_getTomTicket(); ?>" target="_blank">Sac & Suporte</a></li>
             <?php }?>
             <li><a href="/comprar/loginBordero.php?redirect=..%2Fadmin%2F%3Fp%3DrelatorioBordero">Borderô web</a></li>
-            <li><a href="<?php echo multiSite_getURI("URI_SSL", "institucional"?>">Institucional</a></li>
-            <li><a href="<?php echo multiSite_getURI("URI_SSL", "especiais/3-Lei_6103-11"?>">Lei 6103/11</a></li>
-            <li><a href="<?php echo multiSite_getURI("URI_SSL", "faqs"?>">Perguntas frequentes</a></li>
-            <li><a href="<?php echo multiSite_getURI("URI_SSL", "politica"?>">Política de venda</a></li>
-            <li><a href="<?php echo multiSite_getURI("URI_SSL", "privacidade"?>">Privacidade</a></li>
-            <li><a href="<?php echo multiSite_getURI("URI_SSL", "meia_entrada.html"?>" rel="publisher" target="_blank">Política de Meia Entrada</a></li>
-            <li><a href="<?php echo multiSite_getURI("URI_SSL", "pontosdevenda"?>" rel="publisher">Pontos de Venda</a></li>
+            <li><a href="<?php echo multiSite_getURI("URI_SSL", "institucional");?>">Institucional</a></li>
+            <li><a href="<?php echo multiSite_getURI("URI_SSL", "especiais/3-Lei_6103-11");?>">Lei 6103/11</a></li>
+            <li><a href="<?php echo multiSite_getURI("URI_SSL", "faqs");?>">Perguntas frequentes</a></li>
+            <li><a href="<?php echo multiSite_getURI("URI_SSL", "politica");?>">Política de venda</a></li>
+            <li><a href="<?php echo multiSite_getURI("URI_SSL", "privacidade");?>">Privacidade</a></li>
+            <li><a href="<?php echo multiSite_getURI("URI_SSL", "meia_entrada.html");?>" rel="publisher" target="_blank">Política de Meia Entrada</a></li>
+            <li><a href="<?php echo multiSite_getURI("URI_SSL", "pontosdevenda");?>" rel="publisher">Pontos de Venda</a></li>
             <li><a class="minha_conta_mobile" href="minha_conta.php">Minha conta</a>
         </ul>
         <ul class="midias_sociais">
             <li class="title">Mídias Sociais</li>
-            <?
-            php if (multiSite_getFacebook() != "") {?>
+            <?php if (multiSite_getFacebook() != "") {?>
                 <li class="midia">
                     <a href="<?php echo multiSite_getFacebook(); ?>" target="_blank" class="facebook"></a>
                     <div class="icone">

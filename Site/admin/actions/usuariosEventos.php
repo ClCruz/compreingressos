@@ -228,7 +228,7 @@
 		<p>Seguem informa&ccedil;&otilde;es para acesso:</p>
 		<p>URL: <a href="<?php echo multiSite_getURICompra("/admin/?p=relatorioBordero")?>"><?php echo multiSite_getURICompra("/admin/?p=relatorioBordero")?></a></p>
 		<p>Usu&aacute;rio: <?php echo $user['CD_LOGIN']; ?></p>
-		<p>Senha: caso n&atilde;o lembre a senha clique <a href="<?php echo multiSite_getURICompra("admin/gerarNovaSenha.php?email=" .$user['DS_EMAIL']?>">aqui</a> para receber uma nova senha, que ser&aacute; enviada para o email <?php echo $user['DS_EMAIL']; ?>.</p>
+		<p>Senha: caso n&atilde;o lembre a senha clique <a href="<?php echo multiSite_getURICompra("admin/gerarNovaSenha.php?email=" .$user['DS_EMAIL'])?>">aqui</a> para receber uma nova senha, que ser&aacute; enviada para o email <?php echo $user['DS_EMAIL']; ?>.</p>
 		<p>Att.<br/>
 		<?php echo multiSite_getName(); ?></p>
 		<?php

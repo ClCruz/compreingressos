@@ -62,7 +62,7 @@ if (isset($_GET['action'])) {
 			// reCAPTCHA v2 ---------------
 			$post_data = http_build_query(array('secret'    => $recaptcha_cadastro['private_key'],
 			                                    'response'  => $_POST["g-recaptcha-response"],
-			                                    'remoteip'  => $_SERVER["REMOTE_ADDR"]));
+			                                    'remoteip'  => $_SERVER["HTTP_X_FORWARDED_FOR"]));
 
 
 			$ch = curl_init();

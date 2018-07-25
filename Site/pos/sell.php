@@ -840,7 +840,7 @@ if (isset($_GET['RESPAG'])) {
 									(?, ?, ?, GETDATE(), ?, 'P', 'R', ?, 0, ?, 'N', ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			$params = array($newMaxId, $_SESSION['user'], $_SESSION['pos_user']['id'],
 							($totalIngressos + $totalConveniencia), $totalIngressos, $totalConveniencia,
-							$_GET['BINCARTAO'], $_SERVER["REMOTE_ADDR"], ($_GET['NPAR'] <= 1 ? 1 : $_GET['NPAR']),
+							$_GET['BINCARTAO'], $_SERVER["HTTP_X_FORWARDED_FOR"], ($_GET['NPAR'] <= 1 ? 1 : $_GET['NPAR']),
 							$nr_beneficio, 'POS', $_GET['pos_serial'], $_GET['CAUT'], $_GET['NSUAUT'], $id_meio_pagamento);
 			$result = executeSQL($mainConnection, $query, $params);
 

@@ -39,7 +39,7 @@ if ($_POST["paypal_data"]!= "") {
 // reCAPTCHA v2 ---------------
 $post_data = http_build_query(array('secret'    => $recaptcha['private_key'],
                                     'response'  => $_POST["g-recaptcha-response"],
-                                    'remoteip'  => $_SERVER["REMOTE_ADDR"]));
+                                    'remoteip'  => $_SERVER["HTTP_X_FORWARDED_FOR"]));
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, "https://www.google.com/recaptcha/api/siteverify");
 curl_setopt($ch, CURLOPT_POST, 1);
@@ -457,7 +457,7 @@ $params = array
                 ,$totalIngressos
                 ,$totalConveniencia
                 ,$frete
-                ,$_SERVER["REMOTE_ADDR"]
+                ,$_SERVER["HTTP_X_FORWARDED_FOR"]
                 ,$PaymentDataCollection['NumberOfPayments']
                 ,$nr_beneficio
                 ,$nome_presente

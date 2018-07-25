@@ -34,9 +34,9 @@ executeSQL($mainConnection, "insert into mw_log_ipagare values (getdate(), ?, ?)
 $function = null;
 $handler = null;
 
-if (!Fastcash\Security::VerifyIP($_SERVER["REMOTE_ADDR"]))
+if (!Fastcash\Security::VerifyIP($_SERVER["HTTP_X_FORWARDED_FOR"]))
 {
-    // die($_SERVER["REMOTE_ADDR"]);
+    // die($_SERVER["HTTP_X_FORWARDED_FOR"]);
 }
 
 if (isset($_REQUEST["function"]))

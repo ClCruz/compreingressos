@@ -10,7 +10,7 @@ if (!isset($_SESSION['operador']) AND !$_ENV['IS_TEST']) {
 				AND ID_USUARIO_CALLCENTER IS NULL
 				AND DATEADD(HOUR, 1, DT_PEDIDO_VENDA) > GETDATE()
 				AND (ID_CLIENTE = ? AND (CD_BIN_CARTAO <> ? AND CD_BIN_CARTAO <> ?) OR ID_CLIENTE <> ? AND ID_IP = ?)";
-	$params = array($_SESSION['user'], substr($cartao, 0, 6) . '******' . substr($cartao, -4), $cartao, $_SESSION['user'], $_SERVER["REMOTE_ADDR"]);
+	$params = array($_SESSION['user'], substr($cartao, 0, 6) . '******' . substr($cartao, -4), $cartao, $_SESSION['user'], $_SERVER["HTTP_X_FORWARDED_FOR"]);
 	$rows = numRows($mainConnection, $query, $params);
 
 	//print_r(array('<pre>', $query, $params, '</pre>'));die();

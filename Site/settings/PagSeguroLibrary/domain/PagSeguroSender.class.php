@@ -195,7 +195,7 @@ class PagSeguroSender
             $ip = $headers['HTTP_X_FORWARDED_FOR'];
  
         } else {
-            $ip = filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP);
+            $ip = filter_var($_SERVER['HTTP_X_FORWARDED_FOR'], FILTER_VALIDATE_IP);
         }
 
         $this->ip = $ip;

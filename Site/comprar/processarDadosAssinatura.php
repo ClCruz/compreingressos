@@ -12,7 +12,7 @@ require_once('../settings/brandcaptchalib.php');
 
 $resp = brandcaptcha_check_answer(
             $recaptcha['private_key'],
-            $_SERVER["REMOTE_ADDR"],
+            $_SERVER["HTTP_X_FORWARDED_FOR"],
             $_POST["brand_cap_challenge"],
             $_POST["brand_cap_answer"]
         );

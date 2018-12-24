@@ -35,7 +35,7 @@ if (isset($_POST['login']) and isset($_POST['senha'])) {
     } else {
         // VALIDA OPERADOR TELEMARKETING
         if (hasRows($result) and !$rs['IN_TELEMARKETING']) {
-            echo 'Acesso Negado!';
+            echo 'Acesso Negado!!';
         } else if ($rs['ID_USUARIO']) {
             //setcookie('user', $rs['ID_CLIENTE'], $cookieExpireTime);
             $_SESSION['operador'] = $rs['ID_USUARIO'];

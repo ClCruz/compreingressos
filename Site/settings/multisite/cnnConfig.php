@@ -9,9 +9,9 @@ function multiSite_getCurrentSQLServer() {
 
     switch (getCurrentSite()) {
         case "compreingressos":
-            $ret = array("host" => "sqlserver.compreingressos.com"
-                        ,"user" => "dev"
-                        ,"pass" => "!ci@dev@2018!"
+            $ret = array("host" => "192.168.81.17"
+                        ,"user" => "web"
+                        ,"pass" => "!ci@web@2018!"
                         , "port"=> "1433");
         break;
         case "ingressoslitoral":
@@ -36,7 +36,7 @@ function multiSite_getCurrentMysql() {
     $ret = array("host" => null, "user" => null, "pass" => null, "database" => null);
     switch (getCurrentSite()) {
         case "compreingressos":
-            $ret = array("host" => "192.168.81.15"
+            $ret = array("host" => "192.168.81.22"
                         ,"user" => "php"
                         ,"pass" => "SNq3mhh5Tyb59J"
                         ,"database" => "compreingressos_production"

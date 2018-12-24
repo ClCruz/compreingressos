@@ -186,3 +186,6 @@ div#selos2 {
 	div#novo_menu .meio .bottom > div .icone, div#novo_menu .meio .bottom > div .txt { float: none;		text-align: center; }
 	div#novo_menu .bottom input { width: 97%; }
 }
+#footer {
+	margin-bottom: 10px;
+}

@@ -1,6 +1,6 @@
 <?php
-// $whatIsTheSite = "compreingressos";
-$whatIsTheSite = "ingressoslitoral";
+$whatIsTheSite = "compreingressos";
+//$whatIsTheSite = "ingressoslitoral";
 // $type = "bringressos;"
 
 function getCurrentSite() {

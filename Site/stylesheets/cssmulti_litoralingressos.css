@@ -620,3 +620,7 @@ input.submit.reenviar:hover {
         height: 43px !important;
     }
 }
+.fixar {
+    position:inherit;
+    margin-top: 0px !important;
+}
